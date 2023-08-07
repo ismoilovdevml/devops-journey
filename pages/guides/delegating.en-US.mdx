@@ -1,0 +1,20 @@
+import Card, { Cards } from '@components/core/Card';
+import guides from './system/_meta.en-US.json';
+
+# System Design 
+
+Hamjamiyat tomonidan yozilgan System Design uchun yozilgan dokumentatsiya va qo'llanmalar.
+
+<Cards
+  num={3}
+  items={guides}
+  children={Object.keys(guides).map((key, i) => (
+    <Card
+      key={i}
+      title={guides[key].title}
+      description={guides[key].description}
+      icon={guides[key].icon}
+      href={guides[key].href}
+    />
+  ))}
+/>

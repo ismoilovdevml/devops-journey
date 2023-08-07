@@ -1,0 +1,19 @@
+import Card, { Cards } from '@components/core/Card';
+import guides from './algoritm/_meta.en-US.json';
+
+# Ma'lumotlar tuzilmalari va Algoritmlar
+
+Hamjamiyat tomonidan yozilgan Ma'lumotlar tuzilmalari va Algoritmlar uchun yozilgan dokumentatsiya va qo'llanmalar.
+
+<Cards
+  num={3}
+  children={Object.keys(guides).map((key, i) => (
+    <Card
+      key={i}
+      title={guides[key].title}
+      description={guides[key].description}
+      icon={guides[key].icon}
+      href={guides[key].href}
+    />
+  ))}
+/>

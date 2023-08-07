@@ -1,0 +1,14 @@
+{
+  "bridge-lpt-to-arbitrum": {
+    "title": "Kirish",
+    "description": "System Design-ga Kirish",
+    "icon": "▶️",
+    "href": "/guides/system/bridge-lpt-to-arbitrum"
+  },
+  "migrate-stake-to-arbitrum": {
+    "title": "Database",
+    "description": "System Design - Database",
+    "icon": "▶️",
+    "href": "/guides/system/migrate-stake-to-arbitrum"
+  }
+}

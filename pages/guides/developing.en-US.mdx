@@ -1,0 +1,19 @@
+import Card, { Cards } from '@components/core/Card';
+import guides from './dasturlash/_meta.en-US.json';
+
+# Dasturlash
+
+Hamjamiyat tomonidan yozilgan Dasturlash va Sintaksis uchun yozilgan dokumentatsiya va qo'llanmalar.
+
+<Cards
+  num={3}
+  children={Object.keys(guides).map((key, i) => (
+    <Card
+      key={i}
+      title={guides[key].title}
+      description={guides[key].description}
+      icon={guides[key].icon}
+      href={guides[key].href}
+    />
+  ))}
+/>

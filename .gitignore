@@ -1,0 +1,31 @@
+*.local
+.eslintcache
+.next
+.pnpm-debug.log*
+cache
+coverage
+dist
+node_modules
+tsconfig.tsbuildinfo
+logs
+*.log
+pnpm-debug.log*
+build/
+# local env files
+.env
+.envrc
+
+# svelte
+dist-ssr
+
+# editor directories and files
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Sentry
+.sentryclirc

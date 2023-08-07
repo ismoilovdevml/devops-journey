@@ -1,0 +1,98 @@
+{
+  "quickstart": {
+    "title": "Dasturlash tili",
+    "icon": "▶️",
+    "description": "C dasturlash tili",
+    "href": "/guides/dasturlash/quickstart"
+  },
+  "player": {
+    "title": "Kirish",
+    "icon": "▶️",
+    "description": "C dasturlash tiliga kirish",
+    "href": "/guides/dasturlash/player"
+  },
+  "create-a-livestream": {
+    "title": "Ishni boshlash",
+    "icon": "▶️",
+    "description": "C dasturlash tilida kod yozishga tayyorgarlik",
+    "href": "/guides/dasturlash/create-a-livestream"
+  },
+  "stream-via-obs": {
+    "title": "Sintaksis",
+    "icon": "▶️",
+    "description": "C dasturlash tili sintaksisi",
+    "href": "/guides/dasturlash/stream-via-obs"
+  },
+  "upload-a-video-asset": {
+    "title": "output (printf)",
+    "icon": "▶️",
+    "description": "C dasturlash tilida chop etish printf",
+    "href": "/guides/dasturlash/upload-a-video-asset"
+  },
+  "mint-a-video-nft": {
+    "title": "izoh(comments)",
+    "icon": "▶️",
+    "description": "C dasturlash tilida izohlar(comment)",
+    "href": "/guides/dasturlash/mint-a-video-nft"
+  },
+  "dstorage-playback": {
+    "title": "O'zgaruvchilar",
+    "icon": "▶️",
+    "description": "C dasturlash tilida o'zgaruvchilar(variable)",
+    "href": "/guides/dasturlash/dstorage-playback"
+  },
+  "access-control": {
+    "title": "Ma'lumotlar turlari",
+    "icon": "▶️",
+    "description": "C dasturlash tilida ma'lumotlar turlari(data types)",
+    "href": "/guides/dasturlash/access-control"
+  },
+  "access-control-vod": {
+    "title": "konstantalar",
+    "icon": "▶️",
+    "description": "C dasturlash tilida konstantalar",
+    "href": "/guides/dasturlash/access-control-vod"
+  },
+  "listen-for-webhooks": {
+    "title": "Operatorlar",
+    "icon": "▶️",
+    "description": "C dasturlash tilida operatorlar",
+    "href": "/guides/dasturlash/listen-for-webhooks"
+  },
+  "multistream": {
+    "title": "Booloen",
+    "icon": "▶️",
+    "description": "C dasturlash tilida booloen",
+    "href": "/guides/dasturlash/multistream"
+  },
+  "monitor-stream-health": {
+    "title": "if/else",
+    "icon": "▶️",
+    "description": "C dasturlash tilida shart operatorlari if else",
+    "href": "/guides/dasturlash/monitor-stream-health"
+  },
+  "viewer-engagement": {
+    "title": "Switch",
+    "icon": "▶️",
+    "description": "C dasturlash tilida switch",
+    "href": "/guides/dasturlash/viewer-engagement"
+  },
+  "transcode-video-storj": {
+    "title": "while/loop",
+    "icon": "▶️",
+    "description": "C dasturlash tilida while loop sikl",
+    "href": "/guides/dasturlash/transcode-video-storj"
+  },
+  "transcode-video-w3s": {
+    "title": "for/loop",
+    "icon": "▶️",
+    "description": "C dasturlash tilida for loop",
+    "href": "/guides/dasturlash/transcode-video-w3s"
+  },
+  "multiparticipant-stream": {
+    "title": "break/countinue",
+    "icon": "▶️",
+    "description": "C dasturlash tilida break/continue",
+    "href": "/guides/dasturlash/multiparticipant-stream"
+  }
+}

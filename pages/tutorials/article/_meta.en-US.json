@@ -1,0 +1,170 @@
+{
+  "cpu-cache": {
+    "title": "CPU cache nima va u qanday ishlaydi?",
+    "longTitle": "CPU cache nima va u qanday ishlaydi?",
+    "description": "CPU cache nima va u qanday ishlaydi?",
+    "level": "Hamma uchun",
+    "category": "Computer Science",
+    "author": {
+      "name": "Otabek Ismoilov",
+      "image": "/images/tutorials/authors/ismoilovdev.jpeg"
+    },
+    "createdAt": "2022-02-15",
+    "minutesRead": 15,
+    "href": "/tutorials/article/cpu-cache",
+    "theme": {
+      "breadcrumb": false,
+      "footer": true,
+      "sidebar": false,
+      "toc": false,
+      "pagination": true
+    }
+  },
+  "kernel": {
+    "title": "Kernel nima va u qanday ishlaydi?",
+    "longTitle": "Kernel nima va u qanday ishlaydi?",
+    "description": "Kernel nima va u qanday ishlaydi?",
+    "level": "Hamma uchun",
+    "category": "Computer Science",
+    "author": {
+      "name": "Otabek Ismoilov",
+      "image": "/images/tutorials/authors/ismoilovdev.jpeg"
+    },
+    "createdAt": "2023-02-02",
+    "minutesRead": 25,
+    "href": "/tutorials/article/kernel",
+    "theme": {
+      "breadcrumb": false,
+      "footer": true,
+      "sidebar": false,
+      "toc": false,
+      "pagination": true
+    }
+  },
+  "linux-file-system": {
+    "title": "Linux fayl tizimi uchun keng qamrovli qo'llanma",
+    "longTitle": "Linux fayl tizimi uchun keng qamrovli qo'llanma",
+    "description": "Linux fayl tizimi uchun keng qamrovli qo'llanma",
+    "level": "Hamma uchun",
+    "category": "Computer Science",
+    "author": {
+      "name": "Otabek Ismoilov",
+      "image": "/images/tutorials/authors/ismoilovdev.jpeg"
+    },
+    "createdAt": "2023-02-12",
+    "minutesRead": 15,
+    "href": "/tutorials/article/linux-file-system",
+    "theme": {
+      "breadcrumb": false,
+      "footer": true,
+      "sidebar": false,
+      "toc": false,
+      "pagination": true
+    }
+  }, 
+  "quantum": {
+    "title": "#1 Kvant dasturlashga sayohat",
+    "longTitle": "#1 Kvant dasturlashga sayohat",
+    "description": "#1 Kvant dasturlashga sayohat",
+    "level": "Hamma uchun",
+    "category": "Computer Science",
+    "author": {
+      "name": "Otabek Ismoilov",
+      "image": "/images/tutorials/authors/ismoilovdev.jpeg"
+    },
+    "createdAt": "2023-02-15",
+    "minutesRead": 16,
+    "href": "/tutorials/article/quantum",
+    "theme": {
+      "breadcrumb": false,
+      "footer": true,
+      "sidebar": false,
+      "toc": false,
+      "pagination": true
+    }
+  },
+  "llvm": {
+    "title": "LLVM Arxitekturasi",
+    "longTitle": "LLVM Arxitekturasi",
+    "description": "LLVM Arxitekturasi",
+    "level": "Hamma uchun",
+    "category": "Computer Science",
+    "author": {
+      "name": "Otabek Ismoilov",
+      "image": "/images/tutorials/authors/ismoilovdev.jpeg"
+    },
+    "createdAt": "2023-03-01",
+    "minutesRead": 15,
+    "href": "/tutorials/article/llvm",
+    "theme": {
+      "breadcrumb": false,
+      "footer": true,
+      "sidebar": false,
+      "toc": false,
+      "pagination": true
+    }
+  },
+  "blockchain": {
+    "title": "Blockchain",
+    "longTitle": "Blockchain",
+    "description": "Blockchain",
+    "level": "Hamma uchun",
+    "category": "Computer Science",
+    "author": {
+      "name": "Otabek Ismoilov",
+      "image": "/images/tutorials/authors/ismoilovdev.jpeg"
+    },
+    "createdAt": "2023-03-16",
+    "minutesRead": 15,
+    "href": "/tutorials/article/blockchain",
+    "theme": {
+      "breadcrumb": false,
+      "footer": true,
+      "sidebar": false,
+      "toc": false,
+      "pagination": true
+    }
+  },
+  "wasm": {
+    "title": "WebAssembly WASM",
+    "longTitle": "WebAssembly WASM",
+    "description": "WebAssembly WASM",
+    "level": "Hamma uchun",
+    "category": "Computer Science",
+    "author": {
+      "name": "Otabek Ismoilov",
+      "image": "/images/tutorials/authors/ismoilovdev.jpeg"
+    },
+    "createdAt": "2023-05-07",
+    "minutesRead": 17,
+    "href": "/tutorials/article/wasm",
+    "theme": {
+      "breadcrumb": false,
+      "footer": true,
+      "sidebar": false,
+      "toc": false,
+      "pagination": true
+    }
+  },
+  "linux-kernel": {
+    "title": "Asosiy operatsion tizim atamalari va tushunchalari",
+    "longTitle": "Asosiy operatsion tizim atamalari va tushunchalari",
+    "description": "Asosiy operatsion tizim atamalari va tushunchalari",
+    "level": "Hamma uchun",
+    "category": "Computer Science",
+    "author": {
+      "name": "Otabek Ismoilov",
+      "image": "/images/tutorials/authors/ismoilovdev.jpeg"
+    },
+    "createdAt": "2023-06-09",
+    "minutesRead": 40,
+    "href": "/tutorials/article/linux-kernel",
+    "theme": {
+      "breadcrumb": false,
+      "footer": true,
+      "sidebar": false,
+      "toc": false,
+      "pagination": true
+    }
+  }
+}

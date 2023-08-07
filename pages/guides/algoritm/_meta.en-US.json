@@ -1,0 +1,92 @@
+{
+  "get-started": {
+    "title": "DSA.UZ",
+    "icon": "▶️",
+    "description": "DSA.UZ - Ma'lumotlar strukturasi va Algoritmlar",
+    "href": "/guides/algoritm/dsa-uz"
+  },
+  "install-go-livepeer": {
+    "title": "Arrays",
+    "icon": "▶️",
+    "description": "DSA.UZ - Arrays",
+    "href": "/guides/algoritm/install-go-livepeer"
+  },
+  "connect-to-arbitrum": {
+    "title": "Linked List",
+    "icon": "▶️",
+    "description": "DSA.UZ - Linked List",
+    "href": "/guides/algoritm/connect-to-arbitrum"
+  },
+  "configure-reward-calling": {
+    "title": "Stack",
+    "icon": "▶️",
+    "description": "DSA.UZ - Stack",
+    "href": "/guides/algoritm/configure-reward-calling"
+  },
+  "set-session-limits": {
+    "title": "Queue",
+    "icon": "▶️",
+    "description": "DSA.UZ - Queue",
+    "href": "/guides/algoritm/set-session-limits"
+  },
+  "set-pricing": {
+    "title": "Graph",
+    "icon": "▶️",
+    "description": "DSA.UZ - Graph",
+    "href": "/guides/algoritm/set-pricing"
+  },
+  "benchmark-transcoding": {
+    "title": "Tree",
+    "icon": "▶️",
+    "description": "DSA.UZ - Tree",
+    "href": "/guides/algoritm/benchmark-transcoding"
+  },
+  "assess-capabilities": {
+    "title": "Heap",
+    "icon": "▶️",
+    "description": "DSA.UZ - Heap",
+    "href": "/guides/algoritm/get-started"
+  },
+  "monitor-metrics": {
+    "title": "Hash Table",
+    "icon": "▶️",
+    "description": "DSA.UZ - Hash Table",
+    "href": "/guides/algoritm/monitor-metrics"
+  },
+  "vote": {
+    "title": "Algorithmic Paradigms",
+    "icon": "▶️",
+    "description": "DSA.UZ - Algorithmic Paradigms",
+    "href": "/guides/algoritm/vote"
+  },
+  "dual-mine": {
+    "title": "Sorting",
+    "icon": "▶️",
+    "description": "DSA.UZ - Sorting Algorithms",
+    "href": "/guides/algoritm/dual-mine"
+  },
+  "o-t-split": {
+    "title": "Searching",
+    "icon": "▶️",
+    "description": "DSA.UZ - Searching Algorithms",
+    "href": "/guides/algoritm/o-t-split"
+  },
+  "migrate-to-arbitrum": {
+    "title": "Graph Algorithms",
+    "icon": "▶️",
+    "description": "DSA.UZ - Graph Algorithms",
+    "href": "/guides/algoritm/migrate-to-arbitrum"
+  },
+  "migrate-from-contract-wallet": {
+    "title": "Greedy Algorithms",
+    "icon": "▶️",
+    "description": "DSA.UZ - Greedy Algorithms",
+    "href": "/guides/algoritm/migrate-from-contract-wallet"
+  },
+  "troubleshoot": {
+    "title": "Dynamic Porgamming",
+    "icon": "▶️",
+    "description": "DSA.UZ - Dynamic Porgamming",
+    "href": "/guides/algoritm/troubleshoot"
+  }
+}
