@@ -1,6 +1,6 @@
 {
   "overview": "Asosiy",
-  "dasturlash": "▶️ Dasturlash",
-  "algoritm": "▶️ Algoritm",
-  "system": "▶️ System Design"
+  "ci-cd": "▶️ CI/CD",
+  "konteyner": "▶️ Konteynerlash",
+  "k8s": "▶️ Kubernetes(k8s)"
 }
