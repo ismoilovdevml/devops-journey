@@ -62,27 +62,6 @@
       "pagination": true
     }
   }, 
-  "quantum": {
-    "title": "#1 Kvant dasturlashga sayohat",
-    "longTitle": "#1 Kvant dasturlashga sayohat",
-    "description": "#1 Kvant dasturlashga sayohat",
-    "level": "Hamma uchun",
-    "category": "Computer Science",
-    "author": {
-      "name": "Otabek Ismoilov",
-      "image": "/images/tutorials/authors/ismoilovdev.jpeg"
-    },
-    "createdAt": "2023-02-15",
-    "minutesRead": 16,
-    "href": "/tutorials/article/quantum",
-    "theme": {
-      "breadcrumb": false,
-      "footer": true,
-      "sidebar": false,
-      "toc": false,
-      "pagination": true
-    }
-  },
   "llvm": {
     "title": "LLVM Arxitekturasi",
     "longTitle": "LLVM Arxitekturasi",
@@ -96,27 +75,6 @@
     "createdAt": "2023-03-01",
     "minutesRead": 15,
     "href": "/tutorials/article/llvm",
-    "theme": {
-      "breadcrumb": false,
-      "footer": true,
-      "sidebar": false,
-      "toc": false,
-      "pagination": true
-    }
-  },
-  "blockchain": {
-    "title": "Blockchain",
-    "longTitle": "Blockchain",
-    "description": "Blockchain",
-    "level": "Hamma uchun",
-    "category": "Computer Science",
-    "author": {
-      "name": "Otabek Ismoilov",
-      "image": "/images/tutorials/authors/ismoilovdev.jpeg"
-    },
-    "createdAt": "2023-03-16",
-    "minutesRead": 15,
-    "href": "/tutorials/article/blockchain",
     "theme": {
       "breadcrumb": false,
       "footer": true,
