@@ -3,7 +3,7 @@
  */
 import { useRouter } from 'next/router';
 
-const github = 'https://github.com/ismoilovdevml/cs-uz';
+const github = 'https://github.com/ismoilovdevml/devops-journey';
 
 const TITLE_WITH_TRANSLATIONS = {
   'en-US': 'CS-UZ',
@@ -87,7 +87,7 @@ const config: DocsThemeConfig = {
       frontMatter?.description ||
       "DevOps bo'yicha bepul ta'lim platformasi bo'lgan DevOps Journey-ga xush kelibsiz";
     const image = frontMatter?.type
-      ? `https://cs-uz.vercel.ap/api/og?title=${frontMatter?.ogImageText}&category=Developing`
+      ? `https://devops-journey.vercel.app/api/og?title=${frontMatter?.ogImageText}&category=Developing`
       : frontMatter?.image || '/og.jpg';
     const folder = theme === 'light' ? '/light' : '/dark';
 
