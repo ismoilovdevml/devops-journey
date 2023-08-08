@@ -26,6 +26,3 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-
-# Sentry
-.sentryclirc

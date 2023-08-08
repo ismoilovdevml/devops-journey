@@ -26,7 +26,7 @@ export default async function handler(req: NextRequest) {
           flexDirection: 'column',
           alignItems: 'flex-start',
           justifyContent: 'center',
-          backgroundImage: 'url(https://cs-uz.vercel.app/og-bg.jpg)',
+          backgroundImage: 'url(https://devops-journey.vercel.app/og-bg.jpg)',
           paddingLeft: 135,
           paddingRight: 450,
         }}

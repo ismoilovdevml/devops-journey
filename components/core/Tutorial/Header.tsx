@@ -32,14 +32,14 @@ export default function Header() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [tutorial, setTutorial] = useState<Tutorial | null>(null);
 
-  const ogImage = `https://cs-uz.vercel.app/api/og?title=${tutorial?.title}&category=${tutorial?.category}`;
+  const ogImage = `https://devops-journey.vercel.app//api/og?title=${tutorial?.title}&category=${tutorial?.category}`;
 
   const structuredData: JsonLd = {
     '@context': 'https://schema.org/',
     '@type': 'BlogPosting',
     mainEntityOfPage: {
       '@type': 'WebPage',
-      '@id': `https://cs-uz.vercel.app/${router.asPath}`,
+      '@id': `https://devops-journey.vercel.app//${router.asPath}`,
     },
     headline: `${tutorial?.longTitle}`,
     description: `${tutorial?.description}`,
@@ -56,7 +56,7 @@ export default function Header() {
     },
     publisher: {
       '@type': 'Organization',
-      name: 'CS-UZ',
+      name: 'DevOps Journey',
     },
   };
 
