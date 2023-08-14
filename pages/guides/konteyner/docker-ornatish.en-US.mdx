@@ -158,3 +158,32 @@ sudo systemctl start docker
 ```bash
 sudo docker run hello-world
 ```
+
+## Docker Engineni yangilash
+
+Ushbu misol [https://get.docker.com/](https://get.docker.com/) dan skriptni yuklab oladi va uni Linuxda Dockerning so'nggi barqaror versiyasini o'rnatish uchun ishga tushiradi:
+
+```bash
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+```
+
+## Pre-releaselarni o'rnatish test Beta versiyalar
+
+```bash
+curl -fsSL https://test.docker.com -o test-docker.sh
+sudo sh test-docker.sh
+```
+
+## Docker Engine-ni o'chirib tashlash
+1. Docker Engine, CLI, containerd va Docker Compose paketlarini olib tashlash:
+
+```bash
+sudo yum remove docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin docker-ce-rootless-extras
+```
+2. Xostingizdagi imagelar, containerlar, volumelar yoki custom configurationsiya fayllari avtomatik ravishda o'chirilmaydi. Barcha imagelar, containerlar va volumelarni oʻchirish uchun:
+
+```bash
+sudo rm -rf /var/lib/docker
+sudo rm -rf /var/lib/containerd
+```
