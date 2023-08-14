@@ -108,3 +108,53 @@ sudo rm -rf /var/lib/docker
 sudo rm -rf /var/lib/containerd
 ```
 
+# CentOS-da Docker Engine o'rnatish
+CentOS-da Docker Engine bilan ishlashni boshlash uchun talab shartlarga javob berganingizga ishonch hosil qiling va keyin o'rnatish bosqichlarini bajaring.
+
+<Callout type="info" emoji="">
+##### Talablar
+OS talablari
+Docker Engine-ni o'rnatish uchun sizga quyidagi CentOS versiyalaridan birining saqlangan versiyasi kerak bo'ladi:
+
+CentOS 7
+CentOS 8 (stream)
+CentOS 9 (stream)
+
+</Callout>
+
+### `rpm` repositoriya yordamida o'rnatish
+Docker Engine-ni yangi host machinega birinchi marta o'rnatishdan oldin Docker repozitoriyasini sozlashingiz kerak. Shundan so'ng siz Docker-ni repositoriyadan o'rnatishingiz va yangilashingiz mumkin.
+
+#### Repozitoriyani sozlash
+`yum-utils` paketini o'rnating (`yum-config-manager` yordam dasturini taqdim etadi) va repositoriyani sozlang.
+
+```bash
+sudo yum install -y yum-utils
+sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+```
+
+## Docker Engine o'rnatish
+
+1.Docker Engine, containerd va Docker Compose-ni o'rnatish.
+
+Eng so'nggi versiyani(latest) o'rnatish uchun quyidagilarni bajaring:
+
+```bash
+sudo yum install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+```
+
+Agar GPG kalitini(GPG key) qabul qilish so'ralsa, fingerprint `060A` `61C5` `1B55` `8A7F` `742B`  `77AA` `C52F` `EB6B` `621E` `9F35g`a mos kelishini tekshiring va agar shunday bo'lsa, uni qabul qiling.
+
+Bu buyruq Docker-ni o'rnatadi, lekin u Docker-ni ishga tushirmaydi. Shuningdek, u docker guruhini yaratadi, ammo u standart(default) bo'yicha guruhga hech qanday foydalanuvchi qo'shmaydi.
+
+2. Docker-ni ishga tushiring.
+
+```bash
+sudo systemctl start docker
+```
+
+3. `hello-world` imageni ishga tushirish orqali Docker Engine o'rnatilishi muvaffaqiyatli ekanligini tekshiring:
+
+```bash
+sudo docker run hello-world
+```
