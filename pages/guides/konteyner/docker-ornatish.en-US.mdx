@@ -1,3 +1,5 @@
+import { Callout } from "nextra-theme-docs";
+
 ---
 title: Linux serverlarga Docker o'rnatish
 ---
@@ -36,8 +38,73 @@ echo \
 
 ```
 
-4. `Apt` paketi indeksini yangilang:
+4. `apt` paketi indeksini yangilang:
 
 ```bash
 sudo apt-get update
 ```
+
+## Docker Engine o'rnatish
+
+1.Docker Engine, containerd va Docker Compose-ni o'rnating.
+
+Eng so'nggi versiyani(latest) o'rnatish uchun quyidagilarni bajaring:
+
+```bash
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+```
+2.  `hello-world` imageni ishga tushirish orqali Docker Engine o'rnatilishi muvaffaqiyatli ekanligini tekshiring:
+
+```bash
+sudo docker run hello-world
+```
+
+Bu buyruq test imageni yuklaydi va uni containerda ishga tushiradi. Container ishga tushganda, u tasdiqlash xabarini chop etadi va chiqadi.
+
+Tabriklaymiz. Siz Docker Engine-ni muvaffaqiyatli o'rnatdingiz va ishga tushirdingiz.
+
+<Callout type="info" emoji="">
+
+rootsiz ishlashga urinayotganda xatoliklarni qabul qilyapsizmi?
+Docker foydalanuvchilari guruhi mavjud, lekin foydalanuvchilarni o'z ichiga olmaydi, shuning uchun siz Docker buyruqlarini bajarish uchun sudo-dan foydalanishingiz kerak. Imtiyozli bo'lmagan foydalanuvchilarga Docker buyruqlarini va boshqa ixtiyoriy konfiguratsiya bosqichlarini bajarishga ruxsat berish uchun quyidagilarni bajarishingiz kerak.
+
+```bash
+sudo groupadd docker
+
+sudo usermod -aG docker $USER
+
+sudo chown username:docker /var/run/docker.sock
+
+docker info
+```
+</Callout>
+
+## Docker Engineni yangilash
+
+Ushbu misol [https://get.docker.com/](https://get.docker.com/) dan skriptni yuklab oladi va uni Linuxda Dockerning so'nggi barqaror versiyasini o'rnatish uchun ishga tushiradi:
+
+```bash
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+```
+
+## Pre-releaselarni o'rnatish test Beta versiyalar
+
+```bash
+curl -fsSL https://test.docker.com -o test-docker.sh
+sudo sh test-docker.sh
+```
+
+## Docker Engine-ni o'chirib tashlash
+1. Docker Engine, CLI, containerd va Docker Compose paketlarini olib tashlash:
+
+```bash
+sudo apt-get purge docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin docker-ce-rootless-extras
+```
+2. Xostingizdagi imagelar, containerlar, volumelar yoki custom configurationsiya fayllari avtomatik ravishda o'chirilmaydi. Barcha imagelar, containerlar va volumelarni oʻchirish uchun:
+
+```bash
+sudo rm -rf /var/lib/docker
+sudo rm -rf /var/lib/containerd
+```
+
