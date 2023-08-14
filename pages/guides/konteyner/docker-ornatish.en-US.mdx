@@ -1,0 +1,43 @@
+---
+title: Linux serverlarga Docker o'rnatish
+---
+
+# Linux serverlarga Docker o'rnatish
+
+## Debian serverlar uchun docker o'rnatish
+
+
+### `apt` repository yordamida o'rnating
+Docker Engine-ni yangi host machinega birinchi marta o'rnatishdan oldin Docker repozitoriysini sozlashingiz kerak. Shundan so'ng siz Docker-ni repositorydan o'rnatishingiz va yangilashingiz mumkin.
+
+#### Repozitoriyani sozlang
+
+1. `apt` paketi indeksini yangilang va aptga HTTPS orqali repositoriyadan foydalanishga ruxsat berish uchun paketlarni o'rnating:
+
+```bash
+ sudo apt-get update
+ sudo apt-get install ca-certificates curl gnupg
+ ```
+
+2. Dockerning rasmiy GPG kalitini qo'shing:
+
+```bash
+sudo install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+sudo chmod a+r /etc/apt/keyrings/docker.gpg
+```
+3. Repositorini sozlash uchun quyidagi buyruqdan foydalaning:
+
+```bash
+echo \
+  "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian \
+  "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+```
+
+4. `Apt` paketi indeksini yangilang:
+
+```bash
+sudo apt-get update
+```

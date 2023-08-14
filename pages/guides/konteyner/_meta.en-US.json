@@ -1,9 +1,9 @@
 {
   "get-started": {
-    "title": "Jarayonda",
+    "title": "Linux serverlarga Docker o'rnatish",
     "icon": "▶️",
-    "description": "Ishlar olib borilmoqda",
-    "href": "/guides/konteyner/dsa-uz"
+    "description": "Linux serverlarga Docker o'rnatish",
+    "href": "/guides/konteyner/docker-ornatish"
   },
   "install-go-livepeer": {
     "title": "Jarayonda",
