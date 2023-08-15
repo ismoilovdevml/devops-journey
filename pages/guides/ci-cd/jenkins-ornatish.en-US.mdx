@@ -25,7 +25,7 @@ Minimal qurilma talablari:
 
 Ubuntu kabi Debian va Debian-ga asoslangan distributivlarda siz Jenkins-ni `apt` orqali o'rnatishingiz mumkin.
 
-#### Uzoq muddatli qo'llab-quvvatlash versiyasi(LTS Long Term Support release)
+### Uzoq muddatli qo'llab-quvvatlash versiyasi(LTS Long Term Support release)
 
 LTS (Uzoq muddatli qo'llab-quvvatlash) versiyasi har 12 haftada muntazam releaselar oqimidan o'sha vaqt uchun barqaror release sifatida tanlanadi. U debian-stable apt repositorydan o'rnatilishi mumkin.
 
@@ -41,7 +41,7 @@ sudo apt-get install jenkins
 
 ### Haftalik Release
 
-Foydalanuvchilar va plaginlarni ishlab chiquvchilarga xatolarni tuzatish va xususiyatlarni yetkazib berish uchun har hafta yangi nashr chiqariladi. Uni debian apt repositorydan o'rnatishingiz mumkin.
+Foydalanuvchilar va plaginlarni ishlab chiquvchilarga xatolarni tuzatish va xususiyatlarni yetkazib berish uchun har hafta yangi release chiqariladi. Uni debian apt repositorydan o'rnatishingiz mumkin.
 
 ```bash
 curl -fsSL https://pkg.jenkins.io/debian/jenkins.io-2023.key | sudo tee \
@@ -52,3 +52,53 @@ echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] \
 sudo apt-get update
 sudo apt-get install jenkins
 ```
+
+## Java o'rnatish
+
+Jenkins ishga tushirish uchun Java-ni talab qiladi, ammo ba'zi distributivlar standart bo'yicha buni o'z ichiga olmaydi va ba'zi Java versiyalari Jenkins bilan mos kelmaydi.
+
+Siz foydalanishingiz mumkin bo'lgan bir nechta Java ilovalari mavjud. OpenJDK hozirda eng ommabop, biz undan ushbu qo'llanmada foydalanamiz.
+
+Debian apt repositoriyalarini yangilang, OpenJDK 17 ni o'rnating va buyruqlar bilan o'rnatishni tekshiring:
+
+```bash
+sudo apt update
+sudo apt install openjdk-17-jre
+java -version
+```
+
+## Fedora
+
+Jenkins-ni `dnf` orqali o'rnatishingiz mumkin. Avval Jenkins veb-saytidan Jenkins repositoryni paket menejeriga qo'shishingiz kerak.
+
+### Uzoq muddatli qo'llab-quvvatlash versiyasi(LTS Long Term Support release)
+
+LTS (Uzoq muddatli qo'llab-quvvatlash) versiyasi har 12 haftada muntazam releaselar oqimidan o'sha vaqt uchun barqaror release sifatida tanlanadi. Uni `redhat-stable` yum repositorydan o'rnatish mumkin.
+
+```bash
+sudo wget -O /etc/yum.repos.d/jenkins.repo \
+    https://pkg.jenkins.io/redhat-stable/jenkins.repo
+sudo rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key
+sudo dnf upgrade
+# Jenkins package uchun kerakli dependensylarni qo'shing
+sudo dnf install java-17-openjdk
+sudo dnf install jenkins
+sudo systemctl daemon-reload
+
+```
+
+### Haftalik Release
+
+Foydalanuvchilar va plaginlarni ishlab chiquvchilarga xatolarni tuzatish va xususiyatlarni yetkazib berish uchun har hafta yangi release chiqariladi. Uni redhat yum repositoriyadan o'rnatish mumkin.
+
+```bash
+sudo wget -O /etc/yum.repos.d/jenkins.repo \
+    https://pkg.jenkins.io/redhat/jenkins.repo
+sudo rpm --import https://pkg.jenkins.io/redhat/jenkins.io-2023.key
+sudo dnf upgrade
+# Jenkins package uchun kerakli dependensylarni qo'shing
+sudo dnf install java-17-openjdk
+sudo dnf install jenkins
+```
+
+## Jenkinsni ishga tushirish
