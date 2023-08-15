@@ -1,15 +1,15 @@
 {
-  "get-started": {
+  "docker-ornatish": {
     "title": "Linux serverlarga Docker o'rnatish",
     "icon": "▶️",
     "description": "Linux serverlarga Docker o'rnatish",
     "href": "/guides/konteyner/docker-ornatish"
   },
-  "install-go-livepeer": {
-    "title": "Jarayonda",
+  "docker-registry": {
+    "title": "Docker Registry",
     "icon": "▶️",
-    "description": "Ishlar olib borilmoqda",
-    "href": "/guides/konteyner/install-go-livepeer"
+    "description": "Shaxsiy Docker Registry ko'tarish",
+    "href": "/guides/konteyner/docker-registry"
   },
   "connect-to-arbitrum": {
     "title": "Jarayonda",
