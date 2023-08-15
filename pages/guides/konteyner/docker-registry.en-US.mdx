@@ -34,10 +34,10 @@ Ushbu buyruq Docker official registry imageni (2-versiya) tortib(pull) oladi va 
 mkdir auth
 ```
 
-Asosiy autentifikatsiya faylini yarating. Rasmiy registr imagedan foydalanish:
+2.  Asosiy autentifikatsiya faylini yarating va username va parol qo'ying. Rasmiy registr imagedan foydalanish. Quyida biz `devops` nomli user ochamiz va parolini `devops2h3dew` qo'yamiz. Dockerga user qo'shish bizga ci/cd larda kerak bo'ladi.
 
 ```bash
-docker run --entrypoint htpasswd registry:2 -Bbn devops devops9834j > auth/htpasswd
+docker run --entrypoint htpasswd registry:2 -Bbn devops devops2h3dew > auth/htpasswd
 ```
 
 Yoki Apache httpd imagedan foydalanib:
@@ -45,7 +45,7 @@ Yoki Apache httpd imagedan foydalanib:
 ```bash
 docker run \
   --entrypoint htpasswd \
-  httpd:2 -Bbn devops devops9834j > auth/htpasswd
+  httpd:2 -Bbn devops devops2h3dew > auth/htpasswd
 ```
 
 ## Docker Daemoniga xavfsiz registrga ulanishga ruxsat berish
@@ -64,8 +64,42 @@ daemon.json fayliga quyidagi konfigratsiya faylini kiriting localhost o'rniga se
 }
 ```
 
-Docker servisni qaytadan ishga tushiramiz (restart).
+Docker servisini qaytadan ishga tushiramiz (restart).
 
 ```bash
 sudo systemctl restart docker
 ```
+
+## Shaxsiy registringiz bilan ishlash
+
+
+1. Registryga kirish(login qilish)
+
+```bash
+docker login localhost:5000
+```
+Ushbu buyruqni ishga tushurganizda sizdan `Username` so'raydi siz yuqorida ochgan useringizni yozasiz, keyin esa sizdan `Password` so'raydi shu userni parolini kiritasiz.
+
+`docker tag`
+
+```bash
+docker image tag ubuntu localhost:5000/birinchi-image
+```
+
+`docker push`
+
+```bash
+docker push localhost:5000/birinchi-image
+```
+
+`docker pull`
+
+```bash
+docker pull localhost:5000/birinchi-image
+```
+Docker Registryni to'xtatish va barcha malumotlarni o'chirish
+
+```bash
+docker container stop registry && docker container rm -v registry
+```
+
