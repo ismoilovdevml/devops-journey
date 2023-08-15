@@ -25,3 +25,47 @@ Registry stateless, yuqori darajada kengaytiriladigan server side applicationi b
 docker run -d -p 5000:5000 --name registry registry:2
 ```
 Ushbu buyruq Docker official registry imageni (2-versiya) tortib(pull) oladi va uni ishga tushiradi. Registry 5000 portni tinglaydi.
+
+## Docker registringizni asosiy autentifikatsiya bilan himoyalash
+
+1. Autentifikatsiya jildini yarating:
+
+```bash
+mkdir auth
+```
+
+Asosiy autentifikatsiya faylini yarating. Rasmiy registr imagedan foydalanish:
+
+```bash
+docker run --entrypoint htpasswd registry:2 -Bbn devops devops9834j > auth/htpasswd
+```
+
+Yoki Apache httpd imagedan foydalanib:
+
+```bash
+docker run \
+  --entrypoint htpasswd \
+  httpd:2 -Bbn devops devops9834j > auth/htpasswd
+```
+
+## Docker Daemoniga xavfsiz registrga ulanishga ruxsat berish
+
+Docker konfiguratsiyasiga o'ting va Daemon konfiguratsiyasini tahrirlang:
+
+```bash
+cd /etc/docker
+nano daemon.json
+```
+daemon.json fayliga quyidagi konfigratsiya faylini kiriting localhost o'rniga serveringiz IP addresini yozasiz.
+
+```json
+{
+  "insecure-registries" : ["localhost:5000"]
+}
+```
+
+Docker servisni qaytadan ishga tushiramiz (restart).
+
+```bash
+sudo systemctl restart docker
+```
