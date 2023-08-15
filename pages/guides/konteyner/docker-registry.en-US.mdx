@@ -5,3 +5,23 @@ import { Callout } from "nextra-theme-docs";
 <Callout type="info" emoji="">
 Ushbu sahifada [open source Docker Registry](https://github.com/distribution/distribution) yordamida o'z registryingizni joylashtirish haqida ma'lumot mavjud. Teamlar, organizatsiyalar, web hooklar, avtomatlashtirilgan buildlar va boshqalar kabi qo'shimcha funksiyalarga ega bo'lgan host qilingan registryni taklif qiluvchi [Docker Hub](https://docs.docker.com/docker-hub/) haqida ma'lumot olish uchun Docker Hub-ga qarang.
 </Callout>
+
+### Bu nima
+Docker Registry - bu Docker imagelarini joylashtirish(hosting) va tarqatish(distributing) xizmati. Ishlab chiquvchilar undan o'z imagelarini push qilish uchun foydalanadilar va joylashtirishlar Docker konteynerlarini distributening izchil va tezkor usulini ta'minlab, imagelarni pull qilib olish uchun foydalanadilar. Docker Hub - bu hamma foydalanishi mumkin bo'lgan ommaviy registrdir, lekin ba'zida shaxsiy registrni joylashtirishga ehtiyoj bor.
+
+Registry stateless, yuqori darajada kengaytiriladigan server side applicationi bo'lib, u Docker imagelarini saqlaydi va sizga distribute qilish imkonini beradi. Registry ruxsat etilgan [Apache litsenziyasi](https://en.wikipedia.org/wiki/Apache_License) ostida open-source hisoblanadi. Manba kodini [GitHub](https://github.com/distribution/distribution)-da topishingiz mumkin.
+
+## Nima uchun xususiy Docker Registrydan foydalanish kerak?
+
+* Maxfiylik: Har bir Docker image ommaviy(public) bo'lishi kerak emas. Shaxsiy registry yordamida siz o'zingizning shaxsiy imagelaringizni maxfiy(private) saqlashingiz mumkin.
+* Latency: O'z registryngizni joylashtirish, ayniqsa, u joylashtirish muhitiga yaqin bo'lsa, imageni tezroq pull qilib olish va push qilish vaqtlariga olib kelishi mumkin.
+* Nazorat: O'zingizning registryngiz yordamida siz imagelar, ularga kim kirishi va ular qanday tarqatilishi ustidan to'liq nazoratga egasiz.
+
+## Asosiy Docker Registryni o'rnatish
+
+1. Docker Registryni ishga tushirish
+
+```bash
+docker run -d -p 5000:5000 --name registry registry:2
+```
+Ushbu buyruq Docker official registry imageni (2-versiya) tortib(pull) oladi va uni ishga tushiradi. Registry 5000 portni tinglaydi.
