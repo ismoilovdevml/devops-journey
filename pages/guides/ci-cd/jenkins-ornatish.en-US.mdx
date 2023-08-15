@@ -1,5 +1,54 @@
----
-title: Jarayonda
----
+import { Callout } from "nextra-theme-docs";
 
-# Jarayonda
+# Linux Serverlarga Jenkins o'rnatish
+
+<Callout type="info" emoji="">
+Jenkins instalerlari bir nechta Linux distributivlari uchun mavjud.
+* Debian/Ubuntu
+* Fedora
+* Red Hat/Alma/Rocky
+</Callout>
+
+### Talablar
+
+Minimal qurilma talablari:
+
+* 256 MB operativ xotira(RAM)
+* 1 GB disk maydoni (garchi Jenkins Docker konteyneri sifatida ishlayotgan bo'lsa, kamida 10 GB tavsiya etiladi)
+
+#### Kichik jamoa uchun tavsiya etilgan qurilma konfiguratsiyasi:
+
+* 4 GB+ RAM
+* 50 GB+ disk maydoni
+
+## Debian/Ubuntu
+
+Ubuntu kabi Debian va Debian-ga asoslangan distributivlarda siz Jenkins-ni `apt` orqali o'rnatishingiz mumkin.
+
+#### Uzoq muddatli qo'llab-quvvatlash versiyasi(LTS Long Term Support release)
+
+LTS (Uzoq muddatli qo'llab-quvvatlash) versiyasi har 12 haftada muntazam releaselar oqimidan o'sha vaqt uchun barqaror release sifatida tanlanadi. U debian-stable apt repositorydan o'rnatilishi mumkin.
+
+```bash
+curl -fsSL https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key | sudo tee \
+  /usr/share/keyrings/jenkins-keyring.asc > /dev/null
+echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] \
+  https://pkg.jenkins.io/debian-stable binary/ | sudo tee \
+  /etc/apt/sources.list.d/jenkins.list > /dev/null
+sudo apt-get update
+sudo apt-get install jenkins
+```
+
+### Haftalik Release
+
+Foydalanuvchilar va plaginlarni ishlab chiquvchilarga xatolarni tuzatish va xususiyatlarni yetkazib berish uchun har hafta yangi nashr chiqariladi. Uni debian apt repositorydan o'rnatishingiz mumkin.
+
+```bash
+curl -fsSL https://pkg.jenkins.io/debian/jenkins.io-2023.key | sudo tee \
+  /usr/share/keyrings/jenkins-keyring.asc > /dev/null
+echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] \
+  https://pkg.jenkins.io/debian binary/ | sudo tee \
+  /etc/apt/sources.list.d/jenkins.list > /dev/null
+sudo apt-get update
+sudo apt-get install jenkins
+```
