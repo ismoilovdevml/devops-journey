@@ -15,7 +15,7 @@ Hamjamiyat [Telegram
 community](https://t.me/xinuxuz) guruhiga qo'shilish
 
 <div className="mt-8">
-  <Tabs items={['CI/CD', 'Konteynerlash', 'Kubernetes']}>
+  <Tabs items={['CI/CD', 'Konteynerlash', 'Kubernetes', 'Database']}>
     <Tab>
       <div className="mb-8">
         DevOps sayohatini biz bilang boshlang!
@@ -76,7 +76,7 @@ community](https://t.me/xinuxuz) guruhiga qo'shilish
     </Tab>
     <Tab>
       <div className="mb-8">
-Katta loyihalarni samarali loyihalashtirishda Kubernetesni(k8s) qo'llash
+      Katta loyihalarni samarali loyihalashtirishda Kubernetesni(k8s) qo'llash
       </div>
       <div className="mb-4 text-xl font-bold">Qo'llanmalar</div>
       <Cards num={3}>
@@ -95,6 +95,35 @@ Katta loyihalarni samarali loyihalashtirishda Kubernetesni(k8s) qo'llash
       </Cards>
       <div className="text-right mt-4">
         <Link href="/guides/k8s">Hammasini ko'rish →</Link>
+      </div>
+    </Tab>
+    <Tab>
+      <div className="mb-8">
+        Ma'lumotlar bazasi bilan ishlash
+      </div>
+      <div className="mb-4 text-xl font-bold">Qo'llanmalar</div>
+      <Cards num={3}>
+        <Card
+          title="Postgresql"
+          description="Postgresql bilan ishlash"
+          icon="▶️"
+          href="/guides/ci-cd/quickstart"
+        />
+        <Card
+          title="MySQL"
+          description="MySQL bilan ishlash"
+          icon="▶️"
+          href="/guides/ci-cd/create-a-livestream"
+        />
+        <Card
+          title="MongoDB"
+          description="MongoDB bilan ishlash"
+          icon="▶️"
+          href="/guides/ci-cd/upload-a-video-asset"
+        />
+      </Cards>
+      <div className="text-right mt-4">
+        <Link href="/guides/ci-cd">Hammasini ko'rish →</Link>
       </div>
     </Tab>
   </Tabs>

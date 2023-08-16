@@ -1,0 +1,33 @@
+{
+    "quickstart": {
+      "title": "Jarayonda",
+      "icon": "▶️",
+      "description": "Ishlar olib borilmoqda",
+      "href": "/guides/ci-cd/quickstart"
+    },
+    "postgresql-ornatish": {
+      "title": "Posgresql o'rnatish",
+      "icon": "▶️",
+      "description": "Linux serverlarga Posgresql o'rnatish",
+      "href": "/guides/ci-cd/postgresql-ornatish"
+    },
+    "create-a-livestream": {
+      "title": "Jarayonda",
+      "icon": "▶️",
+      "description": "Ishlar olib borilmoqda",
+      "href": "/guides/ci-cd/create-a-livestream"
+    },
+    "stream-via-obs": {
+      "title": "Jarayonda",
+      "icon": "▶️",
+      "description": "Ishlar olib borilmoqda",
+      "href": "/guides/ci-cd/stream-via-obs"
+    },
+    "upload-a-video-asset": {
+      "title": "Jarayonda",
+      "icon": "▶️",
+      "description": "Ishlar olib borilmoqda",
+      "href": "/guides/ci-cd/upload-a-video-asset"
+    }
+  }
+  
