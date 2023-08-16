@@ -15,7 +15,7 @@ PostgreSQL atomiklik(atomicity), mustahkamlik(consistency), izolyatsiya(isolatio
 U bitta mashinadan tortib ma'lumotlar ombori yoki bir vaqtning o'zida ko'plab foydalanuvchilar bilan veb-xizmatlarigacha bo'lgan bir qator ish yuklarini boshqarish uchun mo'ljallangan. Bu macOS Server uchun standart ma'lumotlar bazasi edi va Linux, FreeBSD, OpenBSD va Windows uchun ham mavjud.
 
 
-## Ubuntu serverga Postgres o'rnatish
+## Ubuntu serverlarga Postgres o'rnatish
 
 ### PostgreSQL Apt Repository
 
@@ -42,4 +42,64 @@ sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)
 wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
 sudo apt-get update
 sudo apt-get -y install postgresql
+```
+
+## Debian serverlarga Postgres o'rnatish
+
+PostgreSQL apt repository Debianning hozirda qo'llab-quvvatlanadigan barqaror versiyalarini qo'llab-quvvatlaydi:
+
+* bookworm (12.x)
+* bullseye (11.x)
+* buster (10.x)
+* sid (unstable)
+
+quyidagi arxitekturalar bo'yicha:
+
+* amd64
+* arm64
+* i386 (buster va undan keyingilar)
+* ppc64el
+
+Postgresqlni Debianga o'rnatish quyidagicha:
+```bash
+sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+sudo apt-get update
+sudo apt-get -y install postgresql
+```
+
+## Redhat oilasiga mansub linux serverlarga Postgresql o'rnatish
+
+Red Hat distributivlar oilasiga quyidagilar kiradi:
+
+* Red Hat Enterprise Linux
+* Rocky Linux
+* CentOS (faqat 7 va 6)
+* Fedora
+* Oracle Linux
+
+RHEL 6 va 7
+
+```bash
+yum install postgresql-server
+```
+
+RHEL 8 va Fedora
+
+```bash
+dnf install postgresql-server
+```
+
+RHEL / Rocky Linux / CentOS / SL / OL 7, 8, 9 yoki Fedora 36 va undan keyingi versiyalar uchun:
+
+```bash
+postgresql-setup --initdb
+systemctl enable postgresql.service
+systemctl start postgresql.service
+```
+
+RHEL / CentOS / SL / OL 6 uchun
+```bash
+service postgresql initdb
+chkconfig postgresql on
 ```
