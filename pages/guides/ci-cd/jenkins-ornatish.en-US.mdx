@@ -102,3 +102,40 @@ sudo dnf install jenkins
 ```
 
 ## Jenkinsni ishga tushirish
+
+Jenkinsni serviceni yoqish start berish va ishlayotgan statusni ko'rish uchun quyidagi buyruqlardan foydalaning.
+
+```bash
+sudo systemctl enable jenkins
+sudo systemctl start jenkins
+sudo systemctl status jenkins
+```
+
+## O'rnatishdan keyingi sozlash
+
+Yuqoridagi protseduralardan biri yordamida Jenkinsni yuklab olish, o'rnatish va ishga tushirishdan so'ng (Jenkins Operator bilan o'rnatishdan tashqari), post-installation setup wizard boshlanadi.
+
+Ushbu wizard setup sizni Jenkins qulfini ochish, uni plaginlar bilan sozlash va Jenkins-ga kirishni davom ettirishingiz mumkin bo'lgan birinchi administrator foydalanuvchisini yaratish uchun bir necha tezkor "bir martalik("one-off")" bosqichlardan o'tadi.
+
+#### Jenkins qulfini ochish
+
+Yangi Jenkins misoliga birinchi marta kirganingizda, uni avtomatik ravishda yaratilgan parol yordamida qulfdan chiqarish so'raladi.
+
+1. http://localhost:8080 (yoki uni oʻrnatishda Jenkins uchun qaysi portni sozlagan boʻlsangiz) sahifasini koʻrib chiqing va Jenkins qulfini ochish sahifasi paydo boʻlguncha kuting.
+
+
+![jenkins](/images/ci-cd/1.jpg)
+
+barolni ko'rish uchun jenkisn parol qayerda turganini ko'rsatib parol fayliga yo'l ko'rstaib qo'yadi yani `/var/lib/jenkins/secrets/initialAdminPassword`. parolni olish quyidagi buyruqdan foydalanamiz.
+
+```bash
+sudo cat /var/lib/jenkins/secrets/initialAdminPassword
+```
+BU buyruq `sudo cat /var/lib/jenkins/secrets/initialAdminPassword` parolni konsolda chop etadi.
+
+Agar siz Jenkins-ni Docker-da rasmiy jenkins/jenkins imagedan foydalanib ishlayotgan bo'lsangiz, quyidagi buyruqdan foydalanib, parolni konteynerga kiritmasdan turib konsolda chop etishingiz mumkin.
+
+```bash
+sudo docker exec ${CONTAINER_ID yoki CONTAINER_NOMI} cat /var/jenkins_home/secrets/initialAdminPassword
+```
+
