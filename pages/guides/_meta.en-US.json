@@ -2,5 +2,6 @@
   "overview": "Asosiy",
   "ci-cd": "▶️ CI/CD",
   "konteyner": "▶️ Konteynerlash",
-  "k8s": "▶️ Kubernetes(k8s)"
+  "k8s": "▶️ Kubernetes(k8s)",
+  "database": "▶️ Database"
 }
