@@ -8,7 +8,7 @@ import delegatingGuides from './k8s/_meta.en-US.json';
 
 Hamjamiyat tomonidan yozilgan dokumentatsiya va qo'llanmalar. Mavzular CI/CD, Konteynerlash, Kubernetes(k8s), Monitoring, network, load-balancing va boshqalarni o'z ichiga oladi.
 
-<Tabs items={['▶️ CI-CD', '▶️ Konteynerlash', '▶️ Kubernetesk8s']}>
+<Tabs items={['▶️ CI-CD', '▶️ Konteynerlash', '▶️ Kubernetes(k8s)', '▶️ Database']}>
   <Tab style={{ paddingTop: 8 }}>
     <Cards
       num={3}
@@ -47,6 +47,20 @@ Hamjamiyat tomonidan yozilgan dokumentatsiya va qo'llanmalar. Mavzular CI/CD, Ko
           description={delegatingGuides[key].description}
           icon={delegatingGuides[key].icon}
           href={delegatingGuides[key].href}
+        />
+      ))}
+    />
+  </Tab>
+  <Tab>
+    <Cards
+      num={3}
+      children={Object.keys(databaseGuides).map((key, i) => (
+        <Card
+          key={i}
+          title={databaseGuides[key].title}
+          description={databaseGuides[key].description}
+          icon={databaseGuides[key].icon}
+          href={databaseGuides[key].href}
         />
       ))}
     />
