@@ -2,6 +2,41 @@ import { Callout } from "nextra-theme-docs";
 
 # Linux Serverlarga Postgresql o'rnatish
 
+
+## Kirish
+
+PostgreSQL, shuningdek, Postgres nomi bilan ham tanilgan, kengaytirilishi(extensibility) va SQL muvofiqligini(compliance) ta'kidlaydigan bepul va open source relational database management system (RDBMS).
+
+U dastlab Berkeley Kaliforniya universitetida ishlab chiqilgan `Ingres` ma'lumotlar bazasining vorisi sifatida kelib chiqishiga ishora qilib, `POSTGRES` deb nomlangan.
+1996 yilda loyiha SQL-ni qo'llab-quvvatlashini aks ettirish uchun PostgreSQL deb o'zgartirildi. 2007 yilda ko'rib chiqilgandan so'ng, ishlab chiqish guruhi PostgreSQL nomini va Postgres taxallusini saqlab qolishga qaror qildi.
+
+PostgreSQL atomiklik(atomicity), mustahkamlik(consistency), izolyatsiya(isolation), chidamlilik(durability) (ACID) xususiyatlari, avtomatik yangilanadigan viewlar, materiallashtirilgan viewlar, triggerlar, tashqi kalitlar va saqlangan protseduralar bilan operatsiyalarni o'z ichiga oladi.
+
+U bitta mashinadan tortib ma'lumotlar ombori yoki bir vaqtning o'zida ko'plab foydalanuvchilar bilan veb-xizmatlarigacha bo'lgan bir qator ish yuklarini boshqarish uchun mo'ljallangan. Bu macOS Server uchun standart ma'lumotlar bazasi edi va Linux, FreeBSD, OpenBSD va Windows uchun ham mavjud.
+
+
+## Ubuntu serverga Postgres o'rnatish
+
+### PostgreSQL Apt Repository
+
+Agar Ubuntu versiyangizga kiritilgan versiya siz xohlagan versiya bo'lmasa, PostgreSQL Apt Repository dan foydalanishingiz mumkin. Ushbu repositoriya sizning oddiy tizimlaringiz va patch management bilan integratsiyalanadi va PostgreSQL-ni qo'llab-quvvatlash muddati davomida PostgreSQL-ning barcha qo'llab-quvvatlanadigan versiyalari uchun avtomatik yangilanishlarni ta'minlaydi.
+
+PostgreSQL Apt Repository Ubuntu ning joriy versiyalarini qo'llab-quvvatlaydi:
+
+* kinetic (22.10, LTS bo'lmagan)
+* jammy (22.04, LTS)
+* focal (20.04, LTS)
+* bionic (18.04, LTS)
+
+quyidagi arxitekturalar bo'yicha:
+
+* amd64
+* arm64 (18.04 va undan yangiroq; faqat LTS versiyalari)
+* i386 (18.04 va undan katta)
+* ppc64el (faqat LTS versiyalarida)
+
+Apt Repositorydan foydalanib PostgreSQL-ni o'rnatish:
+
 ```bash
 sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
 wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
