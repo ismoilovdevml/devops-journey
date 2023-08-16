@@ -2,6 +2,15 @@ import { Callout } from "nextra-theme-docs";
 
 # Linux Serverlarga Jenkins o'rnatish
 
+
+## Kirish
+
+Jenkins - bu asosan continuous integration (CI) va continuous delivery (CD) maqsadlarida foydalaniladigan mashhur ochiq manbali(open source) avtomatlashtirish serveridir. U 2004 yilda `Kohsuke Kawaguchi` tomonidan "Hudson" nomi bilan yaratilgan va keyinchalik 2011 yilda "Jenkins" deb o'zgartirilgan.
+
+U Java-da yozilgan va uning funksionalligini oshiruvchi keng ko'lamli plaginlarni qo'llab-quvvatlaydi, bu esa dasturiy ta'minot loyihalarini yaratish, sinovdan o'tkazish va joylashtirish bilan bog'liq turli vazifalarni avtomatlashtirishga mos keladi.
+
+Jenkins turli xil operatsion tizimlarga, jumladan Linux, macOS va Windows-ga o'rnatilishi mumkin va mustaqil rejimda ishga tushirilishi yoki Apache Tomcat kabi dastur serverlarida joylashtirilishi mumkin. U ko'p qirraliligi, kengaytirilishi va dasturiy ta'minotni ishlab chiqish hayotiy siklining ko'p jihatlarini avtomatlashtirish qobiliyati uchun barcha o'lchamdagi dasturiy ta'minotni ishlab chiqish tashkilotlarida keng qo'llaniladi.
+
 <Callout type="info" emoji="">
 Jenkins instalerlari bir nechta Linux distributivlari uchun mavjud.
 * Debian/Ubuntu
@@ -119,14 +128,15 @@ Ushbu wizard setup sizni Jenkins qulfini ochish, uni plaginlar bilan sozlash va 
 
 #### Jenkins qulfini ochish
 
+
 Yangi Jenkins misoliga birinchi marta kirganingizda, uni avtomatik ravishda yaratilgan parol yordamida qulfdan chiqarish so'raladi.
 
-1. http://localhost:8080 (yoki uni oʻrnatishda Jenkins uchun qaysi portni sozlagan boʻlsangiz) sahifasini koʻrib chiqing va Jenkins qulfini ochish sahifasi paydo boʻlguncha kuting.
+1. http://localhost:8080 (yoki uni oʻrnatishda Jenkins uchun qaysi portni sozlagan boʻlsangiz) sahifasini koʻrib chiqing va `Unlock Jenkins` sahifasi paydo boʻlguncha kuting.
 
 
 ![jenkins](/images/ci-cd/1.jpg)
 
-barolni ko'rish uchun jenkisn parol qayerda turganini ko'rsatib parol fayliga yo'l ko'rstaib qo'yadi yani `/var/lib/jenkins/secrets/initialAdminPassword`. parolni olish quyidagi buyruqdan foydalanamiz.
+parolni ko'rish uchun jenkisn parol qayerda turganini ko'rsatib parol fayliga yo'l ko'rstaib qo'yadi yani `/var/lib/jenkins/secrets/initialAdminPassword`. parolni olish quyidagi buyruqdan foydalanamiz.
 
 ```bash
 sudo cat /var/lib/jenkins/secrets/initialAdminPassword
@@ -139,3 +149,29 @@ Agar siz Jenkins-ni Docker-da rasmiy jenkins/jenkins imagedan foydalanib ishlayo
 sudo docker exec ${CONTAINER_ID yoki CONTAINER_NOMI} cat /var/jenkins_home/secrets/initialAdminPassword
 ```
 
+Terminaldan 32 belgidan iborat alphanumeric paroldan nusxa oling va uni Administrator paroli maydoniga joylashtiring, so'ng `Continue` tugmasini bosing.
+Keyingi ekranda tavsiya etilgan plaginlarni o'rnatish yoki maxsus plaginlarni tanlash imkoniyati mavjud:
+
+![jenkins](/images/ci-cd/2.png)
+
+Biz `suggested plugins` opsiyasini bosamiz, bu darhol o'rnatish jarayonini boshlaydi.
+
+![jenkins](/images/ci-cd/3.png)
+
+O'rnatish tugallangach, sizdan birinchi `Admin User` o'rnatish so'raladi. Bu bosqichni oʻtkazib yuborish va yuqoridagi boshlangʻich parol yordamida administrator sifatida davom etish mumkin, lekin foydalanuvchi yaratishga biroz vaqt ajratamiz.
+
+![jenkins](/images/ci-cd/4.png)
+
+Siz Jenkins instance uchun afzal qilingan URL manzilini tasdiqlashingizni so'raydigan Instance Configuration sahifasini olasiz. Serveringiz uchun domen nomini yoki serveringizning IP manzilini tasdiqlang:
+
+![jenkins](/images/ci-cd/5.png)
+
+Tegishli ma'lumotlarni tasdiqlaganingizdan so'ng, `Save and Finish` tugmasini bosing. Siz `"Jenkins is Ready!"` degan tasdiqlash sahifasini olasiz:
+
+![jenkins](/images/ci-cd/6.png)
+
+Asosiy Jenkins boshqaruv paneliga tashrif buyurish uchun `Start using Jenkins` tugmasini bosing:
+
+![jenkins](/images/ci-cd/8.png)
+
+Shu nuqtada siz Jenkins-ni muvaffaqiyatli o'rnatdingiz.
