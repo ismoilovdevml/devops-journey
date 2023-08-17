@@ -153,3 +153,86 @@ Shunga qaramay, interaktiv Postgres seansidan quyidagi amallarni bajarish orqali
 postgres=# \q
 ```
 
+## Yangi rol yaratish
+
+Agar siz postgres useri sifatida kirgan bo'lsangiz, quyidagi buyruqni ishga tushirish orqali yangi rol yaratishingiz mumkin:
+
+```bash
+postgres@server:~$ createuser --interactive
+```
+Buning o'rniga userga kirib keyin ishlamasdan har bir buyruq uchun sudo dan foydalanishni afzal ko'rsangiz, quyidagilarni bajaring:
+
+```bash
+sudo -u postgres createuser --interactive
+```
+Qanday bo'lmasin, script sizni ba'zi tanlovlar bilan taklif qiladi va sizning javoblaringizga asoslanib, spetsifikatsiyalaringizga mos foydalanuvchi(user) yaratish uchun to'g'ri Postgres buyruqlarini bajaring.
+
+```txt
+Enter name of role to add: asilbek
+Shall the new role be a superuser? (y/n) y
+```
+
+## Yangi database yaratish
+
+Postgres autentifikatsiya tizimi standart bo'yicha amalga oshiradigan yana bir taxmin shundan iboratki, tizimga kirish uchun ishlatiladigan har qanday rol uchun ushbu rol o'zi kirishi mumkin bo'lgan bir xil nomdagi ma'lumotlar bazasiga ega bo'ladi. Yani `postgres` useri bo'lsa uni postgres nomli databasesi bo'ladi `asilbek` useri bo'lsa asilbek databasesi bo'lishi kerak.
+
+Bu shuni anglatadiki, agar siz oxirgi bo'limda yaratgan foydalanuvchi `asilbek` deb nomlangan bo'lsa, bu rol standart bo'yicha `asilbek` deb ataladigan databasega ulanishga harakat qiladi. `createdb` buyrug'i bilan tegishli ma'lumotlar bazasini yaratishingiz mumkin.
+
+Agar siz postgres user sifatida tizimga kirgan bo'lsangiz, quyidagi buyruqlarni yozasiz:
+
+```bash
+postgres@server:~$ createdb asilbek
+```
+
+postgres user bilan kirmasdan oddiy sudo bilan kirish uchun quyidagi buyruqni yozasiz:
+
+```bash
+sudo -u postgres createdb asilbek
+```
+
+## Yangi role bilan PostgreSQL Promptni ochish
+
+Identifikatsiyaga asoslangan autentifikatsiya bilan tizimga kirish uchun sizga Postgres rolingiz va ma'lumotlar bazasi bilan bir xil nomga ega Linux useri kerak bo'ladi.
+
+Agar sizda mos keladigan Linux useri(foydalanuvchisi) bo'lmasa, uni `adduser` buyrug'i bilan yaratishingiz mumkin. Buni `sudo` imtiyozlari bilan root bo'lmagan useringizdan qilishingiz kerak bo'ladi (ya'ni postgres foydalanuvchisi sifatida tizimga kirmagan):
+
+```bash
+sudo adduser asilbek
+```
+
+Ushbu yangi user mavjud bo'lgandan so'ng, siz quyidagini ishga tushirish orqali ma'lumotlar bazasiga o'tishingiz va ulanishingiz mumkin
+
+```bash
+sudo -i -u asilbek
+psql
+```
+
+Yoki buni bir qator buyruq bilan kirishingiz mumkin:
+
+```bash
+sudo -u asilbek psql
+```
+
+Ushbu buyruq barcha komponentlar to'g'ri sozlangan bo'lsa, avtomatik ravishda tizimga kiradi.
+
+Agar siz userchining boshqa ma'lumotlar bazasiga ulanishini istasangiz, buni quyidagi kabi ma'lumotlar bazasini belgilash orqali qilishingiz mumkin:
+
+```bash
+psql -d postgres
+```
+
+Tizimga kirganingizdan so'ng siz joriy ulanish ma'lumotlarini tekshirishingiz mumkin:
+
+```bash
+asilbek=# \conninfo
+```
+
+Siz quyidagicha chiqishni ko'rishingiz kerak:
+
+```txt
+You are connected to database "asilbek" as user "asilbek" via socket in "/var/run/postgresql" at port "5432".
+```
+
+<Callout type="info" emoji="">
+E'tibor bering birinchi marta postgres user bilan kirganimizda terminal `postgres=# ` edi hozir biz yangi role ochin yangi user ochib kirganimizdan keyin `asilbek=# ` ga o'zgardi
+</Callout>
