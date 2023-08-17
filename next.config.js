@@ -21,17 +21,8 @@ const config = {
     ignoreBuildErrors: true,
   },
   images: {
-    domains: ['devops-journey.vercel.app'],
+    domains: ['devops-journey.uz'],
   },
-  // async redirects() {
-  //   return [
-  //     {
-  //       source: '/video-miners/getting-started',
-  //       destination: '/guides/orchestrating/get-started',
-  //       permanent: false,
-  //     },
-  //   ];
-  // },
 };
 
 if (process.env.NODE_ENV === 'development') {

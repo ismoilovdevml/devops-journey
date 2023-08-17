@@ -17,11 +17,11 @@
       "description": "Ishlar olib borilmoqda",
       "href": "/guides/database/create-a-livestream"
     },
-    "stream-via-obs": {
+    "postgresql-bilan-ishlash": {
       "title": "Jarayonda",
       "icon": "▶️",
       "description": "Ishlar olib borilmoqda",
-      "href": "/guides/database/stream-via-obs"
+      "href": "/guides/database/postgresql-bilan-ishlash"
     },
     "upload-a-video-asset": {
       "title": "Jarayonda",

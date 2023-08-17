@@ -6,7 +6,7 @@ import { useRouter } from 'next/router';
 const github = 'https://github.com/ismoilovdevml/devops-journey';
 
 const TITLE_WITH_TRANSLATIONS = {
-  'en-US': 'CS-UZ',
+  'en-US': 'DevOps Journey',
 } as const;
 
 const EDIT_LINK_WITH_TRANSLATIONS = {
@@ -38,14 +38,6 @@ const config: DocsThemeConfig = {
   chat: {
     link: 'https://discord.gg/tYEHE4Su',
   },
-  // banner: {
-  //   key: 'docs-launch',
-  //   text: (
-  //     <div className="flex justify-center items-center gap-2">
-  //       CS-UZ-ga Xush Kelibsiz 👋
-  //     </div>
-  //   ),
-  // },
   toc: {
     float: true,
   },
@@ -87,11 +79,11 @@ const config: DocsThemeConfig = {
       frontMatter?.description ||
       "DevOps bo'yicha bepul ta'lim platformasi bo'lgan DevOps Journey-ga xush kelibsiz";
     const image = frontMatter?.type
-      ? `https://devops-journey.vercel.app/api/og?title=${frontMatter?.ogImageText}&category=Developing`
+      ? `https://devops-journey.uz/api/og?title=${frontMatter?.ogImageText}&category=Developing`
       : frontMatter?.image || '/og.jpg';
     const folder = theme === 'light' ? '/light' : '/dark';
 
-    const composedTitle = `${title} – CS-UZ`;
+    const composedTitle = `${title} – DevOps Journey`;
 
     return (
       <>
