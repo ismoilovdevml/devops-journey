@@ -103,3 +103,53 @@ RHEL / CentOS / SL / OL 6 uchun
 service postgresql initdb
 chkconfig postgresql on
 ```
+
+## PostgreSQL Rolelari va ma'lumotlar bazalaridan(Database) foydalanish
+
+Postgresql o'rnatganingizdan keyin uni serveringizda ishga tushirib statusini ko'rishingiz kerak
+
+```bash
+sudo systemctl start postgresql.service
+sudo systemctl enable postgresql.service
+sudo systemctl status postgresql.service
+```
+
+Odatda, Postgres autentifikatsiya va avtorizatsiyani boshqarish uchun "roles" deb nomlangan tushunchadan foydalanadi. Bular qaysidir ma'noda Unix uslubidagi oddiy foydalanuvchilar va guruhlarga o'xshaydi.
+
+O'rnatishdan so'ng Postgres identifikatsiyadan foydalanish uchun o'rnatiladi, ya'ni u Postgres rollarini mos keladigan Unix/Linux tizimi hisobi bilan bog'laydi. Agar Postgres ichida rol mavjud bo'lsa, xuddi shu nomga ega Unix/Linux foydalanuvchi nomi ushbu rol sifatida tizimga kirishi mumkin.
+
+O'rnatish jarayoni standart Postgres roli bilan bog'langan `postgres` deb nomlangan foydalanuvchi hisobini yaratdi. Sizda default `postgres` useri bo'ladi. Postgres-ga kirish uchun ushbu hisobdan foydalanishning bir necha yo'li mavjud. Buning bir usuli - quyidagi buyruqni ishga tushirish orqali serveringizdagi postgres useriga o'tish:
+
+```bash
+sudo -i -u postgres
+```
+
+Keyin Postgres promptga quyidagi yo'llar bilan kirishingiz mumkin:
+
+```bash
+psql
+```
+Bu sizni PostgreSQL promptga kiritadi va shu yerdan siz darhol ma'lumotlar bazasini boshqarish tizimi bilan o'zaro aloqada bo'lishingiz mumkin ya'ni SQL querylar bilan database bialn bemalol ishlay olasiz.
+PostgreSQL promptdan chiqish uchun quyidagi buyruqlardan foydalanasiz:
+
+```bash
+postgres=# \q
+```
+Bu sizni postgres Linux command promptga qaytaradi. Oddiy tizim foydalanuvchisiga qaytish uchun `exit` buyrug'ini bajaring:
+```bash
+postgres@server:~$ exit
+```
+Postgres promptga ulanishning yana bir usuli - psql buyrug'ini postgres useri sifatida to'g'ridan-to'g'ri sudo bilan ishga tushirish:
+
+```bash
+sudo -u postgres psql
+```
+
+Bu sizni to'g'ridan-to'g'ri Postgres-ga o'rtada vositachi bash shellsiz kiradi.
+
+Shunga qaramay, interaktiv Postgres seansidan quyidagi amallarni bajarish orqali chiqishingiz mumkin:
+
+```bash
+postgres=# \q
+```
+
