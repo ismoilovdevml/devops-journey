@@ -2,3 +2,21 @@ import { Callout } from "nextra-theme-docs";
 
 # PostgreSQL-da SQL querylar bilan ishlash
 
+## Kirish
+
+Ma'lumotlar bazalari ko'plab veb-saytlar va ilovalarning asosiy komponenti bo'lib, Internetda ma'lumotlarni saqlash va almashishning asosini tashkil qiladi. Ma'lumotlar bazasini boshqarishning eng muhim jihatlaridan biri bu ma'lumotlar bazasidan ma'lumotlarni olish amaliyotidir, xoh u vaqtinchalik yoki dasturga kodlangan jarayonning bir qismi. Ma'lumotlar bazasidan ma'lumot olishning bir necha yo'li mavjud, ammo eng ko'p qo'llaniladigan usullardan konsol orqali querylarni yuborish orqali amalga oshiriladi.
+
+Relational ma'lumotlar bazasini boshqarish tizimlarida query(so'rov) tabledan(jadval) ma'lumotlarni olish uchun ishlatiladigan har qanday buyruqdir. Structured Query Language (SQL)-da querylar deyarli har doim `SELECT` statementi yordamida amalga oshiriladi.
+
+Ushbu qo'llanmada biz SQL querylarining asosiy sintaksisini, shuningdek, ko'proq qo'llaniladigan ba'zi funksiyalar va operatorlarni muhokama qilamiz. Shuningdek, biz PostgreSQL ma'lumotlar bazasidagi ba'zi namunaviy ma'lumotlardan foydalangan holda SQL querylarini bajarishni mashq qilamiz.
+
+PostgreSQL, ko'pincha "Postgres" deb qisqartiriladi, bu ob'ektga yo'naltirilgan yondashuvga ega bo'lgan ma'lumotlar bazasini boshqarish tizimi bo'lib, ma'lumot PostgreSQL sxemalarida ob'ektlar yoki sinflar sifatida taqdim etilishi mumkinligini anglatadi. PostgreSQL standart SQL bilan chambarchas mos keladi, garchi u boshqa relation ma'lumotlar bazasi tizimlarida uchramaydigan ba'zi xususiyatlarni ham o'z ichiga oladi.
+
+## Talablar
+
+Umuman olganda, ushbu qo'llanmada keltirilgan buyruqlar va tushunchalar har qanday SQL ma'lumotlar bazasi dasturlari bilan ishlaydigan Linux-ga asoslangan har qanday operatsion tizimda ishlatilishi mumkin.
+
+* PostgreSQL linux serveringizda o'rnatilgan bo'lishi kerak. PostgreSQLni o'rnatish uchun quyidagi qo'llanmani o'qib chiqing ["Linux Serverlarga Postgresql o'rnatish"](https://devops-journey.uz/guides/database/postgresql-ornatish)
+
+## Database(malumotlar bazasi) yaratish
+

@@ -18,9 +18,9 @@
       "href": "/guides/database/create-a-livestream"
     },
     "postgresql-bilan-ishlash": {
-      "title": "Jarayonda",
+      "title": "SQL querylar bilan ishlash",
       "icon": "▶️",
-      "description": "Ishlar olib borilmoqda",
+      "description": "PostgreSQL-da SQL querylar bilan ishlash",
       "href": "/guides/database/postgresql-bilan-ishlash"
     },
     "upload-a-video-asset": {
