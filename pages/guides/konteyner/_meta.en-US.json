@@ -1,4 +1,10 @@
 {
+  "dockerga-kirish": {
+    "title": "Docker kirish",
+    "icon": "▶️",
+    "description": "Docker bilan tanishamiz",
+    "href": "/guides/konteyner/dockerga-kirish"
+  },
   "docker-ornatish": {
     "title": "Linux serverlarga Docker o'rnatish",
     "icon": "▶️",
@@ -11,11 +17,11 @@
     "description": "Shaxsiy Docker Registry ko'tarish",
     "href": "/guides/konteyner/docker-registry"
   },
-  "connect-to-arbitrum": {
-    "title": "Jarayonda",
+  "asosiy-docker-buyruqlari": {
+    "title": "Asosiy Docker buyruqlari",
     "icon": "▶️",
-    "description": "Ishlar olib borilmoqda",
-    "href": "/guides/konteyner/connect-to-arbitrum"
+    "description": "Eng ko'p ishlatiladigan va asosiy Docker buyruqlari",
+    "href": "/guides/konteyner/asosiy-docker-buyruqlari"
   },
   "configure-reward-calling": {
     "title": "Jarayonda",
