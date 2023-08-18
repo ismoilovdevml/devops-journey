@@ -3,3 +3,18 @@ import { Callout } from "nextra-theme-docs";
 # Dockerga Kirish
 
 Dasturiy ta'minotni ishlab chiqish va deploymentda bog'liqliklarni boshqarish va ilovalarning turli muhitlarda doimiy ishlashini ta'minlash juda muhim vazifadir. Docker, konteynerlashtirish platformasi ushbu muammolarni hal qilish uchun kuchli yechim sifatida paydo bo'ldi. Ushbu maqolada biz Docker nima ekanligini, nima uchun muhimligini va ishlab chiquvchilar va system administratorlarga qanday yordam berishini o'rganamiz.
+
+## Docker nima?
+Docker - bu open source platforma bo'lib, ishlab chiquvchilarga yengil, portativ konteynerlarda ilovalarni deploymentni(joylashtirish) avtomatlashtirish imkonini beradi. Konteynerlar - bu dasturni, uning runtimesini, system toollarini, librarylarini va dastur ishlashi uchun zarur bo'lgan sozlamalarni qamrab oluvchi mustaqil paketlar. Shunday qilib, Docker konteyner qayerda joylashtirilganidan qat'i nazar, dastur bir xil tarzda ishlashini ta'minlaydi.
+
+## Nega bizga Docker kerak?
+
+* Environment(muhit): Dasturiy ta'minotni ishlab chiqishdagi eng muhim muammolardan biri dasturning turli xil environmentlarda(muhit), masalan, ishlab chiqish(development), sinovdan o'tkazish(testing) va productionda ishlashini ta'minlashdir. Docker konteynerlari barcha dependencylar va konfiguratsiya fayllarini qamrab oladi, bu esa dastur qayerda joylashtirilishidan qat'iy nazar bir xil tarzda ishlashini ta'minlaydi.
+
+* Izolyatsiya: Docker konteynerlari bir-biridan ajratilgan holda ishlaydi, bu mojarolar xavfini kamaytiradi va har bir ilovaning o'ziga xos dependency to'plamiga ega bo'lishini ta'minlaydi. Bu bir xil tizimda bir nechta ilovalarni boshqarish va ularga xizmat ko'rsatishni osonlashtiradi.
+
+* Resurslardan samarali foydalanish: Har bir virtual mashina uchun alohida operatsion tizim namunasini talab qiluvchi anʼanaviy virtualizatsiyadan farqli oʻlaroq, Docker konteynerlari bir xil OS kernelini baham koʻradi. Bu qo'shimcha xarajatlarni kamaytirishga, resurslardan yaxshiroq foydalanishga va tezroq ishga tushirishga olib keladi.
+
+* Mikroservislar arxitekturasi: Docker mikroservislar arxitekturasi uchun juda mos keladi, bu yerda dastur bir-biri bilan aloqa qiladigan kichik, mustaqil servicelarga bo'linadi. Konteynerlar har bir mikroservis uchun tabiiy chegarani ta'minlaydi, bu esa individual servislarni ishlab chiqish, deploy qilish va kengaytirishni osonlashtiradi.
+
+* Continuous Integration va Continuous Deployment (CI/CD): Dockerning konteynerlarni tezda yaratish va deploy qilish qobiliyati uni CI/CD pipelinelari uchun ideal tanlovga aylantiradi. Ishlab chiquvchilar o'z ilovalarining yangi versiyalarini consistent environmentda sinab ko'rishlari va deploy qilishlari mumkin, bu esa deploy paytida xatolar xavfini kamaytiradi.
