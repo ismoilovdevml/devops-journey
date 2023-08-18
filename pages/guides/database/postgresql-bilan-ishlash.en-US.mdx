@@ -20,3 +20,28 @@ Umuman olganda, ushbu qo'llanmada keltirilgan buyruqlar va tushunchalar har qand
 
 ## Database(malumotlar bazasi) yaratish
 
+SQL-da querylar vilan ishlashni boshlashdan oldin, biz avval database va bir nechta tablelarni yaratamiz, so'ngra bu tablelarni bir nechta namunaviy ma'lumotlar(data) bilan to'ldiramiz. Bu sizga querylar bilan keyinroq ishlashni boshlaganingizda amaliy tajriba orttirish imkonini beradi.
+
+Biz ushbu qo'llanma davomida foydalanadigan namunaviy ma'lumotlar bazasi(database) uchun quyidagi senariyni tasavvur qiling:
+
+Siz va bir qancha do'stlaringiz tug'ilgan kuningizni bir-biringiz bilan nishonlaysiz. Har safar guruh a'zolari mahalliy bouling zaliga boradilar, do'stona turnirda qatnashadilar va keyin hamma sizning tug'ilgan kuningizning sevimli taomini tayyorlaydigan joyingizga boradi.
+
+Endi bu an'ana bir muncha vaqtdan beri davom etmoqda, siz ushbu turnirlardagi rekordlarni kuzatishni boshlashga qaror qildingiz. Bundan tashqari, kechki ovqatlarni rejalashtirishni osonlashtirish uchun siz do'stlaringizning tug'ilgan kunlari va ularning sevimli taomlari, fast-foodlari va shirinliklari haqida rekord yaratishga qaror qildingiz. Ushbu ma'lumotni jismoniy daftarda saqlash o'rniga, siz PostgreSQL ma'lumotlar bazasiga yozib olish orqali ma'lumotlar bazasi ko'nikmalaringizni mashq qilishga qaror qilasiz.
+
+Boshlash uchun postgres superuser sifatida PostgreSQL promptni oching:
+
+```bash
+sudo -u postgres psql
+```
+
+Keyin postgresni ishga tushirish orqali database(malumotlar bazasi)yarating:
+
+```bash
+postgres=# CREATE DATABASE bayramlar;
+```
+
+Keyin ushbu ma'lumotlar bazasini ichiga kiring;
+
+```bash
+postgres=# \c bayramlar;
+```
