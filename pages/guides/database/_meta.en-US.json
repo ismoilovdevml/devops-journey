@@ -1,9 +1,9 @@
 {
-    "quickstart": {
-      "title": "Jarayonda",
+    "postgresql-kirish": {
+      "title": "PostgreSQL Kirish",
       "icon": "▶️",
-      "description": "Ishlar olib borilmoqda",
-      "href": "/guides/database/quickstart"
+      "description": "PostgreSQL haqida umumiy ma'lumot",
+      "href": "/guides/database/postgresql-kirish"
     },
     "postgresql-ornatish": {
       "title": "Posgresql o'rnatish",

@@ -1,0 +1,17 @@
+import { Callout } from "nextra-theme-docs";
+
+# PostgreSQLga kirish
+
+PostgreSQL - object-relational ma'lumotlar bazasini boshqarish tizimi (ORDBMS) traditional relational ma'lumotlar bazasini boshqarish tizimiga (RDBMS) kuchli alternativani ta'minlaydi. U foydalanuvchiga ko'proq moslashuvchanlikni ta'minlash uchun aloqador va aloqador bo'lmagan modellarni birlashtiradi va yanada murakkab senariylar va tuzilmagan ma'lumotlarni boshqarishi mumkin. Ushbu qo'llanma "PostgreSQL nima?" Degan savolga javob beradi. va MySQL va PostgreSQL o'rtasidagi farqlarni belgilaydi. Shuningdek, u turli PostgreSQL-dan foydalanish holatlarini tushuntiradi.
+
+## PostgreSQL nima?
+
+PostgreSQL bu bepul open-source ma'lumotlar bazasi bo'lib, dastlab Postgres nomi bilan tanilgan. U ko'ngillilarga asoslangan `PostgreSQL Global Development Group ` tomonidan qurilgan va qo'llab-quvvatlanadi. Hech qanday litsenziya to'lovi talab qilinmaydi va foydalanuvchilar undan o'z talablariga muvofiq foydalanishlari va o'zgartirishlari mumkin. PostgreSQL so'nggi paytlarda ommalashib ketdi va hozirda eng ko'p ishlatiladigan ma'lumotlar bazasi mexanizmi to'rtinchi o'rinni egalladi. U deyarli barcha Linux distributivlari va boshqa operatsion tizimlar, shu jumladan Windows va macOS uchun mavjud. Eng so'nggi yirik nashr - bu PostgreSQL 12.
+
+PostgreSQL Structured Query Language (SQL) orqali yuboriladigan relational querilarni(so'rov) ham, aloqador bo'lmagan JSON querielarini ham qo'llab-quvvatlaydi. Ushbu moslashuvchanlik unga satrlar va raqamlardan ko'ra kengroq ma'lumotlar turlarini boshqarish imkonini beradi. Masalan, PostgreSQL tasvirlar, audio va videolar kabi ommaviy axborot vositalarini saqlash uchun yaxshi moslashtirilgan. Relational modelda ishlaganda, oddiy RDBMS kabi ma'lumotlarni tablelar(jadval), rowlar(ustun) va column(ustun)larda saqlaydi. Bu foydalanuvchilarga boshqa ma'lumotlar bazasi tizimidan ob'ektga aloqador arxitekturaga osongina o'tish imkonini beradi. Shuningdek, u merosning shaklini(inheritance) qo'llab-quvvatlaydi, bunda tablelar inkapsulyatsiya qobiliyatlari bilan birga parent(ota-ona) tabledagi propertielarni meros(inherit) qilib oladi. Foydalanuvchilar kodlar bazasini o'zgartirmasdan o'zlarining ma'lumotlar turlari va funktsiyalarini belgilashlari mumkin.
+
+
+Raqobatchilardan ko'ra ko'proq xususiyatlarga ega bo'lishiga qaramay, PostgreSQL hali ham tranzaksiyalarning yuqori tezligini bajara oladi. Garchi u har doim ham eng yaxshi RDBMS ilovalarining ishlashiga mos kelmasa ham, uning tezligi va sig'imi so'nggi versiyalarda oshdi. PostgreSQL o'zining barqarorligi bilan ajralib turadi va u yuqori darajada kengaytirilishi mumkin. U bitta ma'lumotlar bazasida juda katta hajmdagi ma'lumotlarni saqlashi mumkin.
+
+
+PostgreSQL to'liq ACID muvofiqligini ta'minlaydigan Multi-Version Concurrency Control (MVCC) yordamida parallellikni amalga oshiradi. ACID qisqartma bo'lib, “atomic, consistent, isolated, and durable" degan ma'noni anglatadi. Ushbu xususiyatlar to'plami ma'lumotlar bazasini kafolatlaydi va uning mazmuni xato va nosozliklar mavjud bo'lganda ham buzilmagan va haqiqiy bo'lib qoladi. MVCC ma'lumotlar bazasi tarkibini o'zgartiradigan har bir tranzaksiyadan keyin snapshotga olish orqali ishlaydi. U tranzaktsiyalarni izolyatsiyalashning uchta darajasiga imkon beradi, ular "Committed", "Repeatable Read" va "Serializable". PostgreSQL-ning MVCC ilovasi uning eng kuchli selling pointlaridan biri hisoblanadi.

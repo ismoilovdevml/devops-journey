@@ -4,20 +4,10 @@ import { Callout } from "nextra-theme-docs";
 
 Docker - bu konteynerlar deb ataladigan paketlarda dasturiy ta'minotni yetkazib berish uchun OS darajasidagi virtualizatsiyadan foydalanadigan platform as a service (PaaS) mahsulotlari. Xizmat bepul va premium darajalarga ega. Konteynerlarni joylashtiradigan dastur Docker Engine deb ataladi. U birinchi marta 2013 yilda chiqarilgan va Docker, Inc tomonidan ishlab chiqilgan. Docker - bu yengil konteynerlarda ilovalarni joylashtirishni avtomatlashtirish uchun ishlatiladigan dastur bo'lib, ilovalar izolyatsiya qilingan holda turli muhitlarda samarali ishlashi mumkin. Konteynerlar bir-biridan ajratilgan va o'zlarining dasturiy ta'minoti, kutubxonalari(library) va konfiguratsiya fayllarini birlashtiradi; ular bir-biri bilan aniq belgilangan kanallar orqali muloqot qilishlari mumkin. Barcha konteynerlar bitta operatsion tizim kerneli servicelarini baham ko'rganligi sababli, ular virtual mashinalarga qaraganda kamroq resurslardan foydalanadilar.
 
+## Dockerni tushunish
 
-Dasturiy ta'minotni ishlab chiqish va deploymentda bog'liqliklarni boshqarish va ilovalarning turli muhitlarda doimiy ishlashini ta'minlash juda muhim vazifadir. Docker, konteynerlashtirish platformasi ushbu muammolarni hal qilish uchun kuchli yechim sifatida paydo bo'ldi. Ushbu maqolada biz Docker nima ekanligini, nima uchun muhimligini va ishlab chiquvchilar va system administratorlarga qanday yordam berishini o'rganamiz.
+Oddiy qilib aytganda, Docker - bu ilovalarni yaratish, ishga tushirish, boshqarish va tarqatish jarayonini soddalashtiradigan dasturiy platforma. Buni u o'rnatilgan va ishlayotgan kompyuterning operatsion tizimini virtualizatsiya qilish orqali amalga oshiradi. Docker GO dasturlash tili yordamida yozilgan.
 
-## Docker nima?
-Docker - bu open source platforma bo'lib, ishlab chiquvchilarga yengil, portativ konteynerlarda ilovalarni deploymentni(joylashtirish) avtomatlashtirish imkonini beradi. Konteynerlar - bu dasturni, uning runtimesini, system toollarini, librarylarini va dastur ishlashi uchun zarur bo'lgan sozlamalarni qamrab oluvchi mustaqil paketlar. Shunday qilib, Docker konteyner qayerda joylashtirilganidan qat'i nazar, dastur bir xil tarzda ishlashini ta'minlaydi.
+## Muammo
 
-## Nega bizga Docker kerak?
-
-* Environment(muhit): Dasturiy ta'minotni ishlab chiqishdagi eng muhim muammolardan biri dasturning turli xil environmentlarda(muhit), masalan, ishlab chiqish(development), sinovdan o'tkazish(testing) va productionda ishlashini ta'minlashdir. Docker konteynerlari barcha dependencylar va konfiguratsiya fayllarini qamrab oladi, bu esa dastur qayerda joylashtirilishidan qat'iy nazar bir xil tarzda ishlashini ta'minlaydi.
-
-* Izolyatsiya: Docker konteynerlari bir-biridan ajratilgan holda ishlaydi, bu mojarolar xavfini kamaytiradi va har bir ilovaning o'ziga xos dependency to'plamiga ega bo'lishini ta'minlaydi. Bu bir xil tizimda bir nechta ilovalarni boshqarish va ularga xizmat ko'rsatishni osonlashtiradi.
-
-* Resurslardan samarali foydalanish: Har bir virtual mashina uchun alohida operatsion tizim namunasini talab qiluvchi anʼanaviy virtualizatsiyadan farqli oʻlaroq, Docker konteynerlari bir xil OS kernelini baham koʻradi. Bu qo'shimcha xarajatlarni kamaytirishga, resurslardan yaxshiroq foydalanishga va tezroq ishga tushirishga olib keladi.
-
-* Mikroservislar arxitekturasi: Docker mikroservislar arxitekturasi uchun juda mos keladi, bu yerda dastur bir-biri bilan aloqa qiladigan kichik, mustaqil servicelarga bo'linadi. Konteynerlar har bir mikroservis uchun tabiiy chegarani ta'minlaydi, bu esa individual servislarni ishlab chiqish, deploy qilish va kengaytirishni osonlashtiradi.
-
-* Continuous Integration va Continuous Deployment (CI/CD): Dockerning konteynerlarni tezda yaratish va deploy qilish qobiliyati uni CI/CD pipelinelari uchun ideal tanlovga aylantiradi. Ishlab chiquvchilar o'z ilovalarining yangi versiyalarini consistent environmentda sinab ko'rishlari va deploy qilishlari mumkin, bu esa deploy paytida xatolar xavfini kamaytiradi.
+Aytaylik sizda 3ta Python loyihasi bor. 3ta python loyihasi alohida-alohida boshqa python versiyalarida yozilgan va sizda bitta server bor. Siz bitta serverga 3ta pythonni versiyasini o'rnata olmaysiz muammo shu. Endi yechimni izlaymiz bizga bunda docker yordamga keladi.
