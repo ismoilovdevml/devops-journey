@@ -8,7 +8,7 @@ PostgreSQL - object-relational ma'lumotlar bazasini boshqarish tizimi (ORDBMS) t
 
 PostgreSQL bu bepul open-source ma'lumotlar bazasi bo'lib, dastlab Postgres nomi bilan tanilgan. U ko'ngillilarga asoslangan `PostgreSQL Global Development Group ` tomonidan qurilgan va qo'llab-quvvatlanadi. Hech qanday litsenziya to'lovi talab qilinmaydi va foydalanuvchilar undan o'z talablariga muvofiq foydalanishlari va o'zgartirishlari mumkin. PostgreSQL so'nggi paytlarda ommalashib ketdi va hozirda eng ko'p ishlatiladigan ma'lumotlar bazasi mexanizmi to'rtinchi o'rinni egalladi. U deyarli barcha Linux distributivlari va boshqa operatsion tizimlar, shu jumladan Windows va macOS uchun mavjud. Eng so'nggi yirik nashr - bu PostgreSQL 12.
 
-PostgreSQL Structured Query Language (SQL) orqali yuboriladigan relational querilarni(so'rov) ham, aloqador bo'lmagan JSON querielarini ham qo'llab-quvvatlaydi. Ushbu moslashuvchanlik unga satrlar va raqamlardan ko'ra kengroq ma'lumotlar turlarini boshqarish imkonini beradi. Masalan, PostgreSQL tasvirlar, audio va videolar kabi ommaviy axborot vositalarini saqlash uchun yaxshi moslashtirilgan. Relational modelda ishlaganda, oddiy RDBMS kabi ma'lumotlarni tablelar(jadval), rowlar(ustun) va column(ustun)larda saqlaydi. Bu foydalanuvchilarga boshqa ma'lumotlar bazasi tizimidan ob'ektga aloqador arxitekturaga osongina o'tish imkonini beradi. Shuningdek, u merosning shaklini(inheritance) qo'llab-quvvatlaydi, bunda tablelar inkapsulyatsiya qobiliyatlari bilan birga parent(ota-ona) tabledagi propertielarni meros(inherit) qilib oladi. Foydalanuvchilar kodlar bazasini o'zgartirmasdan o'zlarining ma'lumotlar turlari va funktsiyalarini belgilashlari mumkin.
+PostgreSQL Structured Query Language (SQL) orqali yuboriladigan relational querilarni(so'rov) ham, aloqador bo'lmagan JSON querielarini ham qo'llab-quvvatlaydi. Ushbu moslashuvchanlik unga satrlar va raqamlardan ko'ra kengroq ma'lumotlar turlarini boshqarish imkonini beradi. Masalan, PostgreSQL tasvirlar, audio va videolar kabi ommaviy axborot vositalarini saqlash uchun yaxshi moslashtirilgan. Relational modelda ishlaganda, oddiy RDBMS kabi ma'lumotlarni tablelar(table), rowlar(ustun) va column(ustun)larda saqlaydi. Bu foydalanuvchilarga boshqa ma'lumotlar bazasi tizimidan ob'ektga aloqador arxitekturaga osongina o'tish imkonini beradi. Shuningdek, u merosning shaklini(inheritance) qo'llab-quvvatlaydi, bunda tablelar inkapsulyatsiya qobiliyatlari bilan birga parent(ota-ona) tabledagi propertielarni meros(inherit) qilib oladi. Foydalanuvchilar kodlar bazasini o'zgartirmasdan o'zlarining ma'lumotlar turlari va funktsiyalarini belgilashlari mumkin.
 
 
 Raqobatchilardan ko'ra ko'proq xususiyatlarga ega bo'lishiga qaramay, PostgreSQL hali ham tranzaksiyalarning yuqori tezligini bajara oladi. Garchi u har doim ham eng yaxshi RDBMS ilovalarining ishlashiga mos kelmasa ham, uning tezligi va sig'imi so'nggi versiyalarda oshdi. PostgreSQL o'zining barqarorligi bilan ajralib turadi va u yuqori darajada kengaytirilishi mumkin. U bitta ma'lumotlar bazasida juda katta hajmdagi ma'lumotlarni saqlashi mumkin.
@@ -36,3 +36,28 @@ PostgreSQL-ning boshqa xususiyatlaridan ba'zilari quyidagilardan iborat:
 U foydalanuvchilarga querilarni to'g'ridan-to'g'ri kiritish imkonini beruvchi `psql` konsol dasturi bilan birlashtirilgan.
 
 Rivojlanish va texnik xizmat koʻrsatish hamjamiyat tomonidan amalga oshirilganligi sababli, PostgreSQL faol hamjamiyatga ega boʻlib, xatolarni tuzatishga hissa qoʻshadi va foydalanuvchilarga ularning muammolarini hal qilishda yordam beradi. To'liq grafik interfeysga ega bo'lmasa-da, bepul open-source `pgAdmin` dasturi GUI-ni masofadan boshqarishga ruxsat beradi.
+
+PostgreSQL-ni o'rnatish va undan foydalanish bo'yicha qo'shimcha ma'lumot olish uchun ["Linux Serverlarga Postgresql o'rnatish"](https://devops-journey.uz/guides/database/postgresql-ornatish) qo'llanmasini ko'rib chiqishingiz mumkin.
+
+
+# Object-Relational Database (ORDBMS) vs Relational Database (RDBMS)
+
+## Relational Database nima?
+
+RDBMS nima ekanligini tushuntirish va keyin ORDBMS undan qanday farq qilishini tasvirlash eng osondir. MySQL va boshqa RDBMS ilovalari tablelar va ma'lumotlar o'rtasidagi munosabatlarga asoslangan traditional database principlariga amal qiladi.
+
+* Ma'lumotlar bir qator columnlardan(ustunlar) tashkil topgan tablelarda(jadvallar) saqlanadi.
+
+* Bu columnlar tableda saqlanayotgan elementning turli atributlarini ifodalaydi.
+
+* Tabledagi har bir satr ma'lumotlar bazasidagi alohida yozuvni ifodalaydi va o'zining noyob primary keyi yordamida joylashtirilishi mumkin.
+
+* Tablelar foreign yoki compound keylar yordamida bir-biriga bog'langan.
+
+* Sanoat standartidagi SQL dasturlash tili ma'lumotlarni o'qish va yozish uchun ishlatiladi.
+
+RDBMS tez, ishonchli va undan qanday foydalanishni o'rganish uchun ko'plab manbalar mavjud. Tablelar qanday tuzilganligini va ular qanday bog'liqligini tushunish oson. Tablelar yaratilgandan keyin moslashuvchan tarzda kengaytirilishi mumkin. Ma'lumotlar bazasi ob'ektlari ham, ma'lumotlarning o'zi ham osongina yaratilishi, o'zgartirilishi va o'chirilishi mumkin. Ba'zi mashhur RDBMS dasturlariga Microsoft SQL Server, MySQL, SQLite va MariaDB kiradi.
+
+RDBMS ilovalari traditional field-based ma'lumotlarni saqlash uchun mo'ljallangan. Ushbu ma'lumotlar odatda raqamli yoki string-based. Ular tasvirlar, audio va videolar kabi katta va noqulay ma'lumotlar obyektlari uchun mo'ljallanmagan.
+
+RDBMS ilovalarining yana bir cheklovi ularning SQL bilan yaqin bog'lanishidir. U boshqa tillar bilan integratsiyalashishi mumkin, ammo samarali va muammosiz emas. Xuddi shunday, RDBMSdagi tablelar va yozuvlar o'rtasidagi munosabatlar qat'iy ravishda keylar va value(qiymat)lar bilan belgilanadi. Relational ma'lumotlar bazasi ushbu modeldan xalos bo'lishi va kamroq tuzilgan formatdan foydalanishi deyarli mumkin emas. Relational ma'lumotlar bazasining qat'iy tamoyillari uning kuchli tomonlaridan biri hisoblanib, boshqa kontekstlarda foydalanishni qiyinlashtiradi.
