@@ -15,3 +15,24 @@ Raqobatchilardan ko'ra ko'proq xususiyatlarga ega bo'lishiga qaramay, PostgreSQL
 
 
 PostgreSQL to'liq ACID muvofiqligini ta'minlaydigan Multi-Version Concurrency Control (MVCC) yordamida parallellikni amalga oshiradi. ACID qisqartma bo'lib, “atomic, consistent, isolated, and durable" degan ma'noni anglatadi. Ushbu xususiyatlar to'plami ma'lumotlar bazasini kafolatlaydi va uning mazmuni xato va nosozliklar mavjud bo'lganda ham buzilmagan va haqiqiy bo'lib qoladi. MVCC ma'lumotlar bazasi tarkibini o'zgartiradigan har bir tranzaksiyadan keyin snapshotga olish orqali ishlaydi. U tranzaktsiyalarni izolyatsiyalashning uchta darajasiga imkon beradi, ular "Committed", "Repeatable Read" va "Serializable". PostgreSQL-ning MVCC ilovasi uning eng kuchli selling pointlaridan biri hisoblanadi.
+
+PostgreSQL keng qamrovli replikatsiya xususiyatini(replication feature) taklif etadi. Asosiy ma'lumotlar bazasi o'z nusxalariga(replica) o'zgarishlarni sinxron yoki asinxron ravishda uzatishi mumkin. Replikatsiya har bir ma'lumotlar bazasi, foydalanuvchi, sessiya yoki tranzaksiya asosida belgilanishi mumkin. Sinxron replikatsiya sozlangan bo'lsa, birlamchi hech bo'lmaganda bitta node ma'lumotlarni yozib, tasdiqlashni yuborguncha kutadi. Biroq, bu variant ishlashga salbiy ta'sir ko'rsatishi mumkin. Replikalar yuk almashishni(load sharing) yoqish uchun faqat o'qish uchun so'rovlarni(read-only queri) bajarish uchun sozlanishi mumkin. PostgreSQL, shuningdek,  active standbys rejimidan foydalanish bilan bir qatorda, disaster recovery uchun point-in-time recovery (PITR) qo'llab-quvvatlaydi.
+
+PostgreSQL-ning boshqa xususiyatlaridan ba'zilari quyidagilardan iborat:
+
+* U composite va custom typelarni o'z ichiga olgan to'liq ma'lumotlar turlarini qo'llab-quvvatlaydi.
+
+* U materialized viewlarni, triggerlarni va saqlangan protseduralarni yaratishga imkon beradi.
+
+* Foydalanuvchilar maxsus funksiyalarni belgilashlari va Python, Java, Perl, .Net, Go va C/C++ kabi turli tillarda yozilgan kodlarni birlashtirishi mumkin. PostgreSQL ham o'zining `PL/pgSQL` protsessual tiliga ega, bu foydalanuvchilarga saqlangan protseduralar va subroutinelarni yozish imkonini beradi.
+
+* PostgreSQL har bir rol(per-role) asosida aniqlanishi mumkin bo'lgan keng qamrovli xavfsizlikni boshqarish qobiliyatiga ega. Rol foydalanuvchi yoki guruh bo'lishi mumkin.
+
+* PostgreSQL bir necha turdagi indekslar va indekslarga kirish usullarini qo'llab-quvvatlaydi.
+
+* Bu ixtiyoriy sxemalarga(schema) ruxsat beradi. Ushbu schemalar namespace(nomlar maydoni) kabi ishlaydi va bir xil nomdagi ob'ektlarning birgalikda mavjud bo'lishiga ruxsat beradi.
+
+* PostgreSQL xalqaro belgilar(international character) to'plamini va katta-kichik harflarni, urg'uni sezmaydigan va to'liq matnli qidiruvlarni qo'llab-quvvatlaydi.
+U foydalanuvchilarga querilarni to'g'ridan-to'g'ri kiritish imkonini beruvchi `psql` konsol dasturi bilan birlashtirilgan.
+
+Rivojlanish va texnik xizmat koʻrsatish hamjamiyat tomonidan amalga oshirilganligi sababli, PostgreSQL faol hamjamiyatga ega boʻlib, xatolarni tuzatishga hissa qoʻshadi va foydalanuvchilarga ularning muammolarini hal qilishda yordam beradi. To'liq grafik interfeysga ega bo'lmasa-da, bepul open-source `pgAdmin` dasturi GUI-ni masofadan boshqarishga ruxsat beradi.
