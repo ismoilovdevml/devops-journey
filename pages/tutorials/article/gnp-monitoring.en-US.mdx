@@ -1,0 +1,10 @@
+import { Callout } from "nextra-theme-docs";
+
+# Serverlarni monitoring qilish yoxud Grafana, node_exporter, prometheus o'rnatish va sozlanishi
+
+
+Aksariyat sysadminlar o'z serverlari qanday ishlashi haqida to'liq ma'lumotga ega bo'lishni xohlashadi. Server protsessorlari, xotirasi va I/O statistikasining ko'rinishi ularga muammolarni yuzaga kelishidan oldin aniqlash va ajratishga yordam beradi. Prometheus client nodelaridan foydali statistik ma'lumotlarni yig'ish uchun robust node monitoringi yechimini taklif etadi. Grafana vizualizatsiya yechimi bilan birgalikda Prometheus foydalanuvchilarga serverning asosiy statistikasini vizual kuzatish imkonini beradi.
+
+## Prometheus nima?
+
+Prometheus - bu muntazam ravishda server metriclarini(ko'rsatkichlarini) to'playdigan open source tizim monitoringi ilovasi. U o'zining xost-serverini hamda tashqi clientlarni kuzatishi mumkin. Prometheus barcha clientlar uchun tashqi ish faoliyatini nazorat qilish imkonini beradi, bu mumkin bo'lgan xatolar yoki kutilmagan xatti-harakatlarni erta aniqlash imkonini beradi. Har bir client o'zining ichki statistikasini to'plash va oshkor qilish uchun exporter sifatida tanilgan metrics collation vositasini ishga tushirishi kerak. Xavfsizlik nuqtai nazaridan, Prometheus shu tarzda ma'lumotlarni yig'maydigan external nodeni kuzata olmaydi.

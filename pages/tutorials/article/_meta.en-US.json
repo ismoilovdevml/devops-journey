@@ -124,5 +124,26 @@
       "toc": false,
       "pagination": true
     }
+  },
+  "gnp-monitoring": {
+    "title": "Serverlarni monitoring qilish",
+    "longTitle": "Grafana, node_exporter, prometheus o'rnatish va sozlash",
+    "description": "Grafana, node_exporter, prometheus o'rnatish va sozlash",
+    "level": "Hamma uchun",
+    "category": "Computer Science",
+    "author": {
+      "name": "Otabek Ismoilov",
+      "image": "/images/tutorials/authors/ismoilovdev.jpeg"
+    },
+    "createdAt": "2023-06-09",
+    "minutesRead": 40,
+    "href": "/tutorials/article/gnp-monitoring",
+    "theme": {
+      "breadcrumb": false,
+      "footer": true,
+      "sidebar": false,
+      "toc": false,
+      "pagination": true
+    }
   }
 }
