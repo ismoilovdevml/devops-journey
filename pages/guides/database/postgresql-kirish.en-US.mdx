@@ -72,3 +72,24 @@ ORDBMS object-oriented tillar bilan ishlash uchun mo'ljallangan va bir nechta ob
 
 ORDBMS ilovalari ko'pgina boshqa SQL ma'lumotlar bazalarida yetishmayotgan imkoniyatlarga ega. Ular fotosuratlar, audio fayllar va videolarni o'z ichiga olgan yangi turdagi ma'lumotlarga ixtisoslashgan. ORDBMS murakkab ob'ektlar va relational interfeysga mos kelmaydigan ma'lumotlar bilan ishlash uchun ham foydalidir. Ular, ayniqsa, ko'p sonli vaqtinchalik operatsiyalarni bajarishda yaxshi. ORDBMS ilovalari ko'proq querylar(so'rovlar) tillarini tushunadi va ko'plab komponentlarga ega bo'lgan katta, murakkab tizimga birlashtirilishi mumkin.
 
+Salbiy tomoni sifatida, yangi foydalanuvchi dastlab ORDBMSni loyihalash, amalga oshirish va optimallashtirishda qiyinchiliklarga duch kelishi mumkin. Modellar orasidagi aralash noqulay va integratsiya qilish qiyin bo'lishi mumkin. Aloqaviy bo'lmagan ma'lumotlar bazalari murakkab va ba'zan ulardan foydalanish va o'rganish qiyin. Foydalanuvchi tomonidan aniqlangan juda ko'p tartib-qoidalar tufayli dizaynga nomuvofiqliklar, ortiqcha va samarasizliklar tasodifan kiritilishi mumkin.
+
+Xulosa qilib aytadigan bo'lsak, RDBMS ko'p sonli oddiy SQL readlari bo'lgan va string(satr)lar va raqamlardan foydalanadigan tizimlar uchun foydalidir. Bu, shuningdek, foydalanish qulayligi va tez amalga oshirish yoki prototip ustuvor bo'lsa, eng yaxshi tanlovdir. PostgreSQL kabi ORDBMS murakkab querylar va katta ma'lumotlar ob'ektlarini talab qiladigan murakkab muhitda afzalliklarga ega. Bundan tashqari, u object-oriented dizaynda va kengroq dasturlash tillari bilan yaxshi ishlaydi.
+
+## PostgreSQL nima uchun ishlatiladi?
+
+PostgreSQL tez va ishonchli tizim bo'lib, an'anaviy RDBMS ilovasidan foydalanish mumkin bo'lgan har qanday joyda foydalanish mumkin. Biroq, uni muayyan muhitda uchratish odatiy holdir. Quyida PostgreSQL-dan foydalanishning asosiy holatlari keltirilgan.
+
+* PostgreSQL ko'pincha tuzilgan(structured) va tuzilmagan(unstructured) ma'lumotlar, jumladan, audio, video va elektron pochta xabarlari birgalikda saqlanishi kerak bo'lganda ishlatiladi.
+
+* PostgreSQL `PostGIS` extensioni(kengaytma)ni o'z ichiga oladi, shuning uchun u geospatial ma'lumotlar bazalari bilan yaxshi ishlaydi. U joylashuvga asoslangan xizmatlar va geografik axborot tizimlari (geographic information systems (GIS)) uchun ishlatiladi.
+
+* Matlab va R kabi matematik va statistik ilovalar bilan birgalikda ishlatiladi.
+
+* PostgreSQL `LAPP` stackining bir qismini tashkil qiladi, LAAP - Linux, Apache, PostgreSQL va PHP/Python tillarini anglatadi, bu asl LAMP stackiga raqobatbardoshdir.
+
+* Boshqa data storelari bilan osongina birlashtirilganligi sababli, u turli ma'lumotlar bazasi tizimlari uchun federatsiyalashgan markaz sifatida yaxshi ishlaydi.
+
+* PostgreSQL ko'pincha onlayn tranzaksiyalarni qayta ishlash (online transaction processing (OLTP)), ma'lumotlarni saqlash va masshtablangan veb-ilovalar kabi talabchan rollarda qo'llaniladi.
+
+* Aniqrog'i, u hech bo'lmaganda qisman Reddit, Skype biznes bo'limi, NOAA/NWS va TripAdvisor tomonidan qo'llaniladi.
