@@ -1,6 +1,8 @@
 import { Callout } from "nextra-theme-docs";
 
-# Serverlarni monitoring qilish yoxud Grafana, node_exporter, prometheus o'rnatish va sozlanishi
+# Serverlarni monitoring qilish yoxud Grafana, Prometheus, Node Exporter o'rnatish va sozlash
+
+![Linux](/images/article/monitoring/1.png)
 
 
 Aksariyat sysadminlar o'z serverlari qanday ishlashi haqida to'liq ma'lumotga ega bo'lishni xohlashadi. Server protsessorlari, xotirasi va I/O statistikasining ko'rinishi ularga muammolarni yuzaga kelishidan oldin aniqlash va ajratishga yordam beradi. Prometheus client nodelaridan foydali statistik ma'lumotlarni yig'ish uchun robust node monitoringi yechimini taklif etadi. Grafana vizualizatsiya yechimi bilan birgalikda Prometheus foydalanuvchilarga serverning asosiy statistikasini vizual kuzatish imkonini beradi.
@@ -8,3 +10,7 @@ Aksariyat sysadminlar o'z serverlari qanday ishlashi haqida to'liq ma'lumotga eg
 ## Prometheus nima?
 
 Prometheus - bu muntazam ravishda server metriclarini(ko'rsatkichlarini) to'playdigan open source tizim monitoringi ilovasi. U o'zining xost-serverini hamda tashqi clientlarni kuzatishi mumkin. Prometheus barcha clientlar uchun tashqi ish faoliyatini nazorat qilish imkonini beradi, bu mumkin bo'lgan xatolar yoki kutilmagan xatti-harakatlarni erta aniqlash imkonini beradi. Har bir client o'zining ichki statistikasini to'plash va oshkor qilish uchun exporter sifatida tanilgan metrics collation vositasini ishga tushirishi kerak. Xavfsizlik nuqtai nazaridan, Prometheus shu tarzda ma'lumotlarni yig'maydigan external nodeni kuzata olmaydi.
+
+Prometheus serveri talab qilinadigan ma'lumotlar uchun client serverlarini so'rash uchun HTTP protokolidan foydalanadi. U har bir clientni oldindan belgilangan vaqt oralig'ida so'rov qilib, natijalarning time-seriali ma'lumotlar bazasini saqlaydi. Prometheus statistik ma'lumotlar qachon olinganligini ko'rsatadigan timestamplari bilan birga discrete snapshotlarni saqlaydi. Prometheus o'zi to'plagan metricalarni saqlab qoladi, bu esa clientning uzoq muddatli faoliyatining umumiy ko'rinishini yaratishga imkon beradi.
+
+Client nodelarida turli statistik collectorlardan foydalanish mumkin bo'lsa-da, Prometheus o'zining Node Exporter tool tavsiya qiladi. Prometheus Node Exporter ko'p sonli hardware va kernel metriclarini, jumladan CPU va xotiradan foydalanishni to'playdi. To'plangan mavjud metriclarning to'liq ro'yxatini [Node Exporter GitHub sahifasida](https://github.com/prometheus/node_exporter) topish mumkin. Node Exporter Prometheus bilan chambarchas integratsiyalashgan va bir xil ma'lumotlar formatini baham ko'radi. Node Exporter va Prometheusni birgalikda ishlatish uchun hech qanday konversiya yoki dastlabki ishlov berish talab etilmaydi. Node Exporter monitoring qilish uchun har bir clientga o'rnatilishi kerak. Node Exporter 9100 portidan, Prometheus esa 9090 portidan foydalanadi. Prometheus haqida qo'shimcha ma'lumot olish uchun [Prometheus texnik hujjatlariga](https://prometheus.io/docs/introduction/overview/) qarang.

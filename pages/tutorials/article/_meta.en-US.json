@@ -127,8 +127,8 @@
   },
   "gnp-monitoring": {
     "title": "Serverlarni monitoring qilish",
-    "longTitle": "Grafana, node_exporter, prometheus o'rnatish va sozlash",
-    "description": "Grafana, node_exporter, prometheus o'rnatish va sozlash",
+    "longTitle": "Serverlarni monitoring qilish",
+    "description": "Grafana, Prometheus, Node Exporter o'rnatish va sozlash",
     "level": "Hamma uchun",
     "category": "Computer Science",
     "author": {
