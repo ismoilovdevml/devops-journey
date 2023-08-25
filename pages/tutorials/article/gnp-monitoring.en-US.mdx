@@ -2,7 +2,7 @@ import { Callout } from "nextra-theme-docs";
 
 # Serverlarni monitoring qilish yoxud Grafana, Prometheus, Node Exporter o'rnatish va sozlash
 
-![Linux](/images/article/monitoring/1.png)
+![monitoring](/images/article/monitoring/1.png)
 
 
 Aksariyat sysadminlar o'z serverlari qanday ishlashi haqida to'liq ma'lumotga ega bo'lishni xohlashadi. Server protsessorlari, xotirasi va I/O statistikasining ko'rinishi ularga muammolarni yuzaga kelishidan oldin aniqlash va ajratishga yordam beradi. Prometheus client nodelaridan foydali statistik ma'lumotlarni yig'ish uchun robust node monitoringi yechimini taklif etadi. Grafana vizualizatsiya yechimi bilan birgalikda Prometheus foydalanuvchilarga serverning asosiy statistikasini vizual kuzatish imkonini beradi.
@@ -32,7 +32,7 @@ Prometheusning ba'zi qo'shimcha xususiyatlari quyidagilardir.
 
 ## Grafana nima?
 
-Grafana - bu open source va korporativ nashrlarda mavjud vizualizatsiya ilovasi. Grafana mijozlardan hech qanday metrikalarni yig'maydi va hech qanday ma'lumotlarni saqlamaydi. Buning o'rniga, Grafana foydalanuvchi interfeysi Prometheus yoki boshqa ma'lumotlar manbasi tomonidan to'plangan metrikalarni intuitiv va vizual tarzda chiroyli formatda namoyish etadi. Grafana dashboard yordamida ma'lumotlarni taqdim etadi. Dashboard ko'rsatiladigan qiymatlarni va ularni qanday ko'rsatishni aniqlash uchun shablondir. Aksariyat dashboard foydalanuvchilarga taqdimotni ko'proq nazorat qilish imkonini beruvchi qo'shimcha imkoniyatlarni taqdim etadi.
+Grafana - bu open source va korporativ relizlarda mavjud vizualizatsiya ilovasi. Grafana clientlardan hech qanday metrikalarni yig'maydi va hech qanday ma'lumotlarni saqlamaydi. Buning o'rniga, Grafana foydalanuvchi interfeysi Prometheus yoki boshqa ma'lumotlar manbasi tomonidan to'plangan metrikalarni intuitiv va vizual tarzda chiroyli formatda namoyish etadi. Grafana dashboard yordamida ma'lumotlarni taqdim etadi. Dashboard ko'rsatiladigan qiymatlarni va ularni qanday ko'rsatishni aniqlash uchun shablondir. Aksariyat dashboard foydalanuvchilarga taqdimotni ko'proq nazorat qilish imkonini beruvchi qo'shimcha imkoniyatlarni taqdim etadi.
 
 Grafana keng doiradagi dashboardni, jumladan Prometheus Node Exporter boshqaruv panelini qo'llab-quvvatlaydi. Grafana-da  [Grafana Dashboard Library](https://grafana.com/grafana/dashboards/) tasdiqlangan dashboard mavjud. Shuningdek, u foydalanuvchilarga o'z panellarini yaratish va ma'lumotlar manbasida o'z querylarini bajarish imkonini beradi. Grafana shuningdek, SQL yoki NoSQL ma'lumotlar bazalariga va Jira va GitLab kabi ilovalariga ulanishi mumkin. Bir xil boshqaruv panelida bir nechta ma'lumotlar manbalari birlashtirilishi mumkin.
 
@@ -176,4 +176,92 @@ sudo systemctl daemon-reload
 
 ```bash
 sudo systemctl enable prometheus
+```
+
+6. Prometheus serviceni ishga tushiring va faolligini tekshirish uchun `status` buyrug'ini ko'rib chiqing.
+
+```bash
+sudo systemctl start prometheus
+sudo systemctl status prometheus
+```
+7. Prometheus veb-interfeysi va asboblar paneliga `http://ip_address:9090` orqali kiring. `ip_address` ni monitoring serverining IP manzili bilan almashtiring. Prometheus standart konfiguratsiya faylidan foydalanganligi sababli, u hali ko'p ma'lumotlarni ko'rsatmaydi.
+
+![monitoring](/images/article/monitoring/2.png)
+
+8. Standart `prometheus.yml` fayli local hostni o'chirish uchun direktivani o'z ichiga oladi. Barcha `Target`larni ro'yxatga olish uchun `Status` va `Targets`-ni bosing. Prometheus local Prometheus serviceni yagona target sifatida ko'rsatishi kerak.
+
+![monitoring](/images/article/monitoring/3.png)
+
+
+## Node Exporter-ni o'ratish va sozlash
+
+Masofaviy tizimni kuzatishdan oldin, statistikani yig'ish uchun u qandaydir clientga ega bo'lishi kerak. Bir nechta uchinchi tomon clientlari mavjud. Biroq, foydalanish qulayligi uchun Prometheus Node Exporter clientini tavsiya qiladi. Node Exporter clientga o'rnatilgandan so'ng, clientni `prometheus.yml` da kuzatish uchun serverlar ro'yxatiga qo'shish mumkin.
+
+Node Exporter dasturini o'rnatish uchun quyidagi amallarni bajaring. Ushbu ko'rsatmalarni har bir client(yani kuzatmoqchi(monitoring) qilmoqchi bo'lgan har bir serveringizda) uchun takrorlang.
+
+<Callout type="info" emoji="">
+* Eslatma
+Node Exporter ishlayotgan bo'lsa, uning statistik ma'lumotlar to'plami `9100` portda mavjud. Bu port internetda mavjud va Prometheusni boshqa joyda ishlatayotgan har bir kishi ularni to'plashi mumkin. Agar siz firewalldan foydalansangiz, `sudo ufw allow 9100` buyrug'i yordamida `9100` portini ochishingiz kerak.
+</Callout>
+
+1. [Prometheus downloads sahifasining Node Exporter bo'limiga](https://prometheus.io/download/#node_exporter) murojaat qiling va oxirgi versiyani aniqlang.
+2. Ushbu relizni yuklab olish uchun `wget` dan foydalaning. Fayl formati https://github.com/prometheus/node_exporter/releases/download/v[reliz_raqami]/node_exporter-[reliz_raqami].linux-amd64.tar.gz. [reliz_raqami] ni haqiqiy relizga mos keladigan raqam bilan almashtiring. Misol uchun, quyidagi misol Node Exporter `1.6.1` versiyasini qanday yuklab olishni ko'rsatadi.
+
+```bash
+wget https://github.com/prometheus/node_exporter/releases/download/v1.6.1/node_exporter-1.6.1.linux-amd64.tar.gz
+```
+3. Dasturni arxivdan chiqarib oling
+
+```bash
+tar xvfz node_exporter-*.tar.gz
+```
+4. Bajariladigan(executable) faylni `usr/local/bin`-ga o'tkazing, shunda u butun tizimda mavjud bo'ladi.
+
+```bash
+sudo mv node_exporter-1.6.1.linux-amd64/node_exporter /usr/local/bin
+```
+5. (Ixtiyoriy) Qolgan fayllarni o'chirib tashlang.
+
+```bash
+rm -r node_exporter-1.6.1.linux-amd64*
+```
+6. Node Exporterni ishga tushirishning ikki yo'li mavjud. Uni terminaldan `node_exporter` buyrug'i yordamida ishga tushirish mumkin. Yoki uni system service sifatida faollashtirish mumkin. Uni terminaldan ishga tushirish unchalik qulay emas. Ammo bu vosita faqat vaqti-vaqti bilan foydalanish uchun mo'ljallangan bo'lsa, bu muammo bo'lmasligi mumkin. Node Exporter dasturini qo'lda ishga tushirish uchun quyidagi buyruqdan foydalaning. Terminal statistik ma'lumotlarni yig'ish jarayoniga oid tafsilotlarni chiqaradi.
+
+```bash
+node_exporter
+```
+7. Node Exporterni service sifatida ishga tushirish qulayroq. Node Exporter dasturini shu tarzda ishga tushirish uchun avval `node_exporter` foydalanuvchisini(user) yarating.
+
+```bash
+sudo useradd -rs /bin/false node_exporter
+```
+8. `systemctl` foydalanishi uchun service faylini yarating. Fayl `node_exporter.service` deb nomlanishi va quyidagi formatga ega bo‘lishi kerak. Maydonlarning ko'pchiligi oldingi bo'limda tasvirlanganidek, `prometheus.service` da topilgan maydonlarga o'xshaydi.
+
+```bash
+sudo nano /etc/systemd/system/node_exporter.service
+```
+
+Faylga quyidagi kodni kiriting:
+
+```bash
+[Unit]
+Description=Node Exporter
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+User=node_exporter
+Group=node_exporter
+Type=simple
+Restart=on-failure
+RestartSec=5s
+ExecStart=/usr/local/bin/node_exporter
+
+[Install]
+WantedBy=multi-user.target
+```
+9. (Ixtiyoriy) Agar clientni doimiy ravishda kuzatib(monitoring) borish niyatida boʻlsangiz, yuklash vaqtida Node Exporter dasturini avtomatik ravishda ishga tushirish uchun `systemctl enable` buyrugʻidan foydalaning. Bu doimiy ravishda `9100`-portdagi tizim metrikalarini ochib beradi. Agar Node Exporter faqat vaqti-vaqti bilan foydalanish uchun mo'ljallangan bo'lsa, quyidagi buyruqdan foydalanmang.
+
+```bash
+sudo systemctl enable node_exporter
 ```
