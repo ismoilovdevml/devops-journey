@@ -51,3 +51,35 @@ Ushbu ko'rsatmalarda Prometheus serveriga ega tizim "monitoring serveri" deb ata
 #### Sozlash uchun quyidagi amallarni bajarish talab etiladi.
 
 * 1.Monitoring serverga Prometheusni yuklab olish va o'rnatish
+* 2.Prometheusni service sifatida ishlatish uchun sozlash.
+* 3.Node Exporter dasturini barcha clientlarga o'rnatish.
+* 4.Clientlarni kuzatish uchun Prometheusni sozlash.
+* 5.Grafana serverini o'rnatish va joylashtirish.
+* 6.Grafana va Prometheusni birlashtirish.
+* 7.Node Exporter statistikasi uchun dashboardni import qilish.
+
+## Prometheus o'ratish va sozlash
+
+Prometheusni GitHub repositoriyadan oldindan kompilyatsiya qilingan binary(ikkilik) fayl sifatida yuklab olish mumkin.  [Prometheus Downloads](https://prometheus.io/download/) repositoriyada Prometheusning eng so'nggi relizlari ro'yxati keltirilgan. [Prometheus GitHub sahifasida](https://github.com/prometheus/prometheus), shuningdek, Prometheusni source kodidan(manba kodi) build qilish yoki uni Docker konteyneri sifatida ishga tushirish bo'yicha ko'rsatmalar mavjud. Prometheusni yuklab olish uchun quyidagi amallarni bajaring.
+
+1. [Prometheus downloads](https://prometheus.io/download/) sahifasiga tashrif buyuring va eng so'nggi versiyani yozib oling. Eng so'nggi LTS versiyasi saytda aniq ko'rsatilgan.
+
+2. Monitoring serveriga Prometheusni yuklab olish uchun `wget` dan foydalaning. Maqsadli havola https://github.com/prometheus/prometheus/releases/download/v[release]/prometheus-[release].linux-amd64.tar.gz formatiga ega. Yuklab olish uchun [release] qatorini haqiqiy reliz bilan almashtiring. Masalan, quyidagi yuklash buyruqlari 2.46.0 versiyasini chiqaradi.
+
+```bash
+wget https://github.com/prometheus/prometheus/releases/download/v2.46.0/prometheus-2.46.0.linux-amd64.tar.gz
+```
+3. Arxivlangan Prometheus fayllarini arxivdan chiqarib oling.
+
+```bash
+tar xvfz prometheus-*.tar.gz
+```
+4. (Ixtiyoriy) Fayllar arxivdan chiqarilgandan so'ng, arxivni o'chiring yoki saqlash uchun boshqa joyga ko'chiring.
+```bash
+rm prometheus-*.tar.gz
+```
+5. Prometheus foydalanishi uchun ikkita yangi jild yarating. `/etc/prometheus` jildi Prometheus konfiguratsiya fayllarini saqlaydi. `/var/lib/prometheus` jildi dastur ma'lumotlarini saqlaydi.
+
+```bash
+sudo mkdir /etc/prometheus /var/lib/prometheus
+```
