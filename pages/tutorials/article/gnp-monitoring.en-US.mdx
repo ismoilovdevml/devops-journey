@@ -83,3 +83,29 @@ rm prometheus-*.tar.gz
 ```bash
 sudo mkdir /etc/prometheus /var/lib/prometheus
 ```
+6. Arxivdan chiqarilgan Prometheus jildiga kiring
+
+```bash
+cd prometheus-2.46.0.linux-amd64
+```
+
+7. Prometheus va promtool jildlarini `/usr/local/bin/` jildiga o'tkazing. Bu Prometheusni barcha foydalanuvchilar uchun ochiq qiladi.
+
+```bash
+sudo mv prometheus promtool /usr/local/bin/
+```
+8. `prometheus.yml` YAML konfiguratsiya faylini `/etc/prometheus` jildiga o'tkazing.
+
+```bash
+sudo mv prometheus.yml /etc/prometheus/prometheus.yml
+```
+9. `consoles` va `console_libraries` jildlari moslashtirilgan konsollarni yaratish uchun zarur bo'lgan resurslarni o'z ichiga oladi. Bu xususiyat yanada rivojlangan va ushbu qo'llanmada yoritilgan. Biroq, agar kerak bo'lsa, bu fayllar `etc/prometheus` jildiga ko'chirilishi kerak.
+
+```bash
+sudo mv consoles/ console_libraries/ /etc/prometheus/
+```
+10. Quyidagi buyruq yordamida Prometheus muvaffaqiyatli o'rnatilganligini tekshiring:
+```bash
+prometheus --version
+```
+
