@@ -34,4 +34,20 @@ Prometheusning ba'zi qo'shimcha xususiyatlari quyidagilardir.
 
 Grafana - bu open source va korporativ nashrlarda mavjud vizualizatsiya ilovasi. Grafana mijozlardan hech qanday metrikalarni yig'maydi va hech qanday ma'lumotlarni saqlamaydi. Buning o'rniga, Grafana foydalanuvchi interfeysi Prometheus yoki boshqa ma'lumotlar manbasi tomonidan to'plangan metrikalarni intuitiv va vizual tarzda chiroyli formatda namoyish etadi. Grafana dashboard yordamida ma'lumotlarni taqdim etadi. Dashboard ko'rsatiladigan qiymatlarni va ularni qanday ko'rsatishni aniqlash uchun shablondir. Aksariyat dashboard foydalanuvchilarga taqdimotni ko'proq nazorat qilish imkonini beruvchi qo'shimcha imkoniyatlarni taqdim etadi.
 
-Grafana keng doiradagi asboblar panelini, jumladan Prometheus Node Exporter boshqaruv panelini qo'llab-quvvatlaydi. Grafana-da Grafana asboblar paneli kutubxonasida tasdiqlangan asboblar paneli mavjud. Shuningdek, u foydalanuvchilarga o'z panellarini yaratish va ma'lumotlar manbasida o'z so'rovlarini bajarish imkonini beradi. Grafana shuningdek, SQL yoki NoSQL ma'lumotlar bazalariga va Jira va GitLab kabi voqea chiptalari ilovalariga ulanishi mumkin. Bir xil boshqaruv panelida bir nechta ma'lumotlar manbalari birlashtirilishi mumkin.
+Grafana keng doiradagi dashboardni, jumladan Prometheus Node Exporter boshqaruv panelini qo'llab-quvvatlaydi. Grafana-da  [Grafana Dashboard Library](https://grafana.com/grafana/dashboards/) tasdiqlangan dashboard mavjud. Shuningdek, u foydalanuvchilarga o'z panellarini yaratish va ma'lumotlar manbasida o'z querylarini bajarish imkonini beradi. Grafana shuningdek, SQL yoki NoSQL ma'lumotlar bazalariga va Jira va GitLab kabi ilovalariga ulanishi mumkin. Bir xil boshqaruv panelida bir nechta ma'lumotlar manbalari birlashtirilishi mumkin.
+
+
+Grafana ogohlantirishlar(alerts), annotationlar, dashboard variablelari, plaginlar va autentifikatsiyani qo'llab-quvvatlaydi. Shuningdek, u ma'lumotlarni yanada dekonstruksiya qilish uchun bir qator tahliliy vositalarni taqdim etadi. Grafana veb-interfeysiga xost-serverning `3000`-porti yordamida kirish mumkin. Eng yaxshi natijalarga erishish uchun Prometheus va Grafana-ni bitta serverda ishga tushiring. Qo'shimcha ma'lumot olish uchun Grafanaga [texnik hujjatlariga](https://grafana.com/docs/grafana/latest/introduction/) qarang.
+
+
+### Talablar
+* Prometheus 4 GB RAM va 20 GB disk xotira talab qiladi va kamida ikkita CPU core bilan yaxshi ishlaydi.
+
+
+## Prometheus, Grafana va Node Exporter-ni o'rnatish va sozlash
+
+Ushbu ko'rsatmalarda Prometheus serveriga ega tizim "monitoring serveri" deb ataladi. Kuzatilayotgan tizim "client" hisoblanadi. Prometheus va Grafana yordamida juda murakkab maxsus exporterlar va dashboardni ishlab chiqish mumkin. Biroq, ushbu qo'llanma clientning eng muhim tafsilotlarini, jumladan CPU, xotira va I/O-dan foydalanishni kuzatish uchun yanada sodda yechimni tasvirlaydi. Bu PromQL haqida hech qanday ma'lumotni yoki Prometheus yoki Grafana uchun past darajadagi tafsilotlarni talab qilmaydi.
+
+#### Sozlash uchun quyidagi amallarni bajarish talab etiladi.
+
+* 1.Monitoring serverga Prometheusni yuklab olish va o'rnatish
