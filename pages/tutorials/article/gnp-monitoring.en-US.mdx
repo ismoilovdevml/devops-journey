@@ -9,8 +9,29 @@ Aksariyat sysadminlar o'z serverlari qanday ishlashi haqida to'liq ma'lumotga eg
 
 ## Prometheus nima?
 
-Prometheus - bu muntazam ravishda server metriclarini(ko'rsatkichlarini) to'playdigan open source tizim monitoringi ilovasi. U o'zining xost-serverini hamda tashqi clientlarni kuzatishi mumkin. Prometheus barcha clientlar uchun tashqi ish faoliyatini nazorat qilish imkonini beradi, bu mumkin bo'lgan xatolar yoki kutilmagan xatti-harakatlarni erta aniqlash imkonini beradi. Har bir client o'zining ichki statistikasini to'plash va oshkor qilish uchun exporter sifatida tanilgan metrics collation vositasini ishga tushirishi kerak. Xavfsizlik nuqtai nazaridan, Prometheus shu tarzda ma'lumotlarni yig'maydigan external nodeni kuzata olmaydi.
+Prometheus - bu muntazam ravishda server metriclarini(metrikalarini) to'playdigan open source tizim monitoringi ilovasi. U o'zining xost-serverini hamda tashqi clientlarni kuzatishi mumkin. Prometheus barcha clientlar uchun tashqi ish faoliyatini nazorat qilish imkonini beradi, bu mumkin bo'lgan xatolar yoki kutilmagan xatti-harakatlarni erta aniqlash imkonini beradi. Har bir client o'zining ichki statistikasini to'plash va oshkor qilish uchun exporter sifatida tanilgan metrics collation vositasini ishga tushirishi kerak. Xavfsizlik nuqtai nazaridan, Prometheus shu tarzda ma'lumotlarni yig'maydigan external nodeni kuzata olmaydi.
 
 Prometheus serveri talab qilinadigan ma'lumotlar uchun client serverlarini so'rash uchun HTTP protokolidan foydalanadi. U har bir clientni oldindan belgilangan vaqt oralig'ida so'rov qilib, natijalarning time-seriali ma'lumotlar bazasini saqlaydi. Prometheus statistik ma'lumotlar qachon olinganligini ko'rsatadigan timestamplari bilan birga discrete snapshotlarni saqlaydi. Prometheus o'zi to'plagan metricalarni saqlab qoladi, bu esa clientning uzoq muddatli faoliyatining umumiy ko'rinishini yaratishga imkon beradi.
 
 Client nodelarida turli statistik collectorlardan foydalanish mumkin bo'lsa-da, Prometheus o'zining Node Exporter tool tavsiya qiladi. Prometheus Node Exporter ko'p sonli hardware va kernel metriclarini, jumladan CPU va xotiradan foydalanishni to'playdi. To'plangan mavjud metriclarning to'liq ro'yxatini [Node Exporter GitHub sahifasida](https://github.com/prometheus/node_exporter) topish mumkin. Node Exporter Prometheus bilan chambarchas integratsiyalashgan va bir xil ma'lumotlar formatini baham ko'radi. Node Exporter va Prometheusni birgalikda ishlatish uchun hech qanday konversiya yoki dastlabki ishlov berish talab etilmaydi. Node Exporter monitoring qilish uchun har bir clientga o'rnatilishi kerak. Node Exporter 9100 portidan, Prometheus esa 9090 portidan foydalanadi. Prometheus haqida qo'shimcha ma'lumot olish uchun [Prometheus texnik hujjatlariga](https://prometheus.io/docs/introduction/overview/) qarang.
+
+Prometheusning ba'zi qo'shimcha xususiyatlari quyidagilardir.
+
+* Bu open source va har qanday kompaniyadan mustaqil
+* Har bir Prometheus serveri avtonomdir va taqsimlangan xotira(distributed storage) yoki markaziy serverni(central server) talab qilmaydi
+* Bu juda ishonchli va o'rnatish oson
+* Turli xil clientlarni turli vaqt oralig'ida so'rash mumkin
+* Time-seriyali ma'lumotlar va key-value pairlarini qo'llab-quvvatlaydigan moslashuvchan ko'p o'lchovli ma'lumotlar modelidan foydalanadi
+* Ma'lumotlarni olish va tahlil qilish uchun `PromQL` so'rovlar tilini(query language) qo'llab-quvvatlaydi
+* U AlertManger komponentini o'z ichiga oladi. AlertManager clientlardan ogohlantirishlarni(slerts) oladi va ularni turli obunachilarga yuboradi
+* Prometheus o'z metrikalarini Grafana kabi vizualizatsiya vositalariga kiritishi mumkin
+* Ixtiyoriy Prometheus PushGateway push-ga asoslangan metrik to'plamni qo'llab-quvvatlaydi
+* U sozlanishi va uchinchi tomon kutubxonalarini qo'llab-quvvatlaydi
+* U Docker konteynerlashtirish va Kubernetes-ni qo'llab-quvvatlaydi
+* Prometheus katta va faol ishlab chiquvchilar va foydalanuvchilar hamjamiyatiga ega
+
+## Grafana nima?
+
+Grafana - bu open source va korporativ nashrlarda mavjud vizualizatsiya ilovasi. Grafana mijozlardan hech qanday metrikalarni yig'maydi va hech qanday ma'lumotlarni saqlamaydi. Buning o'rniga, Grafana foydalanuvchi interfeysi Prometheus yoki boshqa ma'lumotlar manbasi tomonidan to'plangan metrikalarni intuitiv va vizual tarzda chiroyli formatda namoyish etadi. Grafana dashboard yordamida ma'lumotlarni taqdim etadi. Dashboard ko'rsatiladigan qiymatlarni va ularni qanday ko'rsatishni aniqlash uchun shablondir. Aksariyat dashboard foydalanuvchilarga taqdimotni ko'proq nazorat qilish imkonini beruvchi qo'shimcha imkoniyatlarni taqdim etadi.
+
+Grafana keng doiradagi asboblar panelini, jumladan Prometheus Node Exporter boshqaruv panelini qo'llab-quvvatlaydi. Grafana-da Grafana asboblar paneli kutubxonasida tasdiqlangan asboblar paneli mavjud. Shuningdek, u foydalanuvchilarga o'z panellarini yaratish va ma'lumotlar manbasida o'z so'rovlarini bajarish imkonini beradi. Grafana shuningdek, SQL yoki NoSQL ma'lumotlar bazalariga va Jira va GitLab kabi voqea chiptalari ilovalariga ulanishi mumkin. Bir xil boshqaruv panelida bir nechta ma'lumotlar manbalari birlashtirilishi mumkin.
