@@ -109,3 +109,71 @@ sudo mv consoles/ console_libraries/ /etc/prometheus/
 prometheus --version
 ```
 
+## Prometheusni service sifatida sozlash
+
+Prometheusni buyruq satridan(konsol) ishga tushirish va to'xtatish mumkin bo'lsa-da, uni `systemctl` yordam dasturidan foydalangan holda service sifatida ishga tushirish qulayroqdir. Bu backgrounda ishlashga imkon beradi.
+
+Prometheus har qanday tashqi tizimlarni kuzatishdan(monitoring) oldin `prometheus.yml` fayliga qo'shimcha konfiguratsiya qo'shilishi kerak. Biroq, Prometheus allaqachon o'zini o'zi nazorat qilish uchun konfiguratsiya qilingan. Prometheusni sozlash uchun quyidagi amallarni bajaring.
+
+1. Prometheus userini(foydalanuchi) yarating. Quyidagi buyruq tizim userini yaratadi.
+
+```bash
+sudo useradd -rs /bin/false prometheus
+```
+
+2. Oldingi bo'limda yaratilgan ikkita jildga egalik huquqini yangi prometheus foydalanuvchisiga topshiring.
+
+```bash
+sudo chown -R prometheus: /etc/prometheus /var/lib/prometheus
+```
+3. Prometheusga service sifatida ishlashga ruxsat berish uchun quyidagi buyruq yordamida `prometheus.service` faylini yarating:
+
+```bash
+sudo nano /etc/systemd/system/prometheus.service
+```
+Faylga quyidagi kodni kiriting:
+
+```bash
+[Unit]
+Description=Prometheus
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+User=prometheus
+Group=prometheus
+Type=simple
+Restart=on-failure
+RestartSec=5s
+ExecStart=/usr/local/bin/prometheus \
+    --config.file /etc/prometheus/prometheus.yml \
+    --storage.tsdb.path /var/lib/prometheus/ \
+    --web.console.templates=/etc/prometheus/consoles \
+    --web.console.libraries=/etc/prometheus/console_libraries \
+    --web.listen-address=0.0.0.0:9090 \
+    --web.enable-lifecycle \
+    --log.level=info
+
+[Install]
+WantedBy=multi-user.target
+```
+
+* `Wants` va `After` opsiyalari `network-online.target` ga o'rnatilishi kerak.
+* `User` va `Group` maydonlarining ikkalasi ham `prometheus`ga o'rnatilishi kerak.
+* `ExecStart` parametri bajariladigan(executeble) prometheusni qayerdan topish mumkinligini tushuntiradi va standart variantlarni belgilaydi.
+* `config.file` opsiyasi Prometheus konfiguratsiya faylining joylashuvini `/etc/prometheus/prometheus.yml` sifatida belgilaydi.
+* `storage.tsdb.path` Prometheusga dastur ma'lumotlarini `/var/lib/prometheus/` jildida saqlashni aytadi.
+* `web.listen-address` `0.0.0.0:9090` ga sozlangan, bu Prometheusga barcha tarmoq interfeyslarida ulanishlarni tinglash imkonini beradi.
+* `web.enable-lifecycle ` opsiyasi foydalanuvchilarga Prometheusni qayta ishga tushirmasdan konfiguratsiya faylini qayta yuklash imkonini beradi.
+
+4. systemctl daemoni reload qilish.
+
+```bash
+sudo systemctl daemon-reload
+```
+
+5. (Ixtiyoriy) Prometheus service tizim ishga tushganda avtomatik ishga tushirish uchun sozlash uchun `systemctl enable` dan foydalaning. Agar bu buyruq qo'shilmasa, Prometheus qo'lda ishga tushirilishi kerak. Yani bu server o'chib yonganda yoki restart bo'lib yonganda avtomatik ravishda prometheusni ishga tushuradi.
+
+```bash
+sudo systemctl enable prometheus
+```
