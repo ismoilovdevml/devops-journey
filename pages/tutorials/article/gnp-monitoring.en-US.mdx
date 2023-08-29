@@ -304,3 +304,52 @@ sudo systemctl restart prometheus
 ```
 
 4. Veb-brauzerdan foydalanib, monitoring serveridagi `9090` portdagi Prometheus veb-portaliga qayta kiring. `Status` va keyin `Targets`ni tanlang. remote_collector job uchun ikkinchi havola ko'rsatiladi, bu clientning 9100 portiga olib keladi. Statistikani ko'rib chiqish uchun havolani bosing.
+
+![monitoring](/images/article/monitoring/5.png)
+
+## Grafana serverini qanday o'rnatish va sozlash
+
+Prometheus hozirda konfiguratsiya faylining `scrape_configs` bo'limida sanab o'tilgan clientlardan statistik ma'lumotlarni yig'moqda. Biroq, ma'lumotni faqat xom ma'lumotlar to'plami sifatida ko'rish mumkin. Statistikani o'qish qiyin va unchalik foydali emas. 
+
+Grafana Prometheus tomonidan to'plangan statistik ma'lumotlarni ko'rish uchun interfeysni taqdim etadi. Grafana-ni Prometheus bilan ishlaydigan bir xil serverga o'rnating va Prometheusni ma'lumotlar manbai(data source) sifatida qo'shing. Keyin ma'lumotlarni sharhlash uchun bir yoki bir nechta panelni o'rnating. Grafana-ni o'rnatish va sozlash uchun quyidagi amallarni bajaring.
+
+1. `apt` yordamida ba'zi kerakli yordamchi dasturlarni o'rnating.
+
+```bash
+sudo apt-get install -y apt-transport-https software-properties-common
+```
+2. Grafana GPG keyini import qiling.
+```bash
+sudo wget -q -O /usr/share/keyrings/grafana.key https://apt.grafana.com/gpg.key
+```
+3. Grafana "stable releases" repositoriyani qo'shing.
+
+```bash
+echo "deb [signed-by=/usr/share/keyrings/grafana.key] https://apt.grafana.com stable main" | sudo tee -a /etc/apt/sources.list.d/grafana.list
+```
+
+4. Repozitariyadagi paketlarni, jumladan, yangi Grafana paketini yangilang.
+
+```bash
+sudo apt-get update
+```
+
+5. Grafana-ning open-source versiyasini o'rnatish
+
+<Callout type="info" emoji="">
+Grafana’ning Enterprise relizini o‘rnatish uchun uning o‘rniga `sudo apt-get install grafana-enterprise` buyrug‘idan foydalaning.
+</Callout>
+
+```bash
+sudo apt-get install grafana
+```
+6. `systemctl` daemoni qayta yuklash(reload).
+
+```bash
+sudo systemctl daemon-reload
+```
+7. Grafana serverini yoqing(enable) va ishga tushiring(start). `systemctl enable`-dan foydalanish serverni tizim yuklanganda Grafana-ni ishga tushirish uchun sozlaydi.
+```bash
+sudo systemctl enable grafana-server.service
+sudo systemctl start grafana-server
+```
