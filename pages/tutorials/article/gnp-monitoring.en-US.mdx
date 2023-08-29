@@ -184,7 +184,7 @@ sudo systemctl enable prometheus
 sudo systemctl start prometheus
 sudo systemctl status prometheus
 ```
-7. Prometheus veb-interfeysi va asboblar paneliga `http://ip_address:9090` orqali kiring. `ip_address` ni monitoring serverining IP manzili bilan almashtiring. Prometheus standart konfiguratsiya faylidan foydalanganligi sababli, u hali ko'p ma'lumotlarni ko'rsatmaydi.
+7. Prometheus veb-interfeysi va dashboardga `http://ip_address:9090` orqali kiring. `ip_address` ni monitoring serverining IP manzili bilan almashtiring. Prometheus standart konfiguratsiya faylidan foydalanganligi sababli, u hali ko'p ma'lumotlarni ko'rsatmaydi.
 
 ![monitoring](/images/article/monitoring/2.png)
 
@@ -388,3 +388,26 @@ Grafana va Prometheusni integratsiya qilish uchun quyidagi amallarni bajaring:
 ![monitoring](/images/article/monitoring/13.png)
 
 ## Grafana Dashboardni import qiish 
+
+Boshqaruv paneli(dashboard) yanada samaraliroq va standartlashtirilgan tartib yordamida client nodining statistikasini ko'rsatadi. Shaxsiy boshqaruv panelini yaratish, albatta, mumkin. Biroq, Prometheus allaqachon Node Exporter statistikasini qo'llab-quvvatlash uchun dashboardni(dashboard) yaratgan. `Node Exporter Full` dashboardi client nodelaridan to'plangan qiymatlarning ko'pini aniq tasvirlaydi. Maxsus panelni yaratishdan ko'ra, oldindan tayyorlangan dashboardni import qilish ancha qulaydir.
+
+Node Exporter dashboardni import qilish uchun quyidagi amallarni bajaring:
+
+<Callout type="info" emoji="">
+Maxsus dashboardni yaratish uchun to'rtta kvadratga o'xshash dashboard tugmasini bosing. Keyin + `New Dashboard`ni tanlang. Qo'shimcha ma'lumot uchun [Building a Dashboard](https://grafana.com/docs/grafana/latest/getting-started/build-first-dashboard/) Grafana qo'llanmasiga murojaat qiling.
+</Callout>
+
+1. [Grafana Dashboard Library](https://grafana.com/grafana/dashboards/)ga tashrif buyuring. Qidiruv so'zi sifatida `Node exporter`ni kiriting.
+![monitoring](/images/article/monitoring/14.png)
+
+2. `Node Exporter Full`-ni tanlang.
+![monitoring](/images/article/monitoring/14.png)
+3. ID raqamini yozib qo'ying yoki `Copy ID to clipboard` tugmani ishlating. Ushbu dashbaordning identifikatori hozirda `1860`.
+![monitoring](/images/article/monitoring/16.png)
+4. Grafana boshqaruv paneliga qayting. To'rt kvadratdan iborat `Dashboard` ikonkasini tanlang va ` + Import`-ni tanlang.
+![monitoring](/images/article/monitoring/17.png)
+5. `Import via grafana.com` maydoniga oldingi bosqichdagi ID `1860` ni kiriting. Keyin `Load` tugmasini tanlang.
+![monitoring](/images/article/monitoring/18.png)
+6. Keyingi ekranda import ma'lumotlarini tasdiqlang. Data source sifatida `Prometheusn`i tanlang va `Import` tugmasini bosing.
+
+![monitoring](/images/article/monitoring/19.png)
