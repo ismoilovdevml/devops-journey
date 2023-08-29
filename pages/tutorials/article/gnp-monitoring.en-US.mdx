@@ -353,3 +353,38 @@ sudo systemctl daemon-reload
 sudo systemctl enable grafana-server.service
 sudo systemctl start grafana-server
 ```
+8. Grafana serverining statusini tekshiring va uning faol holatda ekanligiga ishonch hosil qiling.
+
+```bash
+sudo systemctl status grafana-server
+```
+
+## Grafana va Prometheusni integratsiya qilish
+
+Endi barcha tizim komponentlari o'rnatildi, lekin Grafana va Prometheus o'zaro ishlashi uchun sozlanmagan. Qolgan konfiguratsiya vazifalari, jumladan Prometheusni data source sifatida qoʻshish va dashboard panelini import qilish Grafana veb-interfeysi yordamida bajarilishi mumkin.
+
+Grafana va Prometheusni integratsiya qilish uchun quyidagi amallarni bajaring:
+
+1. Veb-brauzerdan foydalanib, monitoring serverining 3000 portiga kiring. Misol uchun, http://172.168.1.46:3000 kiriting, `172.168.1.46`-ni o'zingizning haqiqiy IP manzilingiz bilan almashtiring. Grafana kirish sahifasini ko'rsatadi. Foydalanuvchi(username) nomiga `admin` parolga esa `password` ni kiriting. Agar xavfsizroq parol so'ralsa, parolni xavfsizroq qiymatga o'zgartiring.
+
+
+![monitoring](/images/article/monitoring/6.png)
+
+2. Parolni muvaffaqiyatli o'zgartirgandan so'ng, Grafana `Grafana Dashboard`ni ko'rsatadi.
+![monitoring](/images/article/monitoring/7.png)
+
+3. Prometheusni `data source` sifatida qoʻshish uchun `Configuration` deb yozilgan tishli belgini bosing, soʻng `Data Sources`-ni tanlang.
+![monitoring](/images/article/monitoring/8.png)
+4. Keyingi ekranda `Add data source` tugmasini bosing.
+![monitoring](/images/article/monitoring/9.png)
+5. Data source sifatida Prometheusni tanlang.
+![monitoring](/images/article/monitoring/9.png)
+6. Local Prometheus manbasi uchun, ushbu qo'llanmada tasvirlanganidek, URL manzilini `http://localhost:9090` ga o'rnating. Boshqa sozlamalarning aksariyati standart qiymatlarda qolishi mumkin. Biroq, bu erda standart bo'lmagan `Timeout` qiymati qo'shilishi mumkin.
+![monitoring](/images/article/monitoring/11.png)
+7. Sozlamalardan qoniqsangiz, ekranning pastki qismidagi `Save & test` tugmasini bosing.
+![monitoring](/images/article/monitoring/12.png)
+
+8. Agar barcha sozlamalar to'g'ri bo'lsa, Grafana `Data source is working` xabarni ko'rsatadi.
+![monitoring](/images/article/monitoring/13.png)
+
+## Grafana Dashboardni import qiish 
