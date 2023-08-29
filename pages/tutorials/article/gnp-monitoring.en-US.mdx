@@ -387,7 +387,7 @@ Grafana va Prometheusni integratsiya qilish uchun quyidagi amallarni bajaring:
 8. Agar barcha sozlamalar to'g'ri bo'lsa, Grafana `Data source is working` xabarni ko'rsatadi.
 ![monitoring](/images/article/monitoring/13.png)
 
-## Grafana Dashboardni import qiish 
+## Grafana Dashboardni import qilish 
 
 Boshqaruv paneli(dashboard) yanada samaraliroq va standartlashtirilgan tartib yordamida client nodining statistikasini ko'rsatadi. Shaxsiy boshqaruv panelini yaratish, albatta, mumkin. Biroq, Prometheus allaqachon Node Exporter statistikasini qo'llab-quvvatlash uchun dashboardni(dashboard) yaratgan. `Node Exporter Full` dashboardi client nodelaridan to'plangan qiymatlarning ko'pini aniq tasvirlaydi. Maxsus panelni yaratishdan ko'ra, oldindan tayyorlangan dashboardni import qilish ancha qulaydir.
 
@@ -411,3 +411,18 @@ Maxsus dashboardni yaratish uchun to'rtta kvadratga o'xshash dashboard tugmasini
 6. Keyingi ekranda import ma'lumotlarini tasdiqlang. Data source sifatida `Prometheusn`i tanlang va `Import` tugmasini bosing.
 
 ![monitoring](/images/article/monitoring/19.png)
+
+7. `Node Exporter Full` dashbaordi darhol ishga tushadi. U client nodening performance metrikalari va holatini, jumladan Xotira, RAM va CPU tafsilotlarini ko'rsatadi. Ekranning yuqori qismidagi bir nechta ochiladigan menyular foydalanuvchilarga kuzatish uchun hostni va kuzatish uchun vaqt oralig'ini tanlash imkonini beradi.
+
+![monitoring](/images/article/monitoring/20.png)
+
+Quyidagi rasmda [Node Exporter Dashboard EN 20201010-StarsL.cn](https://grafana.com/grafana/dashboards/11074-node-exporter-for-prometheus-dashboard-en-v20201010/) dashboardni ko'p serverlarni kuzatish uchun.
+
+![monitoring](/images/article/monitoring/21.png)
+![monitoring](/images/article/monitoring/22.png)
+
+## Xulosa
+
+Prometheus - bu asosiy ko'rsatkichlar(metrics) bo'yicha client tizimlarini(kuzatmoqchi bo'lgan server) so'roq qiluvchi tizim monitoringi ilovasi. Har bir client node so'ralgan ma'lumotlarni yig'ish va ochish uchun exporterdan foydalanishi kerak. Prometheus Grafana vizualizatsiya vositasi bilan birgalikda foydalanilganda eng samarali hisoblanadi. Grafana metrikalarni Prometheusdan import qiladi va ularni intuitiv boshqaruv paneli strukturasi yordamida taqdim etadi.
+
+Komponentlarni birlashtirish uchun Prometheusni markaziy serverga yuklab oling va o'rnating va Prometheusni service sifatida sozlang. Ma'lumotlarni to'plash va clientlarni so'rash uchun Prometheusni sozlash uchun har bir clientga Prometheus `Node Exporter` dasturini o'rnating. Grafana-ni Prometheus bilan bitta serverga o'rnating va Prometheusni data source sifatida sozlang. Nihoyat, clientdan metrikalarni ko'rsatish uchun dashboardni import qiling. Prometheus haqida ko'proq ma'lumot olish uchun [Prometheus Overview and Documentation](https://prometheus.io/docs/introduction/overview/) qarang. Grafanani eng yaxshi [Introduction to Grafana](https://grafana.com/docs/grafana/latest/introduction/)-ni o'qish orqali tushunish mumkin.
