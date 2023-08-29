@@ -39,6 +39,12 @@ Grafana keng doiradagi dashboardni, jumladan Prometheus Node Exporter boshqaruv 
 
 Grafana ogohlantirishlar(alerts), annotationlar, dashboard variablelari, plaginlar va autentifikatsiyani qo'llab-quvvatlaydi. Shuningdek, u ma'lumotlarni yanada dekonstruksiya qilish uchun bir qator tahliliy vositalarni taqdim etadi. Grafana veb-interfeysiga xost-serverning `3000`-porti yordamida kirish mumkin. Eng yaxshi natijalarga erishish uchun Prometheus va Grafana-ni bitta serverda ishga tushiring. Qo'shimcha ma'lumot olish uchun Grafanaga [texnik hujjatlariga](https://grafana.com/docs/grafana/latest/introduction/) qarang.
 
+<Callout type="info" emoji="">
+Butun qo'llanma bo'yicha asosiy tushuncha
+
+Prometheus va Grafana ikkalasini bitta serverga o'rnating va sozlang. Node Exporterni esa kuzatmoqchi yani monitoring qilmqochi bo'lgan serverlaringizga o'rnatib chiqing. Grafanaga o'zingizga mos tayyor Dashboardni import qiling yoki o'zingiz yasab oling. `prometheus.yml` konfigratsiya fayliga Node Exporter o'rnatilgan serverlaringiz IP addresi va portini qo'shib qo'ying. Bu qo'llanmani oxirigachga o'qib chiqsangiz yaxshi tushunasiz ))
+</Callout>
+
 
 ### Talablar
 * Prometheus 4 GB RAM va 20 GB disk xotira talab qiladi va kamida ikkita CPU core bilan yaxshi ishlaydi.
@@ -297,6 +303,24 @@ sudo nano /etc/prometheus/prometheus.yml
     - targets: ["172.78.1.89:9100"]
 # bu yerda client server yani kuzatmoqchi bo'lgan serveringiz IP addresini yozasiz
 ```
+
+<Callout type="info" emoji="">
+Bitr nechta serverlarni monitoring qilish uchun `prometheus.yml` konfigrasiya fayli quyidagicha yoziladi.
+
+```bash
+- job_name: "node_exporter"
+    static_configs:
+      - targets: [
+        "192.168.1.134:9100",
+        "192.168.1.122:9100",
+        "192.168.1.116:9100",
+        "192.168.1.145:9100",
+      ]
+```
+Bu yerda 4 ta serverga node_exporter o'rnatilgan va biz bularni Prometheus o'rnatgan serverimizdagi `/etc/prometheus/prometheus.yml` konfigratsiya faylida biz kuzatmoqchi bo'lgan severlarimizni ro'yxatini qo'shib qo'yyapmiz. 
+</Callout>
+
+
 3. Prometheusni yangilash uchun prometheus serviceni qayta ishga tushiring.
 
 ```bash
@@ -361,7 +385,7 @@ sudo systemctl status grafana-server
 
 ## Grafana va Prometheusni integratsiya qilish
 
-Endi barcha tizim komponentlari o'rnatildi, lekin Grafana va Prometheus o'zaro ishlashi uchun sozlanmagan. Qolgan konfiguratsiya vazifalari, jumladan Prometheusni data source sifatida qoʻshish va dashboard panelini import qilish Grafana veb-interfeysi yordamida bajarilishi mumkin.
+Endi barcha tizim komponentlari o'rnatildi, lekin Grafana va Prometheuprometheus.ymls o'zaro ishlashi uchun sozlanmagan. Qolgan konfiguratsiya vazifalari, jumladan Prometheusni data source sifatida qoʻshish va dashboard panelini import qilish Grafana veb-interfeysi yordamida bajarilishi mumkin.
 
 Grafana va Prometheusni integratsiya qilish uchun quyidagi amallarni bajaring:
 
@@ -371,7 +395,7 @@ Grafana va Prometheusni integratsiya qilish uchun quyidagi amallarni bajaring:
 ![monitoring](/images/article/monitoring/6.png)
 
 2. Parolni muvaffaqiyatli o'zgartirgandan so'ng, Grafana `Grafana Dashboard`ni ko'rsatadi.
-![monitoring](/images/article/monitoring/7.png)
+![monitoring](/images/article/monitoring/7.png)prometheus.yml
 
 3. Prometheusni `data source` sifatida qoʻshish uchun `Configuration` deb yozilgan tishli belgini bosing, soʻng `Data Sources`-ni tanlang.
 ![monitoring](/images/article/monitoring/8.png)
@@ -388,7 +412,7 @@ Grafana va Prometheusni integratsiya qilish uchun quyidagi amallarni bajaring:
 ![monitoring](/images/article/monitoring/13.png)
 
 ## Grafana Dashboardni import qilish 
-
+prometheus.yml
 Boshqaruv paneli(dashboard) yanada samaraliroq va standartlashtirilgan tartib yordamida client nodining statistikasini ko'rsatadi. Shaxsiy boshqaruv panelini yaratish, albatta, mumkin. Biroq, Prometheus allaqachon Node Exporter statistikasini qo'llab-quvvatlash uchun dashboardni(dashboard) yaratgan. `Node Exporter Full` dashboardi client nodelaridan to'plangan qiymatlarning ko'pini aniq tasvirlaydi. Maxsus panelni yaratishdan ko'ra, oldindan tayyorlangan dashboardni import qilish ancha qulaydir.
 
 Node Exporter dashboardni import qilish uchun quyidagi amallarni bajaring:
