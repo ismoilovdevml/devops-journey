@@ -265,3 +265,42 @@ WantedBy=multi-user.target
 ```bash
 sudo systemctl enable node_exporter
 ```
+10. `systemctl` demonini reload qiling, Node Exporter dasturini ishga tushiring va uning statusini tekshiring. Xizmat faol bo'lishi kerak.
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl start node_exporter
+sudo systemctl status node_exporter
+```
+
+11. Client nodedagi `9100` portiga kirish uchun veb-brauzerdan foydalaning, masalan, http://ip_addres:9100. `Node Exporter` deb nomlangan sahifa `Metrics`ni o'qish havolasi bilan birga ko'rsatiladi. Metricalar havolasini bosing va statistik ma'lumotlar yig'ilayotganini tasdiqlang. Turli statistik ma'lumotlarning batafsil tushun tirishlari uchun [Node Exporter texnik hujjatlariga](https://prometheus.io/docs/guides/node-exporter/) qarang.
+
+![monitoring](/images/article/monitoring/4.png)
+
+## Client Nodelarini kuzatish uchun Prometheusni sozlash.
+
+Client Nodelari endi monitoringga tayyor. Clientlarni `prometheus.yml` ga qo'shish uchun quyidagi amallarni bajaring:
+
+1. Prometheus ishlaydigan monitoring serverida tahrirlash uchun `prometheus.yml` ni oching.
+
+```bash
+sudo nano /etc/prometheus/prometheus.yml
+```
+
+2. Joblar ro'yxatini o'z ichiga olgan `scrape_configs` bo'limini toping. Unda hozirda prometheus nomli bitta job ro‘yxati keltirilgan. Bu job `9090`-portdagi local Prometheus taskini nazorat qiladi. Prometheus taski ostiga `remote_collector` `job_name`ga ega ikkinchi jobni qo'shing. Quyidagi ma'lumotlarni kiriting.
+
+```bash
+...
+- job_name: "remote_collector"
+  scrape_interval: 10s 
+  static_configs:
+    - targets: ["172.78.1.89:9100"]
+# bu yerda client server yani kuzatmoqchi bo'lgan serveringiz IP addresini yozasiz
+```
+3. Prometheusni yangilash uchun prometheus serviceni qayta ishga tushiring.
+
+```bash
+sudo systemctl restart prometheus
+```
+
+4. Veb-brauzerdan foydalanib, monitoring serveridagi `9090` portdagi Prometheus veb-portaliga qayta kiring. `Status` va keyin `Targets`ni tanlang. remote_collector job uchun ikkinchi havola ko'rsatiladi, bu clientning 9100 portiga olib keladi. Statistikani ko'rib chiqish uchun havolani bosing.
