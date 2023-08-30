@@ -1,0 +1,7 @@
+import { Callout } from "nextra-theme-docs";
+
+# Kubernetesda minkubedan foydalanib Wordpress va MySQL ko'tarish
+
+Ushbu qo'llanma sizga Minikube yordamida WordPress sayti va MySQL ma'lumotlar bazasini qanday deploy qilishni ko'rsatadi. Ikkala dastur ham ma'lumotlarni saqlash uchun `PersistentVolumes` va `PersistentVolumeClaims`-dan foydalanadi.
+
+[PersistentVolume(PV)](https://kubernetes.io/docs/concepts/storage/persistent-volumes/) administrator tomonidan qo‘lda tayyorlangan yoki Kubernetes tomonidan [StorageClass](https://kubernetes.io/docs/concepts/storage/storage-classes) yordamida dinamik ravishda ta’minlangan clusterdagi storage qismidir. [PersistentVolumeClaim (PVC)](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims) foydalanuvchi tomonidan PV tomonidan bajarilishi mumkin bo'lgan saqlash so'rovidir. PersistentVolumes va PersistentVolumeClaims Pod life sikllaridan mustaqil bo'lib, podlarni qayta ishga tushirish(restart), qayta rejalashtirish(rescheduling) va hatto o'chirish orqali ma'lumotlarni saqlaydi.

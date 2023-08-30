@@ -1,9 +1,9 @@
 {
-  "bridge-lpt-to-arbitrum": {
-    "title": "Jarayonda",
+  "minkube-wordpress": {
+    "title": "Kubernetesda Wordpress deploy qilish",
     "icon": "▶️",
-    "description": "Ishlar olib borilmoqda",
-    "href": "/guides/k8s/bridge-lpt-to-arbitrum"
+    "description": "Minkubedan foydalanib wordpress ko'tarish",
+    "href": "/guides/k8s/minkube-wordpress"
   },
   "migrate-stake-to-arbitrum": {
     "title": "Jarayonda",
