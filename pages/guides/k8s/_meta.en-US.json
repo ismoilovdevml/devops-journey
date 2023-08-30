@@ -1,14 +1,14 @@
 {
+  "k8s-kirish": {
+    "title": "Kubernetesga Kirish",
+    "icon": "▶️",
+    "description": "Kubernetesga ilk qadamlar",
+    "href": "/guides/k8s-kirish"
+  },
   "minkube-wordpress": {
     "title": "Kubernetesda Wordpress deploy qilish",
     "icon": "▶️",
     "description": "Minkubedan foydalanib wordpress ko'tarish",
     "href": "/guides/k8s/minkube-wordpress"
-  },
-  "migrate-stake-to-arbitrum": {
-    "title": "Jarayonda",
-    "icon": "▶️",
-    "description": "Ishlar olib borilmoqda",
-    "href": "/guides/k8s/migrate-stake-to-arbitrum"
   }
 }
