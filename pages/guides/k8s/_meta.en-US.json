@@ -3,7 +3,7 @@
     "title": "Kubernetesga Kirish",
     "icon": "▶️",
     "description": "Kubernetesga ilk qadamlar",
-    "href": "/guides/k8s-kirish"
+    "href": "/guides/k8s/k8s-kirish"
   },
   "minkube-wordpress": {
     "title": "Kubernetesda Wordpress deploy qilish",
