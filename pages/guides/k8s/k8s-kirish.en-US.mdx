@@ -26,6 +26,26 @@ Har bir VM virtuallashtirilgan hardware ustidagi barcha komponentlarni, shu juml
 
 Konteynerlar mashhur bo'ldi, chunki ular qo'shimcha imtiyozlar beradi, masalan:
 
-* Agile applicationlarni yaratish va deployment: VM imagedan foydalanishga nisbatan konteyner imageni yaratish qulayligi va samaradorligi ortdi.
-* Continuous development, integration, va deployment: Ishonchli va tez-tez konteyner imageni yaratish va tez va samarali orqaga qaytarish (imagening o'zgarmasligi tufayli) bilan deploy qilishni ta'minlaydi.
-* Dev va Ops muammolarini ajratish: deployment vaqtida emas, balki build/release vaqtida applicationlar konteyneri imagelarini yarating va shu bilan applicationlarni infratuzilmadan ajrating.
+* `Izolyatsiya`: Konteynerlar applicationlarning izolyatsiya qilingan muhitda ishlashini ta'minlaydi. Bu ularning o'z fayl tizimi, tarmoq va izolyatsiya qilingan  process spacega ega ekanligini anglatadi. Ushbu izolyatsiya, konteyner qayerda ishlayotganidan qat'i nazar, environmentning izchil bo'lishini ta'minlaydi.
+
+* `Environmentlardagi izchillik`: Konteynerlar yordamida ishlab chiquvchilar dasturni ishlab chiqish, sinovdan o'tkazish va ishlab chiqarishda bir xil tarzda ishlashini ta'minlashi mumkin. Klassik "bu mening mashinamda ishlaydi" muammosi deyarli yo'q qilinadi.
+
+* `Yengillik(Lightweight)`: Konteynerlar o'z operatsion tizimiga muhtoj emas, balki host tizimining OS kernelini baham(share qiladi) ko'radi. Bu ularni an'anaviy virtual mashinalarga qaraganda yengilroq va tezroq yuklash imkonini beradi.
+
+* `Resurslardan samarali foydalanish`: Konteynerlar tizim resurslaridan yaxshiroq foydalanish imkonini beradi, chunki ular VM larga qaraganda kichikroq maydonga ega. Bir vaqtning o'zida bir nechta konteynerlar og'ir yuksiz ishlashi mumkin.
+
+* `Mikroservislar`: Konteynerlar mikroservislar arxitekturasi uchun juda mos keladi. Har bir mikroservis konteynerga joylashtirilishi mumkin, bu esa uni mustaqil ravishda ishga tushirish va kengaytirish imkonini beradi.
+
+* `Portativlik`: `Docker` yoki `containerd` kabi konteyner runtimeni qo'llab-quvvatlaydigan har qanday muhitda konteynerlarni ishga tushirishingiz mumkin. Bu ishlab chiquvchining local mashinasida, data centerdagi jismoniy mashinada yoki public cloudda boʻlishi mumkin.
+
+* `Masshtablilik va Orkestratsiya(Scalability and Orchestration)`: Kubernetes kabi orkestrlash vositalari yordamida konteynerlar talabga qarab avtomatik ravishda kattalashishi yoki kichraytirilishi mumkin. Ular, shuningdek, osongina boshqarilishi, yangilanishi yoki orqaga qaytarilishi mumkin.
+
+* `DevOps va Continuous Integration/Continuous Deployment (CI/CD)`: Konteynerlar continuous integration va continuous deploymentni rag'batlantirish orqali DevOps tashabbuslarini qo'llab-quvvatlaydi. Buning sababi shundaki, konteynerlar barqaror muhitni ta'minlash va tez, takrorlanadigan tuzilmalarni qo'llab-quvvatlaydi.
+
+* `Qatlamli fayl tizimi(Layered File System)`: Masalan, Docker layerlarga ruxsat beruvchi union file systemdan foydalanadi. Bu shuni anglatadiki, konteynerlar bo'ylab umumiy fayllar almashish mumkin, bu saqlash maydonini(storage footprint) kamaytiradi va imageni tezroq yuklab oladi.
+
+* `Ekotizim va toollar`: Konteyner texnologiyasining yuksalishi konteynerlarni boshqarish, monitoring, xavfsizlik va orkestratsiya atrofida aylanadigan toollar, platformalar va xizmatlarning boy ekotizimiga olib keldi.
+
+* `Rapid Deployment`: Konteynerlarni tezda ishga tushirish, to'xtatish yoki ko'paytirish mumkin, chunki ularda to'liq virtual mashinalar yuki yo'q.
+
+* `Xarajatlarni tejash`: Konteynerlar resurslardan samarali foydalanish tufayli xarajatlarni tejashga olib kelishi mumkin, bu an'anaviy virtualizatsiyaga qaraganda ko'proq applicationlarning bir xil mashinada ishlashiga imkon beradi.quril
