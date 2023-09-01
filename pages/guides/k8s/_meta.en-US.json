@@ -10,5 +10,11 @@
     "icon": "▶️",
     "description": "Minkubedan foydalanib wordpress ko'tarish",
     "href": "/guides/k8s/minkube-wordpress"
+  },
+  "minkube": {
+    "title": "Minkube",
+    "icon": "▶️",
+    "description": "Minkube o'rnatish va sozlash",
+    "href": "/guides/k8s/minkube"
   }
 }
