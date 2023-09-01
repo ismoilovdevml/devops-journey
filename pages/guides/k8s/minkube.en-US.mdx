@@ -2,3 +2,60 @@ import { Callout } from "nextra-theme-docs";
 
 # Minikube
 
+Minikube - bu local mashinangizda VM yaratadigan va faqat bitta nodeni o'z ichiga olgan oddiy clusterni o'rnatadigan yengil vaznli(lightweight) Kubernetes ilovasi. U Kubernetes bilan tajriba oʻtkazmoqchi boʻlgan yoki u bilan har kuni local kompyuterida ishlamoqchi boʻlgan dasturchilar uchun moʻljallangan. Minikube DNS, NodePorts, ConfigMaps va Secrets kabi Kubernetes xususiyatlarini qo'llab-quvvatlaydi, bu esa Kubernetesni local muhitda sinab ko'rish uchun mos keladi.
+
+![k8s](/images/tutorials/k8s/minkube/1.png)
+
+## Minikubeni o'rnatish
+
+`minikube` local Kubernetes bo'lib, Kubernetes uchun o'rganish va rivojlantirishni osonlashtirishga qaratilgan.
+
+Sizga kerak bo'lgan yagona narsa Docker (yoki shunga o'xshash) konteyneri yoki Virtual Machine environment va Kubernetes bitta buyruq masofasida: `minikube start`
+[Dockerni linux serverlarga o'rnatish](https://devops-journey.uz/guides/konteyner/docker-ornatish) uchun qo'llanmamizdan foydalashingiz mumkin.
+
+<Callout type="info" emoji="">
+##### Sizga kerak bo'ladi
+
+* 2 yoki undan ortiq CPU
+* 2 GB bo'sh xotira
+* 20 GB bo'sh disk maydoni
+* Internetga ulanish
+Container yoki virtual machine manager, masalan: Docker, QEMU, Hyperkit, Hyper-V, KVM, Parallels, Podman, VirtualBox, yoki VMware Fusion/Workstation
+</Callout>
+
+### Linuxga o'rnatish
+
+Binary downloaddan foydalanib, x86-64 Linux-ga eng so'nggi minikube barqaror(stable) versiyasini o'rnatish uchun quyidagi buyruqdan foydalaning.
+
+```bash
+curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+sudo install minikube-linux-amd64 /usr/local/bin/minikube
+```
+### macOSga o'rnatish
+
+Minikube `stable` versiyasini `x86-64` `macOS`-ga `binary download` yordamida o'rnatish uchun quyidagi buyruqdan foydalaning.
+
+```bash
+curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-darwin-amd64
+sudo install minikube-darwin-amd64 /usr/local/bin/minikube
+```
+
+`ARM64` uchun `stable`versiyani `binary download` yordamida o'rnatish.
+
+```bash
+curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-darwin-arm64
+sudo install minikube-darwin-arm64 /usr/local/bin/minikube
+```
+
+`Homebrew` orqali o'rnatish
+
+```bash
+brew install minikube
+```
+Brew orqali o'rnatilgandan keyin qaysi minikube ishlamay qolsa, eski minikube linklarini olib tashlashingiz va yangi o'rnatilgan ikkilik faylni ulashingiz kerak bo'lishi mumkin:
+
+```bash
+brew unlink minikube
+brew link minikube
+```
+
