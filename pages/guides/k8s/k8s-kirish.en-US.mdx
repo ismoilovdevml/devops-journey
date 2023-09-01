@@ -64,3 +64,16 @@ Kubernetes sizga quyidagilarni taqdim etadi:
 * `Automatic bin packing` Siz Kubernetes-ga konteynerlashtirilgan vazifalarni bajarish uchun foydalanishi mumkin bo'lgan nodelar klasterini taqdim etasiz. Siz Kubernetesga har bir konteynerga qancha protsessor va xotira (RAM) kerakligini aytasiz. Kubernetes resurslaringizdan unumli foydalanish uchun konteynerlarni nodelaringizga deploy qilishi mumkin.
 * `Self-healing`(o'z o'zini davolash) Kubernetes self-healing xususiyatiga ega bo'lib, u fail(no so'glom) konteynerlarni avtomatik ravishda aniqlaydi va almashtiradi, ishlamay qolgan konteynerlarni qayta ishga tushiradi va belgilangan probelar asosida ularning sog'lig'ini doimiy ravishda tekshirib, faqat sog'lom konteynerlar trafikni olishini ta'minlaydi. Bu qo'l aralashuvisiz dastur ishonchliligi va mavjudligini ta'minlaydi.
 * `Secretlar va configuration management` Kubernetes parollar, OAuth tokenlari va SSH kalitlari kabi nozik maʼlumotlarni saqlash va boshqarish imkonini beradi. Konteyner imagelarini qayta tiklamasdan va stek konfiguratsiyasidagi secretlarni oshkor qilmasdan secretlarni va dastur konfiguratsiyasini deploy qilishingiz va yangilashingiz mumkin.
+
+
+## Kubernetes nima uchun kerak emas
+
+Kubernetes an'anaviy, har tomonlama qamrab oluvchi PaaS (Platform as a Service) tizimi emas. Kubernetes hardware darajasida emas, balki konteyner darajasida ishlaganligi sababli, u PaaS takliflari uchun umumiy bo'lgan ba'zi umumiy qo'llaniladigan xususiyatlarni, masalan, deployment, masshtablash(scaling), load balancing(og'irlikni muvozanatlash) va foydalanuvchilarga logga yozish, monitoring qilish va ogohlantirish yechimlarini(alerting solution) birlashtirish imkonini beradi. Biroq, Kubernetes monolit emas va bu standart yechimlar ixtiyoriy va ulanishi mumkin. Kubernetes ishlab chiquvchilar platformalarini yaratish uchun qurilish bloklarini(building block) taqdim etadi, ammo muhim bo'lgan joylarda foydalanuvchi tanlovi va moslashuvchanligini saqlaydi.
+
+Kubernetes:
+
+* `Traditional PaaS (Platform as a Service)`: Kubernetes hardware yoki virtual mashina darajasida emas, balki konteyner darajasida ishlaydi, lekin u PaaSga xos bo'lgan ba'zi amaliy darajadagi xizmatlarni taqdim etmaydi, masalan, middleware (masalan, application serverlari), ma'lumotlar bazalari(database), keshlash tizimlari(caching systems) yoki ishlab developer frameworklar.
+
+* Qo'llab-quvvatlanadigan application turlarini cheklamaydi. Kubernetes juda xilma-xil workloadlarini, jumladan, stateless, stateful ma'lumotlari va data-processing(ma'lumotlarni qayta ishlash) workloadlarini qo'llab-quvvatlashga qaratilgan. Agar dastur konteynerda ishlashi mumkin bo'lsa, u Kubernetesda ajoyib ishlashi kerak.
+* Manba kodini(source code) ishlatmaydi va applicationgizni build qilmaydi. Continuous Integration, Delivery, va Deployment (CI/CD) workflowlari tashkilot madaniyati va afzalliklari hamda texnik talablar bilan belgilanadi.
+* Middleware (masalan, message buses) kabi application-leveldagi servicelarni taqdim etmaydi. Built-in servicelar sifatida data-processing frameworklari (masalan, Spark), ma'lumotlar bazalari (masalan, MySQL), keshlar va cluster storage systemlari (masalan, Ceph). Bunday komponentlar Kubernetes-da ishlashi mumkin va/yoki Open Service Broker kabi portativ mexanizmlar orqali Kubernetes-da ishlaydigan ilovalar orqali kirish mumkin.
