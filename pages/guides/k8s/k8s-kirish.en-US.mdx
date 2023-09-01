@@ -48,4 +48,19 @@ Konteynerlar mashhur bo'ldi, chunki ular qo'shimcha imtiyozlar beradi, masalan:
 
 * `Rapid Deployment`: Konteynerlarni tezda ishga tushirish, to'xtatish yoki ko'paytirish mumkin, chunki ularda to'liq virtual mashinalar yuki yo'q.
 
-* `Xarajatlarni tejash`: Konteynerlar resurslardan samarali foydalanish tufayli xarajatlarni tejashga olib kelishi mumkin, bu an'anaviy virtualizatsiyaga qaraganda ko'proq applicationlarning bir xil mashinada ishlashiga imkon beradi.quril
+* `Xarajatlarni tejash`: Konteynerlar resurslardan samarali foydalanish tufayli xarajatlarni tejashga olib kelishi mumkin, bu an'anaviy virtualizatsiyaga qaraganda ko'proq applicationlarning bir xil mashinada ishlashiga imkon beradi.
+
+## Nima uchun sizga Kubernetes kerak va u nima qila oladi
+
+Konteynerlar applicationlaringizni birlashtirish va ishga tushirishning yaxshi usuli hisoblanadi. Ishlab chiqarish muhitida siz applicationlarni ishga tushiradigan konteynerlarni boshqarishingiz va uzilishlar bo'lmasligiga ishonch hosil qilishingiz kerak. Misol uchun, agar konteyner ishdan chiqsa, boshqa konteyner ishga tushishi kerak. Agar bu xatti-harakat tizim tomonidan boshqarilsa, osonroq bo'lmaydimi?
+
+Shunday qilib, Kubernetes yordamga keladi! Kubernetes sizga taqsimlangan tizimlarni(distributed system) barqaror ishlash uchun asos yaratadi. U applicationgiz uchun masshtabni o'zgartirish va uzulishlar haqida g'amxo'rlik qiladi, deployment patternlarini taqdim etadi va boshqalar. Masalan: Kubernetes tizimingiz uchun konteynerlarni deploy qilishni osongina boshqarishi mumkin.
+
+Kubernetes sizga quyidagilarni taqdim etadi:
+
+* `Service discovery va load balancing` Kubernetes DNS nomi yoki o'z IP manzilidan foydalangan holda konteynerni expose qilishi mumkin. Agar konteynerga trafik yuqori bo'lsa, Kubernetes load balance va distribute barqaror bo'lishi uchun tarmoq trafigini taqsimlashi mumkin.
+* `Storage orchestration` Kubernetes sizga o'zingiz tanlagan storage systemini, masalan,  local storagelar, public cloud provayderlari va boshqalarni avtomatik ravishda o'rnatish imkonini beradi.
+* `Automated rollouts va rollbacks(Avtomatlashtirilgan ishga tushirish va orqaga qaytarish)` Kubernetes yordamida deploy qilingan konteynerlaringiz uchun kerakli holatni tasvirlashingiz mumkin va u actual stateni boshqariladigan tezlikda kerakli statega o'zgartirishi mumkin. Masalan, siz Kubernetes-ni deploy qilishingiz uchun yangi konteynerlar yaratish, mavjud konteynerlarni olib tashlash va ularning barcha resurslarini yangi konteynerga qabul qilish uchun avtomatlashtirishingiz mumkin.
+* `Automatic bin packing` Siz Kubernetes-ga konteynerlashtirilgan vazifalarni bajarish uchun foydalanishi mumkin bo'lgan nodelar klasterini taqdim etasiz. Siz Kubernetesga har bir konteynerga qancha protsessor va xotira (RAM) kerakligini aytasiz. Kubernetes resurslaringizdan unumli foydalanish uchun konteynerlarni nodelaringizga deploy qilishi mumkin.
+* `Self-healing`(o'z o'zini davolash) Kubernetes self-healing xususiyatiga ega bo'lib, u fail(no so'glom) konteynerlarni avtomatik ravishda aniqlaydi va almashtiradi, ishlamay qolgan konteynerlarni qayta ishga tushiradi va belgilangan probelar asosida ularning sog'lig'ini doimiy ravishda tekshirib, faqat sog'lom konteynerlar trafikni olishini ta'minlaydi. Bu qo'l aralashuvisiz dastur ishonchliligi va mavjudligini ta'minlaydi.
+* `Secretlar va configuration management` Kubernetes parollar, OAuth tokenlari va SSH kalitlari kabi nozik maʼlumotlarni saqlash va boshqarish imkonini beradi. Konteyner imagelarini qayta tiklamasdan va stek konfiguratsiyasidagi secretlarni oshkor qilmasdan secretlarni va dastur konfiguratsiyasini deploy qilishingiz va yangilashingiz mumkin.
