@@ -1,5 +1,5 @@
 import { Callout } from "nextra-theme-docs";
-import { Steps } from 'nextra/components'
+import { Callout, Steps } from 'nextra/components'
 
 # Minikube
 
@@ -64,3 +64,38 @@ brew unlink minikube
 brew link minikube
 ```
 </Steps>
+
+### Windowsga o'rnatish
+
+minikube `stabele` versiyasini `x86-64` Windows-ga .`exe` yuklab olish orqali o'rnatish uchun:
+
+1. Eng [so'nggi versiya](https://storage.googleapis.com/minikube/releases/latest/minikube-installer.exe) uchun installerni yuklab oling va ishga tushiring.
+Yoki PowerShell dan foydalansangiz, ushbu buyruqdan foydalaning:
+
+```bash
+New-Item -Path 'c:\' -Name 'minikube' -ItemType Directory -Force
+Invoke-WebRequest -OutFile 'c:\minikube\minikube.exe' -Uri 'https://github.com/kubernetes/minikube/releases/latest/download/minikube-windows-amd64.exe' -UseBasicParsing
+```
+2. `minikube.exe` binary faylini PATH-ga qo'shing.
+PowerShell-ni administrator sifatida ishga tushiring.
+
+```powershell
+$oldPath = [Environment]::GetEnvironmentVariable('Path', [EnvironmentVariableTarget]::Machine)
+if ($oldPath.Split(';') -inotcontains 'C:\minikube'){
+  [Environment]::SetEnvironmentVariable('Path', $('{0};C:\minikube' -f $oldPath), [EnvironmentVariableTarget]::Machine)
+}
+```
+
+##### Windows Package Manager orqali o'rnatish
+
+Agar [Windows Package Manager](https://docs.microsoft.com/en-us/windows/package-manager/) o'rnatilgan bo'lsa, minikube o'rnatish uchun quyidagi buyruqdan foydalaning:
+
+```bash
+winget install minikube
+```
+##### Chocolatey orqali o'rnatish
+[Chocolatey Package Manager](https://chocolatey.org/) o'rnatilgan bo'lsa, quyidagi buyruqdan foydalaning:
+
+```bash
+choco install minikube
+```
