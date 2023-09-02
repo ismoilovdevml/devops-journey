@@ -1,6 +1,5 @@
 import { Callout } from "nextra-theme-docs";
 import { Tabs } from 'nextra/components'
-import { Steps } from 'nextra/components'
 
 # Minikube
 
@@ -62,14 +61,14 @@ brew link minikube
 ```
 
 <Tabs items={['x86-64', 'ARM64']}>
-  <Tabs.Tab>
+  <Tabs.Tab>**x86-64**
   Minikube `stable` versiyasini `x86-64` `macOS`-ga `binary download` yordamida o'rnatish uchun quyidagi buyruqdan foydalaning.
   ```bash
 curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-darwin-amd64
 sudo install minikube-darwin-amd64 /usr/local/bin/minikube
 ```
   </Tab>
-  <Tabs.Tab>
+  <Tabs.Tab>**ARM64**
   `ARM64` uchun `stable`versiyani `binary download` yordamida o'rnatish.
 ```bash
 curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-darwin-arm64
