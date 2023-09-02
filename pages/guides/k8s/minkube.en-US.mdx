@@ -1,5 +1,5 @@
 import { Callout } from "nextra-theme-docs";
-import { Tabs } from 'nextra/components'
+import { Steps } from 'nextra/components'
 
 # Minikube
 
@@ -24,6 +24,7 @@ Sizga kerak bo'lgan yagona narsa Docker (yoki shunga o'xshash) konteyneri yoki V
 Container yoki virtual machine manager, masalan: Docker, QEMU, Hyperkit, Hyper-V, KVM, Parallels, Podman, VirtualBox, yoki VMware Fusion/Workstation
 </Callout>
 
+<Steps>
 ### Linuxga o'rnatish
 
 Binary downloaddan foydalanib, x86-64 Linux-ga eng so'nggi minikube barqaror(stable) versiyasini o'rnatish uchun quyidagi buyruqdan foydalaning.
@@ -32,23 +33,26 @@ Binary downloaddan foydalanib, x86-64 Linux-ga eng so'nggi minikube barqaror(sta
 curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
 sudo install minikube-linux-amd64 /usr/local/bin/minikube
 ```
+</Steps>
+
+<Steps>
 ### macOSga o'rnatish
 
-Minikube `stable` versiyasini `x86-64` `macOS`-ga `binary download` yordamida o'rnatish uchun quyidagi buyruqdan foydalaning.
+##### Minikube `stable` versiyasini `x86-64` `macOS`-ga `binary download` yordamida o'rnatish uchun quyidagi buyruqdan foydalaning.
 
 ```bash
 curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-darwin-amd64
 sudo install minikube-darwin-amd64 /usr/local/bin/minikube
 ```
 
-`ARM64` uchun `stable`versiyani `binary download` yordamida o'rnatish.
+##### `ARM64` uchun `stable`versiyani `binary download` yordamida o'rnatish.
 
 ```bash
 curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-darwin-arm64
 sudo install minikube-darwin-arm64 /usr/local/bin/minikube
 ```
 
-`Homebrew` orqali o'rnatish
+##### `Homebrew` orqali o'rnatish
 
 ```bash
 brew install minikube
@@ -59,20 +63,4 @@ Brew orqali o'rnatilgandan keyin qaysi minikube ishlamay qolsa, eski minikube li
 brew unlink minikube
 brew link minikube
 ```
-
-<Tabs items={['x86-64', 'ARM64']}>
-  <Tabs.Tab>**x86-64**
-  Minikube `stable` versiyasini `x86-64` `macOS`-ga `binary download` yordamida o'rnatish uchun quyidagi buyruqdan foydalaning.
-  ```bash
-curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-darwin-amd64
-sudo install minikube-darwin-amd64 /usr/local/bin/minikube
-```
-  </Tab>
-  <Tabs.Tab>**ARM64**
-  `ARM64` uchun `stable`versiyani `binary download` yordamida o'rnatish.
-```bash
-curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-darwin-arm64
-sudo install minikube-darwin-arm64 /usr/local/bin/minikube
-```
-  </Tab>
-</Tabs>
+</Steps>
