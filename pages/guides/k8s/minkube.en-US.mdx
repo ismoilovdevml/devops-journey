@@ -1,4 +1,4 @@
-import { Callout, Steps } from 'nextra/components'
+import { Callout } from "nextra-theme-docs";
 
 # Minikube
 
@@ -6,7 +6,7 @@ Minikube - bu local mashinangizda VM yaratadigan va faqat bitta nodeni o'z ichig
 
 ![k8s](/images/tutorials/k8s/minkube/1.png)
 
-## Minikubeni o'rnatish
+## 1. Minikubeni o'rnatish
 
 `minikube` local Kubernetes bo'lib, Kubernetes uchun o'rganish va rivojlantirishni osonlashtirishga qaratilgan.
 
@@ -23,7 +23,7 @@ Sizga kerak bo'lgan yagona narsa Docker (yoki shunga o'xshash) konteyneri yoki V
 Container yoki virtual machine manager, masalan: Docker, QEMU, Hyperkit, Hyper-V, KVM, Parallels, Podman, VirtualBox, yoki VMware Fusion/Workstation
 </Callout>
 
-<Steps>
+
 
 ### Linuxga o'rnatish
 
@@ -101,4 +101,39 @@ winget install minikube
 ```bash
 choco install minikube
 ```
-</Steps>
+
+## 2. Clustergizni boshlang
+
+Administrator ruxsatiga ega terminaldan (lekin root sifatida tizimga kirmagan) ishga tushiring:
+
+```bash
+minikube start
+```
+Agar minikube ishga tushmasa, mos keladigan konteyner yoki virtual mashina boshqaruvchisini sozlashda yordam olish uchun [drayverlar sahifasiga](https://minikube.sigs.k8s.io/docs/drivers/) qarang.
+
+
+## 3. Clustergiz bilan o'zaro aloqada bo'ling
+
+Agar sizda `kubectl` o'rnatilgan bo'lsa, endi siz undan yangi clusteringizga kirish uchun foydalanishingiz mumkin:
+
+```bash
+kubectl get po -A
+```
+Shu bilan bir qatorda, minikube kubectl ning tegishli versiyasini yuklab olishi mumkin va siz undan shunday foydalanishingiz mumkin:
+
+```bash
+minikube kubectl -- get po -A
+```
+
+Bundan tashqari, shell konfiguratsiyasiga quyidagilarni qo'shish orqali ishingizni osonlashtirishingiz mumkin:
+
+```bash
+alias kubectl="minikube kubectl --"
+```
+Dastlab, storage provayderi kabi ba'zi servicelar hali ishlayotgan holatda bo'lmasligi mumkin. Bu clusterni yaratishda odatiy holat bo'lib, bir zumda o'zini o'zi hal qiladi. Cluster holati(state) haqida qoʻshimcha maʼlumot olish uchun minikube yangi muhitga osongina moslashish imkonini beruvchi Kubernetes boshqaruv panelini birlashtiradi:
+
+```bash
+minikube dashboard
+```
+
+![k8s](/images/tutorials/k8s/minkube/2.jpg)
