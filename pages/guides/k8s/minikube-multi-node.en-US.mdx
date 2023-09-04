@@ -19,7 +19,7 @@ Siz tanlagan drayverda 2 ta nodeli clusterni start berish:
 ```bash
 minikube start --nodes 2 -p multinode-demo
 ```
-```txt
+```txt  filename="natija"
 😄  [multinode-demo] minikube v1.18.1 on Opensuse-Tumbleweed
 ✨  Automatically selected the docker driver
 👍  Starting control plane node multinode-demo in cluster multinode-demo
@@ -47,7 +47,8 @@ Nodelar listini(ro'yxatini) ko'ring.
 kubectl get nodes
 ```
 
-```txtNAME                 STATUS   ROLES                  AGE   VERSION
+```txt  filename="natija"
+NAME                 STATUS   ROLES                  AGE   VERSION
 multinode-demo       Ready    control-plane,master   99s   v1.20.2
 multinode-demo-m02   Ready    <none>                 73s   v1.20.2
 ```
@@ -55,4 +56,52 @@ multinode-demo-m02   Ready    <none>                 73s   v1.20.2
 Shuningdek, siz nodelaringiz holatini(statusini) tekshirishingiz mumkin:
 ```bash
 minikube status -p multinode-demo
+```
+```txt  filename="natija"
+multinode-demo
+type: Control Plane
+host: Running
+kubelet: Running
+apiserver: Running
+kubeconfig: Configured
+
+multinode-demo-m02
+type: Worker
+host: Running
+kubelet: Running
+```
+
+hello world deploymentimizni ishga tushiring:
+
+```bash
+kubectl apply -f hello-deployment.yaml
+```
+```txt filename="natija"
+deployment.apps/hello created
+```
+```bash
+kubectl rollout status deployment/hello
+```
+```txt  filename="natija"
+deployment "hello" successfully rolled out
+```
+So'rov(request) yuborilgan IP-manzilni qaytaradigan hello world servicemizni ishga tushiring:
+
+```bash
+kubectl apply -f hello-svc.yaml
+```
+
+```txt  filename="natija"
+service/hello created
+```
+
+Kelajakda ma'lumot olish uchun podlarimizning IP manzillarini tekshiring
+
+```bash
+kubectl get pods -o wide
+```
+```txt  filename="natija"
+NAME                     READY   STATUS    RESTARTS   AGE   IP           NODE                 NOMINATED NODE   READINESS GATES
+hello-695c67cf9c-bzrzk   1/1     Running   0          22s   10.244.1.2   multinode-demo-m02   <none>           <none>
+hello-695c67cf9c-frcvw   1/1     Running   0          22s   10.244.0.3   multinode-demo       <none>           <none>
 ```
