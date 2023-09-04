@@ -166,7 +166,7 @@ Tadam! Sizning applicationgiz endi http://localhost:7080/ manzilida mavjud.
 
 Application chiqishida request metama'lumotlarini ko'rishingiz kerak. Requestning yo'lini o'zgartirishga harakat qiling va o'zgarishlarni kuzating. Xuddi shunday, siz `POST` requestini bajarishingiz va chiqishda bodyning ko'rinishini kuzatishingiz mumkin.
 
-### Load Balancer (Yuk balanaslagichi)
+### Load Balancer (Yuk balanslagichi)
 
 LoadBalancer o'rnatilishiga kirish uchun `minkube tunnel` buyrug'idan foydalaning. Bu yerda deployment misoli:
 
@@ -178,4 +178,124 @@ Boshqa oynada, "muvozanatli"(balanced) deployment uchun yo'naltiriladigan IP yar
 
 ```bash
 minikube tunnel
+```
+
+Yo'naltiriladigan IP-ni topish uchun ushbu buyruqni bajaring va `EXTERNAL-IP` columni tekshiring:
+
+```bash
+kubectl get services balanced
+```
+Sizning deploymentingiz endi `<EXTERNAL-IP>:8080` da mavjud
+
+
+### Ingress
+
+Ingress addonni yoqing.
+
+```bash
+minikube addons enable ingress
+```
+Quyidagi misol oddiy echo-server servicelarini va ushbu servicelarga yo'naltirish uchun Ingress ob'ektini yaratadi.
+
+```yaml
+kind: Pod
+apiVersion: v1
+metadata:
+  name: foo-app
+  labels:
+    app: foo
+spec:
+  containers:
+    - name: foo-app
+      image: 'kicbase/echo-server:1.0'
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: foo-service
+spec:
+  selector:
+    app: foo
+  ports:
+    - port: 8080
+---
+kind: Pod
+apiVersion: v1
+metadata:
+  name: bar-app
+  labels:
+    app: bar
+spec:
+  containers:
+    - name: bar-app
+      image: 'kicbase/echo-server:1.0'
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: bar-service
+spec:
+  selector:
+    app: bar
+  ports:
+    - port: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: example-ingress
+spec:
+  rules:
+    - http:
+        paths:
+          - pathType: Prefix
+            path: /foo
+            backend:
+              service:
+                name: foo-service
+                port:
+                  number: 8080
+          - pathType: Prefix
+            path: /bar
+            backend:
+              service:
+                name: bar-service
+                port:
+                  number: 8080
+---
+```
+
+Contentni apply qiling
+
+```bash
+kubectl apply -f https://storage.googleapis.com/minikube-site-examples/ingress-example.yaml
+```
+Ingress addressni kuting
+
+```bash
+$ kubectl get ingress
+NAME              CLASS   HOSTS   ADDRESS          PORTS   AGE
+example-ingress   nginx   *       <ip_addresingiz>   80      5m45s
+```
+Docker Desktop foydalanuvchilari uchun eslatma:
+Ishga ingress uchun siz yangi terminal oynasini ochishingiz va minikube tunnelini ishga tushirishingiz kerak va keyingi bosqichda `ip_addresingiz` oʻrniga 127.0.0.1 dan foydalaning.
+
+Endi ingress ishlayotganligini tekshiring:
+
+```bash
+$ curl <ip_addresingiz>/foo
+Request served by foo-app
+...
+
+$ curl <ip_addresingiz>/bar
+Request served by bar-app
+...
+```
+
+## Clusteringizni boshqaring
+
+Deploy qilingan applicationlarga ta'sir qilmasdan Kubernetesni pauza qilish:
+
+```bash
+minikube pause
 ```
