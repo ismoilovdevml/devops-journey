@@ -299,3 +299,35 @@ Deploy qilingan applicationlarga ta'sir qilmasdan Kubernetesni pauza qilish:
 ```bash
 minikube pause
 ```
+
+Pauza qilinagn instancelarni pauzadan chiqarish:
+
+```bash
+minikube unpause
+```
+Clusterni to'xtatish:
+```bash
+minikube stop
+```
+
+Standart xotira chegarasini o'zgartirish (qayta ishga tushirishni(restart) talab qiladi):
+
+```bash
+minikube config set memory 9001
+```
+
+Oson o'rnatilgan Kubernetes servicelari katalogini ko'rib chiqish:
+```bash
+minikube addons list
+```
+
+Eski Kubernetes versiyasini ishga tushiradigan ikkinchi cluster yarating:
+
+```bash
+minikube start -p aged --kubernetes-version=v1.16.1
+```
+Barcha minikube clusterlarini o'chirib tashlash:
+
+```bash
+minikube delete --all
+```
