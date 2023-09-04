@@ -1,4 +1,5 @@
 import { Callout } from "nextra-theme-docs";
+import { Tabs } from 'nextra/components';
 
 # Minikube
 
@@ -137,3 +138,44 @@ minikube dashboard
 ```
 
 ![k8s](/images/tutorials/k8s/minkube/2.jpg)
+
+## Apllicationlarni deploy qilish
+
+### Service
+Namunaviy deploymentni yarating va uni 8080 portida ko'rsating:
+
+```bash
+kubectl create deployment hello-minikube --image=kicbase/echo-server:1.0
+kubectl expose deployment hello-minikube --type=NodePort --port=8080
+```
+
+Bu biroz vaqt olishi mumkin, lekin ishga tushirganingizda deploymentingiz tez orada paydo bo'ladi:
+```bash
+kubectl get services hello-minikube
+```
+Ushbu servicega kirishning eng oson yo'li minikube-ga siz uchun veb-brauzerni ishga tushirishga ruxsat berishdir:
+```bash
+minikube service hello-minikube
+```
+
+Shu bilan bir qatorda, portni yo'naltirish(port forward) uchun kubectl dan foydalaning:
+```bash
+kubectl port-forward service/hello-minikube 7080:8080
+```
+Tadam! Sizning applicationgiz endi http://localhost:7080/ manzilida mavjud.
+
+Application chiqishida request metama'lumotlarini ko'rishingiz kerak. Requestning yo'lini o'zgartirishga harakat qiling va o'zgarishlarni kuzating. Xuddi shunday, siz `POST` requestini bajarishingiz va chiqishda bodyning ko'rinishini kuzatishingiz mumkin.
+
+### Load Balancer (Yuk balanaslagichi)
+
+LoadBalancer o'rnatilishiga kirish uchun `minkube tunnel` buyrug'idan foydalaning. Bu yerda deployment misoli:
+
+```bash
+kubectl create deployment balanced --image=kicbase/echo-server:1.0
+kubectl expose deployment balanced --type=LoadBalancer --port=8080
+```
+Boshqa oynada, "muvozanatli"(balanced) deployment uchun yo'naltiriladigan IP yaratish uchun tunnelni ishga tushiring:
+
+```bash
+minikube tunnel
+```
