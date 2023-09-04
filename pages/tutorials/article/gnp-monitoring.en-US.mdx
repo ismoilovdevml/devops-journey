@@ -139,7 +139,7 @@ sudo nano /etc/systemd/system/prometheus.service
 ```
 Faylga quyidagi kodni kiriting:
 
-```bash
+```bash filename="/etc/systemd/system/prometheus.service"
 [Unit]
 Description=Prometheus
 Wants=network-online.target
@@ -249,7 +249,7 @@ sudo nano /etc/systemd/system/node_exporter.service
 
 Faylga quyidagi kodni kiriting:
 
-```bash
+```bash filename="/etc/systemd/system/node_exporter.service"
 [Unit]
 Description=Node Exporter
 Wants=network-online.target
@@ -295,7 +295,7 @@ sudo nano /etc/prometheus/prometheus.yml
 
 2. Joblar ro'yxatini o'z ichiga olgan `scrape_configs` bo'limini toping. Unda hozirda prometheus nomli bitta job ro‘yxati keltirilgan. Bu job `9090`-portdagi local Prometheus taskini nazorat qiladi. Prometheus taski ostiga `remote_collector` `job_name`ga ega ikkinchi jobni qo'shing. Quyidagi ma'lumotlarni kiriting.
 
-```bash
+```bash filename="/etc/prometheus/prometheus.yml"
 ...
 - job_name: "remote_collector"
   scrape_interval: 10s 
@@ -307,7 +307,7 @@ sudo nano /etc/prometheus/prometheus.yml
 <Callout type="info" emoji="">
 Bitr nechta serverlarni monitoring qilish uchun `prometheus.yml` konfigrasiya fayli quyidagicha yoziladi.
 
-```bash
+```bash filename="/etc/prometheus/prometheus.yml"
 - job_name: "node_exporter"
     static_configs:
       - targets: [
