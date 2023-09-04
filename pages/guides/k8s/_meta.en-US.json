@@ -16,5 +16,11 @@
     "icon": "▶️",
     "description": "Minkube o'rnatish va sozlash",
     "href": "/guides/k8s/minkube"
+  },
+  "minkube-multi-node": {
+    "title": "Multi-Node Clusterdan foydalanish",
+    "icon": "▶️",
+    "description": "Minkubeda Multi-Node Clusterdan foydalanish",
+    "href": "/guides/k8s/minkube-multi-node"
   }
 }
