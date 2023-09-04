@@ -1,0 +1,58 @@
+import { Callout } from "nextra-theme-docs";
+
+# Multi-Node Clusterdan foydalanish
+
+![k8s](/images/tutorials/k8s/multi-node/1.jpg)
+
+
+Ushbu qo'llanma sizga `minikube`-da multi-node(ko'p tugunli) clusterlarni qanday boshlash va unga serviceni deploy qilishni ko'rsatib beradi.
+
+<Callout type="info" emoji="">
+##### Sizga kerak bo'ladi
+
+* `minikube` 1.10.1 yoki undan yuqori versiya
+* kubectl
+</Callout>
+
+## Qo'llanma
+Siz tanlagan drayverda 2 ta nodeli clusterni start berish:
+```bash
+minikube start --nodes 2 -p multinode-demo
+```
+```txt
+😄  [multinode-demo] minikube v1.18.1 on Opensuse-Tumbleweed
+✨  Automatically selected the docker driver
+👍  Starting control plane node multinode-demo in cluster multinode-demo
+🔥  Creating docker container (CPUs=2, Memory=8000MB) ...
+🐳  Preparing Kubernetes v1.20.2 on Docker 20.10.3 ...
+    ▪ Generating certificates and keys ...
+    ▪ Booting up control plane ...
+    ▪ Configuring RBAC rules ...
+🔗  Configuring CNI (Container Networking Interface) ...
+🔎  Verifying Kubernetes components...
+    ▪ Using image gcr.io/k8s-minikube/storage-provisioner:v5
+🌟  Enabled addons: storage-provisioner, default-storageclass
+
+👍  Starting node multinode-demo-m02 in cluster multinode-demo
+🔥  Creating docker container (CPUs=2, Memory=8000MB) ...
+🌐  Found network options:
+    ▪ NO_PROXY=192.168.49.2
+🐳  Preparing Kubernetes v1.20.2 on Docker 20.10.3 ...
+    ▪ env NO_PROXY=192.168.49.2
+🔎  Verifying Kubernetes components...
+🏄  Done! kubectl is now configured to use "multinode-demo" cluster and "default" namespace by default
+```
+Nodelar listini(ro'yxatini) ko'ring.
+```bash
+kubectl get nodes
+```
+
+```txtNAME                 STATUS   ROLES                  AGE   VERSION
+multinode-demo       Ready    control-plane,master   99s   v1.20.2
+multinode-demo-m02   Ready    <none>                 73s   v1.20.2
+```
+
+Shuningdek, siz nodelaringiz holatini(statusini) tekshirishingiz mumkin:
+```bash
+minikube status -p multinode-demo
+```

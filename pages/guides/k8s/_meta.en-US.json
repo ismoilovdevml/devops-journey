@@ -5,22 +5,22 @@
     "description": "Kubernetesga ilk qadamlar",
     "href": "/guides/k8s/k8s-kirish"
   },
-  "minkube-wordpress": {
+  "minikube-wordpress": {
     "title": "Kubernetesda Wordpress deploy qilish",
     "icon": "▶️",
     "description": "Minkubedan foydalanib wordpress ko'tarish",
-    "href": "/guides/k8s/minkube-wordpress"
+    "href": "/guides/k8s/minikube-wordpress"
   },
-  "minkube": {
+  "minikube": {
     "title": "Minkube",
     "icon": "▶️",
     "description": "Minkube o'rnatish va sozlash",
-    "href": "/guides/k8s/minkube"
+    "href": "/guides/k8s/minikube"
   },
-  "minkube-multi-node": {
+  "minikube-multi-node": {
     "title": "Multi-Node Clusterdan foydalanish",
     "icon": "▶️",
     "description": "Minkubeda Multi-Node Clusterdan foydalanish",
-    "href": "/guides/k8s/minkube-multi-node"
+    "href": "/guides/k8s/minikube-multi-node"
   }
 }
