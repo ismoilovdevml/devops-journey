@@ -140,6 +140,18 @@ Dastlab, storage provayderi kabi ba'zi servicelar hali ishlayotgan holatda bo'lm
 minikube dashboard
 ```
 
+<Callout type="info" emoji="">
+Agar siz minkubeni serveringizga o'rnatgan bo'lsangiz minkube dashboardga tashqaridan kira olmaysiz yani faqat server o'zidan kirsa bo'ladi. minkube dashboardni tashqariga ochish uchun quyidagi `kubectl proxy` dan foydalaning
+```bash
+kubectl proxy --address='0.0.0.0' --disable-filter=true
+```
+```txt  filename="natija"
+W0906 04:46:21.897067 1711012 proxy.go:177] Request filter disabled, your proxy is vulnerable to XSRF attacks, please be cautious
+Starting to serve on [::]:8001
+```
+Hoizir sizda serveringiz IP addresida `8001` portda minkube dashboard ochiladi.
+</Callout>
+
 ![k8s](/images/tutorials/k8s/minkube/2.jpg)
 
 ## 4.Apllicationlarni deploy qilish
