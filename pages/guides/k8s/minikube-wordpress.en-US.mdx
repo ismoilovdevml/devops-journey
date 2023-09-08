@@ -249,3 +249,67 @@ spec:
           claimName: wp-pv-claim
 
 ```
+
+`wordpress-deployment.yaml`-ni ishga tushiramiz.
+```bash
+kubectl apply -f wordpress-deployment.yaml
+```
+
+`PersistentVolume` dinamik ravishda ta'minlanganligini tekshiring.
+
+```bash
+kubectl get pvc
+```
+**Eslatma**: PV-larni ta'minlash va bog'lash uchun bir necha daqiqa vaqt ketishi mumkin.
+
+```output filename="Natija"
+NAME             STATUS    VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS       AGE
+mysql-pv-claim   Bound     pvc-8cbd7b2e-4044-11e9-b2bb-42010a800002   20Gi       RWO            standard           77s
+wp-pv-claim      Bound     pvc-8cd0df54-4044-11e9-b2bb-42010a800002   20Gi       RWO            standard           77s
+```
+
+Quyidagi buyruqni bajarish orqali Pod ishlayotganligini tekshiring:
+
+```bash
+kubectl get pods
+```
+
+```output filename="Natija"
+NAME                               READY     STATUS    RESTARTS   AGE
+wordpress-mysql-1894417608-x5dzt   1/1       Running   0          40s
+```
+
+Quyidagi buyruqni bajarish orqali Service ishlayotganligini tekshiring:
+
+```bash
+kubectl get services wordpress
+```
+```output filename="Natija"
+NAME        TYPE            CLUSTER-IP   EXTERNAL-IP   PORT(S)        AGE
+wordpress   LoadBalancer    10.0.0.89    <pending>     80:32406/TCP   4m
+```
+
+**Eslatma**: Minikube Servicelarni faqat `NodePort` orqali tashqariga ochishi mumkin. `EXTERNAL-IP` har doim `<pending>`.
+
+WordPress Servisi uchun IP-manzilni olish uchun quyidagi buyruqni bajaring:
+
+```bash
+minikube service wordpress --url
+```
+Javob quyidagicha bo'lishi kerak:
+
+```output filename="Natija"
+http://1.2.3.4:32406
+```
+IP manzilidan nusxa oling va saytingizni ko'rish uchun brauzerdan kiring.
+
+Quyidagi skrinshotga o'xshash WordPress sozlamalari sahifasini ko'rishingiz kerak.
+
+![k8s](/images/tutorials/k8s/wordpress-k8s/2.png)
+
+## Tozalash
+Secret, Deployments, Services va PersistentVolumeClaims-ni o'chirish uchun quyidagi buyruqni bajaring:
+
+```bash
+kubectl delete -k ./
+```
