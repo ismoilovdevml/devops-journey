@@ -58,7 +58,7 @@ MySQL va Wordpress har biri ma'lumotlarni saqlash uchun `PersistentVolume` talab
 
 ## `kustomization.yaml` yaratish
 
-`Secret generator`ni qo'shing
+`Secret generator`ni qo'shish
 
 Secret - bu parol(password) yoki kalit(key) kabi nozik ma'lumotlarni saqlaydigan ob'ekt. 1.14 dan boshlab `kubectl` kustomizatsiya fayli yordamida Kubernetes ob'ektlarini boshqarishni qo'llab-quvvatlaydi. Siz `kustomization.yaml` da generatorlar tomonidan secret yaratishingiz mumkin.
 
@@ -71,4 +71,100 @@ secretGenerator:
   literals:
   - password=PAROLINGIZ
 EOF
+```
+
+`kustomization.yaml` konfigratsiya faylimizni ishga tushirishimiz apply qilishimiz kerak.
+
+```bash
+kubectl apply -k .
+```
+Quyidagi buyruqni orqali secret mavjudligini tekshiring:
+
+```bash
+kubectl get secrets
+```
+```txt  filename="Natija"
+NAME                    TYPE                                  DATA   AGE
+mysql-pass-c57bb4t7mf   Opaque                                1      9s
+```
+
+## MySQL va WordPress uchun resurs konfiguratsiyasini qo'shish
+
+Quyidagi manifestda bir nusxali(single-instance) MySQL Deployment tasvirlangan. MySQL konteyneri PersistentVolume-ni `/var/lib/mysql` manziliga o'rnatadi. `MYSQL_ROOT_PASSWORD` muhit o'zgaruvchisi(environment variable) Secretdan ma'lumotlar bazasi parolini o'rnatadi.
+
+```yaml filename="application/wordpress/mysql-deployment.yaml"
+apiVersion: v1
+kind: Service
+metadata:
+  name: wordpress-mysql
+  labels:
+    app: wordpress
+spec:
+  ports:
+    - port: 3306
+  selector:
+    app: wordpress
+    tier: mysql
+  clusterIP: None
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-pv-claim
+  labels:
+    app: wordpress
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wordpress-mysql
+  labels:
+    app: wordpress
+spec:
+  selector:
+    matchLabels:
+      app: wordpress
+      tier: mysql
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: wordpress
+        tier: mysql
+    spec:
+      containers:
+      - image: mysql:8.0
+        name: mysql
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-pass
+              key: password
+        - name: MYSQL_DATABASE
+          value: wordpress
+        - name: MYSQL_USER
+          value: wordpress
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-pass
+              key: password
+        ports:
+        - containerPort: 3306
+          name: mysql
+        volumeMounts:
+        - name: mysql-persistent-storage
+          mountPath: /var/lib/mysql
+      volumes:
+      - name: mysql-persistent-storage
+        persistentVolumeClaim:
+          claimName: mysql-pv-claim
 ```
