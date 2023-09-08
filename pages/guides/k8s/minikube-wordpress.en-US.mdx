@@ -38,3 +38,37 @@ Versiyani tekshirish uchun `kubectl version`-ni kiriting.
 Ushbu sahifada ko'rsatilgan misol kubectl 1.27 va undan yuqori versiyalar bilan ishlaydi.
 
 Quyidagi konfiguratsiya fayllarini yuklab oling:
+
+<Callout type="info" emoji="">
+* [mysql-deployment.yaml](https://kubernetes.io/examples/application/wordpress/mysql-deployment.yaml)
+* [wordpress-deployment.yaml](https://kubernetes.io/examples/application/wordpress/wordpress-deployment.yaml)
+</Callout>
+
+## PersistentVolumeClaims va PersistentVolumes yaratish
+
+MySQL va Wordpress har biri ma'lumotlarni saqlash uchun `PersistentVolume` talab qiladi. Ularning `PersistentVolumeClaims`lari joylashtirish bosqichida yaratiladi. Ko'pgina cluster environmentlarida standart `StorageClass` o'rnatilgan. Agar StorageClass PersistentVolumeClaimda ko'rsatilmagan bo'lsa, uning o'rniga clusterning standart StorageClass ishlatiladi. PersistentVolumeClaim yaratilganda, StorageClass konfiguratsiyasi asosida PersistentVolume dinamik ravishda ta'minlanadi.
+
+<Callout type="info" emoji="">
+**Ogohlantirish**: Local clusterlarda standart StorageClass `hostPath` provayderidan foydalanadi. hostPath hajmlari faqat ishlab chiqish va sinov uchun javob beradi. HostPath hajmlari bilan sizning ma'lumotlaringiz Pod rejalashtirilgan nodeda `/tmp` ichida yashaydi va nodelar o'rtasida harakatlanmaydi. Agar Pod o'lsa va clusterdagi boshqa nodega rejalashtirilsa yoki node qayta ishga tushirilsa, ma'lumotlar yo'qoladi.
+
+**Eslatma**: Agar siz hostPath provayderidan foydalanishi kerak bo'lgan clusterni ochayotgan bo'lsangiz, controller-manager komponentida `--enable-hostpath-provisioner` flagini o'rnatilishi kerak.
+
+**Eslatma**: Agar sizda `Google Kubernetes Engine(GKE)`-da ishlaydigan Kubernetes clusteringiz bo'lsa, iltimos, [ushbu qo'llanmaga](https://cloud.google.com/kubernetes-engine/docs/tutorials/persistent-disk) amal qiling.
+</Callout>
+
+## `kustomization.yaml` yaratish
+
+`Secret generator`ni qo'shing
+
+Secret - bu parol(password) yoki kalit(key) kabi nozik ma'lumotlarni saqlaydigan ob'ekt. 1.14 dan boshlab `kubectl` kustomizatsiya fayli yordamida Kubernetes ob'ektlarini boshqarishni qo'llab-quvvatlaydi. Siz `kustomization.yaml` da generatorlar tomonidan secret yaratishingiz mumkin.
+
+Quyidagi buyruqdan `kustomization.yaml`-ga Secret generator qo'shing. `PAROLINGIZ` so‘zini foydalanmoqchi bo‘lgan parol bilan almashtirishingiz kerak bo‘ladi.
+
+```bash
+cat <<EOF >./kustomization.yaml
+secretGenerator:
+- name: mysql-pass
+  literals:
+  - password=PAROLINGIZ
+EOF
+```
