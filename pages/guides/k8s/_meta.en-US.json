@@ -22,5 +22,11 @@
     "icon": "▶️",
     "description": "Minkubeda Multi-Node Clusterdan foydalanish",
     "href": "/guides/k8s/minikube-multi-node"
+  },
+  "k8s-components": {
+    "title": "Kubernetes Komponentlari",
+    "icon": "▶️",
+    "description": "Kubernetes tarkibiy qismi",
+    "href": "/guides/k8s/k8s-components"
   }
 }

@@ -1,8 +1,8 @@
 {
   "quickstart": {
-    "title": "Jarayonda",
+    "title": "Flutter CI/CD",
     "icon": "▶️",
-    "description": "Ishlar olib borilmoqda",
+    "description": "Github Action + Discord (Android, iOS)",
     "href": "/guides/ci-cd/quickstart"
   },
   "jenkins-ornatish": {
