@@ -1,9 +1,9 @@
 {
-  "quickstart": {
+  "flutter-github-action": {
     "title": "Flutter CI/CD",
     "icon": "▶️",
     "description": "Github Action + Discord (Android, iOS)",
-    "href": "/guides/ci-cd/quickstart"
+    "href": "/guides/ci-cd/flutter-github-action"
   },
   "jenkins-ornatish": {
     "title": "Jenkins o'rnatish",
