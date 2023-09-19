@@ -1,6 +1,8 @@
 import { Callout } from "nextra-theme-docs";
 
-# Docker Compose yordamida code server ko'tarish
+# Docker Compose yordamida Code Server ko'tarish
+
+![docker](/images/tutorials/container/1.webp)
 
 Code Serveri serverda Visual Studio Code (VS Code) ni ishga tushirish imkonini beruvchi vositadir, ya'ni siz internetga ulangan holda istalgan kompyuterdan, istalgan joydan VS Code muhitingizga kirishingiz mumkin. Ushbu serverga yo'naltirilgan o'rnatish hamkorlikdagi loyihalar, ta'lim sozlamalari yoki turli joylardan foydalanish mumkin bo'lgan development environment xohlagan har qanday senariy uchun idealdir.
 
@@ -23,7 +25,7 @@ nano docker-compose.yml
 
 2. nano matn muhharri orqali ochilgan oynaga quyidagi kodni nusxalang va o'zingizga moslab sozlab oling.
 
-```yml filename="code-server/docker-compose.yml"
+```yaml filename="code-server/docker-compose.yml"
 ---
 version: "2.1"
 services:
@@ -49,3 +51,20 @@ services:
 <Callout type="info" emoji="">
 Serveringizda Docker va Docker Compose o'rnatilgan bo'lishi talab qilinadi
 </Callout>
+
+Environment o'zgaruvchilarini ehtiyojlaringizga qarab sozlang. Bu yerda har bir o'zgaruvchining qisqacha izohi:
+
+* `PUID` va `PGID`: Foydalanuvchi va guruh identifikatorlari fayl ruxsatlari toʻgʻri oʻrnatilganligiga ishonch hosil qilish uchun.
+* `TZ:` Server uchun vaqt mintaqasi.
+* `PASSWORD` & `HASHED_PASSWORD:` Code serveriga kirish uchun parollar (yoki ochiq matn yoki xeshlangan).
+* `SUDO_PASSWORD` va `SUDO_PASSWORD_HASH:` sudo-ga kirishni ta'minlash uchun parollar (yoki ochiq matn yoki xeshlangan).
+* `PROXY_DOMAIN:` Agar proksi-serverdan foydalanayotgan bo'lsangiz, bu yerda domenni belgilang.
+* `DEFAULT_WORKSPACE:` standart ish maydoni jildi.
+
+3. Code seerverni o'rnatish uchun docker composeni ishga tushiramiz.
+
+```bash
+docker compose up -d
+```
+
+4. Tabrikalymiz siz Code Serverni muvafaqqiyatlari serveringizga o'rnatdingiz. Docker containerlar ro'yxati orqali code-server containerni ko'rishingiz mumkin. Code Server `8443` portda ishlab turibti. Brauzeringiz orqali `SERVER_IP:8443` ga kirsangiz Code Server ochiladi va agar parol o'rnatgan bo'lsangiz sizdan parol so'raydi. Bu konfigratsiyada parolga `- PASSWORD=linux #ixtiyoriy` qo'yilgan.
