@@ -24,15 +24,15 @@
     "href": "/guides/konteyner/asosiy-docker-buyruqlari"
   },
   "code-server": {
-    "title": "Docker Compose yordamida code server ko'tarish",
+    "title": "Code Server",
     "icon": "▶️",
     "description": "Serverda VS Code ishlatish",
     "href": "/guides/konteyner/code-server"
   },
-  "set-session-limits": {
-    "title": "Jarayonda",
+  "wordpress": {
+    "title": "Wordpress o'rnatish",
     "icon": "▶️",
-    "description": "Ishlar olib borilmoqda",
-    "href": "/guides/konteyner/set-session-limits"
+    "description": "Docker yordamida Wordpress o'rnatish",
+    "href": "/guides/konteyner/wordpress"
   }
 }
