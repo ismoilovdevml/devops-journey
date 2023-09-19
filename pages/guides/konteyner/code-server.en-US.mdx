@@ -1,6 +1,6 @@
 import { Callout } from "nextra-theme-docs";
 
-Docker Compose yordamida code server ko'tarish
+# Docker Compose yordamida code server ko'tarish
 
 Code Serveri serverda Visual Studio Code (VS Code) ni ishga tushirish imkonini beruvchi vositadir, ya'ni siz internetga ulangan holda istalgan kompyuterdan, istalgan joydan VS Code muhitingizga kirishingiz mumkin. Ushbu serverga yo'naltirilgan o'rnatish hamkorlikdagi loyihalar, ta'lim sozlamalari yoki turli joylardan foydalanish mumkin bo'lgan development environment xohlagan har qanday senariy uchun idealdir.
 
@@ -13,3 +13,39 @@ Code Serveri serverda Visual Studio Code (VS Code) ni ishga tushirish imkonini b
 
 ## O'rnatish va Sozlash
 Ushbu bo'limda biz sizni Docker Compose yordamida sozlash jarayoni bo'yicha yo'l-yo'riq beramiz, sozlash jarayonini soddalashtirish uchun oldindan belgilangan `docker-compose.yml` faylidan foydalanamiz.
+
+1. Serverimizda `code-server` nomli jild ochib olamiz va uni ichiga `docker-compose.yml` fayl ochamiz.
+
+```bash
+mkdir code-server
+nano docker-compose.yml
+```
+
+2. nano matn muhharri orqali ochilgan oynaga quyidagi kodni nusxalang va o'zingizga moslab sozlab oling.
+
+```yml filename="code-server/docker-compose.yml"
+---
+version: "2.1"
+services:
+  code-server:
+    image: lscr.io/linuxserver/code-server:latest
+    container_name: code-server
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+      - PASSWORD=linux #ixtiyoriy
+      - HASHED_PASSWORD= #ixtiyoriy
+      - SUDO_PASSWORD=password #ixtiyoriy
+      - SUDO_PASSWORD_HASH= #ixtiyoriy
+      - PROXY_DOMAIN=code-server.my.domain #ixtiyoriy
+      - DEFAULT_WORKSPACE=/config/workspace #ixtiyoriy
+    volumes:
+      - /path/to/appdata/config:/config
+    ports:
+      - 8443:8443
+    restart: unless-stopped
+```
+<Callout type="info" emoji="">
+Serveringizda Docker va Docker Compose o'rnatilgan bo'lishi talab qilinadi
+</Callout>

@@ -23,11 +23,11 @@
     "description": "Eng ko'p ishlatiladigan va asosiy Docker buyruqlari",
     "href": "/guides/konteyner/asosiy-docker-buyruqlari"
   },
-  "configure-reward-calling": {
-    "title": "Jarayonda",
+  "code-server": {
+    "title": "Docker Compose yordamida code server ko'tarish",
     "icon": "▶️",
-    "description": "Ishlar olib borilmoqda",
-    "href": "/guides/konteyner/configure-reward-calling"
+    "description": "Serverda VS Code ishlatish",
+    "href": "/guides/konteyner/code-server"
   },
   "set-session-limits": {
     "title": "Jarayonda",
