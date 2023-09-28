@@ -56,7 +56,7 @@ Quyidagi rasmda Kubernetes Container tashuvchi kema sifatida ko'rsatilgan.
 
 ### Control Plane
 
-Control plane konteyner orkestratsiyasi(container orchestration) va clusterning kerakli holatini(state) saqlab turish uchun javobgardir. U quyidagi tarkibiy qismlarga ega.
+Control plane konteyner orkestratsiyasi(container orchestration) va clusterning kerakli stateini(state) saqlab turish uchun javobgardir. U quyidagi tarkibiy qismlarga ega.
 
 <Callout type="info" emoji="">
 * kube-apiserver
@@ -101,3 +101,27 @@ Kubernetes `api-server`i quyidagilar uchun javobgardir
 Kubernetes distributed system bo'lib, uning distributed(taqsimlangan) tabiatini qo'llab-quvvatlaydigan `etcd` kabi samarali distributed databaselar bazasiga muhtoj. U ham backend xizmatini kashf qilish, ham ma'lumotlar bazasi sifatida ishlaydi. Siz uni Kubernetes clusterining miyasi deb atashingiz mumkin.
 
 [`etcd` open source](https://github.com/etcd-io/etcd) kuchli izchil, distributed key-value storedir. Xo'sh, bu nimani anglatadi?
+
+**Strongly consistent** Agar nodega yangilanish amalga oshirilsa, strong consistency uning clusteridagi barcha boshqa nodelarga darhol yangilanishini ta'minlaydi. Bundan tashqari, agar siz CAP teoremasiga qarasangiz, kuchli mustahkamlik va & Bo'limga chidamlilik bilan 100% mavjudlikka erishish mumkin emas.
+
+**Distributed** etcd bir nechta nodelarda cluster sifatida mustahkamlikdan voz kechmasdan ishlash uchun mo'ljallangan.
+
+**Key Value Store** ma'lumotlarni keylar va valuelar sifatida saqlaydigan aloqador bo'lmagan ma'lumotlar bazasi. Shuningdek, u key-valueli API-ni ham ochib beradi. Ma'lumotlar ombori [BoltDB](https://github.com/etcd-io/bbolt) forki bo'lgan B[boltDB](https://github.com/etcd-io/bbolt) ustiga qurilgan.
+
+etcd mustahkam mustahkamlik va mavjudlik uchun `raft consensus` algoritmidan foydalanadi. U yuqori darajadagi mavjudlik va nodelarning nosozliklariga dosh berish uchun leader-member uslubida ishlaydi.
+
+Xo'sh, etcd Kubernetes bilan qanday ishlaydi?
+
+Oddiy qilib aytganda, kubernetes object detaillarini olish uchun kubectl dan foydalansangiz, uni etcd dan olasiz. Bundan tashqari, objectni `pod` kabi deploy qilganingizda, yozuv etcd da yaratiladi.
+
+Xulosa qilib aytganda, bu yerda siz etcd haqida bilishingiz kerak bo'lgan narsalar.
+
+* etcd barcha konfiguratsiyalar, statelar va Kubernetes objectlari metama'lumotlarini (podlar, secretlar, daemonsetlar, deploymentlar, configmaplar, statefulset va boshqalarni) saqlaydi.
+* etcd clientga Watch() API yordamida eventlarga subscribe qilish imkonini beradi. Kubernetes api-server object holatidagi(state) o'zgarishlarni(change) kuzatish uchun etcd-ning `watch` funksiyasidan foydalanadi.
+* etcd gRPC yordamida key-value API-ni ochib beradi. Bundan tashqari, gRPC gatewayi barcha HTTP API chaqiruvlarini gRPC messagelariga tarjima qiladigan RESTful proksi-server hisoblanadi. Bu uni Kubernetes uchun ideal ma'lumotlar bazasiga aylantiradi.
+* etcd barcha objectlarni `/registry` directory keyi ostida  key-value formatida saqlaydi. Masalan, default namespacedagi Nginx nomli pod haqida ma'lumotni `/registry/pods/default/nginx` ostida topish mumkin.
+
+![k8s](/images/tutorials/k8s/architecture/6.png)
+
+
+Bundan tashqari, etcd control planedagi yagona `Statefulset` komponentidir.
