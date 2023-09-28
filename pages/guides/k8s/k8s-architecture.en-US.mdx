@@ -50,6 +50,10 @@ Kubernetes haqida tushunishingiz kerak bo'lgan birinchi va eng muhim narsa - bu 
 
 Kubernetes clusteri control plane nodelari va worker nodelardan iborat.
 
+![k8s](/images/tutorials/k8s/architecture/4.png)
+
+Quyidagi rasmda Kubernetes Container tashuvchi kema sifatida ko'rsatilgan. 
+
 ### Control Plane
 
 Control plane konteyner orkestratsiyasi(container orchestration) va clusterning kerakli holatini(state) saqlab turish uchun javobgardir. U quyidagi tarkibiy qismlarga ega.
@@ -75,3 +79,25 @@ Worker nodelari konteynerlashtirilgan applicationlarni(ilovala) ishga tushirish 
 ## Kubernetes Control Plane Komponentlari
 
 Birinchidan, har bir control plane komponentini va har bir komponent ortidagi muhim tushunchalarni ko'rib chiqaylik.
+
+###  kube-apiserver
+
+`kube-api` serveri Kubernetes API-ni ochib(expose) beruvchi Kubernetes clasterining central hubidir. Oxirgi foydalanuvchilar va boshqa cluster komponentlari API serveri orqali cluster bilan gaplashadi. Juda kamdan-kam hollarda monitoring tizimlari va uchinchi tomon xizmatlari cluster bilan o'zaro aloqa qilish uchun API serverlari bilan gaplashishi mumkin. Shunday qilib, siz clusterni boshqarish uchun `kubectl` dan foydalansangiz, backendda siz `HTTP REST API` orqali API serveri bilan bog'lanasiz. Biroq, scheduler(rejalashtiruvchi), controller va boshqalar kabi ichki cluster komponentlari `gRPC` yordamida API serveri bilan gaplashadi. API serveri va clusterdagi boshqa komponentlar o'rtasidagi aloqa clusterga ruxsatsiz kirishni oldini olish uchun `TLS` orqali amalga oshiriladi.
+
+![k8s](/images/tutorials/k8s/architecture/2.png)
+
+Kubernetes `api-server`i quyidagilar uchun javobgardir
+
+* API management(boshqaruvi): Cluster API so'nggi nuqtasini ochib beradi va barcha API so'rovlarini bajaradi.
+* Autentifikatsiya (client sertifikatlari, tashuvchi tokenlari(bearer token) va HTTP asosiy autentifikatsiyasidan foydalanish) va avtorizatsiya (ABAC va RBAC evaluation).
+* API soʻrovlarini(request) qayta ishlash va API obʼyektlari kabi pods, servicelar va boshqalar uchun maʼlumotlarni tekshirish (Validation and Mutation Admission Controllers)
+* Bu etcd bilan aloqa(communicate) qiladigan yagona komponent.
+* api-server control plane va worker node komponentlari o'rtasidagi barcha jarayonlarni(process) muvofiqlashtiradi.
+* api-serverda o'rnatilgan bastion apiserver proksi-server mavjud. Bu API server jarayonining bir qismidir. U asosan clusterdan tashqaridan ClusterIP servicelariga kirishni ta'minlash uchun ishlatiladi, garchi bu servicelar odatda faqat clusterning o'zida mavjud bo'lsa ham.
+
+### etcd
+
+![k8s](/images/tutorials/k8s/architecture/5.png)
+Kubernetes distributed system bo'lib, uning distributed(taqsimlangan) tabiatini qo'llab-quvvatlaydigan `etcd` kabi samarali distributed databaselar bazasiga muhtoj. U ham backend xizmatini kashf qilish, ham ma'lumotlar bazasi sifatida ishlaydi. Siz uni Kubernetes clusterining miyasi deb atashingiz mumkin.
+
+[`etcd` open source](https://github.com/etcd-io/etcd) kuchli izchil, distributed key-value storedir. Xo'sh, bu nimani anglatadi?
