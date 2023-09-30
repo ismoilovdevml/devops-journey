@@ -82,7 +82,7 @@ Birinchidan, har bir control plane komponentini va har bir komponent ortidagi mu
 
 ###  kube-apiserver
 
-`kube-api` serveri Kubernetes API-ni ochib(expose) beruvchi Kubernetes clasterining central hubidir. Oxirgi foydalanuvchilar va boshqa cluster komponentlari API serveri orqali cluster bilan gaplashadi. Juda kamdan-kam hollarda monitoring tizimlari va uchinchi tomon xizmatlari cluster bilan o'zaro aloqa qilish uchun API serverlari bilan gaplashishi mumkin. Shunday qilib, siz clusterni boshqarish uchun `kubectl` dan foydalansangiz, backendda siz `HTTP REST API` orqali API serveri bilan bog'lanasiz. Biroq, scheduler(rejalashtiruvchi), controller va boshqalar kabi ichki cluster komponentlari `gRPC` yordamida API serveri bilan gaplashadi. API serveri va clusterdagi boshqa komponentlar o'rtasidagi aloqa clusterga ruxsatsiz kirishni oldini olish uchun `TLS` orqali amalga oshiriladi.
+`kube-api` serveri Kubernetes API-ni ochib(expose) beruvchi Kubernetes clasterining central hubidir. Oxirgi foydalanuvchilar va boshqa cluster komponentlari API serveri orqali cluster bilan gaplashadi. Juda kamdan-kam hollarda monitoring tizimlari va uchinchi tomon xizmatlari cluster bilan o'zaro aloqa qilish uchun API serverlari bilan gaplashishi mumkin. Shunday qilib, siz clusterni boshqarish uchun `kubectl` dan foydalansangiz, backendda siz `HTTP REST API` orqali API serveri bilan bog'lanasiz. Biroq, scheduler(scheduler), controller va boshqalar kabi ichki cluster komponentlari `gRPC` yordamida API serveri bilan gaplashadi. API serveri va clusterdagi boshqa komponentlar o'rtasidagi aloqa clusterga ruxsatsiz kirishni oldini olish uchun `TLS` orqali amalga oshiriladi.
 
 ![k8s](/images/tutorials/k8s/architecture/2.png)
 
@@ -125,3 +125,28 @@ Xulosa qilib aytganda, bu yerda siz etcd haqida bilishingiz kerak bo'lgan narsal
 
 
 Bundan tashqari, etcd control planedagi yagona `Statefulset` komponentidir.
+
+### kube-scheduler
+
+kube-scheduler worker nodelarida Kubernetes podlarini rejalashtirish(scheduling) uchun javobgardir. Siz podni o'rnatganingizda, siz protsessor, xotira, affinity, nosozliklar(taints) yoki bardoshlik(tolerations), priority(ustuvorlik), persistent volume(PV) kabi pod talablarini belgilaysiz. Schedulerning asosiy vazifasi cretae so'rovini(requestini) aniqlash va talablarga javob beradigan pod uchun eng yaxshi nodeni tanlashdir.  Quyidagi rasmda schedulerni qanday ishlashining yuqori darajadagi umumiy ko'rinishi ko'rsatilgan.
+
+![k8s](/images/tutorials/k8s/architecture/7.png)
+
+Kubernetes clusterida bir nechta worker nodelari bo'ladi. Xo'sh, qanday qilib scheduler barcha worker nodelardan nodeni tanlaydi?
+
+Bu yerda scheduler qanday ishlaydi.
+
+1. Eng yaxshi nodeni tanlash uchun kube-scheduler filtrlash va baholash(scoring) operatsiyalaridan foydalanadi.
+
+2. Filtrlashda scheduler podni rejalashtirish mumkin bo'lgan eng mos nodelarni topadi. Misol uchun, podni ishga tushirish uchun resurs mavjud bo'lgan besh worker mode mavjud bo'lsa, u barcha besh nodeni tanlaydi. Agar nodelar bo'lmasa, pod rejalashtirilmaydi va rejalashtirish navbatiga o'tkaziladi. Agar bu katta cluster bo'lsa, aytaylik, 100 worker modelari va scheduler barcha nodelarni takrorlamaydi. `percentageOfNodesToScore` deb nomlangan scheduler konfiguratsiya parametri mavjud. Default qiymat odatda 50% ni tashkil qiladi. Shunday qilib, u nodelarning 50% dan ortig'ini round-robin rejimda takrorlashga harakat qiladi. Agar worker modelar bir nechta zonalar bo'ylab tarqalgan bo'lsa, scheduler turli zonalardagi nodelarni takrorlaydi. Juda katta clusterlar uchun standart `percentageOfNodesToScore` 5% ni tashkil qiladi.
+
+3. Baholash(scoring) bosqichida scheduler filtrlangan worker nodelariga ball qo'yish orqali nodelarni tartiblaydi. Scheduler bir nechta scheduling pluginlariga chaqiruv qilish orqali reytingni amalga oshiradi. Nihoyat, podni scheduling(rejalashtirish) uchun eng yuqori darajaga ega worker node tanlanadi. Agar barcha nodelar bir xil darajaga ega bo'lsa, node tasodifiy tanlanadi.
+
+4. Node tanlangandan so'ng, scheduler API serverida binding event yaratadi. Binding event pod va nodeni bog'lashni anglatadi.
+
+**Scheduler haqida bilish kerak bo'lgan narsalar.**
+
+* Bu API serverida pod create(yaratish) eventlarini tinglaydigan kontroller.
+* Scheduler ikki bosqichdan iborat. `Scheduling sikli` va `Binding sikli`. Birgalikda u scheduling konteksti deb ataladi. Scheduling sikli worker nodeni tanlaydi va binding sikli bu o'zgarishni clusterga qo'llaydi.
+
+* Scheduler har doim yuqori high-priority podlarni scheduling(rejalashtirish) uchun low-priority podlardan oldinroq joylashtiradi. Bundan tashqari, ba'zi hollarda, pod tanlangan nodeda ishlay boshlagandan so'ng, poddan chiqarib yuborilishi yoki boshqa nodelarga ko'chirilishi mumkin. Agar siz ko'proq tushunishni istasangiz, [Kubernetes pod priority](https://devopscube.com/pod-priorityclass-preemption/) qo'llanmasini o'qib ko'ring.
