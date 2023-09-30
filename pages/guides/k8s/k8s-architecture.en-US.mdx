@@ -117,7 +117,7 @@ Oddiy qilib aytganda, kubernetes object detaillarini olish uchun kubectl dan foy
 Xulosa qilib aytganda, bu yerda siz etcd haqida bilishingiz kerak bo'lgan narsalar.
 
 * etcd barcha konfiguratsiyalar, statelar va Kubernetes objectlari metama'lumotlarini (podlar, secretlar, daemonsetlar, deploymentlar, configmaplar, statefulset va boshqalarni) saqlaydi.
-* etcd clientga Watch() API yordamida eventlarga subscribe qilish imkonini beradi. Kubernetes api-server object holatidagi(state) o'zgarishlarni(change) kuzatish uchun etcd-ning `watch` funksiyasidan foydalanadi.
+* etcd clientga Watch() API yordamida eventlarga subscribe qilish imkonini beradi. Kubernetes api-server object statetidagi(state) o'zgarishlarni(change) kuzatish uchun etcd-ning `watch` funksiyasidan foydalanadi.
 * etcd gRPC yordamida key-value API-ni ochib beradi. Bundan tashqari, gRPC gatewayi barcha HTTP API chaqiruvlarini gRPC messagelariga tarjima qiladigan RESTful proksi-server hisoblanadi. Bu uni Kubernetes uchun ideal ma'lumotlar bazasiga aylantiradi.
 * etcd barcha objectlarni `/registry` directory keyi ostida  key-value formatida saqlaydi. Masalan, default namespacedagi Nginx nomli pod haqida ma'lumotni `/registry/pods/default/nginx` ostida topish mumkin.
 
@@ -146,7 +146,24 @@ Bu yerda scheduler qanday ishlaydi.
 
 **Scheduler haqida bilish kerak bo'lgan narsalar.**
 
-* Bu API serverida pod create(yaratish) eventlarini tinglaydigan kontroller.
+* Bu API serverida pod create(yaratish) eventlarini tinglaydigan controller.
 * Scheduler ikki bosqichdan iborat. `Scheduling sikli` va `Binding sikli`. Birgalikda u scheduling konteksti deb ataladi. Scheduling sikli worker nodeni tanlaydi va binding sikli bu o'zgarishni clusterga qo'llaydi.
 
 * Scheduler har doim yuqori high-priority podlarni scheduling(rejalashtirish) uchun low-priority podlardan oldinroq joylashtiradi. Bundan tashqari, ba'zi hollarda, pod tanlangan nodeda ishlay boshlagandan so'ng, poddan chiqarib yuborilishi yoki boshqa nodelarga ko'chirilishi mumkin. Agar siz ko'proq tushunishni istasangiz, [Kubernetes pod priority](https://devopscube.com/pod-priorityclass-preemption/) qo'llanmasini o'qib ko'ring.
+
+* Siz maxsus schedulerlarni yaratishingiz va nativ scheduler bilan bir qatorda clusterda bir nechta schedulerlarni ishga tushirishingiz mumkin. Podni deploy qilganizda, pod manifestida maxsus schedulerni belgilashingiz mumkin. Shunday qilib, scheduling qarorlari custom scheduler mantig'i asosida qabul qilinadi.
+
+* Schedulerda ulanadigan scheduling framework mavjud. Ya'ni, siz o'zingizning custom plugingizni scheduling workflowiga qo'shishingiz mumkin.
+
+![k8s](/images/tutorials/k8s/architecture/9.jpg)
+
+### Kube Controller Manager
+
+![k8s](/images/tutorials/k8s/architecture/8.jpg)
+
+
+Controller nima? [Controllerlar](https://kubernetes.io/docs/concepts/architecture/controller/) infinite control sikllarini ishga tushiradigan dasturlardir. Ya'ni, u doimiy ishlaydi va ob'ektlarning actual va kerakli statetini kuzatadi. Actual va kerakli statetida farq bo'lsa, kubernetes resource/object kerakli statetida bo'lishini ta'minlaydi.
+
+Kubernetes-da controllerlar clusteringiz statetini(holatini) kuzatadigan, keyin kerak bo'lganda o'zgartirishlar kiritadigan yoki so'raydigan boshqaruv sikllari. Har bir controller joriy cluster statetini kerakli statega yaqinlashtirishga harakat qiladi.
+
+Aytaylik, siz deployment create qilmoqchisiz, manifest YAML faylida kerakli stateni belgilaysiz (deklarativ yondashuv). Masalan, 2 replica(nusxa), bitta volume mount qilish, configmap va boshqalar.
