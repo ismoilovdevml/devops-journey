@@ -200,3 +200,33 @@ Cloud controller integratsiyasi Kubernetes clusteriga misollar(nodelar uchun), L
 ![k8s](/images/tutorials/k8s/architecture/11.png)
 
 ![k8s](/images/tutorials/k8s/architecture/12.png)
+
+Cloud Controller Manager cloudga xos komponentlarning (nodelar, Loadbalancerlar, storage va h.k.) kerakli stateni(holatini) taʼminlaydigan cloud platformasiga xos controllerlar toʻplamini oʻz ichiga oladi. Quyida cloud controller manageri tarkibiga kiruvchi uchta asosiy controllerlar keltirilgan.
+
+**Node Controller:** Bu controller cloud provayderi API bilan gaplashish orqali nodega oid ma'lumotlarni yangilaydi. Masalan, node labeling va annotation, hostnameni olish, protsessor va xotira mavjudligi, nodelarning salomatligi(nodes health) va boshqalar.
+
+**Route Controller:** U cloudli platformada tarmoq(network) routelarini sozlash uchun javobgardir. Shunday qilib, turli nodelardagi podlar bir-biri bilan gaplashishi mumkin.
+
+**Service Controller** kubernetes servicelari uchun load balancerlarini(yuk blanslagich) deploy qilish, IP manzillarini belgilash va h.k. bilan shug'ullanadi.
+
+![k8s](/images/tutorials/k8s/architecture/13.png)
+
+Quyida  cloud controller managerining ba'zi classic misollari keltirilgan.
+
+
+Load balancer turidagi Kubernetes Serviceni deploy qilish. Bu yerda Kubernetes Cloud-specific(cloudga xos) Loadbalancerni taqdim etadi va Kubernetes servici bilan birlashadi.
+
+Cloud storage yechimlari bilan quvvatlangan podlar uchun Provisioning storage volume (PV).
+
+Umumiy Cloud Controller Manageri kubernetes tomonidan ishlatiladigan cloudga xos resurslarning lifecycleni boshqaradi.
+
+## Kubernetes Worker Node Componentlari
+
+Endi worker node komponentlarining har birini ko'rib chiqamiz.
+
+### Kubelet
+
+Kubelet - bu clusterdagi har bir nodeda ishlaydigan agent komponenti. t konteyner sifatida ishlamaydi, aksincha, systemd tomonidan boshqariladigan daemon sifatida ishlaydi.
+
+U API serverida worker nodelarni ro'yxatdan o'tkazish va podSpec(Pod spetsifikatsiyasi - YAML yoki JSON) bilan asosan API serveridan ishlash uchun javobgardir. podSpec podSpec ichida ishlashi kerak bo'lgan konteynerlarni, ularning resurslarini (masalan, protsessor va xotira chegaralari) va environment o'zgaruvchilari, volumelar va labellar kabi boshqa sozlamalarni belgilaydi. Keyin konteynerlarni yaratish(create) orqali podSpec-ni kerakli statega(holatga) keltiradi.
+Kubernetesda kubelet asosiy komponent bo'lib, u har bir worker nodeda ishlaydi va node va unda ishlaydigan konteynerlar bilan bog'liq bir nechta muhim vazifalarni bajaradi. Quyida kubeletning asosiy majburiyatlari keltirilgan:
