@@ -230,3 +230,27 @@ Kubelet - bu clusterdagi har bir nodeda ishlaydigan agent komponenti. t konteyne
 
 U API serverida worker nodelarni ro'yxatdan o'tkazish va podSpec(Pod spetsifikatsiyasi - YAML yoki JSON) bilan asosan API serveridan ishlash uchun javobgardir. podSpec podSpec ichida ishlashi kerak bo'lgan konteynerlarni, ularning resurslarini (masalan, protsessor va xotira chegaralari) va environment o'zgaruvchilari, volumelar va labellar kabi boshqa sozlamalarni belgilaydi. Keyin konteynerlarni yaratish(create) orqali podSpec-ni kerakli statega(holatga) keltiradi.
 Kubernetesda kubelet asosiy komponent bo'lib, u har bir worker nodeda ishlaydi va node va unda ishlaydigan konteynerlar bilan bog'liq bir nechta muhim vazifalarni bajaradi. Quyida kubeletning asosiy majburiyatlari keltirilgan:
+
+
+**Pod Lifecycle Management** Kubelet konteynerlarning Podda ishlashini ta'minlaydi.
+API serveridan olingan Pod spetsifikatsiyalari asosida konteynerlarni ishga tushiradi(start), to'xtatadi(stop) va qayta ishga tushiradi(restart).
+
+**Node Registration(nodeni ro'yxatdan o'tkazish)** Kubelet nodeni Kubernetes clusterida qayd etib, node resurslari va boshqa tegishli ma'lumotlarni taqdim etadi.
+
+**Resource Management(Resurslarni boshqarish):**Kubelet konteynerlarning resurslardan foydalanishni (masalan, protsessor va xotira) nazorat qiladi va bu ma'lumotni API serveriga xabar qiladi. U konteynerlar uchun o'rnatilgan resurs cheklovlarini(limit) amalga oshiradi.
+
+**Health Checks(Salomatlik tekshiruvlari):** Kubelet ishlaydigan konteynerlarning sog'lig'ini tekshiradi.
+U sog'lig'ini tekshirishda muvaffaqiyatsizlikka uchragan konteynerlarni qayta ishga tushiradi va vaziyat haqida API serveriga xabar beradi.
+
+**Container Runtime Interface (CRI) Implementation** Kubelet konteynerlarning ishlash muddatini (masalan, Docker yoki containerd) konteynerlarning hayot aylanishini( lifecycle) boshqarish uchun o'zaro ta'sir qiladi. U konteyner imagelarini pull qilib olish, konteynerlarni ishga tushirish(start) va to'xtatish(stop) va hokazo operatsiyalarni bajaradi.
+
+**Volume Management:** Kubelet Poddagi konteynerlar tomonidan ishlatiladigan volumelarni mounting va unmountingni boshqaradi.
+
+**Node-Level Security** Kubelet nodedagi barcha konteynerlar Pod spetsifikatsiyasida belgilangan xavfsizlik xususiyatlariga mos kelishini ta'minlaydi.
+
+**Log Management**Kubelet konteyner loglarini yig'ish va boshqarish bilan shug'ullanadi, bu ularni muammolarni bartaraf etish va tahlil qilish uchun mavjud qiladi.
+
+Kubelet konteynerlarda muayyan buyruqlarni bajarishi mumkin, masalan, nosozliklarni tuzatish yoki dastur holatini(state) tekshirish uchun foydalaniladi.
+Qisqa qilib aytganda, kubelet konteynerlarning har bir nodeda kutilganidek ishlashini ta'minlash, resurslarni boshqarish, salomatligini tekshirish va Kubernetes ishchi nodedagi konteynerlarni boshqarish bilan bog'liq boshqa vazifalarni bajarish uchun javobgardir.
+
+![k8s](/images/tutorials/k8s/architecture/14.png)
