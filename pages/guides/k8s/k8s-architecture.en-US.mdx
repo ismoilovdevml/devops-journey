@@ -159,11 +159,44 @@ Bu yerda scheduler qanday ishlaydi.
 
 ### Kube Controller Manager
 
-![k8s](/images/tutorials/k8s/architecture/8.jpg)
+![k8s](/images/tutorials/k8s/architecture/8.png)
 
 
 Controller nima? [Controllerlar](https://kubernetes.io/docs/concepts/architecture/controller/) infinite control sikllarini ishga tushiradigan dasturlardir. Ya'ni, u doimiy ishlaydi va ob'ektlarning actual va kerakli statetini kuzatadi. Actual va kerakli statetida farq bo'lsa, kubernetes resource/object kerakli statetida bo'lishini ta'minlaydi.
 
 Kubernetes-da controllerlar clusteringiz statetini(holatini) kuzatadigan, keyin kerak bo'lganda o'zgartirishlar kiritadigan yoki so'raydigan boshqaruv sikllari. Har bir controller joriy cluster statetini kerakli statega yaqinlashtirishga harakat qiladi.
 
-Aytaylik, siz deployment create qilmoqchisiz, manifest YAML faylida kerakli stateni belgilaysiz (deklarativ yondashuv). Masalan, 2 replica(nusxa), bitta volume mount qilish, configmap va boshqalar.
+Aytaylik, siz deploymentni create qilmoqchisiz, manifest YAML faylida kerakli stateni belgilaysiz (deklarativ yondashuv). Masalan, 2 replica(nusxa), bitta volume mount qilish, configmap va boshqalar. O'rnatilgan deployment controlleri deploymentning har doim kerakli stateda bo'lishini ta'minlaydi. Agar foydalanuvchi deploy,mentni 5 ta replica bilan yangilasa, deployment controlleri uni taniydi va kerakli state 5 relicada(nusxa) bo'lishini ta'minlaydi.
+
+Kube controller manageri barcha Kubernetes controllerlarini boshqaradigan komponentdir. Kubernetes  resources/objects kabi podlar, namespacelari, joblar,  replicasetlar tegishli controllerlar tomonidan boshqariladi. Shuningdek,kube scheduleri ham Kube controller manageri tomonidan boshqariladigan controller hisoblanadi.
+
+![k8s](/images/tutorials/k8s/architecture/10.png)
+
+**Quyida muhim built-in Kubernetes controllerlarining ro'yxati keltirilgan.**
+
+* Deployment controller
+* Replicaset controller
+* DaemonSet controller 
+* Job Controller (Kubernetes Jobs)
+* CronJob Controller
+* endpoints controller
+* namespace controller
+* service accounts controller.
+* Node controller
+
+Kube controller manageri haqida nimalarni bilishingiz kerak.
+
+1. U barcha controllerlarni boshqaradi va controllerlar clusterni kerakli holatda(state) saqlashga harakat qiladilar.
+2. Siz kubernetesni custom resource definition bilan bog'langan custom controllerlar bilan kengaytirishingiz mumkin.
+
+### Cloud Controller Manager (CCM)
+
+Kubernetes cloud environmentda o'rnatilganda, cloud controller manageri `Cloud Platform API` va Kubernetes clusteri o'rtasida ko'prik vazifasini bajaradi.
+
+Shunday qilib, kubernetesning asosiy komponentlari mustaqil ishlashi mumkin va cloud provayderlariga pluginlar yordamida kubernetes bilan integratsiya qilish imkonini beradi. (Masalan, kubernetes clusteri va AWS cloud API o'rtasidagi interfeys)
+
+Cloud controller integratsiyasi Kubernetes clusteriga misollar(nodelar uchun), Load Balancerlari(servicelar uchun) va Storage Volumelari(persistent volume uchun) kabi cloudli resurslarni taʼminlash imkonini beradi.
+
+![k8s](/images/tutorials/k8s/architecture/11.png)
+
+![k8s](/images/tutorials/k8s/architecture/12.png)
