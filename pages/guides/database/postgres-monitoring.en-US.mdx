@@ -1,0 +1,15 @@
+# PostgreSQLni Prometheus/Grafana va postgres_exporter orqali monitoring qilish
+
+## Kirish
+
+Bugungi raqamli asrda ma'lumotlar bazalari son-sanoqsiz ilovalarning asosi bo'lib, korxonalar, hukumatlar va jismoniy shaxslar uchun muhim xizmatlarni taqdim etadi. Elektron tijorat platformalaridan sog'liqni saqlash tizimlariga qadar ma'lumotlar bazalari zamonaviy dunyomizni quvvatlaydigan katta hajmdagi ma'lumotlarni saqlaydi. Shunday qilib, ushbu ma'lumotlar bazalarining sog'lig'i, ishlashi va mavjudligini ta'minlash muhim ahamiyatga ega.
+
+#### Prometheus, Grafana va postgres_exporter haqida qisqacha ma'lumot
+
+**Prometheus:** HTTP endpointlarini o'lchash orqali nazorat qilinadigan maqsadlardan metikalarni to'playdigan open-source monitoring yechimi.
+Prometheus haqida malumot va o'rnatish uchun quyidagi qo'llanmani o'qib chiqing. [To'liq qo'llanma](https://devops-journey.uz/tutorials/article/gnp-monitoring). [Prometheus nima?](https://devops-journey.uz/tutorials/article/gnp-monitoring#prometheus-nima), [Prometheus o'ratish va sozlash](https://devops-journey.uz/tutorials/article/gnp-monitoring#prometheus-oratish-va-sozlash), [Prometheusni service sifatida sozlash](https://devops-journey.uz/tutorials/article/gnp-monitoring#prometheusni-service-sifatida-sozlash)
+
+**Grafana:** Monitoring va vizualizatsiya uchun mashhur open-source platformasi. Grafana bir nechta manbalardan, jumladan Prometheusdan olingan boy vizualizatsiyani (grafiklar, jadvallar va heatmaplar kabi) taqdim etadi. Uning moslashtirilgan dashboardi barcha muhim ko'rsatkichlarning(metrics) jamlangan ko'rinishini taqdim etadi.
+Prometheus haqida malumot va o'rnatish uchun quyidagi qo'llanmani o'qib chiqing. [Grafana nima?](https://devops-journey.uz/tutorials/article/gnp-monitoring#grafana-nima), [Grafana serverini qanday o'rnatish va sozlash](Grafana serverini qanday o'rnatish va sozlash), [Grafana va Prometheusni integratsiya qilish](https://devops-journey.uz/tutorials/article/gnp-monitoring#grafana-va-prometheusni-integratsiya-qilish), [Grafana Dashboardni import qilish](https://devops-journey.uz/tutorials/article/gnp-monitoring#grafana-dashboardni-import-qilish)
+
+**postgres_exporter:** PostgreSQL ko'rsatkichlari(metrics) uchun Prometheus exporteri. U PostgreSQL misoli bilan birga ishlaydi, ma'lumotlar bazasi bilan bog'liq ko'rsatkichlarni Prometheus qabul qilishi mumkin bo'lgan formatda oladi va ochib beradi. postgres_exporter yordamida connection statsdan tortib so'rovlar unumdorligigacha(query performance) bo'lgan PostgreSQL ning turli jihatlarini kuzatish mumkin.

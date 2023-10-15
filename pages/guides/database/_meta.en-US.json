@@ -23,11 +23,11 @@
       "description": "PostgreSQL-da SQL querylar bilan ishlash",
       "href": "/guides/database/postgresql-bilan-ishlash"
     },
-    "upload-a-video-asset": {
-      "title": "Jarayonda",
+    "postgres-monitoring": {
+      "title": "PostgreSQL Monitoring",
       "icon": "▶️",
-      "description": "Ishlar olib borilmoqda",
-      "href": "/guides/database/upload-a-video-asset"
+      "description": "Prometheus/Grafana va postgres_exporter bilan monitoring",
+      "href": "/guides/database/postgres-monitoring"
     }
   }
   
