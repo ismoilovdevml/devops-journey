@@ -254,3 +254,7 @@ Kubelet konteynerlarda muayyan buyruqlarni bajarishi mumkin, masalan, nosozlikla
 Qisqa qilib aytganda, kubelet konteynerlarning har bir nodeda kutilganidek ishlashini ta'minlash, resurslarni boshqarish, salomatligini tekshirish va Kubernetes ishchi nodedagi konteynerlarni boshqarish bilan bog'liq boshqa vazifalarni bajarish uchun javobgardir.
 
 ![k8s](/images/tutorials/k8s/architecture/14.png)
+
+### kube proxy
+
+kube-proxy Kubernetes-dagi asosiy tarmoq komponenti bo'lib, clusterdagi turli nodelar bo'ylab pod-lar bilan tarmoq aloqasini boshqarish uchun javobgardir. U har bir nodeda ishlaydi va ushbu nodelarda tarmoq rulelarini saqlaydi. Ushbu qoidalar(rule) cluster ichidagi yoki tashqarisidagi tarmoq seanslariga pod-larga ulanish imkonini beradi. kube-proxy Kubernetes clusterining ichida ham, tashqarisida ham tarmoq muhiti izchil va predictable qilinadigan bo'lishini ta'minlaydi.
