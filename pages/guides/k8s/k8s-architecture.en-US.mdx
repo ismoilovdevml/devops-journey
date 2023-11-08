@@ -275,3 +275,24 @@ kube-proxy service (ClusterIP) va tegishli pod IP va portlar (endpointlar) haqid
 **sed:** shortest expected delay (kutilgan eng qisqa kechikish)
 **nq:** never queue
 3. **Userspace(eskirgan):** Ushbu rejimda kube-proxy Kubernetes masterini Serviuce va Endpoint obyektlarini qo'shish va o'chirish uchun kuzatib boradi. Har bir Service uchun u local nodeda portni (tasodifiy tanlangan) ochadi. Ushbu "proxy-port" ga har qanday ulanishlar Servicening backend podlaridan biriga proksilangan (shuningdek, tasodifiy tanlangan). Bu unchalik samarali emas, chunki trafik qo'shimcha "hop" orqali o'tadi.
+4. **Kernelspace:** Bu rejim faqat Windows tizimlari uchun.
+
+![k8s](/images/tutorials/k8s/architecture/15.png)
+
+Kube-proxy IPtables va IPVS rejimi o'rtasidagi ishlash farqini tushunishni istasangiz, [ushbu maqolani](https://www.tigera.io/blog/comparing-kube-proxy-modes-iptables-or-ipvs) o'qib chiqishingiz mumkin.
+
+Shuningdek, siz Kubernetes clusterini kube-proxysiz [Cilium](https://docs.cilium.io/en/v1.9/gettingstarted/kubeproxy-free/) bilan almashtirib ishga tushirishingiz mumkin.
+
+![k8s](/images/tutorials/k8s/architecture/15.png)
+
+**kube-proxy funksiyalari**
+
+**Service Abstraction:** kube-proxy IP-tarjima uchun tarmoq qoidalarini(network rule) saqlab, Kubernetes service sifatida podlar guruhini abstrakt qiladi. Bu shuni anglatadiki, client Servicega ulanganda kube-proxy trafikni asosiy podlardan biriga yo'naltiradi.
+
+**Load Balancing** Kubernetes Service uchun bir nechta pod bo'lsa, kube-proxy load balanceri kiruvchi trafikni muvozanatlashtiradi. Bu trafikning mavjud podlarga taqsimlanishini ta'minlaydi.
+
+**TCP/UDP Packet Forwarding(paketlarni yo'naltirish)** kube-proxy TCP va UDP paketlarini tegishli backend Podlariga yo'naltirish uchun javobgardir.
+
+**Session Affinity** u iptables yordamida session affinitini saqlab turishi mumkin, bu esa clientning requestlari har safar session markerlari asosida bir xil Podga yuborilishini ta'minlaydi.
+
+kube-proxy servicelardan foydalanish imkoniyatini boshqarsa-da, u Podlarning bir-biri bilan qanday aloqa qilishini cheklovchi plosilarni qo'llamaydi. Bu kube-proxy bilan birgalikda ishlaydigan network plagini tomonidan boshqarilishi mumkin bo'lgan Kubernetes network polisining roli.
