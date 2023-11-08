@@ -56,7 +56,7 @@ Quyidagi rasmda Kubernetes Container tashuvchi kema sifatida ko'rsatilgan.
 
 ### Control Plane
 
-Control plane konteyner orkestratsiyasi(container orchestration) va clusterning kerakli stateini(state) saqlab turish uchun javobgardir. U quyidagi tarkibiy qismlarga ega.
+Control plane conrtainer orkestratsiyasi(container orchestration) va clusterning kerakli stateini(state) saqlab turish uchun javobgardir. U quyidagi tarkibiy qismlarga ega.
 
 <Callout type="info" emoji="">
 * kube-apiserver
@@ -68,7 +68,7 @@ Control plane konteyner orkestratsiyasi(container orchestration) va clusterning 
 
 ### Worker Node
 
-Worker nodelari konteynerlashtirilgan applicationlarni(ilovala) ishga tushirish uchun javobgardir. Worker node quyidagi komponentlarga ega.
+Worker nodelari conrtainerlashtirilgan applicationlarni(ilovala) ishga tushirish uchun javobgardir. Worker node quyidagi komponentlarga ega.
 
 <Callout type="info" emoji="">
 * kubelet
@@ -226,32 +226,32 @@ Endi worker node komponentlarining har birini ko'rib chiqamiz.
 
 ### Kubelet
 
-Kubelet - bu clusterdagi har bir nodeda ishlaydigan agent komponenti. t konteyner sifatida ishlamaydi, aksincha, systemd tomonidan boshqariladigan daemon sifatida ishlaydi.
+Kubelet - bu clusterdagi har bir nodeda ishlaydigan agent komponenti. t conrtainer sifatida ishlamaydi, aksincha, systemd tomonidan boshqariladigan daemon sifatida ishlaydi.
 
-U API serverida worker nodelarni ro'yxatdan o'tkazish va podSpec(Pod spetsifikatsiyasi - YAML yoki JSON) bilan asosan API serveridan ishlash uchun javobgardir. podSpec podSpec ichida ishlashi kerak bo'lgan konteynerlarni, ularning resurslarini (masalan, protsessor va xotira chegaralari) va environment o'zgaruvchilari, volumelar va labellar kabi boshqa sozlamalarni belgilaydi. Keyin konteynerlarni yaratish(create) orqali podSpec-ni kerakli statega(holatga) keltiradi.
-Kubernetesda kubelet asosiy komponent bo'lib, u har bir worker nodeda ishlaydi va node va unda ishlaydigan konteynerlar bilan bog'liq bir nechta muhim vazifalarni bajaradi. Quyida kubeletning asosiy majburiyatlari keltirilgan:
+U API serverida worker nodelarni ro'yxatdan o'tkazish va podSpec(Pod spetsifikatsiyasi - YAML yoki JSON) bilan asosan API serveridan ishlash uchun javobgardir. podSpec podSpec ichida ishlashi kerak bo'lgan conrtainerlarni, ularning resurslarini (masalan, protsessor va xotira chegaralari) va environment o'zgaruvchilari, volumelar va labellar kabi boshqa sozlamalarni belgilaydi. Keyin conrtainerlarni yaratish(create) orqali podSpec-ni kerakli statega(holatga) keltiradi.
+Kubernetesda kubelet asosiy komponent bo'lib, u har bir worker nodeda ishlaydi va node va unda ishlaydigan conrtainerlar bilan bog'liq bir nechta muhim vazifalarni bajaradi. Quyida kubeletning asosiy majburiyatlari keltirilgan:
 
 
-**Pod Lifecycle Management** Kubelet konteynerlarning Podda ishlashini ta'minlaydi.
-API serveridan olingan Pod spetsifikatsiyalari asosida konteynerlarni ishga tushiradi(start), to'xtatadi(stop) va qayta ishga tushiradi(restart).
+**Pod Lifecycle Management** Kubelet conrtainerlarning Podda ishlashini ta'minlaydi.
+API serveridan olingan Pod spetsifikatsiyalari asosida conrtainerlarni ishga tushiradi(start), to'xtatadi(stop) va qayta ishga tushiradi(restart).
 
 **Node Registration(nodeni ro'yxatdan o'tkazish)** Kubelet nodeni Kubernetes clusterida qayd etib, node resurslari va boshqa tegishli ma'lumotlarni taqdim etadi.
 
-**Resource Management(Resurslarni boshqarish):**Kubelet konteynerlarning resurslardan foydalanishni (masalan, protsessor va xotira) nazorat qiladi va bu ma'lumotni API serveriga xabar qiladi. U konteynerlar uchun o'rnatilgan resurs cheklovlarini(limit) amalga oshiradi.
+**Resource Management(Resurslarni boshqarish):**Kubelet conrtainerlarning resurslardan foydalanishni (masalan, protsessor va xotira) nazorat qiladi va bu ma'lumotni API serveriga xabar qiladi. U conrtainerlar uchun o'rnatilgan resurs cheklovlarini(limit) amalga oshiradi.
 
-**Health Checks(Salomatlik tekshiruvlari):** Kubelet ishlaydigan konteynerlarning sog'lig'ini tekshiradi.
-U sog'lig'ini tekshirishda muvaffaqiyatsizlikka uchragan konteynerlarni qayta ishga tushiradi va vaziyat haqida API serveriga xabar beradi.
+**Health Checks(Salomatlik tekshiruvlari):** Kubelet ishlaydigan conrtainerlarning sog'lig'ini tekshiradi.
+U sog'lig'ini tekshirishda muvaffaqiyatsizlikka uchragan conrtainerlarni qayta ishga tushiradi va vaziyat haqida API serveriga xabar beradi.
 
-**Container Runtime Interface (CRI) Implementation** Kubelet konteynerlarning ishlash muddatini (masalan, Docker yoki containerd) konteynerlarning hayot aylanishini( lifecycle) boshqarish uchun o'zaro ta'sir qiladi. U konteyner imagelarini pull qilib olish, konteynerlarni ishga tushirish(start) va to'xtatish(stop) va hokazo operatsiyalarni bajaradi.
+**Container Runtime Interface (CRI) Implementation** Kubelet conrtainerlarning ishlash muddatini (masalan, Docker yoki containerd) conrtainerlarning hayot aylanishini( lifecycle) boshqarish uchun o'zaro ta'sir qiladi. U conrtainer imagelarini pull qilib olish, conrtainerlarni ishga tushirish(start) va to'xtatish(stop) va hokazo operatsiyalarni bajaradi.
 
-**Volume Management:** Kubelet Poddagi konteynerlar tomonidan ishlatiladigan volumelarni mounting va unmountingni boshqaradi.
+**Volume Management:** Kubelet Poddagi conrtainerlar tomonidan ishlatiladigan volumelarni mounting va unmountingni boshqaradi.
 
-**Node-Level Security** Kubelet nodedagi barcha konteynerlar Pod spetsifikatsiyasida belgilangan xavfsizlik xususiyatlariga mos kelishini ta'minlaydi.
+**Node-Level Security** Kubelet nodedagi barcha conrtainerlar Pod spetsifikatsiyasida belgilangan xavfsizlik xususiyatlariga mos kelishini ta'minlaydi.
 
-**Log Management**Kubelet konteyner loglarini yig'ish va boshqarish bilan shug'ullanadi, bu ularni muammolarni bartaraf etish va tahlil qilish uchun mavjud qiladi.
+**Log Management**Kubelet conrtainer loglarini yig'ish va boshqarish bilan shug'ullanadi, bu ularni muammolarni bartaraf etish va tahlil qilish uchun mavjud qiladi.
 
-Kubelet konteynerlarda muayyan buyruqlarni bajarishi mumkin, masalan, nosozliklarni tuzatish yoki dastur holatini(state) tekshirish uchun foydalaniladi.
-Qisqa qilib aytganda, kubelet konteynerlarning har bir nodeda kutilganidek ishlashini ta'minlash, resurslarni boshqarish, salomatligini tekshirish va Kubernetes ishchi nodedagi konteynerlarni boshqarish bilan bog'liq boshqa vazifalarni bajarish uchun javobgardir.
+Kubelet conrtainerlarda muayyan buyruqlarni bajarishi mumkin, masalan, nosozliklarni tuzatish yoki dastur holatini(state) tekshirish uchun foydalaniladi.
+Qisqa qilib aytganda, kubelet conrtainerlarning har bir nodeda kutilganidek ishlashini ta'minlash, resurslarni boshqarish, salomatligini tekshirish va Kubernetes ishchi nodedagi conrtainerlarni boshqarish bilan bog'liq boshqa vazifalarni bajarish uchun javobgardir.
 
 ![k8s](/images/tutorials/k8s/architecture/14.png)
 
@@ -283,7 +283,7 @@ Kube-proxy IPtables va IPVS rejimi o'rtasidagi ishlash farqini tushunishni istas
 
 Shuningdek, siz Kubernetes clusterini kube-proxysiz [Cilium](https://docs.cilium.io/en/v1.9/gettingstarted/kubeproxy-free/) bilan almashtirib ishga tushirishingiz mumkin.
 
-![k8s](/images/tutorials/k8s/architecture/15.png)
+![k8s](/images/tutorials/k8s/architecture/16.png)
 
 **kube-proxy funksiyalari**
 
@@ -296,3 +296,37 @@ Shuningdek, siz Kubernetes clusterini kube-proxysiz [Cilium](https://docs.cilium
 **Session Affinity** u iptables yordamida session affinitini saqlab turishi mumkin, bu esa clientning requestlari har safar session markerlari asosida bir xil Podga yuborilishini ta'minlaydi.
 
 kube-proxy servicelardan foydalanish imkoniyatini boshqarsa-da, u Podlarning bir-biri bilan qanday aloqa qilishini cheklovchi plosilarni qo'llamaydi. Bu kube-proxy bilan birgalikda ishlaydigan network plagini tomonidan boshqarilishi mumkin bo'lgan Kubernetes network polisining roli.
+
+### Container Runtime
+
+Ehtimol siz Java Runtime (JRE) haqida bilasiz. Bu xostda Java dasturlarini ishga tushirish uchun zarur bo'lgan dasturiy ta'minot. Xuddi shu tarzda, container runtime conrtainerlarni ishga tushirish uchun zarur bo'lgan dasturiy ta'minot komponentidir. container runtime Kubernetes clusteridagi barcha nodelarda ishlaydi. U conrtainer registrlaridan imagelarni olish(pull), conrtainerlarni ishga tushirish, conrtainerlar uchun resurslarni taqsimlash va izolyatsiya qilish hamda xostdagi conrtainerning butun hayot aylanishini(lifecycle) boshqarish uchun javobgardir.
+
+Buni yaxshiroq tushunish uchun ikkita asosiy tushunchani ko'rib chiqaylik:
+
+**Container Runtime Interface (CRI):** Bu Kubernetes-ga turli container runtimelari bilan o'zaro aloqada bo'lishga imkon beruvchi API to'plamidir. Bu turli container runtimelarini Kubernetes bilan almashtirib ishlatish imkonini beradi. CRI containerlarni yaratish, ishga tushirish, to'xtatish va o'chirish, shuningdek, imagelar va container tarmoqlarini boshqarish uchun APIni belgilaydi.
+**Open Container Initiative (OCI):** Bu container formatlari va runtimelari uchun standartlar to'plami
+
+Kubernetes Container Runtime Interface (CRI) bilan mos keladigan bir nechta container runtimelarini (CRI-O, Docker Engine, containerd va boshqalar) qo‘llab-quvvatlaydi. Bu shuni anglatadiki, ushbu containerning barcha runtimelari CRI interfeysini amalga oshiradi va gRPC CRI API-larini (runtime va image servicening endpointlari) namoyish etadi.
+
+Kubernetes tizimni container runtimedan ajratish uchun turli runtimelarini ulash imkonini beruvchi Container Runtime Interface (CRI) ni taqdim etdi. CRI ikkita asosiy gRPC servicelarini belgilaydi:
+**RuntimeService:** containerlarning hayot aylanishini(lifecycle) boshqarish uchun javobgar.
+**ImageService:** Imagelarni boshqarish operatsiyalari uchun javobgar.
+Nodelarda ishlaydigan Kubernetes komponenti bo'lgan Kubelet container runtime bilan faqat CRI tomonidan belgilangan ushbu gRPC API orqali o'zaro ta'sir qiladi.
+
+Xo'sh, Kubernetes container runtimedan qanday foydalanadi?
+
+Kubelet bo'limida bilib olganimizdek, kubelet agenti containerning ishlash davrini(lifecycle) boshqarish uchun CRI API-lardan foydalangan holda container runtime bilan o'zaro ta'sir qilish uchun javobgardir. Shuningdek, u container runtimedan barcha container ma'lumotlarini oladi va uni boshqaruv tekisligiga beradi. Keling, CRI-O container runtime interfeysiga misol keltiraylik. Bu yerda container runtime kubernes bilan qanday ishlashi haqida yuqori darajadagi umumiy ma'lumot.
+
+![k8s](/images/tutorials/k8s/architecture/17.png)
+
+API serveridan pod uchun yangi request(soo'rov) bo'lganda, kubelet Kubernetes Container Runtime Interface orqali kerakli containerlarni ishga tushirish uchun CRI-O demoni bilan gaplashadi. CRI-O containerlar/imagelar kutubxonasi(library) yordamida configratsiya qilingan container registridan kerakli container imageni tekshiradi va pull qilib tortib oladi. Keyin CRI-O container uchun OCI runtime spetsifikatsiyasini (JSON) yaratadi. Keyin CRI-O runtime spetsifikatsiyasiga muvofiq container jarayonini boshlash uchun OCI bilan mos runtimeni (runc) ishga tushiradi.
+
+![k8s](/images/tutorials/k8s/architecture/18.png)
+
+Umumiy container runtimelari quyidagilarni o'z ichiga oladi:
+
+**Docker:** Dastlab Kubernetes Dockerdan to'g'ridan-to'g'ri foydalangan. Docker dastur va uning bog'liqliklarini har qanday Linux serverida ishlashi mumkin bo'lgan virtual containerga to'playdi.
+
+**containerd:** sanoat standartidagi asosiy container runtime. U Linux va Windows uchun demon sifatida mavjud boʻlib, u oʻzining xost tizimining toʻliq container lifecycleni boshqara oladi: imageni uzatish va saqlash, containerni execute qilish va nazorat qilish, low-level storage va tarmoq qoʻshimchalari va boshqalar.
+
+**CRI-O:** OCI (Open Container Initiative) mos runtimelaridan foydalanishni ta'minlash uchun Kubernetes CRI dasturi. Bu faqat Kubernetes-ga e'tibor qaratgan container va Docker-ga yengil(lightweight) muqobildir. Container tarmog'i tarmoq interfeyslarini sozlaydigan va IP manzillari, marshrutlash qoidalari va DNS sozlamalari kabi tarmoq sozlamalarini qo'llaydigan CNI plaginlari bilan birgalikda ishlanadi.
