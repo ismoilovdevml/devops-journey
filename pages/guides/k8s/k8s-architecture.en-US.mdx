@@ -68,7 +68,7 @@ Control plane conrtainer orkestratsiyasi(container orchestration) va clusterning
 
 ### Worker Node
 
-Worker nodelari conrtainerlashtirilgan applicationlarni(ilovala) ishga tushirish uchun javobgardir. Worker node quyidagi komponentlarga ega.
+Worker nodelari conrtainerlashtirilgan applicationlarni(appliationla) ishga tushirish uchun javobgardir. Worker node quyidagi komponentlarga ega.
 
 <Callout type="info" emoji="">
 * kubelet
@@ -274,7 +274,7 @@ kube-proxy service (ClusterIP) va tegishli pod IP va portlar (endpointlar) haqid
 **sh:** source hashing
 **sed:** shortest expected delay (kutilgan eng qisqa kechikish)
 **nq:** never queue
-3. **Userspace(eskirgan):** Ushbu rejimda kube-proxy Kubernetes masterini Serviuce va Endpoint obyektlarini qo'shish va o'chirish uchun kuzatib boradi. Har bir Service uchun u local nodeda portni (tasodifiy tanlangan) ochadi. Ushbu "proxy-port" ga har qanday ulanishlar Servicening backend podlaridan biriga proksilangan (shuningdek, tasodifiy tanlangan). Bu unchalik samarali emas, chunki trafik qo'shimcha "hop" orqali o'tadi.
+3. **Userspace(eskirgan):** Ushbu rejimda kube-proxy Kubernetes masterini Serviuce va Endpoint obyektlarini qo'shish va o'chirish uchun kuzatib boradi. Har bir Service uchun u local nodeda portni (tasodifiy tanlangan) ochadi. Ushbu "proxy-port" ga har qanday ulanishlar Servicening backend podlaridan biriga proksilangan (shuningdek, tasodifiy tanlangan). Bu unchalik samarali emas, chunki trafik addon "hop" orqali o'tadi.
 4. **Kernelspace:** Bu rejim faqat Windows tizimlari uchun.
 
 ![k8s](/images/tutorials/k8s/architecture/15.png)
@@ -330,3 +330,31 @@ Umumiy container runtimelari quyidagilarni o'z ichiga oladi:
 **containerd:** sanoat standartidagi asosiy container runtime. U Linux va Windows uchun demon sifatida mavjud boʻlib, u oʻzining xost tizimining toʻliq container lifecycleni boshqara oladi: imageni uzatish va saqlash, containerni execute qilish va nazorat qilish, low-level storage va tarmoq qoʻshimchalari va boshqalar.
 
 **CRI-O:** OCI (Open Container Initiative) mos runtimelaridan foydalanishni ta'minlash uchun Kubernetes CRI dasturi. Bu faqat Kubernetes-ga e'tibor qaratgan container va Docker-ga yengil(lightweight) muqobildir. Container tarmog'i tarmoq interfeyslarini sozlaydigan va IP manzillari, marshrutlash qoidalari va DNS sozlamalari kabi tarmoq sozlamalarini qo'llaydigan CNI plaginlari bilan birgalikda ishlanadi.
+
+## Kubernetes cluster addon komponentlari(addons)
+![k8s](/images/tutorials/k8s/architecture/19.png)
+
+Kubernetes cluster addon komponentlari Kubernetes funksiyalarini kengaytiruvchi qo'shimcha xizmatlar va resurslardir. Ular odatda Kubernetes clusterida podlar va servicelar sifatida ishlaydi, lekin clusterdan tashqarida ham bo'lishi va kerak bo'lganda u bilan bog'lanishi mumkin. Ushbu addonlar Kubernetes imkoniyatlarini tarmoq, xavfsizlik, monitoring va boshqalar kabi sohalarda yaxshilaydi.
+
+Kubernetes clusterining ba'zi keng tarqalgan addon komponentlarini:
+
+1. **DNS** `CoreDNS` yoki `Kube-DNS` Kubernetes servicelari cluster ichidagi domen nomlarini hal qilish uchun foydalanishi mumkin bo'lgan DNS server. U Kubernetes servicelari va podlari uchun DNS yozuvlarini(record) tayinlaydi, bu ularni cluster ichida topish va muloqot qilish imkonini beradi.
+2. **Web UI (Dashboard)** `Kubernetes Dashboard` Kubernetes clusterlari uchun umumiy maqsadli, veb-ga asoslangan foydalanuvchi interfeysi. U foydalanuvchilarga clusterda ishlaydigan appliationlarni, shuningdek, clusterning o'zini boshqarish va muammolarni bartaraf etish imkonini beradi.
+3. **Container Resource Monitoring** `Metrics Server` clusterdagi resurslardan foydalanish ma'lumotlarini jamlaydi va uni Horizontal Pod Autoscaler kabi boshqa komponentlar uchun mavjud qiladi.
+`Prometheus va Grafana` Ko'pincha birgalikda foydalaniladi, Prometheus belgilangan vaqt oralig'ida sozlangan targetlardan metrikalarni kuzatadi va to'playdi, qoida ifodalarini baholaydi, natijalarni ko'rsatadi va ma'lum shartlar bajarilganda ogohlantirishlarni ishga tushirishi mumkin. Grafana Prometheus tomonidan to'plangan ma'lumotlarni vizualizatsiya qilish uchun ishlatiladi.
+4. **Network Pluginlari** `Container Network Interface (CNI)` pluginlari. Pod aloqasini qo'llab-quvvatlash uchun tarmoq qatlamini taqdim etadi. Masalan, `Calico`, `Flannel` va `Weave`.
+5. **Ingress Controllerlar** `Nginx Ingress Controller`, `HAProxy Ingress Controller` va boshqalar. Ular clusterdagi servicelarga tashqi kirishni boshqaradi, odatda HTTP. Ular Kubernetes servicelari uchun **reverse proxy** va **load balancer** vazifasini bajaradi.
+6. ** Backup va Recovery** `Velero` Kubernetes clusteri resurslari va persistent volumelarining zaxira nusxasini yaratuvchi(backup oluvchi) va tiklaydigan falokatlarni tiklash va ma'lumotlar migratsiyasi uchun addon.
+7. **Service Mesh** `Istio` va `Linkerd`: Mikroservislarni ulash, boshqarish va himoya qilishning yagona usulini ta'minlovchi addonlar, odatda Service Mesh deb ataladi. Ular trafikni yo'naltirish, barqarorlik va kuzatuvchanlik kabi ilg'or tarmoq xususiyatlarini ta'minlaydi.
+8. **Horizontal Pod Autoscaling** `Autoscaling Controllerlar`: Metrics Server tomonidan to'plangan ko'rsatkichlar orqali applicationlarni autoscaling qiluvchi. Applicationlarni kattalashtirish va kichraytirish, muvozanatda ushlab turish.
+9. **Security va Policy Addonlar** `Pod Security Policy (PSP)` Pod ishga tushirish uchun amal qilishi kerak bo'lgan xavfsizlik spetsifikatsiyalarini, jumladan, foydalanuvchi ruxsatlari, volume turlari va boshqalarni belgilaydi.
+`Network Policies` Calico kabi addonlar, shuningdek, podlar orasidagi trafik oqimini boshqarish uchun Kubernetes network policini amalga oshirishga yordam beradi.
+10. **Storage Class Provayderlar** `CSI (Container Storage Interface)` kabi provayderlar. StorageClasslar asosida saqlashni yaratish jarayonini avtomatlashtirish, ular turli xil saqlash turlari va darajalarini aniqlay oladi (masalan, SSD va HDD).
+11. **Cluster-level Logging** `Elasticsearch` va `Kibana` (`Elastic Stack`). Elasticsearch - bu loglarni indekslaydigan va saqlaydigan qidiruv va tahlil mexanizmi. Kibana - bu Elasticsearch-da saqlangan loglarni qidirish va ko'rish uchun ishlatiladigan veb-UI.
+`Fluentd`: Birlashtirilgan logging qatlamlari uchun open-source ma'lumotlar yig'uvchisi(data collector), masalan, Elasticsearch tomonidan yaxshiroq foydalanish uchun ma'lumotlarni to'plash va ishlatish imkonini beradi.
+
+Addonlar turli yo'llar bilan boshqarilishi mumkin:
+
+**Helm Charts:** Helm - bu Kubernetes uchun paket menejeri bo'lib, u ko'pgina addonlarning lifecycleni boshqarish uchun ishlatiladi.
+**Kubernetes Operatorlari:** Kubernetes funksiyalarini kengaytiruvchi maxsus kontrollerlar, complex stateful appliationlar instancelarini create qilish, configratsiya va boshqarish.
+**Addon Manager** Clusterda ishlaydigan addonlarni boshqarish dasturi, ammo u zamonaviyroq yechimlar foydasiga eskirgan.
