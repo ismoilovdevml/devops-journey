@@ -82,7 +82,7 @@ Birinchidan, har bir control plane komponentini va har bir komponent ortidagi mu
 
 ###  kube-apiserver
 
-`kube-api` serveri Kubernetes API-ni ochib(expose) beruvchi Kubernetes clasterining central hubidir. Oxirgi foydalanuvchilar va boshqa cluster komponentlari API serveri orqali cluster bilan gaplashadi. Juda kamdan-kam hollarda monitoring tizimlari va uchinchi tomon xizmatlari cluster bilan o'zaro aloqa qilish uchun API serverlari bilan gaplashishi mumkin. Shunday qilib, siz clusterni boshqarish uchun `kubectl` dan foydalansangiz, backendda siz `HTTP REST API` orqali API serveri bilan bog'lanasiz. Biroq, scheduler(scheduler), controller va boshqalar kabi ichki cluster komponentlari `gRPC` yordamida API serveri bilan gaplashadi. API serveri va clusterdagi boshqa komponentlar o'rtasidagi aloqa clusterga ruxsatsiz kirishni oldini olish uchun `TLS` orqali amalga oshiriladi.
+`kube-api` serveri Kubernetes API-ni ochib(expose) beruvchi Kubernetes clasterining central hubidir. Oxirgi foydalanuvchilar va boshqa cluster komponentlari API serveri orqali cluster bilan gaplashadi. Juda kamdan-kam hollarda monitoring tizimlari va uchinchi tomon Servicelari cluster bilan o'zaro aloqa qilish uchun API serverlari bilan gaplashishi mumkin. Shunday qilib, siz clusterni boshqarish uchun `kubectl` dan foydalansangiz, backendda siz `HTTP REST API` orqali API serveri bilan bog'lanasiz. Biroq, scheduler(scheduler), controller va boshqalar kabi ichki cluster komponentlari `gRPC` yordamida API serveri bilan gaplashadi. API serveri va clusterdagi boshqa komponentlar o'rtasidagi aloqa clusterga ruxsatsiz kirishni oldini olish uchun `TLS` orqali amalga oshiriladi.
 
 ![k8s](/images/tutorials/k8s/architecture/2.png)
 
@@ -98,7 +98,7 @@ Kubernetes `api-server`i quyidagilar uchun javobgardir
 ### etcd
 
 ![k8s](/images/tutorials/k8s/architecture/5.png)
-Kubernetes distributed system bo'lib, uning distributed(taqsimlangan) tabiatini qo'llab-quvvatlaydigan `etcd` kabi samarali distributed databaselar bazasiga muhtoj. U ham backend xizmatini kashf qilish, ham ma'lumotlar bazasi sifatida ishlaydi. Siz uni Kubernetes clusterining miyasi deb atashingiz mumkin.
+Kubernetes distributed system bo'lib, uning distributed(taqsimlangan) tabiatini qo'llab-quvvatlaydigan `etcd` kabi samarali distributed databaselar bazasiga muhtoj. U ham backend Serviceini kashf qilish, ham ma'lumotlar bazasi sifatida ishlaydi. Siz uni Kubernetes clusterining miyasi deb atashingiz mumkin.
 
 [`etcd` open source](https://github.com/etcd-io/etcd) kuchli izchil, distributed key-value storedir. Xo'sh, bu nimani anglatadi?
 
@@ -258,3 +258,20 @@ Qisqa qilib aytganda, kubelet konteynerlarning har bir nodeda kutilganidek ishla
 ### kube proxy
 
 kube-proxy Kubernetes-dagi asosiy tarmoq komponenti bo'lib, clusterdagi turli nodelar bo'ylab pod-lar bilan tarmoq aloqasini boshqarish uchun javobgardir. U har bir nodeda ishlaydi va ushbu nodelarda tarmoq rulelarini saqlaydi. Ushbu qoidalar(rule) cluster ichidagi yoki tashqarisidagi tarmoq seanslariga pod-larga ulanish imkonini beradi. kube-proxy Kubernetes clusterining ichida ham, tashqarisida ham tarmoq muhiti izchil va predictable qilinadigan bo'lishini ta'minlaydi.
+Kubernetes-da service - bu ichki yoki tashqi trafikka bir qator podlarni expose(tashqariga ochish) qilish usuli. Service obyektini yaratganingizda, u unga tayinlangan virtual IP-ni oladi. U clusterIP deb ataladi. Unga faqat Kubernetes clusterida kirish mumkin. Endpoint obyekti Service obyekti ostidagi pod guruhlarining barcha IP manzillari va portlarini o'z ichiga oladi. Endpointlar controlleri pod IP manzillari (endpoint) ro'yxatini saqlash uchun javobgardir. Service controlleri Servicening entpointlarini configratsiya qilish uchun javobgardir. Siz ClusterIP-ga ping yubora olmaysiz, chunki u ping qo'shiladigan pod IP-lardan farqli o'laroq, faqat servicelarni topish uchun ishlatiladi.
+
+kube-proxy - bu daemonset sifatida har bir nodeda ishlaydigan demon. Bu podlar uchun Kubernetes servicelari kontseptsiyasini amalga oshiradigan proxy komponentidir. (load balancingga ega bo'lgan podlar to'plami uchun yagona DNS). U birinchi navbatda UDP, TCP va SCTP-ni proksi-server qiladi va HTTP-ni tushunmaydi. Service (ClusterIP) yordamida podlarni expose qilganingizda, kube-proxy service obyekti ostida guruhlangan backend pods (endpointlar) ga trafik jo'natish uchun tarmoq rule (qoidalarini) yaratadi. Ya'ni, barcha load balancing va servicelarni aniqlash kube-proxy tomonidan amalga oshiriladi.
+
+**kube-proxy qanday ishlaydi**
+
+kube-proxy service (ClusterIP) va tegishli pod IP va portlar (endpointlar) haqida ma'lumot olish uchun API serveri bilan gaplashadi. Shuningdek, u service va endpointlardagi o'zgarishlarni kuzatib boradi. Keyin kube-proxy service ortidagi podlarga trafikni yo'naltirish qoidalarini(rule) create/updatey(aratish/yangilash) uchun quyidagi rejimlardan birini ishlatadi. kube-proxy bir nechta rejimlardan(mode) birida ishlashi mumkin: `userspace`, `iptables` yoki `IPVS`. Eng ko'p ishlatiladigan rejimlar iptables va IPVS bo'lib, ularning eski userspace rejimiga nisbatan samaradorligi tufayli.
+
+1. **IPTables mode:** Bu standart rejim. IPTables rejimida trafik IPtable qoidalari bilan boshqariladi. Bu shuni anglatadiki, har bir service uchun IPtable qoidalari yaratilgan. Ushbu qoidalar ClusterIP-ga keladigan trafikni ushlaydi va keyin uni backend podlariga yo'naltiradi. Bundan tashqari, ushbu rejimda kube-proxy load balancing(yukni muvozanatlash) uchun tasodifiy backend podni tanlaydi. Ulanish o'rnatilgandan so'ng, requestlar ulanish to'xtatilgunga qadar bir xil podga o'tadi.
+2. **IPVS mode:** IPVS (IP Virtual Server) 1000 dan ortiq servicelarga ega clusterlar uchun IPVS ish faoliyatini yaxshilashni taklif qiladi. U backend uchun quyidagi load-balancing algoritmlarini qo'llab-quvvatlaydi.
+**rr:** round-robin : Bu standart rejim.
+**lc:** least connection(eng kam ulanish) (ochiq ulanishlarning eng kichik soni)
+**dh:** destination hashing
+**sh:** source hashing
+**sed:** shortest expected delay (kutilgan eng qisqa kechikish)
+**nq:** never queue
+3. **Userspace(eskirgan):** Ushbu rejimda kube-proxy Kubernetes masterini Serviuce va Endpoint obyektlarini qo'shish va o'chirish uchun kuzatib boradi. Har bir Service uchun u local nodeda portni (tasodifiy tanlangan) ochadi. Ushbu "proxy-port" ga har qanday ulanishlar Servicening backend podlaridan biriga proksilangan (shuningdek, tasodifiy tanlangan). Bu unchalik samarali emas, chunki trafik qo'shimcha "hop" orqali o'tadi.
