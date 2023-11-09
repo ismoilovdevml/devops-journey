@@ -1,5 +1,7 @@
 import { Callout } from "nextra-theme-docs";
 
+![k8s](/images/tutorials/k8s/objects/2.png)
+
 ## Kubernetes Obyektlari
 
 Kubernetes - konteyner operatsiyalarini avtomatlashtiradigan open source platforma. Bu konteynerlashtirilgan ilovalarni deploy qilish va scaling(masshtablash) bilan bog'liq ko'plab qo'lda ishlov berish jarayonlarini avtomatlashtiradi. Asosan, Kubernetes distributed systemlarni barqaror ishlash uchun asos yaratadi, ilovangiz uchun masshtablash(scaling ) va failover, deploy qilish patternlarini taʼminlaydi va hokazo. Masalan, Kubernetes tizimingiz uchun canary deploymentni osongina boshqarishi mumkin.
@@ -15,3 +17,12 @@ Kubernetes shuningdek, service discovery va load balancing, storage orchestratio
 Bundan tashqari, Kubernetes kengaytiriladigan boʻlishi uchun moʻljallangan boʻlib, Custom Resource Definitionlari kabi xususiyatlarga ega boʻlib, sizga oʻz API resurslaringizni yaratishga imkon beradi va uni turli workflowlari va foydalanuvchi ehtiyojlariga moslashtiradi. Bu Kubernetesni konteyner orkestratsiyasi va cloud-native development sohasida poydevor sifatida mustahkamlab, uning atrofida tollar, servicelar va qo'llab-quvvatlashning keng ekotizimiga olib keldi.
 
 Kubernetes obyektlari Kubernetes tizimidagi doimiy obyektlardir(persistent entities). Kubernetes ushbu obyektlardan clusteringiz holatini(stateni) ko'rsatish uchun foydalanadi. Kubernetes obyekti odatda o'zi ko'rsatadigan resurs uchun **"desired state(kerali holat)"** ni belgilaydi. Kubernetes tizimi obyekt tomonidan ko'rsatilgan istalgan holatga mos keladigan joriy holatni doimiy ravishda boshqaradi.
+
+![k8s](/images/tutorials/k8s/objects/1.png)
+
+Har bir obyekt obyekt konfiguratsiyasini belgilaydigan ikkita ichki o'rnatilgan obyekt maydonini o'z ichiga oladi: `object spec` va `object status`.
+
+* Siz taqdim etishingiz kerak bo'lgan `spec`(spetsifikatsiya) obyektning kerakli stateni(holatini) tavsiflaydi.
+* `status` Kubernetes tizimi tomonidan taqdim etilgan va yangilangan obyektning joriy holatini tavsiflaydi. 
+
+Obyektlar odatda `YAML` yoki `JSON` fayllarida aniqlanadi va keyin Kubernetes API bilan yaratiladi. Obyekt `kind`(turi) siz yaratmoqchi bo'lgan Kubernetes obyektining turini belgilaydi, masalan, Pod, Service yoki Deployment.
