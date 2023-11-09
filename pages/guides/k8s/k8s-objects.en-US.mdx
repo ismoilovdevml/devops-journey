@@ -83,7 +83,7 @@ Podlar birgalikda ishlashi kerak bo'lgan bir nechta konteynerlarni ishlatishi mu
 
 #### Best Practica!
 
-***Podlar stateless va immutable(oʻzgarmas) boʻlishi kerak:*** hech qanday doimiy(persistent) maʼlumotlarni toʻgʻridan-toʻgʻri Podda saqlamang va Podning compute konfiguratsiyasi qayta ishga tushirilganda ham davom etishini kutmang. Sizda barcha saqlangan ma'lumotlar o'chib ketadi!!!
+**Podlar stateless va immutable(oʻzgarmas) boʻlishi kerak:** hech qanday doimiy(persistent) maʼlumotlarni toʻgʻridan-toʻgʻri Podda saqlamang va Podning compute konfiguratsiyasi qayta ishga tushirilganda ham davom etishini kutmang. Sizda barcha saqlangan ma'lumotlar o'chib ketadi!!!
 
 **Stateful ilovalar StatefulSet-dan foydalanishi kerak:** Ular doimiy(persistent) ma'lumotlar va holatga oid(stateful) ilovalar bilan ishlash uchun mo'ljallangan bo'lib, hatto Podni qayta yaratish kerak bo'lganda ham bu holat saqlanishini ta'minlaydi.
 
@@ -114,18 +114,26 @@ Servicening asosiy rollaridan biri load balancingni(yukni muvozanatlash) boshqar
 
 Kubernetes Servicelari bir nechta turlarni qo'llab-quvvatlaydi, ularning har biri Podlarga turli xil kirish imkonini beradi:
 
-* **ClusterIP** Ushbu default tur Serviceni cluster-internal(ichki) IP-da ko'rsatadi. Ushbu qiymatni tanlash Serviceni faqat cluster ichidan foydalanish imkoniyatini beradi.
+#### ClusterIP
+
+Ushbu default tur Serviceni cluster-internal(ichki) IP-da ko'rsatadi. Ushbu qiymatni tanlash Serviceni faqat cluster ichidan foydalanish imkoniyatini beradi.
 ![k8s](/images/tutorials/k8s/objects/8.png)
 ![k8s](/images/tutorials/k8s/objects/12.jpg)
 
-* **NodePort** Bu tur har bir nodening IP-da statik portda (NodePort) Service ko'rsatadi. NodePort Serviceni yo'naltiriladigan ClusterIP Serviceni avtomatik ravishda yaratiladi. NodePort Servicega cluster tashqarisidan `<NodeIP>:<NodePort>` so'rovi orqali murojaat qilishingiz mumkin.
+#### NodePort
+
+Bu tur har bir nodening IP-da statik portda (NodePort) Service ko'rsatadi. NodePort Serviceni yo'naltiriladigan ClusterIP Serviceni avtomatik ravishda yaratiladi. NodePort Servicega cluster tashqarisidan `<NodeIP>:<NodePort>` so'rovi orqali murojaat qilishingiz mumkin.
 ![k8s](/images/tutorials/k8s/objects/9.png)
 ![k8s](/images/tutorials/k8s/objects/13.jpg)
 
-* **LoadBalancer** Bu tur cloud providerlarining load balanceridan foydalangan holda Serviceni tashqi ko'rinishda(external) namoyish etadi(expose qiladi). NodePort va ClusterIP Servicelari, ular uchun tashqi load balanceri yo'nalishlari(route) avtomatik ravishda yaratiladi.
+#### LoadBalancer
+
+Bu tur cloud providerlarining load balanceridan foydalangan holda Serviceni tashqi ko'rinishda(external) namoyish etadi(expose qiladi). NodePort va ClusterIP Servicelari, ular uchun tashqi load balanceri yo'nalishlari(route) avtomatik ravishda yaratiladi.
 ![k8s](/images/tutorials/k8s/objects/14.jpg)
 
-* **ExternalName** Bu tur Serviceni externalNamening mazmuniga (masalan, `test.sanjar.uz`(domenga)) uning qiymati bilan `CNAME` yozuvini qaytaradi. Hech qanday proksi-server o'rnatilmagan.
+#### ExternalName
+
+Bu tur Serviceni externalNamening mazmuniga (masalan, `test.sanjar.uz`(domenga)) uning qiymati bilan `CNAME` yozuvini qaytaradi. Hech qanday proksi-server o'rnatilmagan.
 ![k8s](/images/tutorials/k8s/objects/15.png)
 
 Servicelar Podlarning davom etayotgan holatini kuzatib boradi va trafikni faqat mavjud resurslarga yo'naltiradi, ya'ni Pod o'chib qolsa yoki o'chirilsa, Service trafikni qolgan sog'lom podlardan biriga yo'naltiradi. Bu o'zgaruvchan yangilanishlarni amalga oshirish va ilovalar uchun yuqori mavjudlikni ta'minlash usulini ta'minlaydi.
@@ -134,3 +142,43 @@ Selector-based discoveryga qo'shimcha ravishda, Servicelarni Kubernetesdagi DNS 
 
 Servicelar Kubernetes clusterida doimiy obyekt bo'lib qoladi, ular ko'pincha ular ko'rsatgan podlardan oshib ketadi. Ushbu barqarorlik tufayli Servicelar Kubernetes-ga asoslangan ilovaning network layerining muhim tarkibiy qismidir, chunki ular qayta rejalashtirish(rescheduling) yoki o'z-o'zini davolash(self-healing) tufayli cluster bo'ylab qayerda va qanday harakatlanishidan qat'i nazar, ishlaydigan podlarga kirish uchun izchil kirish nuqtasini ta'minlaydi.
 
+
+<div style={{ display: 'flex', alignItems: 'center', lineHeight: '40px' }}>
+  <img
+    src="https://github.com/kubernetes/community/raw/master/icons/png/resources/labeled/vol-128.png"
+    alt="Volumelar"
+    style={{ height: '40px', marginRight: '10px' }}
+  />
+  <h3 style={{ margin: '0', fontWeight: 'bold', fontSize: '25px' }}>Volumelar</h3>
+</div>
+### Volumelar
+
+![k8s](/images/tutorials/k8s/objects/16.png)
+
+Kubernetesda volume bu abstraction(mavhum) bo'lib, saqlash muddati Podning ishlash muddatidan tashqari davom etishiga imkon beradi, bu vaqt o'tishi bilan kelishi va ketishi mumkin bo'lgan konteynerlarning vaqtinchalik xususiyatini hisobga olgan holda muhimdir. Kubernetes-dagi volumelar, shuningdek, Pod-dagi konteynerlar o'rtasida taqsimlanadigan fayl tizimlari muammosini ham hal qiladi.
+
+Volumelar local storage, public cloud provayderlari, network storage tizimlari va boshqalar kabi turli xil storage tizimlari bilan qo'llab-quvvatlanishi mumkin, bu turli ehtiyojlarga mos keladigan keng imkoniyatlarni taqdim etadi. Ushbu storage vaqtinchalik(ephemeral) bo'lishi mumkin, u Pod qancha davom etishi yoki doimiy bo'lib, undan foydalanadigan Poddan uzoqroq bo'lishi mumkin.
+#### Pod Level
+
+Pod spetsifikatsiyasi doirasida volume e'lon qilinadi va Pod ichidagi barcha konteynerlar unga kirishi mumkin. Har bir konteynerning volumega kirishi mustaqildir; masalan, bitta konteyner volumega yozishi mumkin, boshqasi esa faqat undan o'qiydi.
+
+#### Lifecycle
+
+Kubernetes volumening lifecycle uni o'rab turgan Pod bilan bog'langan. U Pod ishga tushirilganda yaratilishi va mountlanishi va Pod o'chirilganda unmount qilinishi va o'chirilishi mumkin, ya'ni ba'zi volume turlari uchun, agar bu persistent volume turi bo'lmasa, ma'lumotlar shu nuqtada yo'qolishi mumkin.
+
+#### Persistent Volumelar
+Podning lifecycledan keyin davom etadigan saqlash ehtiyojlari uchun Kubernetes `PersistentVolumes (PV)` va `PersistentVolumeClaims (PVC)` ga ega. PersistentVolume - bu podlardan mustaqil ravishda mavjud bo'lgan cluster resursi va dinamik ravishda yoki administrator tomonidan oldindan tayyorlanishi mumkin. PersistentVolumeClaim - bu PersistentVolume resursiga so'rov(request) va unga claim bo'lib, uni dinamik ravishda ta'minlanishi mumkin bo'lgan saqlash uchun foydalanuvchi so'rovi sifatida ko'rish mumkin.
+
+#### Sharing and Persistence
+
+Kubernetes bir nechta Podlar tomonidan ishlatilishi mumkin bo'lgan shared volumelarni(umumiy) (ayniqsa, bitta node ichida) va Podni rescheduling va hatto o'chirishda ma'lumotlarning saqlanishini ta'minlaydigan doimiy volumelarni qo'llab-quvvatlaydi.
+
+#### Volume turlari
+Kubernetes tomonidan qo'llab-quvvatlanadigan volumelarning ko'p turlari mavjud, masalan, 
+
+* `emptyDir` (Pod nodedan olib tashlanganida o'chiriladi),
+* `hostPath` (host nodening fayl tizimidan fayl yoki katalogni Podga o'rnatadi),
+`AWS Elastic Block Store`, `Google Persistent Disk`, `Azure Disk Storage,` `NFS mounts` va boshqalar kabi cloud storage servicelari.
+Kubernetes-dagi volumelar ma'lumotlarni boshqarish va saqlashning moslashuvchan usulini ta'minlaydi, saqlash ehtiyojlarini alohida Podlarning lifecycledan ajratadi. Bu holat komponentlar (podlar va ularning konteynerlari) stateless va transient bo'lgan tizimda saqlanishini ta'minlaydi. Bu qobiliyat stateni saqlash, ma'lumotlarni saqlash yoki ikkalasini ham talab qiladigan ilovalar uchun juda muhimdir.
+
+![k8s](/images/tutorials/k8s/objects/17.png)
