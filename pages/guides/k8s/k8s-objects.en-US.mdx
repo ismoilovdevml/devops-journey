@@ -1,0 +1,17 @@
+import { Callout } from "nextra-theme-docs";
+
+## Kubernetes Obyektlari
+
+Kubernetes - konteyner operatsiyalarini avtomatlashtiradigan open source platforma. Bu konteynerlashtirilgan ilovalarni deploy qilish va scaling(masshtablash) bilan bog'liq ko'plab qo'lda ishlov berish jarayonlarini avtomatlashtiradi. Asosan, Kubernetes distributed systemlarni barqaror ishlash uchun asos yaratadi, ilovangiz uchun masshtablash(scaling ) va failover, deploy qilish patternlarini taʼminlaydi va hokazo. Masalan, Kubernetes tizimingiz uchun canary deploymentni osongina boshqarishi mumkin.
+
+U dastlab Google tomonidan ishlab chiqilgan va hozirda `Cloud Native Computing Foundation` tomonidan yuritiladi. Tizim yagona birlik sifatida ishlash uchun ulangan kompyuterlarning yuqori darajada mavjud(highly available) clusterini muvofiqlashtiradi. U taqdim etgan abstraction sizga konteynerlashtirilgan ilovalarni alohida machinelarga bog'lamasdan clusterga deploy qilish imkonini beradi.
+
+Kubernetes cluster bo'ylab dastur konteynerlarini yanada samaraliroq taqsimlash(distribution) va rejalashtirishni(scheduling) avtomatlashtiradi. Kubernetes clusteri konteynerlashtirilgan ilovalarni ishga tushiradigan nodelar deb ataladigan worker machinelar(ishchi serverlar) to'plamidan iborat. Har bir clusterda kamida bitta worker node mavjud.
+
+Worker node(lar) dastur workloadning komponentlari bo'lgan podlarni joylashtiradi. Control plane worker nodelarni va clusterdagi podlarni boshqaradi. Production environmentida control plane odatda bir nechta kompyuterlar bo'ylab ishlaydi va cluster odatda xatolarga chidamlilik va yuqori mavjudlikni(high availability) ta'minlaydigan bir nechta nodelarni boshqaradi.
+
+Kubernetes shuningdek, service discovery va load balancing, storage orchestration, avtomatlashtirilgan rollout(ishga tushirish) va rollback(orqaga qaytarish), self-healing(o'z-o'zini davolash), secret va configuration managementni taklif qiladi. Bu xususiyatlar murakkab deployment va operatsiyalarni, jumladan, zero-downtime, oldingi versiyalarga qaytarish(rollback) va ilovalaringiz uchun maxfiy maʼlumotlarni boshqarish imkonini beradi.
+
+Bundan tashqari, Kubernetes kengaytiriladigan boʻlishi uchun moʻljallangan boʻlib, Custom Resource Definitionlari kabi xususiyatlarga ega boʻlib, sizga oʻz API resurslaringizni yaratishga imkon beradi va uni turli workflowlari va foydalanuvchi ehtiyojlariga moslashtiradi. Bu Kubernetesni konteyner orkestratsiyasi va cloud-native development sohasida poydevor sifatida mustahkamlab, uning atrofida tollar, servicelar va qo'llab-quvvatlashning keng ekotizimiga olib keldi.
+
+Kubernetes obyektlari Kubernetes tizimidagi doimiy obyektlardir(persistent entities). Kubernetes ushbu obyektlardan clusteringiz holatini(stateni) ko'rsatish uchun foydalanadi. Kubernetes obyekti odatda o'zi ko'rsatadigan resurs uchun **"desired state(kerali holat)"** ni belgilaydi. Kubernetes tizimi obyekt tomonidan ko'rsatilgan istalgan holatga mos keladigan joriy holatni doimiy ravishda boshqaradi.
