@@ -44,6 +44,14 @@ Kubernetes clusteri control plane nodelari va worker nodelardan iborat.
 
 Quyidagi rasmda Kubernetes Container tashuvchi kema sifatida ko'rsatilgan. 
 
+<div style={{ display: 'flex', alignItems: 'center', lineHeight: '40px' }}>
+  <img
+    src="https://github.com/kubernetes/community/raw/master/icons/png/infrastructure_components/labeled/control-plane-128.png"
+    alt="Control Plane"
+    style={{ height: '40px', marginRight: '10px' }}
+  />
+  <h3 style={{ margin: '0', fontWeight: 'bold', fontSize: '25px' }}>Control Plane</h3>
+</div>
 ### Control Plane
 
 Control plane conrtainer orkestratsiyasi(container orchestration) va clusterning kerakli stateini(state) saqlab turish uchun javobgardir. U quyidagi tarkibiy qismlarga ega.
@@ -56,6 +64,14 @@ Control plane conrtainer orkestratsiyasi(container orchestration) va clusterning
 * cloud-controller-manager
 </Callout>
 
+<div style={{ display: 'flex', alignItems: 'center', lineHeight: '40px' }}>
+  <img
+    src="https://github.com/kubernetes/community/raw/master/icons/png/infrastructure_components/labeled/node-128.png"
+    alt="Worker Node"
+    style={{ height: '40px', marginRight: '10px' }}
+  />
+  <h3 style={{ margin: '0', fontWeight: 'bold', fontSize: '25px' }}>Worker Node</h3>
+</div>
 ### Worker Node
 
 Worker nodelari conrtainerlashtirilgan applicationlarni(appliationla) ishga tushirish uchun javobgardir. Worker node quyidagi komponentlarga ega.
@@ -66,9 +82,28 @@ Worker nodelari conrtainerlashtirilgan applicationlarni(appliationla) ishga tush
 * Container runtime
 </Callout>
 
+<div style={{ display: 'flex', alignItems: 'center', lineHeight: '40px' }}>
+  <img
+    src="https://github.com/kubernetes/community/raw/master/icons/png/infrastructure_components/labeled/control-plane-128.png"
+    alt="Kubernetes Control Plane Komponentlari"
+    style={{ height: '40px', marginRight: '10px' }}
+  />
+  <h3 style={{ margin: '0', fontWeight: 'bold', fontSize: '25px' }}>Kubernetes Control Plane Komponentlari</h3>
+</div>
+
 ## Kubernetes Control Plane Komponentlari
 
 Birinchidan, har bir control plane komponentini va har bir komponent ortidagi muhim tushunchalarni ko'rib chiqaylik.
+
+
+<div style={{ display: 'flex', alignItems: 'center', lineHeight: '40px' }}>
+  <img
+    src="https://github.com/kubernetes/community/raw/master/icons/png/control_plane_components/labeled/api-128.png"
+    alt="kube-apiserver"
+    style={{ height: '40px', marginRight: '10px' }}
+  />
+  <h3 style={{ margin: '0', fontWeight: 'bold', fontSize: '25px' }}>kube-apiserver</h3>
+</div>
 
 ###  kube-apiserver
 
@@ -93,6 +128,8 @@ Kubernetes `api-server`i quyidagilar uchun javobgardir
   />
   <h3 style={{ margin: '0', fontWeight: 'bold', fontSize: '25px' }}>etcd</h3>
 </div>
+
+### etcd
 
 ![k8s](/images/tutorials/k8s/architecture/5.png)
 Kubernetes distributed system bo'lib, uning distributed(taqsimlangan) tabiatini qo'llab-quvvatlaydigan `etcd` kabi samarali distributed databaselar bazasiga muhtoj. U ham backend Serviceini kashf qilish, ham ma'lumotlar bazasi sifatida ishlaydi. Siz uni Kubernetes clusterining miyasi deb atashingiz mumkin.
@@ -132,6 +169,8 @@ Bundan tashqari, etcd control planedagi yagona `Statefulset` komponentidir.
   <h3 style={{ margin: '0', fontWeight: 'bold', fontSize: '25px' }}>kube-scheduler</h3>
 </div>
 
+### kube-scheduler
+
 kube-scheduler worker nodelarida Kubernetes podlarini rejalashtirish(scheduling) uchun javobgardir. Siz podni o'rnatganingizda, siz protsessor, xotira, affinity, nosozliklar(taints) yoki bardoshlik(tolerations), priority(ustuvorlik), persistent volume(PV) kabi pod talablarini belgilaysiz. Schedulerning asosiy vazifasi cretae so'rovini(requestini) aniqlash va talablarga javob beradigan pod uchun eng yaxshi nodeni tanlashdir.  Quyidagi rasmda schedulerni qanday ishlashining yuqori darajadagi umumiy ko'rinishi ko'rsatilgan.
 
 ![k8s](/images/tutorials/k8s/architecture/7.png)
@@ -160,6 +199,15 @@ Bu yerda scheduler qanday ishlaydi.
 * Schedulerda ulanadigan scheduling framework mavjud. Ya'ni, siz o'zingizning custom plugingizni scheduling workflowiga qo'shishingiz mumkin.
 
 ![k8s](/images/tutorials/k8s/architecture/9.jpg)
+
+<div style={{ display: 'flex', alignItems: 'center', lineHeight: '40px' }}>
+  <img
+    src="https://github.com/kubernetes/community/raw/master/icons/png/control_plane_components/labeled/c-m-128.png"
+    alt="manager"
+    style={{ height: '40px', marginRight: '10px' }}
+  />
+  <h3 style={{ margin: '0', fontWeight: 'bold', fontSize: '25px' }}>Kube Controller Manager</h3>
+</div>
 
 ### Kube Controller Manager
 
@@ -192,6 +240,15 @@ Kube controller manageri haqida nimalarni bilishingiz kerak.
 
 1. U barcha controllerlarni boshqaradi va controllerlar clusterni kerakli holatda(state) saqlashga harakat qiladilar.
 2. Siz kubernetesni custom resource definition bilan bog'langan custom controllerlar bilan kengaytirishingiz mumkin.
+
+<div style={{ display: 'flex', alignItems: 'center', lineHeight: '40px' }}>
+  <img
+    src="https://github.com/kubernetes/community/raw/master/icons/png/control_plane_components/labeled/c-c-m-128.png"
+    alt="c-manager"
+    style={{ height: '40px', marginRight: '10px' }}
+  />
+  <h3 style={{ margin: '0', fontWeight: 'bold', fontSize: '25px' }}>Cloud Controller Manager (CCM)</h3>
+</div>
 
 ### Cloud Controller Manager (CCM)
 
@@ -228,6 +285,16 @@ Umumiy Cloud Controller Manageri kubernetes tomonidan ishlatiladigan cloudga xos
 
 Endi worker node komponentlarining har birini ko'rib chiqamiz.
 
+
+<div style={{ display: 'flex', alignItems: 'center', lineHeight: '40px' }}>
+  <img
+    src="https://github.com/kubernetes/community/raw/master/icons/png/control_plane_components/labeled/kubelet-128.png"
+    alt="kubelet"
+    style={{ height: '40px', marginRight: '10px' }}
+  />
+  <h3 style={{ margin: '0', fontWeight: 'bold', fontSize: '25px' }}>Kubelet</h3>
+</div>
+
 ### Kubelet
 
 Kubelet - bu clusterdagi har bir nodeda ishlaydigan agent komponenti. t conrtainer sifatida ishlamaydi, aksincha, systemd tomonidan boshqariladigan daemon sifatida ishlaydi.
@@ -258,6 +325,15 @@ Kubelet conrtainerlarda muayyan buyruqlarni bajarishi mumkin, masalan, nosozlikl
 Qisqa qilib aytganda, kubelet conrtainerlarning har bir nodeda kutilganidek ishlashini ta'minlash, resurslarni boshqarish, salomatligini tekshirish va Kubernetes ishchi nodedagi conrtainerlarni boshqarish bilan bog'liq boshqa vazifalarni bajarish uchun javobgardir.
 
 ![k8s](/images/tutorials/k8s/architecture/14.png)
+
+<div style={{ display: 'flex', alignItems: 'center', lineHeight: '40px' }}>
+  <img
+    src="https://github.com/kubernetes/community/raw/master/icons/png/control_plane_components/labeled/k-proxy-128.png"
+    alt="proxy"
+    style={{ height: '40px', marginRight: '10px' }}
+  />
+  <h3 style={{ margin: '0', fontWeight: 'bold', fontSize: '25px' }}>kube proxy</h3>
+</div>
 
 ### kube proxy
 
