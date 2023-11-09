@@ -1,6 +1,8 @@
 import { Callout } from "nextra-theme-docs";
 
-![k8s](/images/tutorials/k8s/objects/2.png)
+import Image from 'next/image'
+
+![k8s](/images/tutorials/k8s/objects/2.jpeg)
 
 ## Kubernetes Obyektlari
 
@@ -26,3 +28,19 @@ Har bir obyekt obyekt konfiguratsiyasini belgilaydigan ikkita ichki o'rnatilgan 
 * `status` Kubernetes tizimi tomonidan taqdim etilgan va yangilangan obyektning joriy holatini tavsiflaydi. 
 
 Obyektlar odatda `YAML` yoki `JSON` fayllarida aniqlanadi va keyin Kubernetes API bilan yaratiladi. Obyekt `kind`(turi) siz yaratmoqchi bo'lgan Kubernetes obyektining turini belgilaydi, masalan, Pod, Service yoki Deployment.
+
+
+<Callout type="info" emoji="">
+Diqqat!!! Ushbu qo'llanmada barcha Kubernetes Obyektlari qisqa yoritilgan. Keyingi qismlarda har bir Obyektlar to'liqroq yoritiladi!
+</Callout>
+
+<div style={{ display: 'flex', alignItems: 'center', lineHeight: '40px' }}>
+  <img
+    src="https://github.com/kubernetes/community/raw/master/icons/png/resources/labeled/pod-128.png"
+    alt="Pod icon"
+    style={{ height: '40px', marginRight: '10px' }}
+  />
+  <h3 style={{ margin: '0', fontWeight: 'bold', fontSize: '25px' }}>Pod</h3>
+</div>
+
+Kubernetesning eng kichik va eng oddiy obyekti `pod`-dir. Pod sizning clusteringizdagi ishlaydigan konteynerlar to'plamini ifodalaydi. Bu schedulingning atom uniti(birligi) bo'lib, bir yoki bir nechta konteynerlarni o'z ichiga oladi:
