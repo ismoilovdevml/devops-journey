@@ -4,12 +4,13 @@ import developingGuides from './ci-cd/_meta.en-US.json';
 import orchestratingGuides from './konteyner/_meta.en-US.json';
 import delegatingGuides from './k8s/_meta.en-US.json';
 import databaseGuides from './database/_meta.en-US.json';
+import webserverGuides from './web-server/_meta.en-US.json';
 
 # Qo'llanmalar
 
 Hamjamiyat tomonidan yozilgan dokumentatsiya va qo'llanmalar. Mavzular CI/CD, Konteynerlash, Kubernetes(k8s), Monitoring, network, load-balancing va boshqalarni o'z ichiga oladi.
 
-<Tabs items={['▶️ CI-CD', '▶️ Konteynerlash', '▶️ Kubernetes(k8s)', '▶️ Database']}>
+<Tabs items={['▶️ CI-CD', '▶️ Konteynerlash', '▶️ Kubernetes(k8s)', '▶️ Database', '▶️ Web Serverlar']}>
   <Tab style={{ paddingTop: 8 }}>
     <Cards
       num={3}
@@ -62,6 +63,20 @@ Hamjamiyat tomonidan yozilgan dokumentatsiya va qo'llanmalar. Mavzular CI/CD, Ko
           description={databaseGuides[key].description}
           icon={databaseGuides[key].icon}
           href={databaseGuides[key].href}
+        />
+      ))}
+    />
+  </Tab>
+  <Tab style={{ paddingTop: 8 }}>
+    <Cards
+      num={3}
+      children={Object.keys(webserverGuides).map((key, i) => (
+        <Card
+          key={i}
+          title={webserverGuides[key].title}
+          description={webserverGuides[key].description}
+          icon={webserverGuides[key].icon}
+          href={webserverGuides[key].href}
         />
       ))}
     />
