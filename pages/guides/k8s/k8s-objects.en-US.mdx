@@ -197,5 +197,26 @@ Kubernetes-dagi volumelar ma'lumotlarni boshqarish va saqlashning moslashuvchan 
 
 Kubernetes `Namespace` - bu clusterni bir nechta virtual clusterlarga bo'lish usuli. Kubernetesda namespacelari bitta cluster ichidagi resurslar guruhlarini ajratish mexanizmini ta'minlaydi. Resurs nomlari namespaceda emas, balki namespaceda yagona bo'lishi kerak. Namespacega asoslangan qamrov faqat namespacedagi obyektlar (masalan, Deploymentlar, Servicelar va boshqalar) uchun qo'llaniladi va cluster miqyosidagi obyektlar (masalan, StorageClass, Nodelar, PersistentVolumelar va boshqalar) uchun emas. Bu jismoniy Kubernetes clusterida alohida workspace(ish maydoni) yoki virtual cluster yaratish kabi. Har bir namespace cluster ichidagi obyektlarni yaxshiroq tashkil qilish, resurslarni izolyatsiya qilish va boshqarish imkonini beruvchi resurslar uchun o'z doirasini ta'minlaydi.
 
-**Izolyatsiya va Resource Scope**: Namespacelar bir xil clusterdagi turli loyihalar, jamoalar yoki ilovalar o'rtasida izolyatsiya darajasini ta'minlaydi. Bitta namespaceda yaratilgan Podlar, Servicelar va Deployment kabi Resourcelar boshqa namespacelaridagi resurslardan ajratilgan.
+Kubernetes ichida mavjud bo'lgan har qanday resurs default namespaceda yoki cluster operatori tomonidan yaratilgan namespaceda mavjud. Namespacedan tashqarida faqat nodelar va persistent storage volumelari mavjud; bu past darajadagi resurslar har doim clusterdagi har bir namespacega ko'rinadi.
 
+#### `default` namespace
+
+Obyektlarni namespaceni ko'rsatmasdan yaratganingizda, ular `default` namespaceda yaratiladi. Kubernetes uchta namespace bilan birga keladi.
+
+* `default` Nomidan ko'rinib turibdiki, bu har bir Kubernetes buyrug'i uchun default bo'yicha reference qilingan namespace va har bir Kubernetes resursi default bo'yicha joylashgan joyda. Yangi namespacelar yaratilgunga qadar, butun cluster `default` holatda bo'ladi.
+
+* `kube-system` kube-system namespaceni Kubernetes tizim komponentlari uchun ajratilgan. Bunga `kube-dns`, `kube-proxy` va boshqa clusterning to'g'ri ishlashi uchun muhim bo'lgan muhim komponentlar kiradi.
+
+* `kube-public` kube-public namespace avtomatik ravishda yaratiladi va barcha foydalanuvchilar (shu jumladan autentifikatsiya qilinmaganlar) tomonidan o'qilishi mumkin. U ko'pincha hamma foydalanuvchilar uchun ochiq bo'lishi kerak bo'lgan resurslar uchun ishlatiladi, masalan, umumiy ma'lumot(public information) yoki konfiguratsiya fayllari.
+
+#### Nima uchun Kubernetes namespacelaridan foydalanish kerak?
+
+Kubernetes namespacelari uchun ko'plab foydalanish holatlari mavjud, jumladan:
+
+* Jamoalar yoki loyihalarga bir-birining ishiga ta'sir qilishdan qo'rqmasdan o'zlarining virtual clusterlarida mavjud bo'lishiga ruxsat berish.
+
+* Foydalanuvchilar va jarayonlarni ma'lum namespacelariga cheklash orqali role-based access controls (RBAC) yaxshilash.
+
+* cluster resurslarini resurs kvotalari orqali bir nechta jamoalar va foydalanuvchilar o'rtasida taqsimlashni yoqish.
+
+* Konteynerli ilovalarni ishlab chiqish, sinovdan o'tkazish va deploymentni ajratishning oson usulini ta'minlash, butun lifecycle  bir xil clusterda amalga oshirish imkonini beradi.
