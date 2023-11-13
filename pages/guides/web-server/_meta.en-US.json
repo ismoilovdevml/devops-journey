@@ -1,8 +1,8 @@
 {
     "configuring-nginx-webserver": {
-      "title": "NGINX web-server configratsiya qilish",
+      "title": "NGINX web-server sozlash",
       "icon": "▶️",
-      "description": "NGINX va NGINX Plus-ni veb-server sifatida sozlash",
+      "description": "NGINX va NGINX Plus-ni web-server sifatida sozlash",
       "href": "/guides/web-server/configuring-nginx-webserver"
     }
   }
