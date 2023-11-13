@@ -9,13 +9,19 @@ Ushbu maqola **NGINX Open Source** va **NGINX Plus**-ni veb-server sifatida qand
 
 <Callout type="info" emoji="">
 **Virtual serverlarni sozlash**
+
 **Locationlarni sozlash**
+
 * Location Priority
 
 **O'zgaruvchilardan(variable) foydalanish**
+
 **Maxsus Status kodlarni qaytarish**
+
 **So'rovlarda(request) URI'larni qayta yozish**
+
 **HTTP javoblarini(response) qayta yozish**
+
 **Xatolarni boshqarish(Handling Errors)**
 </Callout>
 
@@ -45,3 +51,5 @@ server {
     # Qo'shimcha server konfiguratsiyasi
 }
 ```
+
+Agar port o'tkazib yuborilsa, standart port ishlatiladi. Xuddi shunday, agar manzil o'tkazib yuborilsa, server barcha manzillarni tinglaydi(listen). Agar `listen` direktivasi umuman kiritilmagan bo'lsa, superfoydalanuvchi huquqlariga(superuser privileges) qarab `standart` port 80/tcp va `default` port 8000/tcp bo'ladi.

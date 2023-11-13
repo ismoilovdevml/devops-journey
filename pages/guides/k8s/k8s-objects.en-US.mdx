@@ -182,3 +182,20 @@ Kubernetes tomonidan qo'llab-quvvatlanadigan volumelarning ko'p turlari mavjud, 
 Kubernetes-dagi volumelar ma'lumotlarni boshqarish va saqlashning moslashuvchan usulini ta'minlaydi, saqlash ehtiyojlarini alohida Podlarning lifecycledan ajratadi. Bu holat komponentlar (podlar va ularning konteynerlari) stateless va transient bo'lgan tizimda saqlanishini ta'minlaydi. Bu qobiliyat stateni saqlash, ma'lumotlarni saqlash yoki ikkalasini ham talab qiladigan ilovalar uchun juda muhimdir.
 
 ![k8s](/images/tutorials/k8s/objects/17.png)
+
+<div style={{ display: 'flex', alignItems: 'center', lineHeight: '40px' }}>
+  <img
+    src="https://github.com/kubernetes/community/raw/master/icons/png/resources/labeled/ns-128.png"
+    alt="Namespacelar"
+    style={{ height: '40px', marginRight: '10px' }}
+  />
+  <h3 style={{ margin: '0', fontWeight: 'bold', fontSize: '25px' }}>Namespacelar</h3>
+</div>
+### Namespacelar
+
+![k8s](/images/tutorials/k8s/objects/18.png)
+
+Kubernetes `Namespace` - bu clusterni bir nechta virtual clusterlarga bo'lish usuli. Kubernetesda namespacelari bitta cluster ichidagi resurslar guruhlarini ajratish mexanizmini ta'minlaydi. Resurs nomlari namespaceda emas, balki namespaceda yagona bo'lishi kerak. Namespacega asoslangan qamrov faqat namespacedagi obyektlar (masalan, Deploymentlar, Servicelar va boshqalar) uchun qo'llaniladi va cluster miqyosidagi obyektlar (masalan, StorageClass, Nodelar, PersistentVolumelar va boshqalar) uchun emas. Bu jismoniy Kubernetes clusterida alohida workspace(ish maydoni) yoki virtual cluster yaratish kabi. Har bir namespace cluster ichidagi obyektlarni yaxshiroq tashkil qilish, resurslarni izolyatsiya qilish va boshqarish imkonini beruvchi resurslar uchun o'z doirasini ta'minlaydi.
+
+**Izolyatsiya va Resource Scope**: Namespacelar bir xil clusterdagi turli loyihalar, jamoalar yoki ilovalar o'rtasida izolyatsiya darajasini ta'minlaydi. Bitta namespaceda yaratilgan Podlar, Servicelar va Deployment kabi Resourcelar boshqa namespacelaridagi resurslardan ajratilgan.
+
