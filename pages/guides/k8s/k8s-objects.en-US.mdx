@@ -220,3 +220,16 @@ Kubernetes namespacelari uchun ko'plab foydalanish holatlari mavjud, jumladan:
 * cluster resurslarini resurs kvotalari orqali bir nechta jamoalar va foydalanuvchilar o'rtasida taqsimlashni yoqish.
 
 * Konteynerli ilovalarni ishlab chiqish, sinovdan o'tkazish va deploymentni ajratishning oson usulini ta'minlash, butun lifecycle  bir xil clusterda amalga oshirish imkonini beradi.
+
+#### Bir nechta Kubernetes namespacelaridan qachon foydalanish kerak?
+
+Kichik jamoalar yoki kichikroq tashkilotlar default namespacedan foydalanishi mumkin. Bu, ayniqsa, developerlar yoki foydalanuvchilarni bir-biridan ajratishning hojati bo'lmasa, dolzarbdir. Biroq, bir namespacega ega bo'lishning ko'plab foydali afzalliklari bor, jumladan:
+
+* **Izolyatsiya**. Katta yoki o'sib borayotgan jamoalar o'z loyihalari va microservicelarini bir-biridan ajratish uchun namespacelardan foydalanishlari mumkin. Jamoalar muammosiz bir xil resurs nomlarini workspacelarida qayta ishlatishlari mumkin. Bundan tashqari, bitta workspacedagi elementlarga amal qilish boshqa workspacelariga hech qachon ta'sir qilmaydi. Masalan `Development`, `Testing`, `Production` namespacelarochib ishlash.
+
+* **Organization** `Development`, `Testing` va `Production` uchun yagona clusterdan foydalanadigan organizatsiyalar test environment ishlab chiqish va test environment uchun namespacelaridan foydalanishi mumkin. Bu developerlar yoki testerlar dasturning lifecycle davomida o'z namespacelarida kiritgan o'zgarishlar ishlab chiqarish kodiga ta'sir qilmasligini ta'minlaydi.
+
+* **Permissionlar**. Namespacelar Kubernetes `RBAC`-dan foydalanishga imkon beradi, shuning uchun jamoalar permissionlar(ruxsat) yoki abilitielar ro'yxatini bitta nom ostida guruhlaydigan rollarni belgilashlari mumkin. Bu ma'lum bir namespacedagi resurslarga faqat ruxsat(access) berilgan foydalanuvchilar kirishini ta'minlashi mumkin.
+
+* **Resource Control** Protsessor yoki xotiradan foydalanish uchun resurs kvotalarini belgilash orqali polisga asoslangan resurs cheklovlari namespacelarida o'rnatilishi mumkin. Bu har bir loyiha yoki namespace ishga tushirish uchun zarur bo'lgan resurslarga ega bo'lishini va hech bir namespace barcha mavjud resurslarni ishlatmasligini ta'minlaydi.
+* **Performance** Namespacelardan foydalanish berilgan clusterning ish faoliyatini(performance) yaxshilashga yordam beradi. Agar cluster turli loyihalar uchun bir nechta namespacega ajratilgan bo'lsa, Kubernetes API operatsiyalarni bajarishda qidirish uchun kamroq elementlarga ega bo'ladi. Bu clusterda ishlayotgan har bir ilova uchun kechikish vaqtini kamaytirishi va umumiy dastur ishlashini tezlashtirishi mumkin.
