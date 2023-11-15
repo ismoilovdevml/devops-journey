@@ -6,15 +6,15 @@ import Image from 'next/image'
 
 ## Kubernetes Obyektlari
 
-Kubernetes - konteyner operatsiyalarini avtomatlashtiradigan open source platforma. Bu konteynerlashtirilgan ilovalarni deploy qilish va scaling(masshtablash) bilan bog'liq ko'plab qo'lda ishlov berish jarayonlarini avtomatlashtiradi. Asosan, Kubernetes distributed systemlarni barqaror ishlash uchun asos yaratadi, ilovangiz uchun masshtablash(scaling ) va failover, deploy qilish patternlarini taʼminlaydi va hokazo. Masalan, Kubernetes tizimingiz uchun canary deploymentni osongina boshqarishi mumkin.
+Kubernetes - konteyner operatsiyalarini avtomatlashtiradigan open source platforma. Bu konteynerlashtirilgan applicationlarni deploy qilish va scaling(masshtablash) bilan bog'liq ko'plab qo'lda ishlov berish jarayonlarini avtomatlashtiradi. Asosan, Kubernetes distributed systemlarni barqaror ishlash uchun asos yaratadi, applicationngiz uchun masshtablash(scaling ) va failover, deploy qilish patternlarini taʼminlaydi va hokazo. Masalan, Kubernetes tizimingiz uchun canary deploymentni osongina boshqarishi mumkin.
 
-U dastlab Google tomonidan ishlab chiqilgan va hozirda `Cloud Native Computing Foundation` tomonidan yuritiladi. Tizim yagona birlik sifatida ishlash uchun ulangan kompyuterlarning yuqori darajada mavjud(highly available) clusterini muvofiqlashtiradi. U taqdim etgan abstraction sizga konteynerlashtirilgan ilovalarni alohida machinelarga bog'lamasdan clusterga deploy qilish imkonini beradi.
+U dastlab Google tomonidan ishlab chiqilgan va hozirda `Cloud Native Computing Foundation` tomonidan yuritiladi. Tizim yagona birlik sifatida ishlash uchun ulangan kompyuterlarning yuqori darajada mavjud(highly available) clusterini muvofiqlashtiradi. U taqdim etgan abstraction sizga konteynerlashtirilgan applicationlarni alohida machinelarga bog'lamasdan clusterga deploy qilish imkonini beradi.
 
-Kubernetes cluster bo'ylab dastur konteynerlarini yanada samaraliroq taqsimlash(distribution) va rejalashtirishni(scheduling) avtomatlashtiradi. Kubernetes clusteri konteynerlashtirilgan ilovalarni ishga tushiradigan nodelar deb ataladigan worker machinelar(ishchi serverlar) to'plamidan iborat. Har bir clusterda kamida bitta worker node mavjud.
+Kubernetes cluster bo'ylab dastur konteynerlarini yanada samaraliroq taqsimlash(distribution) va rejalashtirishni(scheduling) avtomatlashtiradi. Kubernetes clusteri konteynerlashtirilgan applicationlarni ishga tushiradigan nodelar deb ataladigan worker machinelar(ishchi serverlar) to'plamidan iborat. Har bir clusterda kamida bitta worker node mavjud.
 
 Worker node(lar) dastur workloadning komponentlari bo'lgan podlarni joylashtiradi. Control plane worker nodelarni va clusterdagi podlarni boshqaradi. Production environmentida control plane odatda bir nechta kompyuterlar bo'ylab ishlaydi va cluster odatda xatolarga chidamlilik va yuqori mavjudlikni(high availability) ta'minlaydigan bir nechta nodelarni boshqaradi.
 
-Kubernetes shuningdek, service discovery va load balancing, storage orchestration, avtomatlashtirilgan rollout(ishga tushirish) va rollback(orqaga qaytarish), self-healing(o'z-o'zini davolash), secret va configuration managementni taklif qiladi. Bu xususiyatlar murakkab deployment va operatsiyalarni, jumladan, zero-downtime, oldingi versiyalarga qaytarish(rollback) va ilovalaringiz uchun maxfiy maʼlumotlarni boshqarish imkonini beradi.
+Kubernetes shuningdek, service discovery va load balancing, storage orchestration, avtomatlashtirilgan rollout(ishga tushirish) va rollback(orqaga qaytarish), self-healing(o'z-o'zini davolash), secret va configuration managementni taklif qiladi. Bu xususiyatlar murakkab deployment va operatsiyalarni, jumladan, zero-downtime, oldingi versiyalarga qaytarish(rollback) va applicationlaringiz uchun maxfiy maʼlumotlarni boshqarish imkonini beradi.
 
 Bundan tashqari, Kubernetes kengaytiriladigan boʻlishi uchun moʻljallangan boʻlib, Custom Resource Definitionlari kabi xususiyatlarga ega boʻlib, sizga oʻz API resurslaringizni yaratishga imkon beradi va uni turli workflowlari va foydalanuvchi ehtiyojlariga moslashtiradi. Bu Kubernetesni konteyner orkestratsiyasi va cloud-native development sohasida poydevor sifatida mustahkamlab, uning atrofida tollar, servicelar va qo'llab-quvvatlashning keng ekotizimiga olib keldi.
 
@@ -46,7 +46,7 @@ Diqqat!!! Ushbu qo'llanmada barcha Kubernetes Obyektlari qisqa yoritilgan. Keyin
 
 ![k8s](/images/tutorials/k8s/objects/5.png)
 
-Kubernetesdagi pod - Kubernetes ilovalarining asosiy qurilish bloki bo'lib, u yaratilishi(create), rejalashtirilishi(schedule) va boshqarilishi mumkin bo'lgan eng kichik deploymment unit vazifasini bajaradi. Bu, asosan, bir yoki bir nechta konteynerlarni o'rab oladigan, odatda mahkam bog'langan va resurslarni bo'lishishi kerak bo'lgan o'ram(wrapper). Har bir Pod o'zining IP manzili bilan ishlaydi, bu unga Kubernetes clusteridagi boshqa Podlar va servicelar bilan bog'lanish imkonini beradi. Pod ichida konteynerlar IP-manzil va port spaceni almashadilar va bir-birlarini `localhost` orqali topishlari mumkin. Ular, shuningdek, Pod levelida ko'rsatilgan Kubernetes volumelari orqali fayllarni almashishlari mumkin.
+Kubernetesdagi pod - Kubernetes applicationlarining asosiy qurilish bloki bo'lib, u yaratilishi(create), rejalashtirilishi(schedule) va boshqarilishi mumkin bo'lgan eng kichik deploymment unit vazifasini bajaradi. Bu, asosan, bir yoki bir nechta konteynerlarni o'rab oladigan, odatda mahkam bog'langan va resurslarni bo'lishishi kerak bo'lgan o'ram(wrapper). Har bir Pod o'zining IP manzili bilan ishlaydi, bu unga Kubernetes clusteridagi boshqa Podlar va servicelar bilan bog'lanish imkonini beradi. Pod ichida konteynerlar IP-manzil va port spaceni almashadilar va bir-birlarini `localhost` orqali topishlari mumkin. Ular, shuningdek, Pod levelida ko'rsatilgan Kubernetes volumelari orqali fayllarni almashishlari mumkin.
 
 Pod yaratilganda, u clusterdagi node ustida ishlashi rejalashtirilgan va jarayon tugatilgunga qadar, Pod o'chirilguncha, Pod biron sababga ko'ra chiqarib yuborilmaguncha yoki node ishlamay qolguncha u erda qoladi. Har bir Pod holati Kubernetes API da taqdim etilgan va uni Kubernetes API yoki uning buyruq qatori interfeysi orqali boshqarish mumkin.
 
@@ -55,7 +55,7 @@ Pod yaratilganda, u clusterdagi node ustida ishlashi rejalashtirilgan va jarayon
 
 **Volumelar** Pod shared storage volumelari to'plamini belgilashi mumkin. Pod ichidagi konteynerlar ma'lumotlarni almashish uchun ushbu volumelardan foydalanishi mumkin. Volumelar, shuningdek, konteynerni qayta ishga tushirishda ma'lumotlarning saqlanib qolishiga imkon beradi.
 
-**Networking** Har bir Podga cluster ichida noyob IP-manzil beriladi, bu esa ilovalarga portlardan ziddiyat xavfisiz foydalanish imkonini beradi. Pod ichidagi konteynerlar network namespaceni baham ko'radi, ya'ni ular `localhost` yordamida bir-biri bilan bog'lanishlari mumkin.
+**Networking** Har bir Podga cluster ichida noyob IP-manzil beriladi, bu esa applicationlarga portlardan ziddiyat xavfisiz foydalanish imkonini beradi. Pod ichidagi konteynerlar network namespaceni baham ko'radi, ya'ni ular `localhost` yordamida bir-biri bilan bog'lanishlari mumkin.
 
 **Pod haqida ma'lumot** Bunga Pod nomi, noyob(unique) UID va namespacelar kiradi.
 
@@ -85,11 +85,11 @@ Podlar birgalikda ishlashi kerak bo'lgan bir nechta konteynerlarni ishlatishi mu
 
 **Podlar stateless va immutable(oʻzgarmas) boʻlishi kerak:** hech qanday doimiy(persistent) maʼlumotlarni toʻgʻridan-toʻgʻri Podda saqlamang va Podning compute konfiguratsiyasi qayta ishga tushirilganda ham davom etishini kutmang. Sizda barcha saqlangan ma'lumotlar o'chib ketadi!!!
 
-**Stateful ilovalar StatefulSet-dan foydalanishi kerak:** Ular doimiy(persistent) ma'lumotlar va holatga oid(stateful) ilovalar bilan ishlash uchun mo'ljallangan bo'lib, hatto Podni qayta yaratish kerak bo'lganda ham bu holat saqlanishini ta'minlaydi.
+**Stateful applicationlar StatefulSet-dan foydalanishi kerak:** Ular doimiy(persistent) ma'lumotlar va holatga oid(stateful) applicationlar bilan ishlash uchun mo'ljallangan bo'lib, hatto Podni qayta yaratish kerak bo'lganda ham bu holat saqlanishini ta'minlaydi.
 
-**Stateless ilovalar uchun Deploymentdan foydalaning:** Deploymentlar maʼlum miqdordagi Podlar ilova kodini ishlayotganligiga ishonch hosil qiladi.
+**Stateless applicationlar uchun Deploymentdan foydalaning:** Deploymentlar maʼlum miqdordagi Podlar application kodini ishlayotganligiga ishonch hosil qiladi.
 
-Podlar ilovaning ish muhitini qamrab oladi: dasturiy ta'minot(software), runtime, kutubxonalar(library) va vaqtinchalik holatlar(ephemeral states). Podlarni tushunish juda muhim, chunki ular Kubernetes clusterida asosiy deploy qilinadigan  obyekt bo'lib Service qiladi.
+Podlar applicationning ish muhitini qamrab oladi: dasturiy ta'minot(software), runtime, kutubxonalar(library) va vaqtinchalik holatlar(ephemeral states). Podlarni tushunish juda muhim, chunki ular Kubernetes clusterida asosiy deploy qilinadigan  obyekt bo'lib Service qiladi.
 
 
 <div style={{ display: 'flex', alignItems: 'center', lineHeight: '40px' }}>
@@ -136,11 +136,11 @@ Bu tur cloud providerlarining load balanceridan foydalangan holda Serviceni tash
 Bu tur Serviceni externalNamening mazmuniga (masalan, `test.sanjar.uz`(domenga)) uning qiymati bilan `CNAME` yozuvini qaytaradi. Hech qanday proksi-server o'rnatilmagan.
 ![k8s](/images/tutorials/k8s/objects/15.png)
 
-Servicelar Podlarning davom etayotgan holatini kuzatib boradi va trafikni faqat mavjud resurslarga yo'naltiradi, ya'ni Pod o'chib qolsa yoki o'chirilsa, Service trafikni qolgan sog'lom podlardan biriga yo'naltiradi. Bu o'zgaruvchan yangilanishlarni amalga oshirish va ilovalar uchun yuqori mavjudlikni ta'minlash usulini ta'minlaydi.
+Servicelar Podlarning davom etayotgan holatini kuzatib boradi va trafikni faqat mavjud resurslarga yo'naltiradi, ya'ni Pod o'chib qolsa yoki o'chirilsa, Service trafikni qolgan sog'lom podlardan biriga yo'naltiradi. Bu o'zgaruvchan yangilanishlarni amalga oshirish va applicationlar uchun yuqori mavjudlikni ta'minlash usulini ta'minlaydi.
 
 Selector-based discoveryga qo'shimcha ravishda, Servicelarni Kubernetesdagi DNS orqali topish mumkin. Service yaratilganda, unga DNS nomi beriladi, bu boshqa Servicelarga Servicening IP-manzilini hal qilish va haqiqiy Pod IP-larni bilmasdan muloqot qilish imkonini beradi.
 
-Servicelar Kubernetes clusterida doimiy obyekt bo'lib qoladi, ular ko'pincha ular ko'rsatgan podlardan oshib ketadi. Ushbu barqarorlik tufayli Servicelar Kubernetes-ga asoslangan ilovaning network layerining muhim tarkibiy qismidir, chunki ular qayta rejalashtirish(rescheduling) yoki o'z-o'zini davolash(self-healing) tufayli cluster bo'ylab qayerda va qanday harakatlanishidan qat'i nazar, ishlaydigan podlarga kirish uchun izchil kirish nuqtasini ta'minlaydi.
+Servicelar Kubernetes clusterida doimiy obyekt bo'lib qoladi, ular ko'pincha ular ko'rsatgan podlardan oshib ketadi. Ushbu barqarorlik tufayli Servicelar Kubernetes-ga asoslangan applicationning network layerining muhim tarkibiy qismidir, chunki ular qayta rejalashtirish(rescheduling) yoki o'z-o'zini davolash(self-healing) tufayli cluster bo'ylab qayerda va qanday harakatlanishidan qat'i nazar, ishlaydigan podlarga kirish uchun izchil kirish nuqtasini ta'minlaydi.
 
 
 <div style={{ display: 'flex', alignItems: 'center', lineHeight: '40px' }}>
@@ -179,7 +179,7 @@ Kubernetes tomonidan qo'llab-quvvatlanadigan volumelarning ko'p turlari mavjud, 
 * `emptyDir` (Pod nodedan olib tashlanganida o'chiriladi),
 * `hostPath` (host nodening fayl tizimidan fayl yoki katalogni Podga o'rnatadi),
 `AWS Elastic Block Store`, `Google Persistent Disk`, `Azure Disk Storage,` `NFS mounts` va boshqalar kabi cloud storage servicelari.
-Kubernetes-dagi volumelar ma'lumotlarni boshqarish va saqlashning moslashuvchan usulini ta'minlaydi, saqlash ehtiyojlarini alohida Podlarning lifecycledan ajratadi. Bu holat komponentlar (podlar va ularning konteynerlari) stateless va transient bo'lgan tizimda saqlanishini ta'minlaydi. Bu qobiliyat stateni saqlash, ma'lumotlarni saqlash yoki ikkalasini ham talab qiladigan ilovalar uchun juda muhimdir.
+Kubernetes-dagi volumelar ma'lumotlarni boshqarish va saqlashning moslashuvchan usulini ta'minlaydi, saqlash ehtiyojlarini alohida Podlarning lifecycledan ajratadi. Bu holat komponentlar (podlar va ularning konteynerlari) stateless va transient bo'lgan tizimda saqlanishini ta'minlaydi. Bu qobiliyat stateni saqlash, ma'lumotlarni saqlash yoki ikkalasini ham talab qiladigan applicationlar uchun juda muhimdir.
 
 ![k8s](/images/tutorials/k8s/objects/17.png)
 
@@ -219,7 +219,7 @@ Kubernetes namespacelari uchun ko'plab foydalanish holatlari mavjud, jumladan:
 
 * cluster resurslarini resurs kvotalari orqali bir nechta jamoalar va foydalanuvchilar o'rtasida taqsimlashni yoqish.
 
-* Konteynerli ilovalarni ishlab chiqish, sinovdan o'tkazish va deploymentni ajratishning oson usulini ta'minlash, butun lifecycle  bir xil clusterda amalga oshirish imkonini beradi.
+* Konteynerli applicationlarni ishlab chiqish, sinovdan o'tkazish va deploymentni ajratishning oson usulini ta'minlash, butun lifecycle  bir xil clusterda amalga oshirish imkonini beradi.
 
 #### Bir nechta Kubernetes namespacelaridan qachon foydalanish kerak?
 
@@ -232,4 +232,22 @@ Kichik jamoalar yoki kichikroq tashkilotlar default namespacedan foydalanishi mu
 * **Permissionlar**. Namespacelar Kubernetes `RBAC`-dan foydalanishga imkon beradi, shuning uchun jamoalar permissionlar(ruxsat) yoki abilitielar ro'yxatini bitta nom ostida guruhlaydigan rollarni belgilashlari mumkin. Bu ma'lum bir namespacedagi resurslarga faqat ruxsat(access) berilgan foydalanuvchilar kirishini ta'minlashi mumkin.
 
 * **Resource Control** Protsessor yoki xotiradan foydalanish uchun resurs kvotalarini belgilash orqali polisga asoslangan resurs cheklovlari namespacelarida o'rnatilishi mumkin. Bu har bir loyiha yoki namespace ishga tushirish uchun zarur bo'lgan resurslarga ega bo'lishini va hech bir namespace barcha mavjud resurslarni ishlatmasligini ta'minlaydi.
-* **Performance** Namespacelardan foydalanish berilgan clusterning ish faoliyatini(performance) yaxshilashga yordam beradi. Agar cluster turli loyihalar uchun bir nechta namespacega ajratilgan bo'lsa, Kubernetes API operatsiyalarni bajarishda qidirish uchun kamroq elementlarga ega bo'ladi. Bu clusterda ishlayotgan har bir ilova uchun kechikish vaqtini kamaytirishi va umumiy dastur ishlashini tezlashtirishi mumkin.
+* **Performance** Namespacelardan foydalanish berilgan clusterning ish faoliyatini(performance) yaxshilashga yordam beradi. Agar cluster turli loyihalar uchun bir nechta namespacega ajratilgan bo'lsa, Kubernetes API operatsiyalarni bajarishda qidirish uchun kamroq elementlarga ega bo'ladi. Bu clusterda ishlayotgan har bir application uchun kechikish vaqtini kamaytirishi va umumiy dastur ishlashini tezlashtirishi mumkin.
+
+### Workloads
+
+![k8s](/images/tutorials/k8s/objects/19.png)
+
+Workloads Kubernetes-da ishlaydigan dasturdir. Sizning workloadigiz bitta komponent bo'ladimi yoki birgalikda ishlaydigan bir nechta bo'ladimi, Kubernetes-da siz uni podlar to'plamida ishlatasiz. Kubernetes-da Pod sizning clusteringizdagi ishlaydigan konteynerlar to'plamini ifodalaydi. Kubernetes podlari aniqlangan lifecyclega ega. Misol uchun, bir marta sizning clusteringizda pod ishlayotgan bo'lsa, u ishlayotgan nodedagi tanqidiy nosozlik bu nodedagi barcha podlarning ishlamay qolganligini anglatadi. Kubernetes muvaffaqiyatsizlik darajasini yakuniy deb hisoblaydi: agar node keyinchalik sog'lom bo'lsa ham, tiklanish uchun yangi Pod yaratishingiz kerak bo'ladi. Biroq, hayotni sezilarli darajada osonlashtirish uchun har bir Podni bevosita boshqarishingiz shart emas. Buning o'rniga siz o'z nomingizdan bir qator podlarni boshqaradigan workload resurslaridan foydalanishingiz mumkin. Ushbu manbalar siz ko'rsatgan holatga mos keladigan to'g'ri turdagi podlarning to'g'ri soni ishlayotganiga ishonch hosil qiluvchi kontrollerlarni sozlaydi.
+
+Kubernetes bir nechta built-in workload resourcelarini taqdim etadi:
+
+* `Deployment` va `ReplicaSet` (eski ReplicationController resursini almashtirish). Deployment sizning clusteringizda stateless applicationlarning workloadini boshqarish uchun juda mos keladi, bu yerda Deploymentdagi har qanday pod bir-birining o'rnini bosadi va kerak bo'lganda almashtirilishi mumkin.
+
+* `StatefulSet` sizga qandaydir tarzda holatni kuzatuvchi bir yoki bir nechta tegishli podlarni ishga tushirish imkonini beradi. Misol uchun, agar sizning workloaddingiz ma'lumotlarni doimiy ravishda yozib olsa, har bir Podga `PersistentVolume` bilan mos keladigan StatefulSet-ni ishga tushirishingiz mumkin. Oʻsha StatefulSet uchun Podlarda ishlaydigan sizning kodingiz umumiy barqarorlikni yaxshilash uchun maʼlumotlarni bir xil StatefulSetʼdagi boshqa podlarga takrorlashi mumkin.
+
+* `DaemonSet` nodelar uchun local bo'lgan imkoniyatlarni ta'minlovchi podlarni belgilaydi. Har safar clusteringizga DaemonSet spetsifikatsiyasiga mos keladigan nodeni qo'shsangiz, control plane ushbu DaemonSet uchun Podni yangi nodega rejalashtiradi(schedule). DaemonSet-dagi har bir pod classic Unix/POSIX serveridagi tizim demoniga o'xshash ishni bajaradi. DaemonSet sizning clusteringiz ishlashi uchun asosiy bo'lishi mumkin, masalan, cluster tarmog'ini ishga tushirish uchun plagin, u sizga nodeni boshqarishda yordam berishi yoki siz ishlayotgan konteyner platformasini yaxshilaydigan ixtiyoriy xatti-harakatni ta'minlashi mumkin.
+
+* `Job` va `CronJob` tugallanadigan(completion) va keyin to'xtatiladigan vazifalarni(task) aniqlashning turli usullarini taqdim etadi. Bir marta tugallanadigan vazifani belgilash uchun `Job` foydalanishingiz mumkin. Bir ishni jadvalga muvofiq bir necha marta bajarish uchun `CronJob`-dan foydalanishingiz mumkin
+
+Kengroq Kubernetes ekotizimida siz qo'shimcha xatti-harakatlarni ta'minlaydigan uchinchi tomon workload resurslarini topishingiz mumkin. Custom resource definitionidan foydalanib, Kubernetesning asosiy qismi bo'lmagan muayyan xatti-harakatni xohlasangiz, uchinchi tomon workload resourceni qo'shishingiz mumkin. Misol uchun, agar siz applicationingiz uchun Podlar guruhini ishga tushirmoqchi bo'lsangiz, lekin barcha Podlar mavjud bo'lmaguncha ishlashni to'xtatsangiz (ehtimol, ba'zi yuqori o'tkazuvchanlik taqsimoti uchun), u holda siz ushbu xususiyatni ta'minlaydigan extensionni amalga oshirishingiz yoki o'rnatishingiz mumkin.
