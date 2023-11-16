@@ -139,7 +139,7 @@ sudo nano /etc/systemd/system/prometheus.service
 ```
 Faylga quyidagi kodni kiriting:
 
-```bash filename="/etc/systemd/system/prometheus.service" / --web.listen-address=0.0.0.0:9090 \ / / --config.file /etc/prometheus/prometheus.yml \ /
+```bash filename="/etc/systemd/system/prometheus.service"
 [Unit]
 Description=Prometheus
 Wants=network-online.target
@@ -249,7 +249,7 @@ sudo nano /etc/systemd/system/node_exporter.service
 
 Faylga quyidagi kodni kiriting:
 
-```bash filename="/etc/systemd/system/node_exporter.service" /ExecStart=/usr/local/bin/node_exporter/
+```bash filename="/etc/systemd/system/node_exporter.service"
 [Unit]
 Description=Node Exporter
 Wants=network-online.target
