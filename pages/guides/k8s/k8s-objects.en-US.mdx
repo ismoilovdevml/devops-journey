@@ -270,3 +270,60 @@ Ular foydalanuvchilar operatsion yoki tashkiliy maqsadlarda foydalanishlari mumk
 * `"tier" : "frontend"`,`"tier" : "backend"`,`"tier" : "cache"`
 * `"partition" : "customerA"`,`"partition" : "customerB"`
 * `"track" : "daily"`,`"track" : "weekly"`
+
+#### Label Selectorlar
+
+Namelar va UIDlardan farqli o'laroq, labellar o'ziga xoslikni ta'minlamaydi. Umuman olganda, biz ko'plab obyektlar bir xil label(lar)ga ega bo'lishini kutamiz.
+Label selectorlari orqali client/user obyektlar to'plamini aniqlay oladi. Label selectori Kubernetesdagi asosiy guruhlash primitividir. API hozirda ikki turdagi selectorlarni qo'llab-quvvatlaydi: `equality-based` va `set-based`. Label selectorri vergul bilan ajratilgan bir nechta talablardan(requirement) iborat bo'lishi mumkin. Bir nechta talablar bo'lsa, ularning barchasi bajarilishi kerak, shuning uchun vergul ajratuvchi mantiqiy(logical) `AND (&&)` operatori vazifasini bajaradi.
+Bo'sh yoki ko'rsatilmagan selectorlarning semantikasi kontekstga bog'liq va selectorlardan foydalanadigan API turlari ularning haqiqiyligi(validity) va ma'nosini hujjatlashtirishi kerak.
+
+##### Equality-based requirement
+
+Equality(Tenglik)- yoki inequality-based(tengsizlikka asoslangan) requirementlar label keylari va valuelari bo'yicha filtrlash imkonini beradi. Mos obyektlar barcha belgilangan label cheklovlarini qondirishi kerak, lekin ularda qo'shimcha labellar ham bo'lishi mumkin. Uch xil operatorlar qabul qilinadi `=`,`==`,`!=`. Birinchi ikkitasi tenglikni(equality) ifodalaydi, ikkinchisi esa tengsizlikni(inequality) ifodalaydi. Masalan:
+
+```yaml /=/ /!=/
+environment = production
+tier != frontend
+```
+Birinchisi, kaliti environmentga va productionga teng qiymatga ega bo'lgan barcha resurslarni tanlaydi. Ikkinchisi old qismdan farqli daraja va qiymatga equal keyga ega barcha resurslarni va tier key bilan labelsiz barcha resurslarni tanlaydi. Vergul operatori yordamida frontenddan tashqari productiondagi resurslarni filtrlash mumkin: `muhit=production`,`tier!=frontend`.
+
+Equality-based yorliq label requirementi uchun foydalanish senariylaridan biri Podlar uchun node selction(tanlash) mezonlarini belgilashdir. Misol uchun, quyidagi Pod namunasi `"accelerator=nvidia-tesla-p100"` labeli bilan nodelarni tanlaydi.
+
+```yaml /nvidia-tesla-p100/
+apiVersion: v1
+kind: Pod
+metadata:
+  name: cuda-test
+spec:
+  containers:
+    - name: cuda-test
+      image: "registry.k8s.io/cuda-vector-add:v0.1"
+      resources:
+        limits:
+          nvidia.com/gpu: 1
+  nodeSelector:
+    accelerator: nvidia-tesla-p100
+```
+
+##### Set-based requirement
+
+Set-based label requirementlari keylarni valuelar to'plamiga muvofiq filtrlash imkonini beradi. Uch turdagi operatorlar qo'llab-quvvatlanadi: `in`, `notin` va `exists` (faqat kalit identifikator). Masalan:
+
+```yml /in/ /notin/
+environment in (production, qa)
+tier notin (frontend, backend)
+partition
+!partition
+```
+
+* Birinchi misolda keyi `environment`ga teng va `production` yoki `qa` qiymatiga teng bo'lgan barcha resurslar tanlanadi.
+
+* Ikkinchi misolda `frontend` va `backend` qismdan boshqa tier va valuelarga teng keyga ega barcha resurslar va tier key bilan labelsiz barcha resurslar tanlanadi.
+
+* Uchinchi misol barcha resurslarni, shu jumladan key partitionga ega labelni tanlaydi; qiymatlar tekshirilmaydi.
+
+* To'rtinchi misol key partitioni bilan labelsiz barcha resurslarni tanlaydi; qiymatlar tekshirilmaydi.
+
+Xuddi shunday vergul ajratuvchi ham AND operatori vazifasini bajaradi. Shunday qilib, `partition` key (qiymatidan qat'iy nazar) va `qa` dan farqli `environment` bilan resurslarni filtrlash `partition,environment notin (qa)` yordamida amalga oshirilishi mumkin. Set-based label selectori equality(tenglik)ning umumiy(general) shaklidir, chunki `environment=production` `environment in (production)` ga teng; `!=` va `and` uchun ham xuddi shunday
+
+Set-based requirementlar equality-based requirementlar bilan aralashtirilishi mumkin. Masalan: `partition in (customerA, customerB),environment!=qa`.
