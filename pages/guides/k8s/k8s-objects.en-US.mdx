@@ -327,3 +327,49 @@ partition
 Xuddi shunday vergul ajratuvchi ham AND operatori vazifasini bajaradi. Shunday qilib, `partition` key (qiymatidan qat'iy nazar) va `qa` dan farqli `environment` bilan resurslarni filtrlash `partition,environment notin (qa)` yordamida amalga oshirilishi mumkin. Set-based label selectori equality(tenglik)ning umumiy(general) shaklidir, chunki `environment=production` `environment in (production)` ga teng; `!=` va `and` uchun ham xuddi shunday
 
 Set-based requirementlar equality-based requirementlar bilan aralashtirilishi mumkin. Masalan: `partition in (customerA, customerB),environment!=qa`.
+
+
+### Annotationlar
+
+Kubernetesdagi Annotationlar(izohlar) - bu cluster ichidagi obyektlarga o'zboshimchalik bilan(arbitrary) identifikator bo'lmagan ma'lumotlarni biriktirish uchun ishlatiladigan metama'lumotlar. Ular obyektni aniqlash yoki tanlash uchun ishlatilmaydigan tavsiflovchi ma'lumotlarni qo'shish usulini taklif qiluvchi key-value pairlari. Annotationlar clusterdagi resurslar haqida qo'shimcha context, documentation yoki operatsion eslatmalarni taqdim etish uchun ishlatilishi mumkin.
+
+Kubernetes annotationlarining bir nechta asosiy jihatlari:
+
+* **Identifikatsiya qilmaydigan metama'lumotlar** Labellardan farqli o'laroq, annotationlar obyektlarni tanlash yoki aniqlash uchun ishlatilmaydi. Ular qo'shimcha ma'lumotlarni taqdim etish uchun mo'ljallangan.
+
+* **Moslashuvchan foydalanish** Annotationlar turli xil Kubernetes resurslariga qo'llanilishi mumkin, masalan, podlar, servicelar, deploymentlar va boshqalar, bu foydalanuvchilarga maxsus ma'lumotlarni qo'shish imkonini beradi.
+
+* **Information va Tooling** Annotationlar ko'pincha developerlar, operatorlar va Kubernetes ekotizimidagi turli toollar tomonidan qo'llaniladi. Ular audit, monitoring yoki avtomatlashtirish uchun tafsilotlarni o'z ichiga olishi mumkin.
+
+* **Turli xil foydalanish holatlari** Ular ko'p maqsadli(multiple purpose) va build informationlarini belgilash, operational detaillarni aniqlash, debugging informationni qo'shish yoki hatto dasturga xos(application-specific) konfiguratsiyalarni boshqarishda yordam berish kabi bir nechta maqsadlarga xizmat qilishi mumkin.
+
+Misol uchun, Annotationlar resurs yaratuvchisi haqidagi ma'lumotlarni, versiya tafsilotlarini, application-specific metama'lumotlarni yoki resursni qayd qilish, monitoring qilish yoki boshqarish uchun ishlatiladigan tashqi systems/toollarga pointerlarni o'z ichiga olishi mumkin.
+
+Kubernetes-da annotationlardan foydalanishga misollar sifatida resursning amal qilish muddati haqidagi ma'lumotlarni qo'shish mumkin, masalan:
+
+```yaml \2023-12-31\
+apiVersion: v1
+kind: Pod
+metadata:
+  name: my-pod
+  annotations:
+    expiration-date: "2023-12-31"
+spec:
+  # pod specification...
+```
+yana bir misol
+
+```yaml \annotations:\
+apiVersion: v1
+kind: Pod
+metadata:
+  name: annotations-demo
+  annotations:
+    imageregistry: "https://hub.docker.com/"
+spec:
+  containers:
+  - name: nginx
+    image: nginx:1.14.2
+    ports:
+    - containerPort: 80
+```
