@@ -251,3 +251,22 @@ Kubernetes bir nechta built-in workload resourcelarini taqdim etadi:
 * `Job` va `CronJob` tugallanadigan(completion) va keyin to'xtatiladigan vazifalarni(task) aniqlashning turli usullarini taqdim etadi. Bir marta tugallanadigan vazifani belgilash uchun `Job` foydalanishingiz mumkin. Bir ishni jadvalga muvofiq bir necha marta bajarish uchun `CronJob`-dan foydalanishingiz mumkin
 
 Kengroq Kubernetes ekotizimida siz qo'shimcha xatti-harakatlarni ta'minlaydigan uchinchi tomon workload resurslarini topishingiz mumkin. Custom resource definitionidan foydalanib, Kubernetesning asosiy qismi bo'lmagan muayyan xatti-harakatni xohlasangiz, uchinchi tomon workload resourceni qo'shishingiz mumkin. Misol uchun, agar siz applicationingiz uchun Podlar guruhini ishga tushirmoqchi bo'lsangiz, lekin barcha Podlar mavjud bo'lmaguncha ishlashni to'xtatsangiz (ehtimol, ba'zi yuqori o'tkazuvchanlik taqsimoti uchun), u holda siz ushbu xususiyatni ta'minlaydigan extensionni amalga oshirishingiz yoki o'rnatishingiz mumkin.
+
+### Labellar va Selectorlar
+
+Kubernetes-da labellar va selectorlar clusteringizdagi obyektlarning kichik to'plamlarini tartibga solish va tanlash imkonini beruvchi key conceptlardir. Ular toifalarga(categorize) ajratish va aniqlash uchun Kubernetes obyektlariga (masalan, Podlar, Servicelar yoki Deploymentlar) biriktirishingiz mumkin bo‘lgan metama’lumotlardir. Labellar obyektlar bilan bog'langan key/value juftliklari bo'lib, selectorlar ushbu labellar asosida obyektlarni filtrlash uchun ishlatiladi.
+
+#### Labellar
+
+Kubernetesdagi labellar moslashtirilgan key-value pairlari boʻlib, obyektlarga biriktirilgan boʻlib, moslashuvchan tashkil etish va identifikatsiya qilish imkonini beradi. Ular obyektlarni samarali guruhlash, filtrlash va boshqarish uchun metama'lumotlarni taqdim etadi, operatsion vazifalar va dinamik konfiguratsiyaga yordam beradi, obyektlar bo'ylab o'ziga xoslikni ta'minlamasdan tanlab so'rovlar va toifalarga ajratish imkonini beradi.
+
+Labellar key-value pairlaridan iborat, masalan, `app: frontend` yoki `tier: backend`. Bitta obyektga bir nechta labelllar qo'shishingiz mumkin, bu obyekt uchun turli perspectivelar yoki toifalarni taqdim etishingiz mumkin. **Metadata**; ular biriktirilgan obyektlarning xatti-harakatlariga(behavior ) bevosita ta'sir qilmaydi.
+Ular foydalanuvchilar operatsion yoki tashkiliy maqsadlarda foydalanishlari mumkin bo'lgan identifikatsiya ma'lumotlarini taqdim etadi.
+
+**Labellarga misollar**
+
+* `"release" : "stable"`,`"release" : "canary"`
+* `"environment" : "dev"`, `"environment" : "qa"`,`"environment" : "production"`
+* `"tier" : "frontend"`,`"tier" : "backend"`,`"tier" : "cache"`
+* `"partition" : "customerA"`,`"partition" : "customerB"`
+* `"track" : "daily"`,`"track" : "weekly"`
