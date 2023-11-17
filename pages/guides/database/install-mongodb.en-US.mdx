@@ -207,7 +207,99 @@ sudo systemctl restart mongod
 ```
 10. MongoDB-ga kirish uchun keyingi barcha urinishlar foydalanuvchi va autentifikatsiya ma'lumotlar bazasi nomini ko'rsatishi kerak. `userAdmin` o'rniga administrator hisobi nomini almashtiring va so'ralganda administrator parolini kiriting. MongoDB shellga kirish uchun quyidagi buyruqdan foydalaning.
 
+<Callout type="info" emoji="">
+**Sinov**
+xizmat kutilganidek ishlayotganligini tekshirib ko'ring. mongo shellga kiring
+
+```bash
+mongosh
+```
+Bu safar siz ogohlantirishlar yo'qolganini kuzatasiz.
+Biroq, agar siz ma'lumotlar bazalarini ko'rish kabi ma'lumotlar bazasi bilan bog'liq har qanday vazifani bajarishga harakat qilsangiz, autentifikatsiya zarurligini ko'rsatadigan ba'zi natijalarni olasiz.
+
+```bash
+show dbs
+```
+Autentifikatsiya bilan tizimga kirish uchun, avvalo, `exit` buyruqni ishga tushirish orqali Mongo Shell-dan chiqing. Keyin quyidagi sintaksisdan foydalanib, admin user  yordamida tizimga kiring.
+
+```bash
+mongosh  "mongodb://userAdmin@127.0.0.1:27017"
+```
+</Callout>
 
 ```bash
 mongosh --authenticationDatabase "admin" -u "userAdmin" -p
 ```
+
+### MongoDB uchun masofaviy kirishni yoqish(Remote Access)
+
+Agar boshqacha ko'rsatilmagan bo'lsa, MongoDB faqat local kirishni ta'minlaydi. Ma'lumotlar bazasiga masofaviy kirishni yoqish uchun konfiguratsiya fayliga quyidagi o'zgartirishlarni kiriting.
+
+1. Asosiy MongoDB konfiguratsiya faylini tahrirlang.
+
+```bash
+sudo vi /etc/mongod.conf
+```
+2. `net` sarlavhasi ostida barcha manzillardan ulanishga ruxsat berish uchun `bindIp` qiymatini `0.0.0.0` ga o'zgartiring. Ushbu manzilga ulanishni cheklash uchun ma'lum bir manzilni kiriting.
+
+```conf filename="/etc/mongod.conf" /net:/ /port:/ /bindIp:/
+net:
+    port: 27017
+    bindIp: 0.0.0.0
+```
+
+Mana `mongod.conf` ni to'liq ko'rinishi
+
+```conf filename="/etc/mongod.conf" /security:/ /authorization:/ /enabled/ /net:/ /port:/ /bindIp:/
+# mongod.conf
+
+# for documentation of all options, see:
+#   http://docs.mongodb.org/manual/reference/configuration-options/
+
+# Where and how to store data.
+storage:
+  dbPath: /var/lib/mongodb
+#  engine:
+#  wiredTiger:
+
+# where to write logging data.
+systemLog:
+  destination: file
+  logAppend: true
+  path: /var/log/mongodb/mongod.log
+
+# network interfaces
+net:
+  port: 27017
+  bindIp: 0.0.0.0
+
+
+# how the process runs
+processManagement:
+  timeZoneInfo: /usr/share/zoneinfo
+
+security:
+  authorization: enabled
+#operationProfiling:
+
+#replication:
+
+#sharding:
+
+## Enterprise-Only Options:
+
+#auditLog:
+```
+
+3. Restart MongoDB.
+
+```bash
+sudo systemctl restart mongod
+```
+4. Agar ufw firewall yoqilgan bo'lsa, `27017` portiga ulanishga ruxsat bering.
+
+```bash
+sudo ufw allow 27017
+```
+
+### MongoDB-dan qanday foydalanish
