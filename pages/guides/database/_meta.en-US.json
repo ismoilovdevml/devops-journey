@@ -28,6 +28,12 @@
       "icon": "▶️",
       "description": "Prometheus/Grafana va postgres_exporter bilan monitoring",
       "href": "/guides/database/postgres-monitoring"
+    },
+    "start-mongodb": {
+      "title": "MongoDB",
+      "icon": "▶️",
+      "description": "MongoDB nima va undan nima uchun foydalaniladi?",
+      "href": "/guides/database/start-mongodb"
     }
   }
   
