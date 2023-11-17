@@ -17,3 +17,63 @@ MongoDB documentlari formati nisbatan tuzilmagan(unstructured), shuning uchun ha
 Jismoniy shaxslar yoki kichik korxonalar uchun mo'ljallangan `MongoDB Community Edition` bepul foydalanish mumkin. Ilova Server Side Public License (SSPL) ostida ishlatilishi mumkin va manba kodi bepul mavjud. Biroq, SSPL standart open source litsenziyalardan farq qiladi va biroz cheklovchidir. Foydalanuvchilarga litsenziya atrofida biron bir dasturiy ta'minotni ishlab chiqishdan oldin uni yaxshilab tushunish tavsiya etiladi. MongoDB ko'pgina Linux distributivlari uchun Windows va macOS bilan birga mavjud.
 
 MongoDB bilan yanada chuqurroq tanishish, shu jumladan MongoDB va SQL o'rtasidagi taqqoslash uchun [MongoDB nima va undan nima uchun foydalaniladi?](https://devops-journey.uz/guides/database/start-mongodb) qo'llanmasiga qarang.
+
+### MongoDB o'rnatish
+
+MongoDB o'rnatish jarayoni juda oddiy. Avval rasmiy MongoDB paketini qo'shing va keyin ilovani o'rnatish uchun `apt` dan foydalaning. MongoDB-ni o'rnatish uchun quyidagi amallarni bajaring.
+
+<Callout type="info" emoji="">
+#### Eslatma
+Standart Ubuntu repositoriyasi bilan ta'minlangan `mongodb` to'plami rasmiy paket emas va ko'pincha yangilanmaydi. Boshqa ilovalar bilan to'g'ri ishlamasligi mumkin. Ushbu bo'limdagi ko'rsatmalar rasmiy MongoDB paketini qanday o'rnatishni ko'rsatadi. Norasmiy `mongodb `to'plami o'rnatilganligini tekshirish uchun `which mongodb` buyrug'ini bajaring. Agar Ubuntu ilovaga yo'lni ko'rsatsa, uni `apt` yordamida o'chirib tashlang.
+</Callout>
+
+1. `gnupg` va `curl` utilitasini o'rnating.
+
+```bash /gnupg/ /curl/
+sudo apt-get install gnupg curl
+```
+2. Public MongoDB GPG imzo kalitini(signing key) import qiling. Kalit muvaffaqiyatli import qilinganligini tekshiring.
+
+```bash //
+curl -fsSL https://pgp.mongodb.com/server-7.0.asc | \
+   sudo gpg -o /usr/share/keyrings/mongodb-server-7.0.gpg \
+   --dearmor
+```
+
+3. Ubuntu paketlari ro'yxatiga rasmiy MongoDB repositoriyasi haqida ma'lumot qo'shing.
+
+```bash
+echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/7.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-7.0.list
+```
+
+4. `apt` yordamida paketlar ro'yxatini yangilang.
+
+```bash
+sudo apt-get update
+```
+5. MongoDB-ning so'nggi(latest) versiyasini o'rnating.
+
+```bash /mongodb-org/
+sudo apt-get install -y mongodb-org
+```
+
+<Callout type="info" emoji="">
+**Eslatma**
+MongoDB-ning ma'lum bir versiyasini o'rnatish uchun, o'rnatish uchun chiqarilganni haqiqiy versiya bilan almashtirib, quyidagi buyruqdan foydalaning.
+
+```bash /7.0.3/
+sudo apt-get install -y mongodb-org=7.0.3 mongodb-org-database=7.0.3 mongodb-org-server=7.0.3 mongodb-mongosh=7.0.3 mongodb-org-mongos=7.0.3 mongodb-org-tools=7.0.3
+```
+`7.0.3` versiya o'rniga o'zingizga kerakli versiyani tanlab o'rnatib olishingiz mumkin
+</Callout>
+
+6. **Ixyiyoriy** Joriy konfiguratsiya bilan `apt-get` buyrug'i har doim yangi versiya mavjud bo'lganda MongoDB ni yangilaydi. Avtomatik yangilanishlarning oldini olish uchun quyidagi buyruqlarni bajaring.
+
+```bash
+echo "mongodb-org hold" | sudo dpkg --set-selections
+echo "mongodb-org-database hold" | sudo dpkg --set-selections
+echo "mongodb-org-server hold" | sudo dpkg --set-selections
+echo "mongodb-mongosh hold" | sudo dpkg --set-selections
+echo "mongodb-org-mongos hold" | sudo dpkg --set-selections
+echo "mongodb-org-tools hold" | sudo dpkg --set-selections
+```
