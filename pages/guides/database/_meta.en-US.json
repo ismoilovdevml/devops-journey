@@ -11,11 +11,11 @@
       "description": "Linux serverlarga Posgresql o'rnatish",
       "href": "/guides/database/postgresql-ornatish"
     },
-    "create-a-livestream": {
-      "title": "Jarayonda",
+    "install-mongodb": {
+      "title": "MongoDB o'rnatish va sozlash",
       "icon": "▶️",
-      "description": "Ishlar olib borilmoqda",
-      "href": "/guides/database/create-a-livestream"
+      "description": "Ubuntu 20.04 serverga MongoDB o'rnatish",
+      "href": "/guides/database/install-mongodb"
     },
     "postgresql-bilan-ishlash": {
       "title": "SQL querylar bilan ishlash",
