@@ -134,3 +134,80 @@ Using Mongosh:		2.0.2
 
 For mongosh info see: https://docs.mongodb.com/mongodb-shell/
 ```
+
+### MongoDB ni sozlash(konfiguratsiya qilsih)
+
+MongoDB uchun dastur sozlamalari `/etc/mongod.conf` faylida saqlanadi. Ushbu qiymatlarning aksariyati default qiymatlarda qolishi mumkin. Biroq, xavfsizlikni yaxshilash uchun foydalanuvchi autentifikatsiyasini yoqish muhimdir. MongoDB-dan masofadan foydalanish uchun qo'shimcha o'zgarishlar kiritilishi kerak. Konfiguratsiya fayli opsiyalarining toʻliq roʻyxati uchun [MongoDB konfiguratsiya fayli texnik hujjatlariga](https://www.mongodb.com/docs/manual/reference/configuration-options/) qarang.
+
+#### MongoDB autentifikatsiyani yoqish
+
+Autentifikatsiyani yoqish uchun administrator yarating va keyin asosiy konfiguratsiya faylida autentifikatsiya sozlamasini sozlang. Ma'lumotlar bazasini himoya qilish uchun quyidagi amallarni bajaring.
+
+1. MongoDB shelga kiring.
+
+```bash
+mongosh
+```
+2. Administrator ma'lumotlar bazasiga o'ting.
+
+```bash
+use admin
+```
+```txt filename="Natija"
+switched to db admin
+```
+3. Administrator yaratish uchun `db.createUser` buyrug'idan foydalaning. Foydalanuvchi uchun foydalanuvchi nomini `user` va `pwd` uchun parolni kiriting. Yaxshiroq xavfsizlik uchun `pwd` maydonining qiymati sifatida `passwordPrompt()` buyrug'idan foydalaning. Bu MongoDB ga parolni so'rashni aytadi. Administratorga ikkita rol bering, `userAdminAnyDatabase` va `readWriteAnyDatabase`. MongoDB sheldagi buyruqni quyidagi tarzda kiriting va `userAdmin` o'rniga haqiqiy administrator nomini almashtiring.
+
+
+```json
+db.createUser(
+    {
+        user: "userAdmin",
+        pwd: passwordPrompt(),
+        roles: [
+            { role: "userAdminAnyDatabase", db: "admin" },
+            { role: "readWriteAnyDatabase", db: "admin" }
+        ]
+    }
+)
+```
+
+4. Buyruqni kiritgandan so'ng, MongoDB admin parolni so'raydi. So'ralganda parolni kiriting. Agar parol qabul qilinsa, MongoDB `ok` deb qaytaradi.
+
+```txt filename="Natija"
+Enter password
+********{ ok: 1 }
+```
+5. mongod instanceni o'chirish uchun `db.adminCommand` buyrug'idan foydalaning.
+
+```json
+db.adminCommand( { shutdown: 1 } )
+```
+6. Shelldan chiqing
+
+```bash
+exit
+```
+7. Konfiguratsiya sozlamalarini qo'shish uchun `/etc/mongod.conf` konfiguratsiya faylini tahrirlang.
+
+```bash
+sudo nano /etc/mongod.conf
+```
+
+8. `security:` qatorini izohdan olib tashlang: va `authorization: enabled` qatorini qo'shing. Faylni saqlang va yoping.
+
+```conf filename="/etc/mongod.conf" /security:/ /authorization:/ /enabled/
+security:
+    authorization: enabled
+```
+9. Restart MongoDB
+
+```bash
+sudo systemctl restart mongod
+```
+10. MongoDB-ga kirish uchun keyingi barcha urinishlar foydalanuvchi va autentifikatsiya ma'lumotlar bazasi nomini ko'rsatishi kerak. `userAdmin` o'rniga administrator hisobi nomini almashtiring va so'ralganda administrator parolini kiriting. MongoDB shellga kirish uchun quyidagi buyruqdan foydalaning.
+
+
+```bash
+mongosh --authenticationDatabase "admin" -u "userAdmin" -p
+```
