@@ -250,7 +250,7 @@ net:
 
 Mana `mongod.conf` ni to'liq ko'rinishi
 
-```conf filename="/etc/mongod.conf" /security:/ /authorization:/ /enabled/ /net:/ /port:/ /bindIp:/
+```conf filename="/etc/mongod.conf" /security:/ /authorization:/ /enabled/ /net:/ /port:/ /bindIp:/ /0.0.0.0/ /27017/
 # mongod.conf
 
 # for documentation of all options, see:
@@ -303,4 +303,85 @@ sudo ufw allow 27017
 ```
 
 ### MongoDB-dan qanday foydalanish
+
+MongoDB ko'p jihatdan boshqa ma'lumotlar bazasi tizimlaridan juda farq qiladi va RDBMS foydalanuvchilarini chalkashtirib yuborishi mumkin. Ushbu qo'llanma o'rnatish va sozlashga qaratilgan bo'lsa-da, bu yerda bir nechta qo'shimcha maslahatlar mavjud. Har qanday buyruqni ishga tushirishdan oldin, MongoDB shellga kirish uchun `mongosh` buyrug'idan foydalaning. Agar kerak bo'lsa, autentifikatsiya ma'lumotlarini qo'shing. MongoDB-dan qanday foydalanish haqida qo'shimcha ma'lumot olish uchun [MongoDB texnik hujjatlarini](https://www.mongodb.com/docs/manual/introduction/) ko'rib chiqing. MongoDB shuningdek, asosiy ma'lumotlarni o'z ichiga olgan qisqa [Boshlash qo'llanmasini](https://www.mongodb.com/docs/manual/tutorial/getting-started/) taqdim etadi. Barcha mavjud ma'lumotlar bazalarini ko'rish uchun `show dbs` buyrug'idan foydalaning.
+
+```bash
+show dbs
+```
+
+```txt filename="Natija"
+admin   180.00 KiB
+config   60.00 KiB
+local    72.00 KiB
+```
+
+Kontekstni boshqa ma'lumotlar bazasiga o'zgartirish uchun `use` buyrug'ini qo'llang.
+
+```bash
+use admin
+```
+```txt filename="Natija"
+switched to db admin
+```
+
+Yangi ma'lumotlar bazasini yaratish uchun maxsus buyruq yo'q. Foydalanish buyrug'i mavjud ma'lumotlar bazasiga o'tadi yoki ma'lumotlar bazasi allaqachon mavjud yoki yo'qligiga qarab yangisini yaratadi. Yangi ma'lumotlar bazasini yaratish uchun `use newdatabase` kiriting, bu erda `newdatabase` - qo'shiladigan ma'lumotlar bazasi nomi.
+
+```bash
+use testguidedb
+```
+MongoDB collectionni relational ma'lumotlar bazasidagi tablega o'xshash funksiyaga ega. Collection yaratish uchun `db.collectionname.insertOne` funksiyasidan foydalaning, bu yerda `collectionname` collection nomidir. `{}` qavslar ichida bir qator key-value pairlarini kiriting. Har bir pairni(juftlik), oxirgisidan tashqari, vergul bilan ajrating. Bir vaqtning o'zida bir nechta yozuvlarni kiritish uchun uning o'rniga `insertMany` buyrug'idan foydalaning. `testdata` collectioniga ma'lumotlarni qo'shish uchun quyidagi formatdan foydalaning.
+
+```json
+db.testdata.insertOne(
+    {Value_one: "30",
+    Value_two: "40",
+    Value_three: "Test"
+    }
+)
+```
+
+Collectiondan ma'lumotlarni olish uchun `db.find` buyrug'idan foydalaning. Quyidagi buyruq `test` ma'lumotlari collectionidagi barcha pairlarni qaytaradi.
+
+```bash
+db.testdata.find( {} )
+```
+
+```txt filename="Natija"
+{
+    _id: ObjectId("63c56d3dd4cb6182bed3fac3"),
+    Value_one: '30',
+    Value_two: '40',
+    Value_three: 'Test'
+}
+```
+
+Muayyan ma'lumotlar bazasidagi barcha collectionlarni ro'yxatga olish uchun `show collections buyrug'idan foydalaning.
+
+```bash
+show collections
+```
+```txt filename="Natija"
+testdata
+```
+
+### Xulosa
+
+
+MongoDB - bu ma'lumotlarni saqlash bo'yicha katta moslashuvchanlikni ta'minlaydigan document-oriented ma'lumotlar bazasi. Har bir ma'lumotlar bazasida key-value pairlarining erkin shakldagi qatoridan iborat bir yoki bir nechta collection mavjud. MongoDB-ni o'rnatish uchun rasmiy repositoriyani qo'shing, keyin uni o'rnatish uchun `apt`-dan foydalaning. MongoDB daemonini boshqarish uchun `systemctl` dan foydalaning va konfiguratsiya fayliga autentifikatsiya yoki masofaviy kirishni qo'llab-quvvatlang. Qo'shimcha ma'lumot olish uchun [MongoDB veb-saytiga](https://www.mongodb.com/) qarang.
+
+### Qo'shimcha
+
+Ushbu mavzu bo'yicha qo'shimcha ma'lumot olish uchun quyidagi manbalarga murojaat qilishingiz mumkin. 
+
+* [MongoDB](https://www.mongodb.com/)
+* [MongoDB Documentation](https://www.mongodb.com/docs/manual/introduction/)
+* [Getting Started tutorial](https://www.mongodb.com/docs/manual/tutorial/getting-started/)
+* [MongoDB Configuration File documentation](https://www.mongodb.com/docs/manual/reference/configuration-options/)
+* [SQL to MongoDB Mapping Chart](https://www.mongodb.com/docs/manual/reference/sql-comparison/)
+* [MongoDB Troubleshooting Guide](https://www.mongodb.com/docs/manual/reference/installation-ubuntu-community-troubleshooting/)
+
+**Foydalanilgan manbalar:** [www.linode.com](https://www.linode.com/), [www.cherryservers.com](https://www.cherryservers.com/)
+
+**Sana:** 2023.11.18(2023-yil 18-noyabr)
 
