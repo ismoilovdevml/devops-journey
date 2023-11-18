@@ -3,3 +3,18 @@ import { Callout } from "nextra-theme-docs";
 ## MongoDB nima va undan nima uchun foydalaniladi?
 
 ![mongodb](/images/tutorials/database/mongo_db.jpeg)
+
+**MongoDB** - bu document-oriented ma'lumotlar bazasi va an'anaviy Relational DataBase Management System (RDBMS) ilovalariga muqobil. MongoDB - bu ma'lumotlarni yanada moslashuvchan va kamroq tuzilgan tarzda saqlaydigan NoSQL ma'lumotlar bazasi. Ushbu qo'llanma MongoDB ga kirishni ta'minlaydi va u qanday ishlashini tasvirlaydi. Shuningdek, u MongoDB SQL-ga asoslangan ma'lumotlar bazalaridan, shu jumladan MySQL-dan qanday farq qilishini tushuntiradi va uning asosiy foydalanish holatlarini sanab o'tadi.
+
+### MongoDB nima?
+
+**MongoDB** manbaga asoslangan(source-available) document-oriented ma'lumotlar bazasi bo'lib, dastlab **MongoDB Inc **tomonidan ishlab chiqilgan. Undan [Server Side Public License (SSPL)](https://en.wikipedia.org/wiki/Server_Side_Public_License) ostida foydalanish bepul. MongoDB ko'pgina operatsion tizimlar, jumladan Windows, macOS va ko'pgina Linux distributivlari uchun mavjud. Bepul `MongoDB Community Edition` kichikroq tashkilotlar uchun mo'ljallangan, tijorat(commercial) `MongoDB Enterprise Server `esa ilg'or xususiyatlar bilan to'ldirilgan va mijozlarni qo'llab-quvvatlashni o'z ichiga oladi. `MongoDB Atlas` cloud ichida ishlaydigan to'liq boshqariladigan xizmatdir.
+
+<Callout type="info" emoji="">
+**Eslatma:**
+MongoDB SSPL tafsilotlari juda muhokama qilindi. SSPLga muvofiq, SSPL litsenziyalangan texnologiyani o'z ichiga olgan mahsulotni taklif qiladigan har bir kishi o'z dasturiy ta'minotini ham chiqarishi kerak. Ba'zi sanoat mutaxassislari bu ochiq kodli litsenziya mezonlariga to'liq javob bermaydi, deb hisoblashadi. MongoDB asosidagi har qanday dasturiy ta'minotni ishlab chiqishdan oldin shartnoma shartlarini yaxshilab o'rganib chiqish yaxshiroqdir.
+</Callout>
+
+MongoDB relatiom ma'lumotlar bazasi emas. U ma'lumotlarni ma'lumotlar bazasi tablelari(jadval) ichidagi rowlar(qator) sifatida saqlamaydi. Buning o'rniga, u documentlarda ma'lumotlarni saqlaydi. Bu uning NoSQL ilovasi sifatida tasniflanganligini anglatadi. Bu foydalanuvchilarga o'z ma'lumotlarini moslashuvchan va erkin shaklda saqlash imkonini beradi. Foydalanuvchilar o'zlarining ichki ma'lumotlari va dasturlash tuzilmalari bilan moslashish uchun o'zlarining ma'lumotlar bazasi sxemasini belgilashlari mumkin. MongoDB documentlari ob'ektga yo'naltirilgan dasturlash tillarining sinflari va ob'ektlari bilan yaqindan bog'langan strategiya yordamida tashkil etilishi mumkin. Bu unga mijoz ilovalari bilan samarali ishlash imkonini beradi.
+
+Har bir MongoDB document o'z tuzilishiga ega bo'lishi mumkin va documentlarni istalgan vaqtda osongina o'zgartirish mumkin. Ko'pgina RDBMS tizimlaridan farqli o'laroq, document schemasi(sxemasi) oldindan belgilanishi shart emas. MongoDB documentlari binary JSON (BSON) nomli industry-standartidagi JavaScript Object Notation (JSON) fayl formatining o'zgarishidan foydalanadi. JSON open-standard fayl formati boʻlib, maʼlumotni inson oʻqiy oladigan matnda atribut-qiymat juftlari(attribute-value pair) sifatida saqlaydi. BSON binary kodlash yordamida ma'lumotlarni zichlashtiradi va soddalashtiradi. Saqlash maydoni bo'yicha u JSONga qaraganda samaraliroq, chunki uni osonroq tahlil qilish mumkin. Biroq, uni o'qish mumkin emas va odatda dekodlanishi kerak. MongoDB hali ham JSON documentlarini saqlashi yoki BSON maʼlumotlarini JSON formatida olishi mumkin. CSV yoki JSON formatidagi ma'lumotlarni MongoDB-ga osongina import qilish mumkin.
