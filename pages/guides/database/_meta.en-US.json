@@ -34,6 +34,12 @@
       "icon": "▶️",
       "description": "MongoDB nima va undan nima uchun foydalaniladi?",
       "href": "/guides/database/start-mongodb"
+    },
+    "postges-cluster": {
+      "title": "Highly Available PostgreSQL clusterini yaratish",
+      "icon": "▶️",
+      "description": "Patroni va HAProxy yordamida Highly Available PostgreSQL clusterini yaratish",
+      "href": "/guides/database/postges-cluster"
     }
   }
   
