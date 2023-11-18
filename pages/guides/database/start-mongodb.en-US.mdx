@@ -113,7 +113,6 @@ MongoDB-da collectionlar va documentlarga ma'lum darajada bog'liq bo'lgan `curso
 
 Xulosa qilib aytadigan bo'lsak, MongoDB ma'lumotlar bazasida bir qator collectionlar mavjud va collectionda documentlar clusteri mavjud. Har bir document nol yoki undan ko'p fieldlarni o'z ichiga oladi. Har bir field key-value pairidan iborat. Quyidagi jadvalda RDBMS terminologiyasi MongoDB ekvivalentlari bilan taqqoslanadi.
 
-<Callout type="info" emoji="">
 
 | RDBMS       | MongoDB     |
 | ----------- | ----------- | 
@@ -122,7 +121,6 @@ Xulosa qilib aytadigan bo'lsak, MongoDB ma'lumotlar bazasida bir qator collectio
 | Row	      | Document    |
 | Column	  | Field       |
 
-</Callout>
 
 #### Key-Value Pairlar
 
@@ -185,4 +183,20 @@ MongoDB moslashuvchanlikni talab qiladigan vaziyatlarda semi-structured datalard
 * Capped collectionlar funksiyasidan unumdorlikni(performance) oshirish uchun foydalanish mumkin. Bu xususiyat collection hajmini cheklaydi, insertion orderni(insert tartibi) saqlaydi va circular queue(navbat) vazifasini bajaradi.
 
 ### Xulosa
+
+Ushbu qo'llanma **MongoDB nima?** degan savolga javob beradi. MongoDB - bu relatiom ma'lumotlar bazasi emas, balki document-oriented NoSQL ma'lumotlar bazasi. U o'z ma'lumotlarini document sifatida saqlaydi. Har bir MongoDB bir nechta collectionlardan iborat va har bir collectionda documentlar to'plami mavjud. MongoDB documentining sintaksisi JSON fayl formatining o'zgarishiga asoslangan. U har bir field(maydon) key va valuega ega bo'lgan fieldlar to'plamidan iborat. Fieldlar bir-birining ichiga joylashtirilishi mumkin. Nested field embedded document(o'rnatilgan document) deb ataladi.
+
+SQL bilan taqqoslaganda, MongoDB unstructured datalar(tuzilmagan ma'lumotlar) bilan samaraliroq ishlaydi va ko'proq moslashuvchanlikni taklif qiladi. Collection ichidagi documentlar bir xil fieldlar yoki ma'lumotlar turlariga ega bo'lishi shart emas va alohida documentilar osongina o'zgartirilishi mumkin. MongoDB RDBMS-ga qaraganda ancha tezroq va gorizontal masshtablashdan(horizontal scaling) foydalangan holda osonlik bilan o'lchaydi. MongoDB advanced high-availability tizimni taqdim etish uchun replikalardan foydalanadi va muntazam definationlar va JavaScript funksiyalarini o'z ichiga oladigan kuchli ad-hoc querylarga ega. MongoDB haqida qo'shimcha ma'lumot olish uchun [MongoDB texnik hujjatlariga](https://docs.mongodb.com/) qarang.
+
+
+### Qo'shimcha
+
+Ushbu mavzu bo'yicha qo'shimcha ma'lumot olish uchun quyidagi manbalarga murojaat qilishingiz mumkin. 
+
+* [MongoDB asoslari bo'yicha qo'llanma](https://university.mongodb.com/courses/M001/about)
+* [MongoDB texnik hujjatlari](https://docs.mongodb.com/)
+
+**Foydalanilgan manbalar:** [www.linode.com](https://www.linode.com/docs/guides/)
+
+**Sana:** 2023.11.18(2023-yil 18-noyabr)
 
