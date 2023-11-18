@@ -72,3 +72,29 @@ SQL va NoSQL ma'lumotlar bazalarining juda xilma-xil modellari tufayli ular ko'p
 MongoDB erkinligi juda jozibali, ammo arxitektura haqida oldindan o'ylash uchun biroz vaqt sarflash muhimdir. Hech qanday muvofiqlashtirish yoki rejalashtirishsiz qabul qilingan qarorlar tushunish va ulardan foydalanish qiyin bo'lgan ma'lumotlarga olib kelishi mumkin.
 
 MongoDB va SQL ma'lumotlar bazalari atomicityligi, performance(ishlash samaradorligi) va reliability(ishonchliligi) jihatidan ham farqlanadi.
+
+* **Atomicity** Ma'lumotlar bazasi terminologiyasida atomic operatsiyasi bo'linmas operatsiya hisoblanadi. Bu butunlay sodir bo'ladi yoki umuman bo'lmaydi. Bitta documentga MongoDB yozish operatsiyasi, hatto o'rnatilgan documentlarni yangilashda ham har doim atomik bo'ladi. Query API bir xil operatsiyada bir nechta documentlarni yangilashga ruxsat beradi, ammo bu atomik bo'lishi kafolatlanmaydi. RDBMSda ma'lumotlar bazasi va saqlash mexanizmiga qarab tranzaktsiyalar atomik bo'lishi mumkin. Misol uchun, MySQL InnoDB saqlash qurilmasi bilan foydalanilganda atomiklikni kafolatlaydi. MongoDB ning atomligi haqida ko'proq ma'lumot olish uchun [MongoDB tranzaksiyalari hujjatlariga](https://docs.mongodb.com/manual/core/transactions/) qarang.
+
+* **Performance** MongoDB juda yaxshi performancega ega. Buni asosiy va ikkilamchi indekslar va boshqa optimallashtirishlar yordamida yanada yaxshilash mumkin. Turli ma'lumotlar bazasi ilovalari o'rtasidagi performanceni ba'zan solishtirish qiyin. Biroq, NoSQL ma'lumotlar bazalari odatda SQL-ga asoslangan ma'lumotlar bazalariga qaraganda ancha tezroq. Buning sababi shundaki, ular joinlarni bajarishlari yoki indekslar va foreign keylarni tekshirishlari shart emas. MongoDB ning aniq ishlashi ma'lumotlar qanday saqlanishiga va bir nechta documentlarga kirish kerakligiga bog'liq.
+
+* **High-availability(Yuqori mavjudlik)** Replica setlariga asoslangan mustahkam yuqori mavjudlik(high-availability) imkoniyatlari MongoDB-ga o'rnatilgan. Replikatsiya to'plami ma'lumotlarning kamida ikkita va afzalroq uchta nusxasidan va arbiter daemonidan iborat. Barcha read(o'qish) va writelar(yozish) birlamchi primary replicada amalga oshiriladi, ikkinchi darajali(secondary) relicalar esa o'z nusxalarini saqlaydi. Start-up timeda yoki primary replika muvaffaqiyatsizlikka uchraganda, arbiter saylov jarayoni orqali yangi primaryni replicani tanlaydi. Secondary replika  read-only(faqat o'qish) uchun amallarni bajarishi ham mumkin, ammo secondary replikalarning to'liq yangilanishi kafolatlanmaydi. RDBMS tizimlari ushbu xususiyatni hisobga olgan holda ishlab chiqilmagan, ammo ba'zi ilovalar ushbu funksiyani ta'minlashi mumkin. Aksariyat relation ma'lumotlar bazalari zahira nusxalarisiz(backup) ham juda ishonchli hisoblanadi.
+
+Ko'pgina relatiom ma'lumotlar bazalarida bo'lgani kabi, MongoDB ham command-line yordam dasturi bilan paketlangan. `mongosh` tooli CSV yoki JSON fayllaridan ma'lumotlarni import qilish va boshqaruv vazifalarini, shu jumladan xavfsizlikni bajarish uchun ishlatilishi mumkin. SQL dasturlash tilidagi ko'pgina statementlar MongoDB Query API uchun ekvivalent shakllarga tarjima qilinishi mumkin. Masalan, SQL `INSERT INTO <table_name>` buyrug'i APIda `<collection_name>.insertOne` metodi chaqiruviga aylanadi.
+
+SQL buyrug'i orasidagi o'zgarishlarga e'tibor bering,
+
+```sql
+INSERT INTO xodimlar(xodim_id, yosh, department) VALUES ("b5007", 32, "Marketing")
+```
+
+MongoDB Query API versiyasiga nisbatan:
+
+```json
+
+db.xodimlar.insertOne(
+    { xodim_id: "b5007", age: 32, department: "Marketing" }
+)
+```
+MongoDB texnik hujjatlarida siz murojaat qilishingiz mumkin bo'lgan [SQL to MongoDB Mapping Chart](https://www.mongodb.com/docs/manual/reference/sql-comparison/) qo'llanmasi bor.
+
+#### Documentlar and Collectionlar
