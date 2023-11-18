@@ -21,17 +21,16 @@ Docker Engine-ni yangi host machinega birinchi marta o'rnatishdan oldin Docker r
 
 ```bash
 sudo install -m 0755 -d /etc/apt/keyrings
-curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
 sudo chmod a+r /etc/apt/keyrings/docker.gpg
 ```
 3. Repositorini sozlash uchun quyidagi buyruqdan foydalaning:
 
 ```bash
 echo \
-  "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian \
+  "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
   "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \
   sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-
 ```
 
 4. `apt` paketi indeksini yangilang:
@@ -66,11 +65,9 @@ Docker foydalanuvchilari guruhi mavjud, lekin foydalanuvchilarni o'z ichiga olma
 
 ```bash
 sudo groupadd docker
-
-sudo usermod -aG docker $USER
-
-sudo chown username:docker /var/run/docker.sock
-
+CURRENT_USERNAME=$(whoami)
+sudo chmod 666 /var/run/docker.sock
+sudo chown $CURRENT_USERNAME:docker /var/run/docker.sock
 docker info
 ```
 </Callout>
