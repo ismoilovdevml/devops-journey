@@ -98,3 +98,30 @@ db.xodimlar.insertOne(
 MongoDB texnik hujjatlarida siz murojaat qilishingiz mumkin bo'lgan [SQL to MongoDB Mapping Chart](https://www.mongodb.com/docs/manual/reference/sql-comparison/) qo'llanmasi bor.
 
 #### Documentlar and Collectionlar
+
+MongoDB arxitekturasi relation ma'lumotlar bazasidan farqli atamalar bilan tavsiflanadi. Table, row, column, join atamalari oʻrniga document, collection, field soʻzlari ishlatiladi.
+
+SQL ham, MongoDB ham top-level containerga murojaat qilish uchun database atamasidan foydalanadi. Yagona(single) database odatda ma'lum bir maqsadga xizmat qiladi yoki individual mijoz tomonidan qo'llaniladi va ushbu misol uchun ma'lumotlarning butun majmuasini o'z ichiga oladi. MongoDB birinchi marta foydalanilganda avtomatik ravishda ma'lumotlar bazasini(database) yaratadi. Bu ma'lumotlar bazasini ishlatishdan oldin yaratilishi kerak bo'lgan relation ma'lumotlar bazalaridan farq qiladi.
+
+Har bir MongoDB ma'lumotlar bazasida bir yoki bir nechta collection mavjud. MongoDB collectionni yaratadi va collection birinchi marta ishlatilganda unga o'zgarmas `UUID`ni tayinlaydi. Collection fayl jildiga o'xshaydi. MongoDB collectioniga default structure berilmagan va aniq definition yoki template bilan bog'lanmagan. Biroq, collectionni aniq yaratish va unga bir qator ixtiyoriy parametrlarni, jumladan, maksimal o'lcham(maximum size) va tekshirish qoidalarini(validation rule) belgilash mumkin. RDBMS ilovasining bir xil darajasida har bir ma'lumotlar bazasida tablelar to'plami mavjud. Biroq, tableni ishlatishdan oldin uning columnlari bilan birga aniqlanishi kerak.
+
+MongoDB document-orientedligi sababli, har bir collectionda bir qator documentlar mavjud. Documentni ma'lumotlar bazasidagi yozuv sifatida ko'rish mumkin. MongoDB documentlarida ma'lumotlarni saqlash uchun ishlatiladigan variable number fieldlar mavjud. Har bir field(maydon) key-value pairidan iborat. Vergullar fieldlarni ajratib turadi, qavslar esa `{}` documentning butun mazmunini qamrab oladi. Collectiondagi turli documentlar bir xil format yoki sxemani bo'lishishi shart emas. Field keyining nomlari va ma'lumotlar turlari documentlar orasida farq qilishi mumkin. RDBMS ilovasi ma'lumotlar yozuvini table ichidagi row sifatida saqlaydi. Relation ma'lumotlar bazasida har bir row alohida yozuvni ifodalaydi. Tabledagi har bir row bir xil formatda bo'lishi va bir xil columnlarni o'z ichiga olishi kerak.
+
+MongoDB avtomatik ravishda har bir documentga `_id` nomli fieldni qo'shadi. `_id` fieldi documentning internal ID(ichki IDsini) saqlaydi va uning unique primary keyy(agona asosiy kaliti) sifatida ishlaydi.
+
+MongoDB-da collectionlar va documentlarga ma'lum darajada bog'liq bo'lgan `cursor` nomli ob'ekt mavjud. cursor ma'lumotlar bazasi so'rovidan(database query) qaytariladigan documentlar ro'yxatiga  pointerdir(ko'rsatgich).
+
+Xulosa qilib aytadigan bo'lsak, MongoDB ma'lumotlar bazasida bir qator collectionlar mavjud va collectionda documentlar clusteri mavjud. Har bir document nol yoki undan ko'p fieldlarni o'z ichiga oladi. Har bir field key-value pairidan iborat. Quyidagi jadvalda RDBMS terminologiyasi MongoDB ekvivalentlari bilan taqqoslanadi.
+
+<Callout type="info" emoji="">
+
+| RDBMS       | MongoDB     |
+| ----------- | ----------- | 
+| Database	  | Database    |
+| Table	      | Collection  |
+| Row	      | Document    |
+| Column	  | Field       |
+
+</Callout>
+
+#### Key-Value Pairlar
