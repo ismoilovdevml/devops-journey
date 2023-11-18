@@ -147,12 +147,12 @@ Relation ma'lumotlar bazasidan farqli o'laroq, MongoDB ichki o'rnatilgan fieldla
 
 Bu RDBMSda ierarxik munosabatlar qanday amalga oshirilishidan farq qiladi. SQL-ga asoslangan tableda tabledagi columnlar diskret ma'lumotlar elementlarini saqlaydi. Ular sub-recordlar yoki arraylarni saqlash uchun mo'ljallanmagan. Ancillary relationshiplar foreign keylar orqali aniqlanadi va boshqa table bilan birlashtiriladi. MongoDB ancha moslashuvchan, chunki u har bir documentga boshqa ierarxiyani saqlashga imkon beradi va foreign yoki compound keylarni talab qilmaydi. Embedded documentlar relation  ma'lumotlar bazasida joinlar o'rnini egallaydi. Biroq, RDBMS tablelari bilan solishtirganda MongoDB ma'lumotlarining turli embedded documentlarda takrorlanishi ehtimoli ancha yuqori.
 
-Ushbu misolda `pochtaManzili` nomli key-value uchun embedded documentga ega. Ushbu embedded document `Kmanzili`(ko'cha), `shahar`, `davlat` va `pochtaIndeksi` toʻrtta ichki key-value pairidan iborat. Ushbu maxsus embedded document quyida ko'rsatilganidek tuzilgan bo'lishi mumkin.
+Ushbu misolda `pochtaManzili` nomli key-value uchun embedded documentga ega. Ushbu embedded document `tuman`, `viloyat`, `davlat` va `pochtaIndeksi` toʻrtta ichki key-value pairidan iborat. Ushbu maxsus embedded document quyida ko'rsatilganidek tuzilgan bo'lishi mumkin.
 
 ```json
 pochtaManzili: {
-    Kmanzili: "Navoiy ko'cha 34",
-    shahar: "Toshkent",
+    tuman: "Olot",
+    viloyat: "Buxoro",
     davlat: "O'zbekiston",
     pochtaIndeksi: 10221
 },
@@ -161,3 +161,28 @@ pochtaManzili: {
 Embedded documentlar va sxema dizayni haqida qo'shimcha ma'lumot olish uchun [ma'lumotlar modeli dizayni](https://docs.mongodb.com/manual/core/data-model-design/) bo'yicha MongoDB texnik hujjatlariga murojaat qiling.
 
 ### Nima uchun MongoDB dan foydalanish kerak?
+
+MongoDB moslashuvchanlikni talab qiladigan vaziyatlarda semi-structured datalardan(yarim tuzilgan ma'lumotlar) foydalanish uchun ajoyib tanlovdir. Document-oriented ma'lumotlar bazasi sifatida u yuqori darajada kengaytiriladi va ob'ektga yo'naltirilgan tillarda yozilgan dasturlar bilan yaxshi ishlaydi. NoSQL ma'lumotlar bazalarining tabiiy xususiyatlaridan tashqari, MongoDB quyidagi afzalliklarga ega:
+
+* Bu foydalanuvchiga ma'lumotlarni har qanday usulda tartibga solish va tuzish uchun to'liq moslashuvchanlikni taklif qiladi. Collectiondagi documentlarni ilovadagi aniq ob'ektlar va classlar bilan moslashtirish oson.
+
+* U filedlar va regular expressionlar asosidagi maxsus querylarni qo'llab-quvvatlaydi. Bu soʻrovlar(query) shaxsiylashtirilgan(personalized) JavaScript funksiyalarini ham oʻz ichiga olishi mumkin. Querylar SQL statementlariga qaraganda ancha ochiq va moslashuvchan.
+
+* MongoDB katta hajmli(high-volume) ma'lumotlar to'plamlari(data set) uchun optimallashtirilgan va yuqori darajada kengaytirilishi mumkin. U shardlar yordamida bir nechta serverlarda load balancingni amalga oshirishi mumkin. Foydalanuvchi tomonidan belgilangan shard keyi ma'lumotlar diapazonlar bo'yicha serverlar bo'ylab qanday taqsimlanishini aniqlaydi.
+
+* MongoDB yuqori darajada mavjudligini(high availability) hisobga olgan holda ishlab chiqilgan. U juda mustahkam va kuchli replikatsiya va zaxira(backup) mexanizmlarini o'z ichiga oladi. Turli xil workloadlari bir xil clusterda ajratilishi mumkin va ma'lumotlar global yoki local miqyosda saqlanishi mumkin.
+
+* U yuqori unumdorlikni(high performance) taklif etadi va relation ma'lumotlar bazalariga qaraganda sezilarli darajada tezroq, ayniqsa ma'lumotlarni yozishda.
+
+* MongoDB foydalanuvchilarga ma'lum bir atribut yoki funksiya chaqiruvi natijasi asosida documentlarni tanlash va guruhlash imkonini beruvchi unique aggregation toollarini o'z ichiga oladi.
+
+* MongoDB dasturchilar uchun o'rganish va ulardan foydalanish oson. Bu RDBMS ilovalariga qaraganda kamroq murakkab va texnik tafsilotlarga ega.
+
+* Infratuzilma komponentlari nuqtai nazaridan, MongoDB ma'lumotlar bazasini himoya qilish uchun ko'plab built-in xususiyatlarni taqdim etadi. Bu juda portable, platforma va cloud-agnostic. Bu foydalanuvchilarga o'z ma'lumotlarini boshqa muhitlarga ko'chirish yoki cloudlar yoki sotuvchilarni o'zgartirish imkonini beradi. MongoDB o'ndan ortiq tillar uchun drayverlarni taqdim etadi.
+
+* MongoDB fayl tizimi sifatida ishlash uchun `GridFS` komponentidan foydalanishi mumkin. Fayllar ko'paytirilishi va bir nechta serverlarda yukni muvozanatlashi(load balancing) mumkin.
+
+* Capped collectionlar funksiyasidan unumdorlikni(performance) oshirish uchun foydalanish mumkin. Bu xususiyat collection hajmini cheklaydi, insertion orderni(insert tartibi) saqlaydi va circular queue(navbat) vazifasini bajaradi.
+
+### Xulosa
+
