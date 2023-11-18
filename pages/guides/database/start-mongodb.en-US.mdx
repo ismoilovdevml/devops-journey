@@ -8,7 +8,7 @@ import { Callout } from "nextra-theme-docs";
 
 ### MongoDB nima?
 
-**MongoDB** manbaga asoslangan(source-available) document-oriented ma'lumotlar bazasi bo'lib, dastlab **MongoDB Inc **tomonidan ishlab chiqilgan. Undan [Server Side Public License (SSPL)](https://en.wikipedia.org/wiki/Server_Side_Public_License) ostida foydalanish bepul. MongoDB ko'pgina operatsion tizimlar, jumladan Windows, macOS va ko'pgina Linux distributivlari uchun mavjud. Bepul `MongoDB Community Edition` kichikroq tashkilotlar uchun mo'ljallangan, tijorat(commercial) `MongoDB Enterprise Server `esa ilg'or xususiyatlar bilan to'ldirilgan va mijozlarni qo'llab-quvvatlashni o'z ichiga oladi. `MongoDB Atlas` cloud ichida ishlaydigan to'liq boshqariladigan xizmatdir.
+**MongoDB** manbaga asoslangan(source-available) document-oriented ma'lumotlar bazasi bo'lib, dastlab **MongoDB Inc** tomonidan ishlab chiqilgan. Undan [Server Side Public License (SSPL)](https://en.wikipedia.org/wiki/Server_Side_Public_License) ostida foydalanish bepul. MongoDB ko'pgina operatsion tizimlar, jumladan Windows, macOS va ko'pgina Linux distributivlari uchun mavjud. Bepul `MongoDB Community Edition` kichikroq tashkilotlar uchun mo'ljallangan, tijorat(commercial) `MongoDB Enterprise Server `esa ilg'or xususiyatlar bilan to'ldirilgan va mijozlarni qo'llab-quvvatlashni o'z ichiga oladi. `MongoDB Atlas` cloud ichida ishlaydigan to'liq boshqariladigan xizmatdir.
 
 <Callout type="info" emoji="">
 **Eslatma:**
@@ -18,3 +18,41 @@ MongoDB SSPL tafsilotlari juda muhokama qilindi. SSPLga muvofiq, SSPL litsenziya
 MongoDB relatiom ma'lumotlar bazasi emas. U ma'lumotlarni ma'lumotlar bazasi tablelari(jadval) ichidagi rowlar(qator) sifatida saqlamaydi. Buning o'rniga, u documentlarda ma'lumotlarni saqlaydi. Bu uning NoSQL ilovasi sifatida tasniflanganligini anglatadi. Bu foydalanuvchilarga o'z ma'lumotlarini moslashuvchan va erkin shaklda saqlash imkonini beradi. Foydalanuvchilar o'zlarining ichki ma'lumotlari va dasturlash tuzilmalari bilan moslashish uchun o'zlarining ma'lumotlar bazasi sxemasini belgilashlari mumkin. MongoDB documentlari ob'ektga yo'naltirilgan dasturlash tillarining sinflari va ob'ektlari bilan yaqindan bog'langan strategiya yordamida tashkil etilishi mumkin. Bu unga mijoz ilovalari bilan samarali ishlash imkonini beradi.
 
 Har bir MongoDB document o'z tuzilishiga ega bo'lishi mumkin va documentlarni istalgan vaqtda osongina o'zgartirish mumkin. Ko'pgina RDBMS tizimlaridan farqli o'laroq, document schemasi(sxemasi) oldindan belgilanishi shart emas. MongoDB documentlari binary JSON (BSON) nomli industry-standartidagi JavaScript Object Notation (JSON) fayl formatining o'zgarishidan foydalanadi. JSON open-standard fayl formati boʻlib, maʼlumotni inson oʻqiy oladigan matnda atribut-qiymat juftlari(attribute-value pair) sifatida saqlaydi. BSON binary kodlash yordamida ma'lumotlarni zichlashtiradi va soddalashtiradi. Saqlash maydoni bo'yicha u JSONga qaraganda samaraliroq, chunki uni osonroq tahlil qilish mumkin. Biroq, uni o'qish mumkin emas va odatda dekodlanishi kerak. MongoDB hali ham JSON documentlarini saqlashi yoki BSON maʼlumotlarini JSON formatida olishi mumkin. CSV yoki JSON formatidagi ma'lumotlarni MongoDB-ga osongina import qilish mumkin.
+
+MongoDB querilar(so'rov) uchun Structured Query Language (SQL) foydalanmaydi. Buning o'rniga u documentlarni insert(kiritish), update(yangilash) yoki delete(o'chirish) va ma'lumotlarni olish(retrieve) uchun `MongoDB Query API`-dan foydalanadi. API qo'shimcha ravishda bulk write operatorini o'z ichiga oladi. APIdan qanday foydalanish haqida qo'shimcha ma'lumot olish uchun [MongoDB Query API hujjatlariga](https://docs.mongodb.com/manual/crud/#std-label-crud) murojaat qiling.
+
+![mongodb](/images/tutorials/database/1.svg)
+
+MongoDB-ni o'z serverlaringizda o'rnatish uchun [Ubuntu 20.04 serverga MongoDB o'rnatish va sozlash](https://devops-journey.uz/guides/database/install-mongodb) qo'llanmasini o'qib chiqishingiz mumkin
+
+### MongoDB vs SQL
+
+Ma'lumotlar bazasining eng mashhur turi Relational DataBase Management System (RDBMS) hisoblanadi. RDBMS ilovalari ma'lumotlarni saqlash va olish va ma'lumotlar bazasini boshqarish uchun SQL dasturlash tilidan foydalanadi. RDBMS yoki SQL-ga asoslangan ma'lumotlar bazasi tablelar(jadvallar), rowlar(qatorlar) va column(ustun)lardan quyidagi tarzda foydalanadi:
+
+* Har bir ma'lumotlar bazasi tablelar to'plami uchun repository(ombordir).
+
+* Table columnlar to'plami sifatida aniqlanadi. Har bir column ma'lum bir ma'lumot turi bilan bog'langan. Turga misol `VARCHAR` bo'lib, u o'zgaruvchan uzunlikdagi qatorni anglatadi. Column yozuvning(record) o'ziga xos atributini ifodalaydi.
+
+* Table rowlar bilan to'ldirilgan. Tabledagi har bir row ma'lumotlar bazasidagi har xil yozuvdir.
+
+* Ma'lumotlar bazasi table two-by-two matrixsaga o'xshaydi. Matritsa ichidagi har bir kvadrat rowning bitta columnni ifodalaydi va ma'lumotlar qismini o'z ichiga oladi.
+
+Bundan farqli o'laroq, MongoDB document-based ma'lumotlar bazasi bo'lib, u NoSQL ma'lumotlar bazasi turidir. Nomidan ko'rinib turibdiki, NoSQL ma'lumotlar bazalari SQL dan foydalanmaydi. Ular xususiy API yoki shunga o'xshash boshqa usul yordamida ma'lumotlarga kirishadi. MongoDB ma'lumotlari RDBMS ilovasidan farqli atamalar yordamida tavsiflanadi. Tablelar, rowlar va columnlardan foydalanish o'rniga MongoDB documentlarni collectionlar ichida saqlaydi. Har bir documentda key-value pair(kalit-qiymat juftligi) mavjud bo'lgan maydonlar ro'yxati mavjud. MongoDB ning ichki tuzilishi haqida ko'proq ma'lumot olish uchun quyidagi bo'limlarga qarang. 
+
+Tizim darajasida(system level) MongoDB odatiy RDBMS dan bir necha asosiy jihatlari bilan farq qiladi. NoSQL va SQL ma'lumotlar bazasini tanlashda to'g'ri qaror qabul qilish uchun quyidagi fikrlarni ko'rib chiqing:
+
+* RDBMS ma'lumotlar bazalari relationdir. Ma'lumotlar bazasi tablelar va columnlar o'rtasidagi munosabatlar atrofida tuzilgan. NoSQL ma'lumotlar bazalari, shu jumladan MongoDB, aloqador emas. Foydalanuvchilar turli documentlar yoki collectionlar o'rtasida hech qanday aloqani belgilashlari shart emas.
+
+* RDBMS ilovalari har doim table-based(jadvalga asoslangan). Ma'lumotlar tablening multi-columnli rowlarida saqlanadi. NoSQL ma'lumotlar bazalari ma'lumotlarni saqlash uchun tablelardan foydalanmaydi. Ma'lumotlar documentlarda, key-value pairlarida, graphlarda yoki wide columnlarda saqlanadi.
+
+* SQL ma'lumotlar bazalari yozuvlar bir xil maydonlarni o'z ichiga olgan yaxshi tuzilgan ma'lumotlar uchun juda mos keladi. MongoDB va boshqa NoSQL ma'lumotlar bazalari tuzilmagan(unstructured) yoki o'zgaruvchan ma'lumotlar uchun yaxshiroqdir.
+
+* SQL ma'lumotlar bazalari bir vaqtning o'zida bir nechta rowlarni yangilash(update) uchun mo'ljallangan. NoSQL ma'lumotlar bazalari bir vaqtning o'zida bir nechta yangilanishlarni boshqarishi mumkin bo'lsa-da, bir vaqtning o'zida bitta documentni yangilashda eng samarali hisoblanadi.
+
+* SQL ma'lumotlar bazalari odatda vertikal ravishda kengaytiriladi(vertically scalable). Server admini tezlikni oshirish yoki ko'proq ma'lumotlarni qayta ishlash uchun server xotirasini yoki protsessorini oshirishi kerak. NoSQL ma'lumotlar bazalari ko'pincha gorizontal ravishda kengaytiriladi(horizontally scalable). Clusterga ko'proq serverlar qo'shish va load balancerini sozlash orqali sig'im oshiriladi. Shunday qilib, NoSQL clusterlarining ko'pchiligi bitta serverli relation ma'lumotlar bazasiga qaraganda ko'proq ma'lumotlarni qayta ishlashga qodir.
+
+* RDBMS tizimlari yaxshi tashkil etilgan va juda ishonchli. Relation ma'lumotlar bazalari uchun resurslar keng tarqalgan va sanoat bilimlari juda chuqur. NoSQL ma'lumotlar bazalari unchalik yaxshi tashkil etilmagan va u qadar katta hamjamiyatga ega emas.
+
+* NoSQL ma'lumotlar bazalari relation ma'lumotlar bazalari kabi ma'lumotlarning takrorlanishini kamaytirmaydi. Shunday qilib, NoSQL ma'lumotlar bazasi odatda ekvivalent RDBMSga qaraganda ko'proq saqlash joyini talab qiladi.
+
+SQL va NoSQL ma'lumotlar bazalarining juda xilma-xil modellari tufayli ular ko'pincha turli senariylarda qo'llaniladi. MongoDB ma'lumotlar bazasini loyihalash va undan foydalanishda quyidagi fikrlarni, ayniqsa RDBMS bilan farqlarni yodda tuting.
