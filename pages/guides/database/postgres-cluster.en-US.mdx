@@ -3,3 +3,34 @@ import { Callout } from "nextra-theme-docs";
 ## Patroni va HAProxy yordamida Highly Available PostgreSQL clusterini yaratish
 
 ![postgres-cluster](/images/tutorials/database/pg-cluster.png)
+
+### PostgreSQL nima?
+
+[**PostgreSQL**](https://www.postgresql.org/) (Postgres) barcha asosiy operatsion tizimlarda ishlaydigan open source, to'liq ACIDga mos keladigan relational ma'lumotlar bazasidir. Postgres juda ko'p qirrali, xususiyatlarga boy va kuchli ma'lumotlar bazasi bo'lsa-da, unda high availability uchun o'rnatilgan(built-in) yechim yo'q.
+
+Ushbu qo'llanma sizga Patroni yordamida uchta serverdan iborat highly available Postgres clusterini qanday yaratishni ko'rsatadi.
+
+<Callout type="info" emoji="">
+Postgres haqida to'liqroq ma'lumot olish uchun [**PostgreSQLga kirish**](https://devops-journey.uz/guides/database/postgresql-kirish) va serveringizni o'rnatish uchun [**Linux Serverlarga Postgresql o'rnatish**](https://devops-journey.uz/guides/database/postgresql-ornatish) ni ko'rib chiqishingiz mumkin.
+</Callout>
+
+### PostgreSQL o'rnatish
+
+PostgreSQL-ni o'rnatishda 3ta serverga o'rnating. Ushbu qo'llanmadagi misollar uchta Postgres server `192.0.2.11`, `192.0.2.12` va `192.0.2.13` IP manzillarini belgilaydi.
+
+1. Postgresni 3ta serveringizda o'rnating. Qanday o'rnatish bo'yicha [**Linux Serverlarga Postgresql o'rnatish**](https://devops-journey.uz/guides/database/postgresql-ornatish) dan foydalanasiz. yoli quyidagi amallarni 3ta serveringizda bajarib Postgresni o'rnatib oling.
+
+Postgres-ni o'rnatmoqchi bo'lgan uchta serverda paketlar ro'yxatini(package list) yangilang:
+
+```bash
+sudo apt update
+```
+
+2. Postgresni o'rnating
+
+```bash /postgresql/
+sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+sudo apt-get update
+sudo apt-get -y install postgresql
+```
