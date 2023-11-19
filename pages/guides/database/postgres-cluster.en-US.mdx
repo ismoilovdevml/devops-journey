@@ -14,11 +14,35 @@ Ushbu qo'llanma sizga Patroni yordamida uchta serverdan iborat highly available 
 Postgres haqida to'liqroq ma'lumot olish uchun [**PostgreSQLga kirish**](https://devops-journey.uz/guides/database/postgresql-kirish) va serveringizni o'rnatish uchun [**Linux Serverlarga Postgresql o'rnatish**](https://devops-journey.uz/guides/database/postgresql-ornatish) ni ko'rib chiqishingiz mumkin.
 </Callout>
 
+### Sxema
+
+![postgres-cluster](/images/tutorials/database/pg-scheme.png)
+![postgres-cluster](/images/tutorials/database/pg-cluster1.png)
+
+### Talablar
+Boshlashdan oldin sizda 3ta postgres server, 1ta etcd server va 1ta HAProxy server kerak bo'ladi
+
+<Callout type="info" emoji="">
+**OS:** Ubuntu 20.04
+**PostgreSQL versiyasi:** 16
+
+| Server      | IP            | Role                  |
+| ----------- | ------------- | --------------------- |
+| node1	      | 195.168.1.10  |  Postgresql, Patroni  |
+| node2	      | 195.168.1.11  |  Postgresql, Patroni  |
+| node3	      | 195.168.1.12  |  Postgresql, Patroni  |
+| etcnode	  | 195.168.1.13  |  etcd                 |
+| haproxynode | 195.168.1.14  |  HAProxy              |
+
+Agar imkoniyat bo'lsa har bir postgres node uchun bittadan `etcd` server sozlab olish kerak!
+
+</Callout>
+
 ### PostgreSQL o'rnatish
 
 PostgreSQL-ni o'rnatishda 3ta serverga o'rnating. Ushbu qo'llanmadagi misollar uchta Postgres server `192.0.2.11`, `192.0.2.12` va `192.0.2.13` IP manzillarini belgilaydi.
 
-1. Postgresni 3ta serveringizda o'rnating. Qanday o'rnatish bo'yicha [**Linux Serverlarga Postgresql o'rnatish**](https://devops-journey.uz/guides/database/postgresql-ornatish) dan foydalanasiz. yoli quyidagi amallarni 3ta serveringizda bajarib Postgresni o'rnatib oling.
+1. Postgresni 3ta serveringizda o'rnating. Qanday o'rnatish bo'yicha [**Linux Serverlarga Postgresql o'rnatish**](https://devops-journey.uz/guides/database/postgresql-ornatish) dan foydalanasiz. yoli quyidagi amallarni 3ta serveringizda bajarib Postgresni o'rnatib oling.(Bu yerda Debian/Ubuntu uchun)
 
 Postgres-ni o'rnatmoqchi bo'lgan uchta serverda paketlar ro'yxatini(package list) yangilang:
 
@@ -34,3 +58,11 @@ wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-
 sudo apt-get update
 sudo apt-get -y install postgresql
 ```
+
+3. O'rnatishdan so'ng Postgres avtomatik ravishda service sifatida ishlaydi. Postgres serviceni to'xtating, shunda Patroni uni shu nuqtadan boshlab boshqara oladi:
+
+```bash
+sudo systemctl stop postgresql
+```
+
+4. Patroni, Ubuntu 16.04 da sukut bo'yicha /usr/lib/postgresql/9.5/bin katalogida joylashgan Postgres bilan o'rnatilgan yordamchi dasturlardan foydalanadi. Patroni yordam dasturlarini topa olishini ta'minlash uchun PATHda ramziy havolalar yarating:
