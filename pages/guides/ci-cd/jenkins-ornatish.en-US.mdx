@@ -34,6 +34,20 @@ Minimal qurilma talablari:
 
 Ubuntu kabi Debian va Debian-ga asoslangan distributivlarda siz Jenkins-ni `apt` orqali o'rnatishingiz mumkin.
 
+## Java o'rnatish
+
+Jenkins ishga tushirish uchun Java-ni talab qiladi, ammo ba'zi distributivlar standart bo'yicha buni o'z ichiga olmaydi va ba'zi Java versiyalari Jenkins bilan mos kelmaydi.
+
+Siz foydalanishingiz mumkin bo'lgan bir nechta Java ilovalari mavjud. OpenJDK hozirda eng ommabop, biz undan ushbu qo'llanmada foydalanamiz.
+
+Debian apt repositoriyalarini yangilang, OpenJDK 17 ni o'rnating va buyruqlar bilan o'rnatishni tekshiring:
+
+```bash
+sudo apt update
+sudo apt install openjdk-17-jre
+java -version
+```
+
 ### Uzoq muddatli qo'llab-quvvatlash versiyasi(LTS Long Term Support release)
 
 LTS (Uzoq muddatli qo'llab-quvvatlash) versiyasi har 12 haftada muntazam releaselar oqimidan o'sha vaqt uchun barqaror release sifatida tanlanadi. U debian-stable apt repositorydan o'rnatilishi mumkin.
@@ -62,19 +76,6 @@ sudo apt-get update
 sudo apt-get install jenkins
 ```
 
-## Java o'rnatish
-
-Jenkins ishga tushirish uchun Java-ni talab qiladi, ammo ba'zi distributivlar standart bo'yicha buni o'z ichiga olmaydi va ba'zi Java versiyalari Jenkins bilan mos kelmaydi.
-
-Siz foydalanishingiz mumkin bo'lgan bir nechta Java ilovalari mavjud. OpenJDK hozirda eng ommabop, biz undan ushbu qo'llanmada foydalanamiz.
-
-Debian apt repositoriyalarini yangilang, OpenJDK 17 ni o'rnating va buyruqlar bilan o'rnatishni tekshiring:
-
-```bash
-sudo apt update
-sudo apt install openjdk-17-jre
-java -version
-```
 
 ## Fedora
 
