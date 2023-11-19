@@ -40,7 +40,7 @@ Agar imkoniyat bo'lsa har bir postgres node uchun bittadan `etcd` server sozlab 
 
 ### PostgreSQL o'rnatish
 
-PostgreSQL-ni o'rnatishda 3ta serverga o'rnating. Ushbu qo'llanmadagi misollar uchta Postgres server `192.0.2.11`, `192.0.2.12` va `192.0.2.13` IP manzillarini belgilaydi.
+PostgreSQL-ni o'rnatishda 3ta serverga o'rnating. Ushbu qo'llanmadagi misollar uchta Postgres server `195.168.1.10`, `195.168.1.11` va `195.168.1.12` IP manzillarini belgilaydi.
 
 1. Postgresni 3ta serveringizda o'rnating. Qanday o'rnatish bo'yicha [**Linux Serverlarga Postgresql o'rnatish**](https://devops-journey.uz/guides/database/postgresql-ornatish) dan foydalanasiz. yoli quyidagi amallarni 3ta serveringizda bajarib Postgresni o'rnatib oling.(Bu yerda Debian/Ubuntu uchun)
 
@@ -65,4 +65,61 @@ sudo apt-get -y install postgresql
 sudo systemctl stop postgresql
 ```
 
-4. Patroni, Ubuntu 16.04 da sukut bo'yicha /usr/lib/postgresql/9.5/bin katalogida joylashgan Postgres bilan o'rnatilgan yordamchi dasturlardan foydalanadi. Patroni yordam dasturlarini topa olishini ta'minlash uchun PATHda ramziy havolalar yarating:
+4. Patroni, Ubuntu 20.04 da default bo'yicha `/usr/lib/postgresql/16/bin` jildida joylashgan Postgres bilan o'rnatilgan yordamchi dasturlardan foydalanadi. Patroni yordam dasturlarini topa olishini ta'minlash uchun `PATH`da symbolic linklar yarating:
+
+```bash
+sudo ln -s /usr/lib/postgresql/16/bin* /usr/sbin/
+```
+
+5. Shu bosqichlarni barcha postgres node serverlarida takrorlab chiqing yani **195.168.1.10**, **195.168.1.11**, **195.168.1.12**
+
+### Patroni o'rnatish
+
+Patroni Postgres konfiguratsiyasini boshqaradigan open source Python paketidir. U replikatsiya(replication), zaxiralash(backup) va tiklash(restoration) kabi vazifalarni bajarish uchun sozlanishi mumkin.
+
+Ushbu qo'llanmada siz Patronidan quyidagi maqsadlarda foydalanasiz:
+
+* Serverda ishlaydigan Postgres instanceni sozlang
+
+* Replikatsiyani  primarydan standby rejimiga sozlang
+
+* Primary ishlamay qolganda avtomatik ravishda eng yaxshi standby rejimiga o'tish.
+
+1. Python va pipni o'rnating:
+
+```bash /python/ /python-pip/
+sudo apt install python python-pip -y
+```
+
+2. `setuptools` python paketining so'nggi versiyasiga ega ekanligingizga ishonch hosil qiling:
+
+```bash
+sudo pip install --upgrade setuptools
+```
+
+3. Patroni o'rnatish uchun `pip` dan foydalaning:
+
+```bash
+sudo pip install patroni
+```
+
+4. Qolgan Postgres nodelarda ham shu amllarni bajarib Patronini o'rnating.
+
+### etcd o'rnatish
+
+**etcd** - bu Postgres clusterining holatini(stateni) saqlash uchun ishlatiladigan fault-tolerant(xatolarga chidamli), distributed key-value store. Ushbu qo'llanmada siz bitta serverli etcd clusteridan foydalanasiz. Biroq, productionda, bitta etcd nodining ishlamay qolishi mumkin, bu Postgres serverlaringizga ta'sir qilmasligi uchun kattaroq etcd clusteridan foydalanish yaxshi bo'lishi mumkin. Ya'ni hozir biz 3ta postgres node uchun bitta etcd server ishlatyapmiz lekin aslida har bitta postgres node uchun alohida etcd server sozlanishi kerak. Masalan 3ta postgres node bo'lsa 3ta etcd server sozlanishi kerak.
+
+1. etcd o'rnatish uchun paketlarni yangilab oling
+
+```bash
+sudo apt update
+```
+
+2. etcd o'rnating
+
+```bash
+sudo apt install etcd -y
+```
+
+### HAProxy o'rnatish
+
