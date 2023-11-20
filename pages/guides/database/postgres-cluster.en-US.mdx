@@ -28,9 +28,9 @@ Boshlashdan oldin sizda 3ta postgres server, 1ta etcd server va 1ta HAProxy serv
 
 | Server      | IP            | Role                  |
 | ----------- | ------------- | --------------------- |
-| node1	      | 195.168.1.10  |  Postgresql, Patroni  |
-| node2	      | 195.168.1.11  |  Postgresql, Patroni  |
-| node3	      | 195.168.1.12  |  Postgresql, Patroni  |
+| node1	      | 195.168.1.10  |  -  |
+| node2	      | 195.168.1.11  |  -  |
+| node3	      | 195.168.1.12  |  -  |
 | etcnode	  | 195.168.1.13  |  etcd                 |
 | haproxynode | 195.168.1.14  |  HAProxy              |
 
@@ -124,3 +124,57 @@ sudo apt install etcd -y
 ### HAProxy o'rnatish
 
 Ma'lumotlar bazasidan foydalanadigan dasturni ishlab chiqishda, agar ular doimiy ravishda o'zgarib tursa, ma'lumotlar bazasi endpointlarini kuzatib borish qiyin bo'lishi mumkin. HAProxy-dan foydalanish ilovani ulashingiz mumkin bo'lgan yagona endpointni berish orqali buni soddalashtiradi. HAProxy ulanishni hozirda qaysi node Primary(asosiy) bo'lsa, unga yo'naltiradi. Buni Patroni taqdim etgan REST endpointi yordamida amalga oshiradi. Patroni istalgan vaqtda faqat Primary Postgres nodening onlayn ko'rinishini ta'minlaydi va HAProxy-ni to'g'ri nodega ulanishga majbur qiladi.
+
+1. HAProxy o'rnatish uchun paketlarni yangilang
+
+```bash
+sudo apt update
+```
+
+2. HAProxy o'rnating.
+```bash
+sudo apt install haproxy -y
+```
+
+Eslatib o'tamiz HAProxy serverda statik IP bo'lishi kerak.
+
+### Status
+
+Sizda 3ta postgres node server, 1ta etcd server va 1ta HAProxy server bo'lishi va kerakli dasturlar o'rnatilgan bo'lishi kerak. HAProxy serverda static IP(public) manzili bo'lishi kerak.
+
+**Status**
+
+| Private IP(internal) | Server  | statik IP(public) |
+| -------------------- | ------- | ----------------- |
+| 195.168.1.10         | node1   |  -                |
+| 195.168.1.11         | node2   |  -                |
+| 195.168.1.12         | node3   |  -                |
+| 195.168.1.13         | etcd    |  -                |
+| 195.168.1.14         | HAProxy | 172.21.78.1       |
+
+
+### etcd serverni konfiguratsiya qilish
+
+1. Quyidagi konfiguratsiyani qo'shish uchun `/etc/default/etcd` faylini tahrirlang.
+
+```bash filename="/etc/default/etcd"
+ETCD_LISTEN_PEER_URLS="http://195.168.1.13:2380"
+
+ETCD_LISTEN_CLIENT_URLS="http://localhost:2379,http://195.168.1.13:2379"
+
+ETCD_INITIAL_ADVERTISE_PEER_URLS="http://195.168.1.13:2380"
+
+ETCD_INITIAL_CLUSTER="etcd0=http://195.168.1.13:2380,"
+
+ETCD_ADVERTISE_CLIENT_URLS="http://195.168.1.13:2379"
+
+ETCD_INITIAL_CLUSTER_TOKEN="cluster1"
+
+ETCD_INITIAL_CLUSTER_STATE="new"
+```
+
+2. etcd servicega restart bering
+
+```bash
+sudo systemctl restart etcd
+```
