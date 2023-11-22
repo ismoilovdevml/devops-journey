@@ -26,3 +26,14 @@ Barcha RDBMS ilovalari singari, MySQL ham relation ma'lumotlar bazasidir. Admini
 * MySQL veb-ishlab chiqishda keng qo'llaniladigan PHP bilan yaxshi ishlaydi.
 * U juda ko'p turli kompilyatorlar va turli platformalarda ishlaydi va tizimlar orasida ko'chma(portable) bo'lishi uchun mo'ljallangan. Client dasturlari ko'p tillarda yozilishi mumkin. MySQL C/C++, PHP, Java, Python, Ruby va Perl uchun APIlarni taqdim etadi.
 * MySQL stand-alone ilovalarga kiritilishi mumkin bo'lgan kutubxona(library) sifatida mavjud.
+* MySQL bir nechta qulay client yordamchi dasturlari(utilitie), jumladan `mysqldump` va `mysqladmin` bilan paketlangan. Foydalanuvchilar `mysqlcheck` dasturi yordamida tablelarni tekshirishlari, optimallashtirishlari va tuzatishlari mumkin.
+* MySQL open source litsenziyasi ishlab chiquvchilarga MySQL-ni sozlash va manba kodini o'z talablariga javob berish uchun o'zgartirish imkonini beradi.
+
+
+MySQL, shuningdek, mijozlarni(client) to'liq qo'llab-quvvatlash bilan to'liq xususiyatli(fully-featured) **Enterprise Edition** versiyasi ham mavjud.
+
+## MySQL Client va Serveri nima?
+
+MySQL clienti(mijoz) va MySQL serveri tarmoq arxitekturasida birgalikda ishlaydigan ikki xil komponentdir. Odatda bitta markaziy server va bir yoki bir nechta client mavjud. MySQL ma'lumotlar bazasi server ilovasi xostga o'rnatiladi, ko'pincha LAMP stekining bir qismi sifatida. Ushbu server ma'lumotlar bazasi konfiguratsiyasi va ma'lumotlarini saqlaydi va clientlar so'rovlariga javob beradi. Shuningdek, u xavfsizlikni va har qanday kirishni boshqarish tizimini ta'minlaydi va kerak bo'lganda ma'lumotlarni replicatsiya qiladi va arxivlaydi. Xuddi shu server turli clientlar uchun bir nechta ma'lumotlar bazalarini joylashtirishi mumkin.
+
+MySQL clienti foydalanuvchilarga MySQL serveriga bir xil tizimda yoki boshqa xostda ulanish imkonini beradi. Mijoz read(o'qish) yoki ma'lumotlar bazasiga write(yozish) uchun serverga SQL so'rovlarini(query) yuboradi. MySQL clienti, shuningdek, clientni boshqaradi, maintain qiladi va himoya qiladi. Querylarni bajarish(run) uchun faqat masofaviy ma'lumotlar bazasiga ulanishni xohlaydigan foydalanuvchilar uchun stand-alone client tavsiya etiladi. Serverda ma'lumotlar bazasini joylashtirmoqchi bo'lgan adminlar MySQL server paketini to'liq o'rnatishlari kerak. Serverni o'rnatish ma'lumotlar bazasini yaratish va boshqarish uchun clientni o'z ichiga oladi.
