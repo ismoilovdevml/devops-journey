@@ -34,5 +34,17 @@
     "icon": "▶️",
     "description": "Docker yordamida Wordpress o'rnatish",
     "href": "/guides/konteyner/wordpress"
+  },
+  "konteynerlash": {
+    "title": "Loyihalarni konteynerlash",
+    "icon": "▶️",
+    "description": "Loyihalarni konteynerlash va joylashtirish",
+    "href": "/guides/konteyner/konteynerlash"
+  },
+  "start-dockerswarm": {
+    "title": "Docker Swarm",
+    "icon": "▶️",
+    "description": "Docker Swarm bilan ilk qadamlar",
+    "href": "/guides/konteyner/start-dockerswarm"
   }
 }
