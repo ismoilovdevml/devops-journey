@@ -40,6 +40,12 @@
       "icon": "▶️",
       "description": "Patroni va HAProxy yordamida Highly Available PostgreSQL clusterini yaratish",
       "href": "/guides/database/postgres-cluster"
+    },
+    "start-mysql": {
+      "title": "MySQL",
+      "icon": "▶️",
+      "description": "MySQL Kirish",
+      "href": "/guides/database/start-mysql"
     }
   }
   
