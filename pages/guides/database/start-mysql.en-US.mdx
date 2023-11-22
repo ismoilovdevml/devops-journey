@@ -11,3 +11,18 @@ MySQL - bu SQL-ni implement qiladigan relation ma'lumotlar bazasini boshqarish t
 MySQL-ning asosiy versiyasi Oracle korporatsiyasi tomonidan tarqatiladi va open-source litsenziya ostida bepul mavjud. MySQL-ning joriy versiyasi 8.0. MySQL har qanday Linux distiributorida va boshqa ko'plab platformalarda ishlatilishi mumkin. Bu Linux, Apache va PHP dasturlash tili bilan bir qatorda open source LAMP stackning muhim tarkibiy qismidir. LAMP stacki Linuxda open source veb-ilovalarni ishlab chiqishning asosidir. MySQL client/server tizimining bir qismi sifatida yoki embedded system bir qismi sifatida ishlatilishi mumkin.
 
 Barcha RDBMS ilovalari singari, MySQL ham relation ma'lumotlar bazasidir. Administratorlar va foydalanuvchilar ma'lumotlar bazasidagi tablelar ichidagi va o'rtasidagi munosabatlarni belgilaydilar. Turli columnlar zarur(required) yoki ixtiyoriy(optional) sifatida belgilanishi mumkin va asosiy primary key boshqa tablega pointer sifatida xizmat qilishi mumkin. MySQL barqaror, ishonchli va ulardan foydalanish oson. MySQL ning ba'zi o'ziga xos afzalliklari:
+
+* MySQL etuk(mature), mashhur va yaxshi o'rnatilgan mahsulotdir. U boshqa open source ma'lumotlar bazalariga qaraganda ko'proq community yordamiga ega va yaxshi ma'lumotnoma materiallari va texnik hujjatlarga ega.
+
+* MySQL InnoDB storage systemi bilan foydalanilganda ACID stand bo'lishi uchun sozlanishi mumkin. ACID qisqartmasi Atomicity, Consistency, Isolation, va Durability degan ma'noni anglatadi. Bu har qanday xato, nosozlik yoki uzilishlarga qaramasdan ma'lumotlarning haqiqiyligini(data validity) kafolatlashi mumkinligini anglatadi.
+
+* Optimallashtirilgan class kutubxonalari(library), compression(siqish), memory allocation(xotirani taqsimlash) va hash tablelari kabi xususiyatlar tufayli u o'zining high performance bilan mashhur. U bir nechta protsessorli tizimlarda(multiple CPU) yanada samarali ishlash uchun multi-threaded kerneli threadlarni qo'llab-quvvatlaydi.
+
+* U juda katta ma'lumotlar bazalarini qo'llab-quvvatlaydi, har bir table uchun yuzlab million yozuvlarni(record) va 64 tagacha indekslarni saqlaydi.
+
+* MySQL kengaytirilgan xavfsizlik mexanizmlarini, shu jumladan barcha parollarni shifrlashni ta'minlaydi.
+* Bu ishonchlilikni oshirish uchun ma'lumotlarni replicatsiya qilish va redundancy qilish imkonini beradi.
+* MySQL tablelar va columnlardagi aliaslarni qo'llab-quvvatlaydi va turli xil belgilar(character) to'plamini to'liq qo'llab-quvvatlaydi.
+* MySQL veb-ishlab chiqishda keng qo'llaniladigan PHP bilan yaxshi ishlaydi.
+* U juda ko'p turli kompilyatorlar va turli platformalarda ishlaydi va tizimlar orasida ko'chma(portable) bo'lishi uchun mo'ljallangan. Client dasturlari ko'p tillarda yozilishi mumkin. MySQL C/C++, PHP, Java, Python, Ruby va Perl uchun APIlarni taqdim etadi.
+* MySQL stand-alone ilovalarga kiritilishi mumkin bo'lgan kutubxona(library) sifatida mavjud.
