@@ -10,5 +10,17 @@
     "icon": "▶️",
     "description": "Linux Serverlarga Jenkins(CI/CD) o'rnatish",
     "href": "/guides/ci-cd/jenkins-ornatish"
+  },
+  "start-githubactions": {
+    "title": "Github Action",
+    "icon": "▶️",
+    "description": "Github Action bilan CI/CD yozamiz",
+    "href": "/guides/ci-cd/start-githubactions"
+  },
+  "start-gitlabci": {
+    "title": "Gitlab CI",
+    "icon": "▶️",
+    "description": "Gitlab CI bilan ishlaymiz",
+    "href": "/guides/ci-cd/start-gitlabci"
   }
 }
