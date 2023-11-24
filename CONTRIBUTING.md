@@ -123,3 +123,49 @@ Rasmda ushbu mavzu uchun `k8s-kirish.en-US.mdx` fayli ochilgan siz ham yangi mav
 ```
 
 `k8s-kirish` bu fayl nomi hisoblanaadi va bu yerga fayl nomi to'gri kiritilishi kerak. `"tittle"` esa bu mavzuning sarlavhasi hisoblanadi. `"description"` bu mavzuning qisqachi izohi. `"href"` mavzu joylashgan yo'lni tasvirlaydi.
+
+## Sahifalarga ishlov berish
+
+Hoizr biz sahifalarga ishlov berishni ko'rib chiqamiz. Avval boshdan aytib o'tilganiddek loyiha Nextra ustiga qurilgani uchun bu qismni nextrani rasmiy qo'llanmalaridan o'rganib olishingiz mumkin juda yaxshi tushintirilgan va yoki shu paytgacha yozilgan ishlangan sahifalardan namunlar ko'rib o'rganishingiz mumkin.
+
+
+* [Markdown MDX bilan ishlash](https://nextra.site/docs/guide/markdown)
+
+* [Kod parchalarini yozish](https://nextra.site/docs/guide/syntax-highlighting)
+
+* [Linklar bilan ishlash](https://nextra.site/docs/guide/link)
+
+* [Rasmlar bilan ishlash](https://nextra.site/docs/guide/image)
+
+* [Jadvallar chizish](https://nextra.site/docs/guide/advanced/table)
+
+* [Callout Componentlari bilan ishlash](https://nextra.site/docs/guide/built-ins/callout)
+
+* [Tablar bilan ishlash](https://nextra.site/docs/guide/built-ins/tabs)
+
+* [Cardlar yasash](https://nextra.site/docs/guide/built-ins/cards)
+
+* [Bosqich style bilan ishlash](https://nextra.site/docs/guide/built-ins/steps)
+
+### Maqollar yozish
+
+[**Devops Journey**ga maqolalar](https://devops-journey.uz/tutorials/all) yozish uchun alohida bo'lim ajaratilgan.
+
+
+![assets](assets/contributing/6.png)
+
+----
+
+Ushbu bo'lim kodda `pages/tutorials/article` qismmida joylashgan.
+
+![assets](assets/contributing/7.png)
+
+Ushbu qismda ham tepada aytib o'tilganidek `_meta.en-US.json` fayli orqali boshqariladi va mavzularni qo'shish uni yozish ham tepada aytib o'tganimizdek bir hil hisoblanadi.
+
+----
+
+
+### Yordam olish
+Agar sizga yordam kerak bo'lsa yoki savollaringiz bo'lsa, ismoilovdev@gmail.com emailiga yoki [telegramdagi communityga](https://t.me/devopsuzb) murojaat qiling.
+
+> Biz sizning hissalaringizni qadrlaymiz va sizning ishtirokingizni kutamiz!
