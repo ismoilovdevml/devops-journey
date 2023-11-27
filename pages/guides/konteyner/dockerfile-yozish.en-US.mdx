@@ -1,0 +1,106 @@
+import { Callout } from "nextra-theme-docs";
+
+## Dockerfilelar yozish bo'yicha qo'llanma
+
+![docker](/images/tutorials/container/4.png)
+
+
+Docker samaradorligining markazida **Dockerfile** yotadi - Docker imagelarini yaratish uchun ishlatiladigan asosiy skript. Ushbu fayllar takrorlanadigan va portativ konteynerli muhitni yaratish uchun zarur bo'lgan ko'rsatmalar va bog'liqliklarni qamrab oladi. O'rnatish jarayonini soddalashtirish va turli muhitlarda izchillikni ta'minlashga intilayotgan dasturchilar va DevOps muhandislari uchun samarali Dockerfilelarni qanday yaratishni tushunish juda muhimdir.
+
+Ushbu qo'llanma Dockerfilelar qanday yozishni uni elementlarini ko'rib chiqamiz.
+
+### FROM
+
+Dockerfiledagi `FROM` instructioni sizning imagengiz asosida quriladigan asosiy imageni belgilash uchun ishlatiladi. Bu yangi konteyner imegaseni yaratish uchun boshlang'ich nuqtadir. Docker iamgeni yaratishni boshlaganingizda, odatda uni ma'lum muhit yoki funksiyalar to'plamini ta'minlaydigan mavjud imagega asoslashni xohlaysiz. `FROM` instructioni ushbu asosiy imageni belgilaydi.
+
+```bash /FROM/
+FROM <image>[:<tag>] [@<digest>]
+#NodeJS namunalar
+FROM node
+FROM node:18
+FROM node@sha256:XXXXXX
+```
+
+**image** - bu yangi imagengizga asoslanmoqchi bo'lgan imagening nomi.
+
+**tag** (ixtiyoriy) imagening muayyan versiyasi yoki variantini bildiradi. Agar belgilanmagan bo'lsa, u default bo'yicha `latest` bo'ladi.
+
+**@digest** (ixtiyoriy) sizga imageni uning content hashi (digest) bo'yicha belgilash imkonini beradi va bu imagega aniq mos kelishini ta'minlaydi.
+
+### MAINTAINER, LABEL
+
+Dockerfile-dagi `MAINTAINER` instructioni qurilayotgan imagening muallifi yoki maintainerini ko'rsatish uchun ishlatilgan. Biroq, bu instruction iamge haqidagi metamaʼlumotlar, jumladan, texnik maʼlumotlar bilan taʼminlash uchun `LABEL` dan foydalanish foydasiga eskirgan.
+
+Maintainerni ko'rsatish uchun `LABEL` dan qanday foydalanish mumkinligiga misol:
+
+```bash /MAINTAINER/ /LABEL/
+FROM node:18
+MAINTAINER Otabek Ismoilov
+# LABEL bilan
+LABEL maintainer="Otabek Ismoilov ismoilovdev@gmail.com"
+```
+
+### RUN
+
+Docker faylidagi `RUN` buyrug'i Docker imagedagi buyruqlarni bajarish uchun ishlatiladi. Ushbu buyruqlar odatda paketlarni o'rnatish, tizimni yangilash, fayllarni yuklab olish yoki konteyner ichidagi muhitni tayyorlash uchun zarur bo'lgan boshqa vazifalar uchun ishlatiladi.
+
+`RUN` qanday ishlatilishiga misol:
+
+```bash /RUN/
+FROM ubuntu:latest
+
+# Konteynerni yangilash va konteynerga zip, git, unzip o'rnatish
+RUN apt-get update && apt-get install -y \
+    zip \
+    git \
+    unzip
+```
+
+Javascript applicationlar uchun misol
+
+```bash /RUN/
+FROM node:18
+
+RUN npm install
+RUN npm build
+```
+### WORKDIR
+
+Dockerfiledagi `WORKDIR` ko'rsatmasi Dockerfiledagi har qanday keyingi ko'rsatmalar uchun ishchi jildni o'rnatish uchun ishlatiladi. Bu buyruqlar bajariladigan konteyner ichidagi joriy jildni o'zgartiradi.
+
+WORKDIR ga misol:
+
+```bash /WORKDIR/
+FROM python:3.9-slim
+WORKDIR /usr/src/app
+```
+`WORKDIR /usr/src/app` Bu qator konteyner ichidagi ishchi jildni `/usr/src/app` ga o'rnatadi. Dockerfile-dagi keyingi buyruqlar, agar bekor qilinmasa, ushbu ko'rsatilgan jildda bajariladi.
+
+Ishchi jildi o'rnatish, ayniqsa, fayllarda ishlaydigan yoki yo'llarga(path) murojaat qilish kerak bo'lgan buyruqlar har safar to'liq yo'lni ko'rsatmasdan doimiy ishlashini ta'minlash uchun foydalidir. Shuni ta'kidlash kerakki, WORKDIR-dan foydalanish, agar asosiy imageda mavjud bo'lmasa, jild yaratmaydi. Agar ko'rsatilgan jildg imageda mavjud bo'lmasa, Docker uni buyruq talab qilganda yoki `COPY` ko'rsatmasi yordamida ushbu jildga fayllar ko'chirilganda yaratadi.
+
+
+### COPY
+
+Dockerfiledagi `COPY` buyrug'i fayllar yoki jildlarni host mashinasidan qurilayotgan Docker imagesiga nusxalash uchun ishlatiladi.
+
+`COPY` qanday ishlatilishiga misol:
+
+```bash /COPY/
+FROM ubuntu:latest
+RUN mkdir /myapp
+
+COPY app-files /myapp
+```
+
+app-files jildidagi fayllarni host mashinasidan iamge ichidagi /myapp jildiga ko'chiradi.
+
+Python applicationlari uchun real namuna
+
+```bash /COPY/
+FROM python:3.9-slim
+WORKDIR /usr/src/app
+COPY . /usr/src/app
+RUN pip install --no-cache-dir -r requirements.txt
+```
+`WORKDIR` konteyner ichidagi ishni jildni `/usr/src/app` ga o'rnatadi. `COPY` Joriy jilddagi barcha fayllarni Docker imagedagi `/usr/src/app` jildiga ko'chiradi.
+
