@@ -10,12 +10,18 @@ Docker - bu dasturni ishga tushirish uchun zarur bo'lgan barcha narsalarni (kod,
 
 Har bir konteyner alohida kernel(yadro) va operatsion tizimga bog'liq bo'lmasdan, o'z protsessor(CPU), xotira(memory), block I/O, va tarmoq resurslari bilan deploy qilingan. Docker va virtual mashinalarni solishtirish eng oson bo'lishi mumkin bo'lsa-da, ular resurslarni almashish yoki ajratish usullari bilan farqlanadi.
 
-## Docker imalari
+Docker - konteynerlar deb ataladigan paketlarda dasturiy ta'minotni etkazib berish uchun operatsion tizim darajasidagi virtualizatsiyadan foydalanadigan xizmat sifatidagi platformalar(platforms as a service **(PaaS)**) mahsulotlari. Konteynerlar bir-biridan ajratilgan(izolatsiya qilingan) va o'zlarining dasturiy ta'minoti, kutubxonalari va konfiguratsiya fayllarini birlashtiradi; ular bir-biri bilan aniq belgilangan kanallar orqali muloqot qilishlari mumkin. Barcha konteynerlar bitta operatsion tizim kerneli tomonidan boshqariladi va shuning uchun virtual mashinaga qaraganda kamroq resurslardan foydalanadi.
+
+## Docker imagelari
+
+Bu bir nechta layerlardan tashkil topgan fayl bo'lib, Docker konteynerida kodni bajarish(execute)  uchun foydalaniladi. Ular docker konteynerlarini yaratish uchun ishlatiladigan ko'rsatmalar to'plamidir. **Docker Image** - bu dasturni ishga tushirish uchun zarur bo'lgan barcha narsalarni o'z ichiga olgan executable packet. Ushbu image konteyner qanday yaratilishi kerakligi haqida ma'lumot beradi, qaysi dasturiy komponentlar va qanday ishlashini aniqlaydi. Docker Container - bu dasturni ishga tushirish uchun zarur bo'lgan barcha depencylar(bog'liqliklar) bilan dastur kodini birlashtirgan virtual muhit.
+
 Har bir Docker konteyneri imagedan yaratilgan. Imagelarni Docker registridan (masalan, rasmiy Docker Hub) tortib(pull) olasiz va ulardan konteynerlar yaratish uchun foydalanasiz. Bitta image ko'plab konteynerlarni yaratishi mumkin. Masalan, veb-server konteynerini o'rnatish uchun eng so'nggi(latest) nginx imagesidan foydalanishingiz mumkin.
 
 ## Dockerfilelar
+Dockerfile **DSL (Domain Specific Language)** dan foydalanadi va Docker imageni yaratish bo'yicha ko'rsatmalarni(instruction) o'z ichiga oladi. Dockerfile imageni tezda yaratish jarayonlarini belgilaydi. Ilovangizni yaratishda siz Docker faylini tartibda yaratishingiz kerak, chunki Docker dasturi barcha ko'rsatmalarni yuqoridan pastgacha bajaradi.
 
-Dockerfile - bu imageni yig'ish uchun kerakli buyruqlarni o'z ichiga olgan matnli fayl. Dockerfile yozilgach, administrator fayl ichidagi buyruqlar asosida image yaratish uchun `docker build` buyrug'idan foydalanadi. Dockerfile ichidagi buyruqlar va ma'lumotlar izchil va barqaror joylashtirishni ta'minlash uchun maxsus dasturiy ta'minot versiyalari va bog'liqliklardan(depency) foydalanish uchun sozlanishi mumkin.
+Dockerfile - Bu matn hujjati bo'lib, u bajarilganda Docker imageni yig'ishga yordam beradigan kerakli buyruqlarni o'z ichiga oladi. Docker image Docker fayli yordamida yaratilgan. Dockerfile - bu imagening manba kodi. Dockerfile yozilgach, administrator fayl ichidagi buyruqlar asosida image yaratish uchun `docker build` buyrug'idan foydalanadi. Dockerfile ichidagi buyruqlar va ma'lumotlar izchil va barqaror joylashtirishni ta'minlash uchun maxsus dasturiy ta'minot versiyalari va bog'liqliklardan(dependency) foydalanish uchun sozlanishi mumkin. 
 
 Dockerfile imagelarni yaratish uchun quyidagi buyruqlardan foydalaniladi:
 
@@ -42,3 +48,4 @@ RUN apt-get -y update && apt-get -y upgrade && apt-get install -y build-essentia
 
 ## Docker Swarm
 
+Docker `Docker Swarm` deb nomlangan clusterni yaratish uchun serverlarni birlashtirishni osonlashtiradi. Swarm manageri yoki leaderini yaratganingizdan so'ng va leaderga nodelarni biriktirganingizdan so'ng, konteynerni deploy qilishni kengaytirishingiz mumkin. Leader kerakli holatni(stateni) saqlab qolish uchun vazifalarni(task) qo'shish yoki olib tashlash orqali clusterni avtomatik ravishda moslashtiradi. Node - bu Swarm-da ishtirok etadigan Docker enginening yagona nusxasi. Swarm menejeri Swarmga taqdim etilishi mumkin bo'lgan servicelarni ochish uchun kirish yukini muvozanatlashdan foydalanadi.
