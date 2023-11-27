@@ -2,12 +2,43 @@ import { Callout } from "nextra-theme-docs";
 
 # Dockerga Kirish
 
-Docker - bu konteynerlar deb ataladigan paketlarda dasturiy ta'minotni yetkazib berish uchun OS darajasidagi virtualizatsiyadan foydalanadigan platform as a service (PaaS) mahsulotlari. Xizmat bepul va premium darajalarga ega. Konteynerlarni joylashtiradigan dastur Docker Engine deb ataladi. U birinchi marta 2013 yilda chiqarilgan va Docker, Inc tomonidan ishlab chiqilgan. Docker - bu yengil konteynerlarda ilovalarni joylashtirishni avtomatlashtirish uchun ishlatiladigan dastur bo'lib, ilovalar izolyatsiya qilingan holda turli muhitlarda samarali ishlashi mumkin. Konteynerlar bir-biridan ajratilgan va o'zlarining dasturiy ta'minoti, kutubxonalari(library) va konfiguratsiya fayllarini birlashtiradi; ular bir-biri bilan aniq belgilangan kanallar orqali muloqot qilishlari mumkin. Barcha konteynerlar bitta operatsion tizim kerneli servicelarini baham ko'rganligi sababli, ular virtual mashinalarga qaraganda kamroq resurslardan foydalanadilar.
+![docker](/images/tutorials/container/docker.jpg)
 
-## Dockerni tushunish
+## Docker nima?
 
-Oddiy qilib aytganda, Docker - bu ilovalarni yaratish, ishga tushirish, boshqarish va tarqatish jarayonini soddalashtiradigan dasturiy platforma. Buni u o'rnatilgan va ishlayotgan kompyuterning operatsion tizimini virtualizatsiya qilish orqali amalga oshiradi. Docker GO dasturlash tili yordamida yozilgan.
+Docker - bu dasturni ishga tushirish uchun zarur bo'lgan barcha narsalarni (kod, kutubxonalar(library), runtime, tizim sozlamalari(system setting) va depencylar) o'z ichiga olgan yengil(lightweight), stand-alone(mustaqil) paketlarni yaratish, deploy qilish va boshqarish imkonini beruvchi tooldir. Bunday paketlar konteynerlar(container) deb ataladi.
 
-## Muammo
+Har bir konteyner alohida kernel(yadro) va operatsion tizimga bog'liq bo'lmasdan, o'z protsessor(CPU), xotira(memory), block I/O, va tarmoq resurslari bilan deploy qilingan. Docker va virtual mashinalarni solishtirish eng oson bo'lishi mumkin bo'lsa-da, ular resurslarni almashish yoki ajratish usullari bilan farqlanadi.
 
-Aytaylik sizda 3ta Python loyihasi bor. 3ta python loyihasi alohida-alohida boshqa python versiyalarida yozilgan va sizda bitta server bor. Siz bitta serverga 3ta pythonni versiyasini o'rnata olmaysiz muammo shu. Endi yechimni izlaymiz bizga bunda docker yordamga keladi.
+## Docker imalari
+Har bir Docker konteyneri imagedan yaratilgan. Imagelarni Docker registridan (masalan, rasmiy Docker Hub) tortib(pull) olasiz va ulardan konteynerlar yaratish uchun foydalanasiz. Bitta image ko'plab konteynerlarni yaratishi mumkin. Masalan, veb-server konteynerini o'rnatish uchun eng so'nggi(latest) nginx imagesidan foydalanishingiz mumkin.
+
+## Dockerfilelar
+
+Dockerfile - bu imageni yig'ish uchun kerakli buyruqlarni o'z ichiga olgan matnli fayl. Dockerfile yozilgach, administrator fayl ichidagi buyruqlar asosida image yaratish uchun `docker build` buyrug'idan foydalanadi. Dockerfile ichidagi buyruqlar va ma'lumotlar izchil va barqaror joylashtirishni ta'minlash uchun maxsus dasturiy ta'minot versiyalari va bog'liqliklardan(depency) foydalanish uchun sozlanishi mumkin.
+
+Dockerfile imagelarni yaratish uchun quyidagi buyruqlardan foydalaniladi:
+
+* `ADD` - fayllarni hostdagi manbadan belgilangan manzildagi konteynerning fayl tizimiga nusxalash.
+* `CMD` - konteyner ichida ma'lum bir buyruqni bajarish.
+* `ENTRYPOINT` - image bilan konteyner yaratilgan har safar foydalanish uchun standart dasturni o'rnatish.
+* `ENV` - environment o'zgaruvchilarini o'rnatish.
+* `EXPOSE` - konteyner va tashqi dunyo o'rtasida tarmoq ulanishini yoqish uchun ma'lum bir portni ko'rsatish.
+* `FROM` - build jarayonini boshlash uchun ishlatiladigan asosiy imageni aniqlang.
+* `MAINTAINER` - image yaratuvchining to'liq ismi va elektron pochta manzilini aniqlang.
+* `RUN` - Dockerfilelar uchun markaziy executing directive.
+* `USER` - konteynerni ishga tushiradigan UID (foydalanuvchi nomi) ni o'rnating.
+* `VOLUME` - konteynerdan host mashinasidagi jildga kirishni yoqish.
+* `WORKDIR` - CMD bilan belgilangan buyruq bajariladigan yo'lni(path) o'rnatish.
+
+Har bir buyruqni ishlatish shart emas. Quyida faqat `MAINTAINER`, `FROM` va `RUN` buyruqlaridan foydalangan holda ishlaydigan Dockerfile misoli keltirilgan:
+
+
+```dockerfile filename="Dockerfile" /MAINTAINER/ /FROM/ /RUN/
+MAINTAINER Samid Dastanbayev
+FROM ubuntu:latest
+RUN apt-get -y update && apt-get -y upgrade && apt-get install -y build-essential
+```
+
+## Docker Swarm
+
