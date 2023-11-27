@@ -46,6 +46,12 @@
       "icon": "▶️",
       "description": "MySQL Kirish",
       "href": "/guides/database/start-mysql"
+    },
+    "sql-injection": {
+      "title": "SQL Injection Attack",
+      "icon": "▶️",
+      "description": "Bu nima va uni qanday oldini olish mumkin",
+      "href": "/guides/database/sql-injection"
     }
   }
   
