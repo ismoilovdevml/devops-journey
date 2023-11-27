@@ -46,5 +46,11 @@
     "icon": "▶️",
     "description": "Docker Swarm bilan ilk qadamlar",
     "href": "/guides/konteyner/start-dockerswarm"
+  },
+  "dockerfiles": {
+    "title": "Dockerfilelar",
+    "icon": "▶️",
+    "description": "Dockerfile yozish bo'yicha qo'llanma",
+    "href": "/guides/konteyner/dockerfiles"
   }
 }

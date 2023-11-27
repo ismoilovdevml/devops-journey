@@ -1,0 +1,63 @@
+import { Callout } from "nextra-theme-docs";
+
+# Dockerfilelar yozish bo'yicha qo'llanma
+
+![docker](/images/tutorials/container/4.png)
+
+
+Docker samaradorligining markazida **Dockerfile ** yotadi - Docker imagelarini yaratish uchun ishlatiladigan asosiy skript. Ushbu fayllar takrorlanadigan va portativ konteynerli muhitni yaratish uchun zarur bo'lgan ko'rsatmalar va bog'liqliklarni qamrab oladi. O'rnatish jarayonini soddalashtirish va turli muhitlarda izchillikni ta'minlashga intilayotgan dasturchilar va DevOps muhandislari uchun samarali Dockerfilelarni qanday yaratishni tushunish juda muhimdir.
+
+Ushbu qo'llanma Dockerfilelar qanday yozishni uni elementlarini ko'rib chiqamiz.
+
+### FROM
+
+Dockerfiledagi `FROM` instructioni sizning imagengiz asosida quriladigan asosiy imageni belgilash uchun ishlatiladi. Bu yangi konteyner imegaseni yaratish uchun boshlang'ich nuqtadir. Docker iamgeni yaratishni boshlaganingizda, odatda uni ma'lum muhit yoki funksiyalar to'plamini ta'minlaydigan mavjud imagega asoslashni xohlaysiz. `FROM` instructioni ushbu asosiy imageni belgilaydi.
+
+```dockerfile /FROM/
+FROM <image>[:<tag>] [@<digest>]
+#NodeJS namunalar
+FROM node
+FROM node:18
+FROM node@sha256:XXXXXX
+```
+**<image> ** - bu yangi imagengizga asoslanmoqchi bo'lgan imagening nomi.
+**<tag>** (ixtiyoriy) imagening muayyan versiyasi yoki variantini bildiradi. Agar belgilanmagan bo'lsa, u default bo'yicha `latest` bo'ladi.
+**@<digest> ** (ixtiyoriy) sizga imageni uning content hashi (digest) bo'yicha belgilash imkonini beradi va bu imagega aniq mos kelishini ta'minlaydi.
+
+### MAINTAINER, LABEL
+
+Dockerfile-dagi `MAINTAINER` instructioni qurilayotgan imagening muallifi yoki maintainerini ko'rsatish uchun ishlatilgan. Biroq, bu instruction iamge haqidagi metamaʼlumotlar, jumladan, texnik maʼlumotlar bilan taʼminlash uchun `LABEL` dan foydalanish foydasiga eskirgan.
+
+Maintainerni ko'rsatish uchun `LABEL` dan qanday foydalanish mumkinligiga misol:
+
+```dockerfile /MAINTAINER/ /LABEL/
+FROM node:18
+MAINTAINER Otabek Ismoilov
+# LABEL bilan
+LABEL maintainer="Otabek Ismoilov ismoilovdev@gmail.com"
+```
+
+### RUN
+
+Docker faylidagi `RUN` buyrug'i Docker imagedagi buyruqlarni bajarish uchun ishlatiladi. Ushbu buyruqlar odatda paketlarni o'rnatish, tizimni yangilash, fayllarni yuklab olish yoki konteyner ichidagi muhitni tayyorlash uchun zarur bo'lgan boshqa vazifalar uchun ishlatiladi.
+
+`RUN` qanday ishlatilishiga misol:
+
+```dockerfile /RUN/
+FROM ubuntu:latest
+
+# Konteynerni yangilash va konteynerga zip, git, unzip o'rnatish
+RUN apt-get update && apt-get install -y \
+    zip \
+    git \
+    unzip
+```
+
+Javascript applicationlar uchun misol
+
+```dockerfile /RUN/
+FROM node:18
+
+RUN npm install
+RUN npm build
+```
