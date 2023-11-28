@@ -70,10 +70,10 @@ Prometheusni GitHub repositoriyadan oldindan kompilyatsiya qilingan binary(ikkil
 
 1. [Prometheus downloads](https://prometheus.io/download/) sahifasiga tashrif buyuring va eng so'nggi versiyani yozib oling. Eng so'nggi LTS versiyasi saytda aniq ko'rsatilgan.
 
-2. Monitoring serveriga Prometheusni yuklab olish uchun `wget` dan foydalaning. Maqsadli havola https://github.com/prometheus/prometheus/releases/download/v[release]/prometheus-[release].linux-amd64.tar.gz formatiga ega. Yuklab olish uchun [release] qatorini haqiqiy reliz bilan almashtiring. Masalan, quyidagi yuklash buyruqlari 2.46.0 versiyasini chiqaradi.
+2. Monitoring serveriga Prometheusni yuklab olish uchun `wget` dan foydalaning. Maqsadli havola https://github.com/prometheus/prometheus/releases/download/v[release]/prometheus-[release].linux-amd64.tar.gz formatiga ega. Yuklab olish uchun [release] qatorini haqiqiy reliz bilan almashtiring. Masalan, quyidagi yuklash buyruqlari 2.48.0 versiyasini chiqaradi.
 
 ```bash
-wget https://github.com/prometheus/prometheus/releases/download/v2.46.0/prometheus-2.46.0.linux-amd64.tar.gz
+wget https://github.com/prometheus/prometheus/releases/download/v2.48.0/prometheus-2.48.0.linux-amd64.tar.gz
 ```
 3. Arxivlangan Prometheus fayllarini arxivdan chiqarib oling.
 
@@ -92,7 +92,7 @@ sudo mkdir /etc/prometheus /var/lib/prometheus
 6. Arxivdan chiqarilgan Prometheus jildiga kiring
 
 ```bash
-cd prometheus-2.46.0.linux-amd64
+cd prometheus-2.48.0.linux-amd64
 ```
 
 7. Prometheus va promtool jildlarini `/usr/local/bin/` jildiga o'tkazing. Bu Prometheusni barcha foydalanuvchilar uchun ochiq qiladi.
@@ -211,10 +211,10 @@ Node Exporter ishlayotgan bo'lsa, uning statistik ma'lumotlar to'plami `9100` po
 </Callout>
 
 1. [Prometheus downloads sahifasining Node Exporter bo'limiga](https://prometheus.io/download/#node_exporter) murojaat qiling va oxirgi versiyani aniqlang.
-2. Ushbu relizni yuklab olish uchun `wget` dan foydalaning. Fayl formati https://github.com/prometheus/node_exporter/releases/download/v[reliz_raqami]/node_exporter-[reliz_raqami].linux-amd64.tar.gz. [reliz_raqami] ni haqiqiy relizga mos keladigan raqam bilan almashtiring. Misol uchun, quyidagi misol Node Exporter `1.6.1` versiyasini qanday yuklab olishni ko'rsatadi.
+2. Ushbu relizni yuklab olish uchun `wget` dan foydalaning. Fayl formati https://github.com/prometheus/node_exporter/releases/download/v[reliz_raqami]/node_exporter-[reliz_raqami].linux-amd64.tar.gz. [reliz_raqami] ni haqiqiy relizga mos keladigan raqam bilan almashtiring. Misol uchun, quyidagi misol Node Exporter `1.7.0` versiyasini qanday yuklab olishni ko'rsatadi.
 
 ```bash
-wget https://github.com/prometheus/node_exporter/releases/download/v1.6.1/node_exporter-1.6.1.linux-amd64.tar.gz
+wget https://github.com/prometheus/node_exporter/releases/download/v1.7.0/node_exporter-1.6.1.linux-amd64.tar.gz
 ```
 3. Dasturni arxivdan chiqarib oling
 
@@ -224,12 +224,12 @@ tar xvfz node_exporter-*.tar.gz
 4. Bajariladigan(executable) faylni `usr/local/bin`-ga o'tkazing, shunda u butun tizimda mavjud bo'ladi.
 
 ```bash
-sudo mv node_exporter-1.6.1.linux-amd64/node_exporter /usr/local/bin
+sudo mv node_exporter-1.7.0.linux-amd64/node_exporter /usr/local/bin
 ```
 5. (Ixtiyoriy) Qolgan fayllarni o'chirib tashlang.
 
 ```bash
-rm -r node_exporter-1.6.1.linux-amd64*
+rm -r node_exporter-1.7.0.linux-amd64*
 ```
 6. Node Exporterni ishga tushirishning ikki yo'li mavjud. Uni terminaldan `node_exporter` buyrug'i yordamida ishga tushirish mumkin. Yoki uni system service sifatida faollashtirish mumkin. Uni terminaldan ishga tushirish unchalik qulay emas. Ammo bu vosita faqat vaqti-vaqti bilan foydalanish uchun mo'ljallangan bo'lsa, bu muammo bo'lmasligi mumkin. Node Exporter dasturini qo'lda ishga tushirish uchun quyidagi buyruqdan foydalaning. Terminal statistik ma'lumotlarni yig'ish jarayoniga oid tafsilotlarni chiqaradi.
 
@@ -299,8 +299,9 @@ sudo nano /etc/prometheus/prometheus.yml
 ...
 - job_name: "remote_collector"
   scrape_interval: 10s 
-  static_configs:
-    - targets: ["172.78.1.89:9100"]
+    static_configs:
+      - targets:
+          - "195.158.4.203:9100"
 # bu yerda client server yani kuzatmoqchi bo'lgan serveringiz IP addresini yozasiz
 ```
 
@@ -311,10 +312,10 @@ Bitr nechta serverlarni monitoring qilish uchun `prometheus.yml` konfigrasiya fa
 - job_name: "node_exporter"
     static_configs:
       - targets: [
-        "192.168.1.134:9100",
-        "192.168.1.122:9100",
-        "192.168.1.116:9100",
-        "192.168.1.145:9100",
+        "195.168.1.134:9100",
+        "195.168.1.122:9100",
+        "195.168.1.116:9100",
+        "195.168.1.145:9100",
       ]
 ```
 Bu yerda 4 ta serverga node_exporter o'rnatilgan va biz bularni Prometheus o'rnatgan serverimizdagi `/etc/prometheus/prometheus.yml` konfigratsiya faylida biz kuzatmoqchi bo'lgan severlarimizni ro'yxatini qo'shib qo'yyapmiz. 
@@ -340,16 +341,17 @@ Grafana Prometheus tomonidan to'plangan statistik ma'lumotlarni ko'rish uchun in
 1. `apt` yordamida ba'zi kerakli yordamchi dasturlarni o'rnating.
 
 ```bash
-sudo apt-get install -y apt-transport-https software-properties-common
+sudo apt-get install -y apt-transport-https software-properties-common wget
 ```
 2. Grafana GPG keyini import qiling.
 ```bash
-sudo wget -q -O /usr/share/keyrings/grafana.key https://apt.grafana.com/gpg.key
+sudo mkdir -p /etc/apt/keyrings/
+wget -q -O - https://apt.grafana.com/gpg.key | gpg --dearmor | sudo tee /etc/apt/keyrings/grafana.gpg > /dev/null
 ```
 3. Grafana "stable releases" repositoriyani qo'shing.
 
 ```bash
-echo "deb [signed-by=/usr/share/keyrings/grafana.key] https://apt.grafana.com stable main" | sudo tee -a /etc/apt/sources.list.d/grafana.list
+echo "deb [signed-by=/etc/apt/keyrings/grafana.gpg] https://apt.grafana.com stable main" | sudo tee -a /etc/apt/sources.list.d/grafana.list
 ```
 
 4. Repozitariyadagi paketlarni, jumladan, yangi Grafana paketini yangilang.
