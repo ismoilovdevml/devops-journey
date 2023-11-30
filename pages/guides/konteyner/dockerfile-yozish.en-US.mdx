@@ -15,7 +15,7 @@ Dockerfiledagi `FROM` instructioni sizning imagengiz asosida quriladigan asosiy 
 
 ```bash /FROM/
 FROM <image>[:<tag>] [@<digest>]
-#NodeJS namunalar
+#Node.jsnamunalar
 FROM node
 FROM node:18
 FROM node@sha256:XXXXXX
@@ -147,7 +147,7 @@ FROM python:3.9
 
 ADD https://example.com/file.txt /app/file.txt
 ```
-`ADD` insturctioni, shuningdek, masofaviy(remote) URL-manzillardan fayllarni olib, ularni imagega qo'shishi mumkin. Ushbu misolda fayl (file.txt) `https://example.com/file.txt` dan yuklab olinadi va imagening `/app` katalogiga joylashtiriladi.
+`ADD` insturctioni, shuningdek, masofaviy(remote) URL-manzillardan fayllarni olib, ularni imagega qo'shishi mumkin. Ushbu misolda fayl (file.txt) `https://example.com/file.txt` dan yuklab olinadi va imagening `/app` jildiga joylashtiriladi.
 
 ### CMD
 
@@ -222,7 +222,7 @@ Bu buyruq Docker-ga `80`-portni konteynerdan hostdagi `8080`-portga publish qili
 
 `EXPOSE` konteyner qaysi portlardan foydalanishni kutayotganini bildirish uchun ko'proq qo'llanma xususiyatidir. Bu foydalanuvchilarga runtimeda konteynerning tarmoq harakatiga bevosita ta'sir qilmasdan mo'ljallangan tarmoq aloqa portlarini tushunishga yordam beradi. Haqiqiy port ulanishi va tarmoq konfiguratsiyasi konteyner tegishli port mapping bilan `docker run` buyrug'i yordamida ishga tushirilganda amalga oshiriladi.
 
-Misol uchun NodeJS dasturiga namuna Dockerfile
+Misol uchun Node.js dasturiga namuna Dockerfile
 
 ```bash /EXPOSE/
 FROM node:14
@@ -245,3 +245,167 @@ EXPOSE 3000
 CMD ["npm", "start"]
 ```
 Ushbu Node.js misolida `EXPOSE` insturctioni konteyner ichidagi Node.js ilovasi `3000`-portda tinglashini(listen) bildiradi. Bu ko‘plab Node.js ilovalari uchun umumiy senariy bo‘lishi mumkin, chunki ular odatda ushbu portdan default bo‘yicha foydalanadilar.
+
+### VOLUME
+
+`VOLUME` instructioni Docker konteynerida mount point yaratish uchun ishlatiladi va konteyner tomonidan yaratilgan ma'lumotlarni doimiy ravishda saqlash yoki konteyner va ost mashinasi o'rtasida ma'lumotlarni almashish uchun ishlatiladi.
+
+`VOLUME` instructioni sintaksisiga msiol:
+
+```bash /VOLUME/
+# Use a base image
+FROM ubuntu:latest
+
+# Ma'lumotlarni saqlash uchun volume yaratish
+VOLUME /app/data
+```
+
+Ushbu misolda `VOLUME` insturctioni konteyner ichidagi `/app/data` da moint pointni yaratadi. Konteynerni ishga tushirish paytida ushbu jildga yozilgan har qanday ma'lumotlar konteynerning yoziladigan qatlamidan(writable layer) tashqarida saqlanadi, bu esa konteyner to'xtatilgandan yoki o'chirilgandan keyin ham doimiy(persistent) va mavjud bo'ladi.
+
+`VOLUME` dan foydalanish bo‘yicha bir nechta asosiy fikrlarga e’tibor qaratish muhim:
+
+* **Persisting Data(Doimiy ma'lumotlar):** Belgilangan volume mountga yozilgan har qanday ma'lumotlar, hatto konteyner o'chirib tashlangan bo'lsa ham saqlanib qoladi. Bu ma'lumotlarni konteyner instancelarida almashish va qayta ishlatish imkonini beradi.
+
+* **Runtimeda Volume Mount:** Konteynerni ishga tushirganda, Docker'dagi `-v` yoki `--volume` flagi yoki `--mount` flagi local jild yoki nomlangan jildni Dockerfile'da `VOLUME` yordamida yaratilgan jildga yo'naltirish uchun ishlatiladi.
+
+Masalan:
+
+```bash
+docker run -v /host/path:/app/data my_image
+```
+
+Bu buyruq host mashinasidagi `/host/path` jildini konteyner ichidagi `/app/data` jildiga moslashtiradi.
+
+* **Ixtisoslashgan ma'lumotlar konteynerlari(Specialized Data Containers):** volumelarni konteynerlar o'rtasida ham taqsimlash(share) mumkin. Nomlangan volumeni yaratish bir nechta konteynerlarga bir xil ma'lumotlarni almashish imkonini beradi.
+
+Masalan; misol uchun:
+
+```bash
+docker run --name container1 -v shared_data:/app/data my_image
+docker run --name container2 --volumes-from container1 another_image
+```
+
+Bu yerda `container2` `container1` volumidan foydalanadi.
+
+Dockerfiledagi `VOLUME` birinchi navbatda Docker uchun ko'rsatma bo'lib xizmat qiladi, bu konteyner ichidagi ma'lum bir jild doimiy ma'lumotlarni(persistent data) saqlash yoki konteynerlar yoki host mashinasi bilan ma'lumotlarni almashish uchun mo'ljallanganligini ko'rsatadi. Bu Docker konteynerlarida stateful datalarni boshqarishning asosiy jihati.
+
+### USER
+
+`USER` insturctioni Docker faylida keyingi buyruqlarni bajarayotganda Docker konteyneri qaysi foydalanuvchiga(user) ishlashi kerakligini belgilash uchun ishlatiladi. U foydalanuvchini username nomi yoki UID (Foydalanuvchi identifikatori) bo'yicha sozlash imkonini beradi.
+
+`USER` instructioni sintaksisi quyidagicha:
+
+```bash
+USER <username yoki UID>
+```
+`<username yoki UID>` asosiy imagedagi mavjud foydalanuvchining yoki Dockerfile-da yaratilgan foydalanuvchining usernamesi yoki UID boʻlishi mumkin.
+Docker faylida USER instructionian foydalanishni ko'rsatadigan bir nechta misollar:
+
+```bash /USER/
+FROM ubuntu:latest
+
+# Yangi foydalanuvchi "appuser" yaratadi va o'sha foydalanuvchiga o'tadi
+RUN useradd -ms /bin/bash appuser
+USER appuser
+
+WORKDIR /home/appuser
+
+COPY . .
+CMD ["./start.sh"]
+```
+Ushbu misolda, `useradd` yordamida `appuser` nomli yangi foydalanuvchi yaratilgan va `USER` insturctioni Dockerfile faylidagi keyingi buyruqlar uchun `appuser`ni standart foydalanuvchi sifatida belgilaydi. Bu cheklangan imtiyozlar bilan dasturni ishga tushirish uchun foydalidir.
+
+UID dan foyalanishga misol
+
+```bash /USER/
+FROM node:14
+WORKDIR /usr/src/app
+
+COPY . .
+
+RUN chown -R node:node /usr/src/app
+USER node
+CMD ["npm", "start"]
+```
+`USER` instructioni Node.js asosiy imagesida mavjud bo'lmagan `root` foydalanuvchisi bo'lgan node foydalanuvchisiga o'tadi. Foydalanuvchilarni almashtirishdan oldin, dastur ishlayotgan vaqtda o'z fayllariga kirishini ta'minlash uchun dastur jildining egaligi node foydalanuvchisiga o'zgartiriladi.
+
+`USER` instructionidan foydalanish xavfsizlik maqsadlari uchun juda muhim, chunki root bo‘lmagan foydalanuvchilar bilan konteynerlarni ishga tushirish konteynerlashtirilgan ilova ichidagi xavfsizlik zaifliklarining potentsial ta’sirini kamaytiradi. Ammo shuni yodda tutingki, Dockerfile'dagi ba'zi operatsiyalar root huquqlarini talab qilishi mumkin, shuning uchun Dockerfile'da foydalanuvchini belgilashda xavfsizlikning eng yaxshi amaliyotlari bilan operatsion talablarni muvozanatlash juda muhimdir.
+
+### Namunalar
+
+Quyida bir nechta dasturlar uchun yozilgan Dockerfilelar
+
+#### JavaScript (Node.js)
+
+```bash
+FROM node:18
+
+WORKDIR /usr/src/app
+COPY package*.json ./
+
+RUN npm install
+
+COPY . .
+EXPOSE 3000
+CMD ["npm", "start"]
+```
+#### Python
+
+```bash
+FROM python:3.9
+WORKDIR /usr/src/app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY . .
+
+EXPOSE 5000
+CMD ["python", "app.py"]
+```
+
+#### Rust
+
+```bash
+FROM rust:latest
+WORKDIR /usr/src/app
+COPY . .
+
+CMD ["cargo", "run"]
+```
+
+#### .NET(C#)
+```bash
+# Use a base image
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+WORKDIR /app
+
+COPY *.csproj .
+RUN dotnet restore
+
+COPY . .
+RUN dotnet publish -c Release -o out
+
+FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS runtime
+WORKDIR /app
+COPY --from=build /app/out .
+EXPOSE 80
+
+ENTRYPOINT ["dotnet", "YourApp.dll"]
+```
+
+#### Go
+
+```bash
+FROM golang:latest
+WORKDIR /go/src/app
+
+COPY . .
+
+RUN go build -o main .
+
+EXPOSE 8080
+
+CMD ["./main"]
+```
+
+Qo'shimcha Dockerfilelar va yaxshiroq loyiha va fremworkga moslab yozilgan Dockerfile namunlarini [devops-tools](https://github.com/ismoilovdevml/devops-tools/tree/master/Docker) github repositoriyasidan topsishingiz mumkin
