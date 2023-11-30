@@ -148,3 +148,100 @@ FROM python:3.9
 ADD https://example.com/file.txt /app/file.txt
 ```
 `ADD` insturctioni, shuningdek, masofaviy(remote) URL-manzillardan fayllarni olib, ularni imagega qo'shishi mumkin. Ushbu misolda fayl (file.txt) `https://example.com/file.txt` dan yuklab olinadi va imagening `/app` katalogiga joylashtiriladi.
+
+### CMD
+
+`CMD`  insturctioni ushbu Docker imagega asoslangan konteyner ishga tushirilganda bajarilishi kerak bo'lgan buyruqni belgilash uchun ishlatiladi. U konteyner ishga tushganda ishga tushirish uchun standart buyruqni belgilaydi, garchi uni konteynerni ishga tushirishda buyruq berish orqali bekor qilish mumkin.
+
+CMD insturctioni sintaksisi quyidagicha:
+
+```bash /CMD/
+FROM python:3.9
+
+CMD ["python", "app.py"]
+```
+Ushbu misolda, ushbu imagega asoslangan konteyner ishga tushirilganda, u standart buyruq sifatida Python skripti `app.py` ni ishga tushiradi.
+
+Web Serverni ishga tushirishga misol
+
+```bash
+FROM nginx:latest
+
+CMD ["nginx", "-g", "daemon off;"]
+```
+Bu yerda CMD instructioni Nginx veb-serverini konteyner ichida ishga tushirish buyrug'ini belgilaydi.
+
+### ENTRYPOINT
+
+`ENTRYPOINT` instructioni Docker imagedan konteyner ishga tushirilganda bajariladigan asosiy buyruqni o'rnatadi. Runtimeda buyruq berish orqali bekor qilinishi mumkin bo'lgan `CMD` instructionidan farqli o'laroq, `ENTRYPOINT` konteynerning bajarilishi(execute) uchun belgilangan boshlanish nuqtasini ta'minlaydi, ammo konteyner ishga tushirilganda u hali ham qo'shimcha argumentlar yoki buyruqlar bilan to'ldirilishi mumkin.
+
+`ENTRYPOINT` instructioni sintaksisi `CMD` ga o'xshaydi:
+
+```bash /ENTRYPOINT/
+FROM python:3.9
+
+ENTRYPOINT ["python", "app.py"]
+```
+Bunday holda, `ENTRYPOINT` instructioni konteyner ishga tushirilganda Python skripti `app.py` ni asosiy buyruq sifatida bajarishi(execute) kerakligini bildiradi.
+
+CMD bilan birga ishlatilishi
+
+```bash /ENTRYPOINT/ /CMD/
+FROM nginx:latest
+
+ENTRYPOINT ["nginx", "-g", "daemon off;"]
+CMD ["-c", "/etc/nginx/nginx.conf"]
+```
+
+Ushbu Dockerfile Nginx serverini standart sozlamalar bilan ishga tushirish uchun `ENTRYPOINT`-dan foydalanadi va foydalaniladigan konfiguratsiya faylini belgilash uchun `CMD`-dan foydalanadi (nginx.conf). Konteyner ishga tushganda, ENTRYPOINT standart sozlamalar bilan Nginx-ni ishga tushiradi va CMD konfiguratsiya fayli argumentini taqdim etish orqali uni to'ldiradi.
+
+ENTRYPOINT konteynerning asosiy ishlashini aniqlash va izchil bajarilish muhitini ta'minlash uchun foydalidir. U ko'pincha ma'lum bir boshlang'ich nuqtasi yoki ishga tushirish jarayonini talab qiladigan uzoq muddatli servicelar yoki ilovalar uchun qo'llaniladi. Bundan tashqari, u foydalanuvchilarga iruntimeda qo'shimcha argumentlar yoki buyruqlar taqdim etish imkonini beradi va uning funksiyalarini kengaytiradi.
+
+### EXPOSE
+
+`EXPOSE` insturctioni Dockerga konteyner runtimeda ma'lum tarmoq portlarini tinglashi(listen) haqida xabar berish uchun ishlatiladi. Biroq, u portlarni publish qilmaydi yoki ochmaydi. U foydalanuvchilar uchun konteyner qaysi portlarni tinglamoqchi(listen) ekanligini tushunish uchun documentatsiya sifatida xizmat qiladi.
+
+`EXPOSE` insturctionining sintaksisi oddiy:
+
+```bash /EXPOSE/
+FROM nginx:latest
+
+# HTTP trafigi uchun 80 portini ochadi(expose)
+EXPOSE 80
+```
+
+Bunday holda, `EXPOSE` insturctioni Dockerga konteyner kiruvchi trafik uchun `80`-portni tinglashini(listen) aytadi. Biroq, bu insturctionning o'zi portni host machinega publish qilmaydi yoki uni mapda ko'rsatmaydi. Portlarni konteynerdan hostga map qilish yoki publish qilish uchun konteynerni `docker run -p` buyru'gidan foydalanishingiz kerak.
+
+Masalan, konteynerning `80`-portini host-mashinadagi `8080`-portga map qilish uchun siz konteynerni quyidagicha ishga tushirasiz:
+
+```bash /-p/
+docker run -p 8080:80 my_image
+```
+
+Bu buyruq Docker-ga `80`-portni konteynerdan hostdagi `8080`-portga publish qilishni aytadi, bu esa konteyner ichida ishlaydigan servicelarga tashqi kirish imkonini beradi.
+
+`EXPOSE` konteyner qaysi portlardan foydalanishni kutayotganini bildirish uchun ko'proq qo'llanma xususiyatidir. Bu foydalanuvchilarga runtimeda konteynerning tarmoq harakatiga bevosita ta'sir qilmasdan mo'ljallangan tarmoq aloqa portlarini tushunishga yordam beradi. Haqiqiy port ulanishi va tarmoq konfiguratsiyasi konteyner tegishli port mapping bilan `docker run` buyrug'i yordamida ishga tushirilganda amalga oshiriladi.
+
+Misol uchun NodeJS dasturiga namuna Dockerfile
+
+```bash /EXPOSE/
+FROM node:14
+
+WORKDIR /usr/src/app
+
+# package.json va package-lock.json fayllaridan nusxa oladi
+COPY package*.json ./
+
+# Dependencilarniu o'rnatadi
+RUN npm install
+
+# Ilova fayllarini nusxalaydi
+COPY . .
+
+# Node.js ilovasi uchun 3000 portini ochadi
+EXPOSE 3000
+
+# Node.js ilovasini ishga tushirish buyrug'i
+CMD ["npm", "start"]
+```
+Ushbu Node.js misolida `EXPOSE` insturctioni konteyner ichidagi Node.js ilovasi `3000`-portda tinglashini(listen) bildiradi. Bu ko‘plab Node.js ilovalari uchun umumiy senariy bo‘lishi mumkin, chunki ular odatda ushbu portdan default bo‘yicha foydalanadilar.
