@@ -105,3 +105,46 @@ RUN pip install --no-cache-dir -r requirements.txt
 `WORKDIR` konteyner ichidagi ishni jildni `/usr/src/app` ga o'rnatadi. `COPY` Joriy jilddagi barcha fayllarni Docker imagedagi `/usr/src/app` jildiga ko'chiradi.
 
 ### ENV
+
+Dockerfiledagi `ENV` buyrug'i konteyner ichidagi muhit o'zgaruvchilarini(environment variable) o'rnatish uchun ishlatiladi. Ushbu o'zgaruvchilar key-value juftliklari bo'lib, ularga konteyner ichida ishlaydigan har qanday jarayon orqali kirish mumkin.
+
+`ENV` insturctionlaridan foydalanishni ko'rsatadigan oddiy Dockerfile misoli:
+
+```bash /ENV/
+FROM node:14
+
+ENV NODE_ENV=production
+ENV PORT=3000
+```
+Real mysql database uchun `ENV` ishlatilishi
+
+```bash /ENV/
+FROM mysql:latest
+
+ENV MYSQL_ROOT_PASSWORD=my-secret-pw
+ENV MYSQL_DATABASE=mydb
+ENV MYSQL_USER=user
+ENV MYSQL_PASSWORD=password
+```
+
+### ADD
+
+Dockerfile-dagi `ADD` insturctioni fayllarni, jildlarni yoki masofaviy URL-larni yaratish kontekstidan yaratilayotgan Docker imagening fayl tizimiga nusxalash uchun ishlatiladi. Bu sizga Docker build kontekstidan (Dockerfile joylashgan jild) local fayllar yoki jildlarni imagega qo'shish imkonini beradi.
+
+`ADD` insturctioni sintaksisi quyidagicha:
+
+```bash /ADD/
+FROM node:14
+
+ADD myapp /usr/src/app
+```
+Bu yerda Docker build kontekstidan `myapp` nomli local jildni image ichidagi `/usr/src/app` jildiga qo'shiladi.
+
+Masofaviy fayl qo'shsih quyidagicha
+
+```bash /ADD/
+FROM python:3.9
+
+ADD https://example.com/file.txt /app/file.txt
+```
+`ADD` insturctioni, shuningdek, masofaviy(remote) URL-manzillardan fayllarni olib, ularni imagega qo'shishi mumkin. Ushbu misolda fayl (file.txt) `https://example.com/file.txt` dan yuklab olinadi va imagening `/app` katalogiga joylashtiriladi.
