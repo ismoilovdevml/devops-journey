@@ -130,7 +130,7 @@
     "longTitle": "Serverlarni monitoring qilish",
     "description": "Grafana, Prometheus, Node Exporter o'rnatish va sozlash",
     "level": "Hamma uchun",
-    "category": "Computer Science",
+    "category": "DevOps",
     "author": {
       "name": "Otabek Ismoilov",
       "image": "/images/tutorials/authors/ismoilovdev.jpeg"
@@ -138,6 +138,27 @@
     "createdAt": "2023-06-09",
     "minutesRead": 40,
     "href": "/tutorials/article/gnp-monitoring",
+    "theme": {
+      "breadcrumb": false,
+      "footer": true,
+      "sidebar": false,
+      "toc": false,
+      "pagination": true
+    }
+  },
+  "netflix-deploy": {
+    "title": "DevSecOps Project: Neftlix",
+    "longTitle": "DevSecOps Project: Neftlix",
+    "description": "Neftlix klonini deploy qilamiz(Jenkins,SonarQube,Docker)",
+    "level": "Hamma uchun",
+    "category": "DevOps",
+    "author": {
+      "name": "Otabek Ismoilov",
+      "image": "/images/tutorials/authors/ismoilovdev.jpeg"
+    },
+    "createdAt": "2023-01-12",
+    "minutesRead": 40,
+    "href": "/tutorials/article/netflix-deploy",
     "theme": {
       "breadcrumb": false,
       "footer": true,
