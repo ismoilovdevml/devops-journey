@@ -63,7 +63,47 @@ Minimum Server talabi
 
 Eslatib o'ta,iz ushbu loyihani o'zingizda sinab test qilib ko'rish uchun bu minumum server talabi. Agar siz buni production uchun ishlatmoqchi bo'lsangiz loyiha va sizning talablaringizga qarab bu ko'satkichlar o'zgaradi
 
-
-Agar imkoniyat bo'lsa har bir postgres node uchun bittadan `etcd` server sozlab olish kerak!
-
 </Callout>
+
+Server olganingizdan keyin `ssh` bilan serverga kirib yangilab olamiz
+
+```bash
+sudo apt update && sudo apt upgrade -y
+```
+
+Kerakli dasturlarni o'rnatib olamiz
+
+```bash
+sudo apt install git nano zip unzip wget apt-transport-https gnupg lsb-release -y
+```
+Serverni yangilab kerakli dasturlarni o'rnatib olganimizdan keyin keyingi bosqichga Jenkins o'rnatishga o'tsak bo'ladi.
+
+### Jenkins o'rnatish, sozlash va domen ulash
+
+**Jenkins**-ni o'rnatish sizning loyihangiz uchun Continuous Integration/Continuous Deployment**(CI/CD)** pipeline o'rnatishda muhim qadamdir. Jenkins - bu ilovalarni yaratish, sinovdan o'tkazish va deployment uchun ishlatiladigan mashhur avtomatlashtirish serveri.
+
+Jenkins o'rnatish bo'yicha to'liq qo'llanmani [Linux Serverlarga Jenkins o'rnatish](https://devops-journey.uz/guides/ci-cd/jenkins-ornatish) qo'llanmasida topishingiz mumkin. Yoki keling qisqa o'rnatishni boshlaymiz.
+
+1. Java o'rnatish
+
+Jenkins ishga tushirish uchun Java-ni talab qiladi, ammo ba'zi distributivlar standart bo'yicha buni o'z ichiga olmaydi va ba'zi Java versiyalari Jenkins bilan mos kelmaydi. Siz foydalanishingiz mumkin bo'lgan bir nechta Java ilovalari mavjud. OpenJDK hozirda eng ommabop, biz undan ushbu qo'llanmada foydalanamiz. Debian apt repositoriyalarini yangilang, OpenJDK 17 ni o'rnating va buyruqlar bilan o'rnatishni tekshiring:
+
+```bash
+sudo apt update
+sudo apt install openjdk-17-jre
+java -version
+```
+
+2. LTS versiyali jenkinsni o'rnatish
+
+LTS (Uzoq muddatli qo'llab-quvvatlash) versiyasi har 12 haftada muntazam releaselar oqimidan o'sha vaqt uchun barqaror release sifatida tanlanadi. U debian-stable apt repositorydan o'rnatilishi mumkin.
+
+```bash
+curl -fsSL https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key | sudo tee \
+  /usr/share/keyrings/jenkins-keyring.asc > /dev/null
+echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] \
+  https://pkg.jenkins.io/debian-stable binary/ | sudo tee \
+  /etc/apt/sources.list.d/jenkins.list > /dev/null
+sudo apt-get update
+sudo apt-get install jenkins
+```
