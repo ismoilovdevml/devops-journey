@@ -84,7 +84,7 @@ Serverni yangilab kerakli dasturlarni o'rnatib olganimizdan keyin keyingi bosqic
 
 Jenkins o'rnatish bo'yicha to'liq qo'llanmani [Linux Serverlarga Jenkins o'rnatish](https://devops-journey.uz/guides/ci-cd/jenkins-ornatish) qo'llanmasida topishingiz mumkin. Yoki keling qisqa o'rnatishni boshlaymiz.
 
-1. Java o'rnatish
+**1. Java o'rnatish**
 
 Jenkins ishga tushirish uchun Java-ni talab qiladi, ammo ba'zi distributivlar standart bo'yicha buni o'z ichiga olmaydi va ba'zi Java versiyalari Jenkins bilan mos kelmaydi. Siz foydalanishingiz mumkin bo'lgan bir nechta Java ilovalari mavjud. OpenJDK hozirda eng ommabop, biz undan ushbu qo'llanmada foydalanamiz. Debian apt repositoriyalarini yangilang, OpenJDK 17 ni o'rnating va buyruqlar bilan o'rnatishni tekshiring:
 
@@ -94,7 +94,7 @@ sudo apt install openjdk-17-jre
 java -version
 ```
 
-2. LTS versiyali jenkinsni o'rnatish
+**2. LTS versiyali jenkinsni o'rnatish**
 
 LTS (Uzoq muddatli qo'llab-quvvatlash) versiyasi har 12 haftada muntazam releaselar oqimidan o'sha vaqt uchun barqaror release sifatida tanlanadi. U debian-stable apt repositorydan o'rnatilishi mumkin.
 
@@ -107,3 +107,54 @@ echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] \
 sudo apt-get update
 sudo apt-get install jenkins
 ```
+
+**3. Jenkinsni ishga tushirish**
+
+Jenkinsni serviceni yoqish start berish va ishlayotgan statusni ko'rish uchun quyidagi buyruqlardan foydalaning.
+
+```bash
+sudo systemctl enable jenkins
+sudo systemctl start jenkins
+sudo systemctl status jenkins
+```
+**4. Jenkins qulfini ochish**
+
+Yangi Jenkins misoliga birinchi marta kirganingizda, uni avtomatik ravishda yaratilgan parol yordamida qulfdan chiqarish so'raladi. http://localhost:8080 (yoki uni oʻrnatishda Jenkins uchun qaysi portni sozlagan boʻlsangiz) sahifasini koʻrib chiqing va `Unlock Jenkins` sahifasi paydo boʻlguncha kuting.
+
+![jenkins](/images/ci-cd/1.jpg)
+
+parolni ko'rish uchun jenkisn parol qayerda turganini ko'rsatib parol fayliga yo'l ko'rstaib qo'yadi yani `/var/lib/jenkins/secrets/initialAdminPassword`. parolni olish quyidagi buyruqdan foydalanamiz.
+
+```bash
+sudo cat /var/lib/jenkins/secrets/initialAdminPassword
+```
+Bu buyruq `sudo cat /var/lib/jenkins/secrets/initialAdminPassword` parolni konsolda chop etadi. Terminaldan 32 belgidan iborat alphanumeric paroldan nusxa oling va uni Administrator paroli maydoniga joylashtiring, so'ng `Continue` tugmasini bosing. Keyingi ekranda tavsiya etilgan plaginlarni o'rnatish yoki maxsus plaginlarni tanlash imkoniyati mavjud:
+
+![jenkins](/images/ci-cd/2.png)
+
+Biz `suggested plugins` opsiyasini bosamiz, bu darhol o'rnatish jarayonini boshlaydi.
+
+![jenkins](/images/ci-cd/3.png)
+
+O'rnatish tugallangach, sizdan birinchi `Admin User` o'rnatish so'raladi. Bu bosqichni oʻtkazib yuborish va yuqoridagi boshlangʻich parol yordamida administrator sifatida davom etish mumkin, lekin foydalanuvchi yaratishga biroz vaqt ajratamiz.
+
+![jenkins](/images/ci-cd/4.png)
+
+Siz Jenkins instance uchun afzal qilingan URL manzilini tasdiqlashingizni so'raydigan Instance Configuration sahifasini olasiz. Serveringiz uchun domen nomini yoki serveringizning IP manzilini tasdiqlang:
+
+![jenkins](/images/ci-cd/5.png)
+
+Tegishli ma'lumotlarni tasdiqlaganingizdan so'ng, `Save and Finish` tugmasini bosing. Siz `"Jenkins is Ready!"` degan tasdiqlash sahifasini olasiz:
+
+![jenkins](/images/ci-cd/6.png)
+
+Asosiy Jenkins boshqaruv paneliga tashrif buyurish uchun `Start using Jenkins` tugmasini bosing:
+
+![jenkins](/images/ci-cd/8.png)
+
+Shu nuqtada siz Jenkins-ni muvaffaqiyatli o'rnatdingiz. Keyingi qismga o'tamiz
+
+5. Nginx, certbot o'rnatish va domen ulab ssl sertifikat olish
+
+Serverimizga Jenkins o'rnatdik va uni dastlablki holat uchun zolab oldik lekin biz har doim jenkinsga kirganimizda serverimiz IP mazili va jenkins portini kiritib yozishimiz kerak bu yaxshimas lekin bunga kirish oson bo'lishi va xavfsiz bo'lishi uchun domen ulab ssl sertificat olamiz.
+
