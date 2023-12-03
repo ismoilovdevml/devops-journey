@@ -154,7 +154,60 @@ Asosiy Jenkins boshqaruv paneliga tashrif buyurish uchun `Start using Jenkins` t
 
 Shu nuqtada siz Jenkins-ni muvaffaqiyatli o'rnatdingiz. Keyingi qismga o'tamiz
 
-5. Nginx, certbot o'rnatish va domen ulab ssl sertifikat olish
+**5. Nginx, certbot o'rnatish va domen ulab ssl sertifikat olish**
 
 Serverimizga Jenkins o'rnatdik va uni dastlablki holat uchun zolab oldik lekin biz har doim jenkinsga kirganimizda serverimiz IP mazili va jenkins portini kiritib yozishimiz kerak bu yaxshimas lekin bunga kirish oson bo'lishi va xavfsiz bo'lishi uchun domen ulab ssl sertificat olamiz.
 
+Nginx va certbot o'rnatish uchun quyidagi buyruqdan foyalanasiz.
+
+```bash
+sudo apt update
+sudo apt install nginx
+sudo apt install certbot python3-certbot-nginx
+```
+jenkinsga domen ulash uchun nginx configuratsiya qilishimiz kerak. `/etc/nginx/sites-available/` jildida domenimiz uchun configuratsiya fayl ochamiz. MAsalan domenimiz `jenkins.samidello.uz`.
+
+```bash /jenkins.samidello.uz/
+sudo nano /etc/nginx/sites-available/jenkins.samidello.uz
+```
+fayl nano matn muhrarrida ochilganidan keyin quyidagi Nginx configuratsiyani joylashtiring.
+
+```bash filename="/etc/nginx/sites-available/jenkins.samidello.uz"
+server {
+    listen 80;
+    server_name jenkins.samidello.uz;
+
+    location / {
+        proxy_pass http://localhost:8080;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+**Nginx**dagi ushbu konfiguratsiya bloki `80`-portda `jenkins.samidello.uz` domeni orqali Jenkinsga kirish uchun `reverse proxy-`serverni o'rnatish uchun zarur. Ushbu Nginx configuratsiyani qismlarga bo'lib ko'rib chiqamiz.
+
+```bash
+server {
+    listen 80;
+    server_name jenkins.samidello.uz;
+```
+* `server` Bu blok Nginx-da server konfiguratsiya blokining boshlanishini bildiradi.
+
+* `listen 80` Nginx standart **HTTP** porti bo'lgan **80**-portda tinglaydi(listen).
+
+* `server_name jenkins.samidello.uz;` Ushbu server blokiga mos keladigan domen nomi yoki nomlarini belgilaydi. Bu holda, u `jenkins.samidello.uz` ga o'rnatiladi.
+
+```bash
+    location / {
+        proxy_pass http://localhost:8080;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+```
+* `location /` Bu blok ushbu server bloki boshqaradigan joyni belgilaydi. Bunday holda, u ildiz(root) `/` ga o'rnatiladi, shuning uchun `jenkins.samidello.uz` saytiga har qanday so'rov ushbu blok tomonidan ko'rib chiqiladi.
+
+* `proxy_pass http://localhost:8080;` Bu qator Jenkins ishlayotgan server backend serverini belgilaydi. Nginx `jenkins.samidello.uz` saytiga kelgan so'rovlarni Jenkins ishlashi kutilayotgan `http://localhost:8080` manziliga yo'naltiradi.
