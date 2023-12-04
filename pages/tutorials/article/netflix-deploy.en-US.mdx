@@ -8,7 +8,7 @@ DevOps va monitoringda ilg'or texnologiyalardan foydalangan holda Netflix klonin
 
 Bizning maqsadimiz? **Netflix**-ga o'xshash streaming platformasining funksionalligini takrorlash, shu bilan birga mustahkam deployment amaliyotlari, qat'iy xavfsizlik choralari va tizim ishlashini sinchkovlik bilan kuzatish.
 
-Ushbu qoʻllanma davomida biz zaifliklarni skanerlash uchun **Trivy**, kod sifatini tahlil qilish uchun **Sonarqube ** va xavfsizlikni baholash uchun** OWASP Dependency Check** kabi dasturalarning uzluksiz integratsiyasini(CI continuous integration) taʼminlab, ushbu ilovani ishga tushirish va deploy qilish uchun zarur boʻlgan murakkab bosqichlarni koʻrib chiqamiz.
+Ushbu qo'llanma davomida biz zaifliklarni skanerlash uchun **Trivy**, kod sifatini tahlil qilish uchun **Sonarqube ** va xavfsizlikni baholash uchun** OWASP Dependency Check** kabi dasturalarning uzluksiz integratsiyasini(CI continuous integration) ta'minlab, ushbu ilovani ishga tushirish va deploy qilish uchun zarur bo'lgan murakkab bosqichlarni ko'rib chiqamiz.
 
 Ushbu loyiha Ubuntu servernini sozlashdan boshlanadi, u yerda biz **Jenkins**, **Docker** va **Node.js**, **Sonarqube Scanner** va **JDK** kabi muhim plaginlarni o'rnatamiz va sozlaymiz. Bundan tashqari, biz kino va teleko'rsatuv ma'lumotlarini olish uchun asosiy komponent bo'lgan **TMDB API** integratsiyasini o'rganamiz.
 
@@ -119,7 +119,7 @@ sudo systemctl status jenkins
 ```
 **4. Jenkins qulfini ochish**
 
-Yangi Jenkins misoliga birinchi marta kirganingizda, uni avtomatik ravishda yaratilgan parol yordamida qulfdan chiqarish so'raladi. http://localhost:8080 (yoki uni oʻrnatishda Jenkins uchun qaysi portni sozlagan boʻlsangiz) sahifasini koʻrib chiqing va `Unlock Jenkins` sahifasi paydo boʻlguncha kuting.
+Yangi Jenkins misoliga birinchi marta kirganingizda, uni avtomatik ravishda yaratilgan parol yordamida qulfdan chiqarish so'raladi. http://localhost:8080 (yoki uni o'rnatishda Jenkins uchun qaysi portni sozlagan bo'lsangiz) sahifasini ko'rib chiqing va `Unlock Jenkins` sahifasi paydo bo'lguncha kuting.
 
 ![jenkins](/images/ci-cd/1.jpg)
 
@@ -136,7 +136,7 @@ Biz `suggested plugins` opsiyasini bosamiz, bu darhol o'rnatish jarayonini boshl
 
 ![jenkins](/images/ci-cd/3.png)
 
-O'rnatish tugallangach, sizdan birinchi `Admin User` o'rnatish so'raladi. Bu bosqichni oʻtkazib yuborish va yuqoridagi boshlangʻich parol yordamida administrator sifatida davom etish mumkin, lekin foydalanuvchi yaratishga biroz vaqt ajratamiz.
+O'rnatish tugallangach, sizdan birinchi `Admin User` o'rnatish so'raladi. Bu bosqichni o'tkazib yuborish va yuqoridagi boshlang'ich parol yordamida administrator sifatida davom etish mumkin, lekin foydalanuvchi yaratishga biroz vaqt ajratamiz.
 
 ![jenkins](/images/ci-cd/4.png)
 
@@ -158,7 +158,7 @@ Shu nuqtada siz Jenkins-ni muvaffaqiyatli o'rnatdingiz. Keyingi qismga o'tamiz
 
 Serverimizga Jenkins o'rnatdik va uni dastlablki holat uchun zolab oldik lekin biz har doim jenkinsga kirganimizda serverimiz IP mazili va jenkins portini kiritib yozishimiz kerak bu yaxshimas lekin bunga kirish oson bo'lishi va xavfsiz bo'lishi uchun domen ulab ssl sertificat olamiz.
 
-Nginx va certbot o'rnatish uchun quyidagi buyruqdan foyalanasiz.
+**6.Nginx va certbot o'rnatish uchun quyidagi buyruqdan foyalanasiz.**
 
 ```bash
 sudo apt update
@@ -188,7 +188,7 @@ server {
 ```
 **Nginx**dagi ushbu konfiguratsiya bloki `80`-portda `jenkins.samidello.uz` domeni orqali Jenkinsga kirish uchun `reverse proxy-`serverni o'rnatish uchun zarur. Ushbu Nginx configuratsiyani qismlarga bo'lib ko'rib chiqamiz.
 
-```bash
+```bash /server/ /listen/ /server_name/
 server {
     listen 80;
     server_name jenkins.samidello.uz;
@@ -199,7 +199,7 @@ server {
 
 * `server_name jenkins.samidello.uz;` Ushbu server blokiga mos keladigan domen nomi yoki nomlarini belgilaydi. Bu holda, u `jenkins.samidello.uz` ga o'rnatiladi.
 
-```bash
+```bash /proxy_set_header/ /location/ /proxy_pass/
     location / {
         proxy_pass http://localhost:8080;
         proxy_set_header Host $host;
@@ -211,3 +211,30 @@ server {
 * `location /` Bu blok ushbu server bloki boshqaradigan joyni belgilaydi. Bunday holda, u ildiz(root) `/` ga o'rnatiladi, shuning uchun `jenkins.samidello.uz` saytiga har qanday so'rov ushbu blok tomonidan ko'rib chiqiladi.
 
 * `proxy_pass http://localhost:8080;` Bu qator Jenkins ishlayotgan server backend serverini belgilaydi. Nginx `jenkins.samidello.uz` saytiga kelgan so'rovlarni Jenkins ishlashi kutilayotgan `http://localhost:8080` manziliga yo'naltiradi.
+
+* `proxy_set_header` Bu qatorlar proksi-server so'rovi bilan birga uzatiladigan **header**halarni o'rnatadi. Ular asl client IP, host, protokol va boshqalar haqidagi ma'lumotlarni o'z ichiga oladi. Bu Jenkinsga Nginx orqali kelgan so'rovlarni to'g'ri bajarishga yordam beradi.
+
+Ushbu konfiguratsiya **Nginx**-ni **Jenkins** uchun reverse proxy-server sifatida o'rnatadi. **80**-portda `jenkins.samidello.uz` manziliga Nginx tomonidan qabul qilingan har qanday so'rov(request) **8080**-portda lokal ravishda ishlaydigan Jenkins serveriga yo'naltiriladi. Shuningdek, so'rov Jenkinsga yetib kelganida mijoz ma'lumotlari yaxlitligini saqlash uchun zarur headerlar o'rnatilishini ta'minlaydi.
+
+**7. SSL sertifikat olish va HTTP trafikni HTTPS ga yo'naltirish**
+
+Nginx configuratsiya uchun symbolic link yaratish
+```bash
+sudo ln -s /etc/nginx/sites-available/jenkins.samidello.uz //etc/nginx/sites-enabled/jenkins.samidello.uz
+```
+Bu buyruq `/etc/nginx/sites-available` jildida Jenkins uchun yaratgan konfiguratsiya fayli (jenkins.samidello.uz) va `/etc/nginx/sites-enabled` jildi o'rtasida symbolic link hosil qiladi. Ushbu ulanishning maqsadi Nginx serveriga siz Jenkins uchun o'rnatgan konfiguratsiyani saytlar faollashtirilgan jildda mavjud qilish orqali o'qish va foydalanish imkonini berishdir.
+
+**Nginx konfiguratsiya sintaksisini tekshirish**
+```bash
+sudo nginx -t
+```
+Ushbu buyruq hech qanday sintaksis xatosi yo'qligiga ishonch hosil qilish uchun Nginx konfiguratsiya fayllari sintaksisini tekshiradi. Bu Nginx-ning noto'g'ri konfiguratsiyalar tufayli ishga tushmasligining oldini olish uchun muhim qadamdir.
+
+**SSL sertifikatini olish uchun Certbot-dan foydalanish.**
+
+```bash
+sudo certbot
+```
+Bu buyruq Certbot ilovasini ishga tushiradi. U bepul Sertifikat organi **Let's Encrypt**dan **SSL/TLS** sertifikatini olish uchun bir qator takliflar orqali foydalanuvchi bilan o'zaro aloqada bo'ladi. Certbot sizdan SSL sertifikatini olmoqchi bo'lgan Nginx server blokini tanlashni taklif qiladi. Bunday holda, u jenkins.samidello.uz saytini domen konfiguratsiyasi sifatida aniqlaydi va sertifikat berish jarayoni bo'yicha sizga yo'l ko'rsatadi. Ko'rsatmalar xizmat shartlariga rozi bo'lishni, yangilash bildirishnomalari uchun elektron pochta manzilini taqdim etishni va **HTTP** trafigini **HTTPS**ga yo'naltirishni tanlashni o'z ichiga oladi.
+
+## Docker O'rnatish
