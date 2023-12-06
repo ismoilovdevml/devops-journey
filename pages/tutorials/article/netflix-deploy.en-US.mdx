@@ -241,7 +241,7 @@ Bu buyruq Certbot ilovasini ishga tushiradi. U bepul Sertifikat organi **Let's E
 
 **Docker**-ni o'rnatish infratuzilmangizda bir nechta maqsadlarga xizmat qiladi, ayniqsa SonarQube-ni o'rnatish va uni domen orqali ulashda va applicationlarimzida deploy qilshimizda ishga tushirishimizda.
 
-kleing docker o'rnatish uchun bash scriptdan foydalanamiz. `nano` matn muharrir bilan `docker.sh` nomli fayl ochib olamiz.
+Keling docker o'rnatish uchun bash scriptdan foydalanamiz. `nano` matn muharrir bilan `docker.sh` nomli fayl ochib olamiz.
 
 ```bash
 sudo nano docker.sh
@@ -301,5 +301,10 @@ SonarQube-ni o'rnatish avtomatlashtirilgan tahlilni ishlab chiqish jarayoniga in
 ```bash
 docker run -d --name sonar -p 9000:9000 sonarqube:lts-community
 ```
-Ushbu buyruq SonarQube LTS Community versiyasini `9000` portda ishga tuhsiradi. Serveringiz IP maznilida `9000` portga kirsangiz quyidagi SonarQube oynasi ochilishi kerak.
+Ushbu buyruq SonarQube LTS Community versiyasini `9000` portda ishga tushiradi. Serveringiz IP maznilida `9000` portga kirsangiz quyidagi SonarQube oynasi ochilishi kerak.
 
+![netflix](/images/article/netflix/sonar1.png)
+
+Ushbu oynada siz **username** ga `admin` **passowrd** ga `admin` yozib kiramiz. Keyin bizdan oldingi parolni yozishimizni va ynagi parol qo'yishimizni so'raydi va yangi parol qo'yib sozlaymiz. sizda quyidagi oyna ochilishi kerak.
+
+![netflix](/images/article/netflix/sonar2.png)
