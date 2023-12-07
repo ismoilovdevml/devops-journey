@@ -31,9 +31,9 @@ Keling, ushbu texnik sayohatni birgalikda boshlaymiz va Netflix-ga o'xshash stri
 
 * [Docker, Trivy o'rnatish va SonarQubeni docker orqali o'rnatish, domen ulash](#docker-trivy-ornatish-va-sonarqubeni-docker-orqali-ornatish-domen-ulash)
 
-* TMDB API key olish
+* [TMDB API key olish](#tmdb-api-key-olish)
 
-* Prometheus va Grafana o'rnatish, tizimni monitoring qilish
+* [Prometheus va Grafana o'rnatish, tizimni monitoring qilish](#prometheus-va-grafana-ornatish-tizimni-monitoring-qilish)
 
 * Jenkinsga prometheus plagini o'rnatish va monitoring qilish
 
@@ -373,3 +373,22 @@ Ma'lumotlarni to'ldirib chiqagnimizdan keyin quyidagi oynada bizga API key berad
 API Keyni nusxalab olib qo'yamiz loyihamizda ishlatamiz.
 
 ## Prometheus va Grafana o'rnatish, tizimni monitoring qilish
+
+Prometheus va Grafana monitoring va vizualizatsiya uchun o'rnatamiz. Prometheus turli tizimlardagi ko'rsatkichlarni(metrikalarni) to'playdi va saqlaydi, Grafana esa ushbu ko'rsatkichlarni vizualizatsiya qilish va tahlil qilish uchun foydalanuvchilarga qulay interfeysni taqdim etadi. Birgalikda ular deploy qilingan ilovalar va infratuzilmani samarali monitoring qilish, muammolarni bartaraf etish va ish faoliyatini tahlil qilish imkonini beradi.
+
+**Prometheus** va **Grafana** o'rnatish bo'yicha batafsil qo'llanma oldinroq yozilgan shu qo'llanmadan foydalangan holda **Prometheus**, **Garafana** va **node_exporter**ni o'rnatib sozlashingiz mumkin. 
+
+<Callout type="info" emoji="">
+
+Prometheus, Grafana, Node Exporter o'rnatish sozlash integratsiya qilish uchun quyidagi qo'llanmadan foydalanasiz.
+**Pometheus:** [Prometheus nima?](https://devops-journey.uz/tutorials/article/gnp-monitoring#prometheus-nima), [Prometheus o'ratish va sozlash](https://devops-journey.uz/tutorials/article/gnp-monitoring#prometheus-oratish-va-sozlash), [Client Nodelarini kuzatish uchun Prometheusni sozlash](https://devops-journey.uz/tutorials/article/gnp-monitoring#client-nodelarini-kuzatish-uchun-prometheusni-sozlash), [Grafana va Prometheusni integratsiya qilish](https://devops-journey.uz/tutorials/article/gnp-monitoring#grafana-va-prometheusni-integratsiya-qilish)
+
+**Grafana:** [Grafana nima?](https://devops-journey.uz/tutorials/article/gnp-monitoring#grafana-nima), [Grafana serverini qanday o'rnatish va sozlash
+](https://devops-journey.uz/tutorials/article/gnp-monitoring#grafana-serverini-qanday-ornatish-va-sozlash), [Grafana Dashboardni import qilish](https://devops-journey.uz/tutorials/article/gnp-monitoring#grafana-dashboardni-import-qilish)
+
+**Node Exporter:** [Node Exporter-ni o'ratish va sozlash](https://devops-journey.uz/tutorials/article/gnp-monitoring#node-exporter-ni-oratish-va-sozlash)
+
+![netflix](/images/article/netflix/grafana-dashboard1.png)
+
+Rasmdagi **Node Exporter Full** Dashboardi `ID`si `1860` havola [Node Exporter Full](https://grafana.com/grafana/dashboards/1860-node-exporter-full/)
+</Callout>
