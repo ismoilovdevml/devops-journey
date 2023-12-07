@@ -25,15 +25,15 @@ Keling, ushbu texnik sayohatni birgalikda boshlaymiz va Netflix-ga o'xshash stri
 <Callout type="info" emoji="">
 **Mundarija**
 
-* Ubuntu 20.04 server sozlash
+* [Ubuntu 20.04 server sozlash](#ubuntu-2004-server-sozlash)
 
-* Jenkins o'rnatish, sozlash va domen ulash
+* [Jenkins o'rnatish, sozlash va domen ulash](#jenkins-ornatish-sozlash-va-domen-ulash)
 
-* Docker, Trivy o'rnatish va SonarQubeni docker orqali o'rnatish, domen ulash
+* [Docker, Trivy o'rnatish va SonarQubeni docker orqali o'rnatish, domen ulash](#docker-trivy-ornatish-va-sonarqubeni-docker-orqali-ornatish-domen-ulash)
 
 * TMDB API key olish
 
-* Prometheus va Grafana o'rnatish tizimni monitoring qilish
+* Prometheus va Grafana o'rnatish, tizimni monitoring qilish
 
 * Jenkinsga prometheus plagini o'rnatish va monitoring qilish
 
@@ -341,3 +341,35 @@ Scriptni ishga tushiramiz.
 sudo chmod +x trivy.sh
 ./trivy.sh
 ```
+
+## TMDB API key olish
+
+**TMDB** API keyi Kino ma'lumotlar bazasidan (**The Movie Database - TMDB**) kino va teleko'rsatuv ma'lumotlariga kirish va olish uchun zarurdir. Bu ilovalarga filmlar xulosalari, translatsiya maʼlumotlari, reytinglar va Netflixʼga oʻxshash keng qamrovli filmlar streaminng platformasini yaratish uchun zarur boʻlgan boshqa metamaʼlumotlar kabi tafsilotlarni olish imkonini beradi.
+
+TMDB API key olish uchun uning saytiga kirishimiz kerak. [themoviedb.org(https://www.themoviedb.org/)]
+
+![netflix](/images/article/netflix/tmdb1.png)
+
+**TMDB**da akkountingiz bo'lsa akkountizga kirasiz yoki akkount ochib olasiz. Quyidagi oynadan `Settings` bo'limga o'tib keyin `API` bo'limga kirasiz.
+
+![netflix](/images/article/netflix/tmdb2.png)
+
+`API` bo'limga kiramiz.
+![netflix](/images/article/netflix/tmdb3.png)
+
+`Create` dan API key generatsiya qilib olamiz.
+![netflix](/images/article/netflix/tmdb4.png)
+
+Shartlarni qabul qilishingiz kerak. `Accept`
+![netflix](/images/article/netflix/tmdb7.png)
+
+Ma'lumotlarni to'ldirib chiqamiz.
+
+![netflix](/images/article/netflix/tmdb6.png)
+
+Ma'lumotlarni to'ldirib chiqagnimizdan keyin quyidagi oynada bizga API key beradi. `API Key`
+![netflix](/images/article/netflix/tmdb5.png)
+
+API Keyni nusxalab olib qo'yamiz loyihamizda ishlatamiz.
+
+## Prometheus va Grafana o'rnatish, tizimni monitoring qilish
