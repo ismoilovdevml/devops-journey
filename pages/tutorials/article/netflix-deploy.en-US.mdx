@@ -29,7 +29,7 @@ Keling, ushbu texnik sayohatni birgalikda boshlaymiz va Netflix-ga o'xshash stri
 
 * Jenkins o'rnatish, sozlash va domen ulash
 
-* Docker o'rnatish va SonarQubeni docker orqali o'rnatish, domen ulash
+* Docker, Trivy o'rnatish va SonarQubeni docker orqali o'rnatish, domen ulash
 
 * TMDB API key olish
 
@@ -78,7 +78,7 @@ sudo apt install git nano zip unzip wget apt-transport-https gnupg lsb-release -
 ```
 Serverni yangilab kerakli dasturlarni o'rnatib olganimizdan keyin keyingi bosqichga Jenkins o'rnatishga o'tsak bo'ladi.
 
-### Jenkins o'rnatish, sozlash va domen ulash
+## Jenkins o'rnatish, sozlash va domen ulash
 
 **Jenkins**-ni o'rnatish sizning loyihangiz uchun Continuous Integration/Continuous Deployment**(CI/CD)** pipeline o'rnatishda muhim qadamdir. Jenkins - bu ilovalarni yaratish, sinovdan o'tkazish va deployment uchun ishlatiladigan mashhur avtomatlashtirish serveri.
 
@@ -237,7 +237,7 @@ sudo certbot
 ```
 Bu buyruq Certbot ilovasini ishga tushiradi. U bepul Sertifikat organi **Let's Encrypt**dan **SSL/TLS** sertifikatini olish uchun bir qator takliflar orqali foydalanuvchi bilan o'zaro aloqada bo'ladi. Certbot sizdan SSL sertifikatini olmoqchi bo'lgan Nginx server blokini tanlashni taklif qiladi. Bunday holda, u jenkins.samidello.uz saytini domen konfiguratsiyasi sifatida aniqlaydi va sertifikat berish jarayoni bo'yicha sizga yo'l ko'rsatadi. Ko'rsatmalar xizmat shartlariga rozi bo'lishni, yangilash bildirishnomalari uchun elektron pochta manzilini taqdim etishni va **HTTP** trafigini **HTTPS**ga yo'naltirishni tanlashni o'z ichiga oladi.
 
-## Docker o'rnatish va SonarQubeni docker orqali o'rnatish, domen ulash
+## Docker, Trivy o'rnatish va SonarQubeni docker orqali o'rnatish, domen ulash
 
 **Docker**-ni o'rnatish infratuzilmangizda bir nechta maqsadlarga xizmat qiladi, ayniqsa SonarQube-ni o'rnatish va uni domen orqali ulashda va applicationlarimzida deploy qilshimizda ishga tushirishimizda.
 
@@ -305,6 +305,39 @@ Ushbu buyruq SonarQube LTS Community versiyasini `9000` portda ishga tushiradi. 
 
 ![netflix](/images/article/netflix/sonar1.png)
 
-Ushbu oynada siz **username** ga `admin` **passowrd** ga `admin` yozib kiramiz. Keyin bizdan oldingi parolni yozishimizni va ynagi parol qo'yishimizni so'raydi va yangi parol qo'yib sozlaymiz. sizda quyidagi oyna ochilishi kerak.
+Ushbu oynada siz **Login**ga `admin` **Passowrd**ga `admin` yozib kiramiz. Keyin bizdan oldingi parolni yozishimizni va ynagi parol qo'yishimizni so'raydi va yangi parol qo'yib sozlaymiz. sizda quyidagi oyna ochilishi kerak.
 
 ![netflix](/images/article/netflix/sonar2.png)
+
+Parolni yangilaganizdan keyin quyidagi SonarQube dashboardi ochilishi kerak.
+
+![netflix](/images/article/netflix/sonar3.png)
+
+
+### Trivy o'rnatish
+
+**Trivy** dasturiy ta'minotni ishlab chiqish jarayonida xavfsizlik choralarini kuchaytirish uchun o'rnatilgan. Bu konteynerlar uchun maxsus ishlab chiqilgan, konteyner imagelari va fayl tizimlaridagi xavfsizlik muammolari va zaifliklarni aniqlaydigan zaiflik skaneri(vulnerability scanner). **Trivy** konteynerlashtirilgan ilovalarning ma'lum zaifliklardan xoli bo'lishini ta'minlash, xavfsizlik xatarlarini kamaytirish va deploy qilingan dasturiy ta'minotning umumiy xavfsizlik holatini yaxshilashga yordam beradi.
+
+Keling **Trivy**ni bash script yordamida o'rnatamiz. nano matn muharriri yordamida `trivy.sh` fayl ochib olamiz.
+
+```bash
+nano trivy.sh
+```
+
+nani matn muharirir ochilganidan keyin quyidagi scriptni joylashtiramiz.
+
+```bash filename="trivy.sh"
+#!/bin/bash
+sudo apt-get install wget apt-transport-https gnupg lsb-release
+wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
+echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee -a /etc/apt/sources.list.d/trivy.list
+sudo apt-get update
+sudo apt-get install trivy
+```
+
+Scriptni ishga tushiramiz.
+
+```bash
+sudo chmod +x trivy.sh
+./trivy.sh
+```
