@@ -61,7 +61,7 @@ Minimum Server talabi
 | ------------- | -------------- | ------------- |------------- | --------- |
 | Ubuntu 20.04  | 8GB            | 4vCPU 2 core  | 150GB        | Ha kerak  |
 
-Eslatib o'ta,iz ushbu loyihani o'zingizda sinab test qilib ko'rish uchun bu minumum server talabi. Agar siz buni production uchun ishlatmoqchi bo'lsangiz loyiha va sizning talablaringizga qarab bu ko'satkichlar o'zgaradi
+Eslatib o'tamiz ushbu loyihani o'zingizda sinab test qilib ko'rish uchun bu minumum server talabi. Agar siz buni production uchun ishlatmoqchi bo'lsangiz loyiha va sizning talablaringizga qarab bu ko'satkichlar o'zgaradi
 
 </Callout>
 
@@ -381,6 +381,7 @@ Prometheus va Grafana monitoring va vizualizatsiya uchun o'rnatamiz. Prometheus 
 <Callout type="info" emoji="">
 
 Prometheus, Grafana, Node Exporter o'rnatish sozlash integratsiya qilish uchun quyidagi qo'llanmadan foydalanasiz.
+
 **Pometheus:** [Prometheus nima?](https://devops-journey.uz/tutorials/article/gnp-monitoring#prometheus-nima), [Prometheus o'ratish va sozlash](https://devops-journey.uz/tutorials/article/gnp-monitoring#prometheus-oratish-va-sozlash), [Client Nodelarini kuzatish uchun Prometheusni sozlash](https://devops-journey.uz/tutorials/article/gnp-monitoring#client-nodelarini-kuzatish-uchun-prometheusni-sozlash), [Grafana va Prometheusni integratsiya qilish](https://devops-journey.uz/tutorials/article/gnp-monitoring#grafana-va-prometheusni-integratsiya-qilish)
 
 **Grafana:** [Grafana nima?](https://devops-journey.uz/tutorials/article/gnp-monitoring#grafana-nima), [Grafana serverini qanday o'rnatish va sozlash
@@ -392,3 +393,20 @@ Prometheus, Grafana, Node Exporter o'rnatish sozlash integratsiya qilish uchun q
 
 Rasmdagi **Node Exporter Full** Dashboardi `ID`si `1860` havola [Node Exporter Full](https://grafana.com/grafana/dashboards/1860-node-exporter-full/)
 </Callout>
+
+## Jenkinsga prometheus plagini o'rnatish va monitoring qilish
+
+![netflix](/images/article/netflix/grafana-dashboard2.png)
+
+**Jenkins**-ga Prometheus plaginini o'rnatish va monitoring qilish Jenkinsga xos ko'rsatkichlarni(metrics) to'plash va kuzatish imkonini beradi. Bu Jenkinsning ishlashi, resurslardan foydalanish va ish holatini kuzatishga yordam beradi, Jenkinsning sog'lig'ini yaxshiroq ko'rish imkonini beradi va CI/CD pipelinedagi muammolarni aniqlash va hal qilishda yordam beradi.
+
+Jenkinsga prometheus plagini o'rnatish uchun Jenkinsga kirib **->** `Manage Jenkins` **->** `Plugins` bo'limga kiramiz.
+
+![netflix](/images/article/netflix/jenkins1.png)
+
+![netflix](/images/article/netflix/jenkins2.png)
+
+Prometheus plagini o'rnatilganidan keyin **->** `Manage Jenkisn` **->** `System` ga kirib Prometheus bo'limini topamiz va quyidagicha to'ldirib `Apply` bosib `Save` qilamiz.
+
+![netflix](/images/article/netflix/jenkins3.png)
+
