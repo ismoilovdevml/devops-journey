@@ -410,3 +410,86 @@ Prometheus plagini o'rnatilganidan keyin **->** `Manage Jenkisn` **->** `System`
 
 ![netflix](/images/article/netflix/jenkins3.png)
 
+Plaginni o'rnatib sozlab bo'lganimzidan keyin prometheusga jenkins exporterni qo'shib sozlaymiz. `/etc/prometheus/prometheus.yml` fayliga quyida konfiguratsiyani qo'shib qo'yamiz.
+
+```yaml
+nano /etc/prometheus/prometheus.yml
+```
+
+```yaml filename="/etc/prometheus/prometheus.yml" /8080/ /prometheus/ /jenkins/
+  - job_name: 'jenkins'
+    metrics_path: '/prometheus'
+    static_configs:
+      - targets: ['0.0.0.0:8080']
+```
+
+`0.0.0.0:8080` bu yerda siz jenkins o'rnatilgan serveringiz **IP** manzilini kiritasiz. Quyida to'liq `prometheus.yml` faylining to'liq ko'rinishi.
+
+```yaml filename="/etc/prometheus/prometheus.yml" /static_configs/ /targets/
+# my global config
+global:
+  scrape_interval: 15s # Set the scrape interval to every 15 seconds. Default is every 1 minute.
+  evaluation_interval: 15s # Evaluate rules every 15 seconds. The default is every 1 minute.
+  # scrape_timeout is set to the global default (10s).
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          # - alertmanager:9093
+
+# Load rules once and periodically evaluate them according to the global 'evaluation_interval'.
+rule_files:
+  # - "first_rules.yml"
+  # - "second_rules.yml"
+
+# A scrape configuration containing exactly one endpoint to scrape:
+# Here it's Prometheus itself.
+scrape_configs:
+  # The job name is added as a label `job=<job_name>` to any timeseries scraped from this config.
+  - job_name: "prometheus"
+
+    # metrics_path defaults to '/metrics'
+    # scheme defaults to 'http'.
+
+    static_configs:
+      - targets: ["localhost:9090"]
+
+
+  - job_name: "node_exporter"
+    static_configs:
+      - targets: ["localhost:9100"]
+
+  - job_name: 'jenkins'
+    metrics_path: '/prometheus'
+    static_configs:
+      - targets: ['0.0.0.0:8080']
+```
+
+Configuratsiyani yozib sozlab bo'lganimzidan keyin uni `promtool` bilan tekshirib ko'ramiz.
+
+```bash
+promtool check config /etc/prometheus/prometheus.yml
+```
+
+```txt filename="Natija"
+Checking /etc/prometheus/prometheus.yml
+ SUCCESS: /etc/prometheus/prometheus.yml is valid prometheus config file syntax
+```
+Configuratsiya to'gri yozilgan bo'lssa sizda quyidagi natija chiqishi kerak agar xato chiqsa configuratsiyani yana bir bor ko'rib chiqing.
+**prometheus**ni restart qilib qayta ishga tushirishimiz kerak.
+
+```bash
+sudo systemctl restart prometheus
+```
+
+`http://0.0.0.0:9090/targets` quyida siz IP manzilingiz bilan prometheusga kirib targets bo'limga kirsangiz `job="jenkins"` chiqishi kerak.
+
+Grafana orqali Jenkins metrikalarni vizualizatsiya qilish uchun Jenkins dashboard import qilamiz. 
+
+![netflix](/images/article/netflix/grafana-dashboard2.png)
+
+Rasmdagi Dashboard `ID`si `9964` [Jenkins: Performance and Health Overview](https://grafana.com/grafana/dashboards/9964-jenkins-performance-and-health-overview/)
+Gfanaga dashboard import qilish bo'yicha qo'llanma yozilgan [Grafana Dashboardni import qilish](https://devops-journey.uz/tutorials/article/gnp-monitoring#grafana-dashboardni-import-qilish) qo'llanmasidan foydalanasiz.
+
