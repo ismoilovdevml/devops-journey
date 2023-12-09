@@ -35,7 +35,7 @@ Keling, ushbu texnik sayohatni birgalikda boshlaymiz va Netflix-ga o'xshash stri
 
 * [Prometheus va Grafana o'rnatish, tizimni monitoring qilish](#prometheus-va-grafana-ornatish-tizimni-monitoring-qilish)
 
-* Jenkinsga prometheus plagini o'rnatish va monitoring qilish
+* [Jenkinsga prometheus plagini o'rnatish va monitoring qilish](https://devops-journey.uz/tutorials/article/netflix-deploy#jenkinsga-prometheus-plagini-ornatish-va-monitoring-qilish)
 
 * Jenkinsga email(gmail) integratsiya qilish
 
@@ -493,3 +493,16 @@ Grafana orqali Jenkins metrikalarni vizualizatsiya qilish uchun Jenkins dashboar
 Rasmdagi Dashboard `ID`si `9964` [Jenkins: Performance and Health Overview](https://grafana.com/grafana/dashboards/9964-jenkins-performance-and-health-overview/)
 Gfanaga dashboard import qilish bo'yicha qo'llanma yozilgan [Grafana Dashboardni import qilish](https://devops-journey.uz/tutorials/article/gnp-monitoring#grafana-dashboardni-import-qilish) qo'llanmasidan foydalanasiz.
 
+## Jenkinsga email(gmail) integratsiya qilish
+
+**Jenkins** va plaginlarni sozlash bilan elektron pochta integratsiyasi avtomatik bildirishnomalar(notification) va build statusi, nosozliklar yoki tizim muammolari haqida ogohlantirishlarga imkon beradi. Bu ishlab chiqish guruhi bilan o'z vaqtida aloqa o'rnatishni ta'minlaydi, CI/CD pipelinedagi mumkin bo'lgan muammolarga tezkor javob beradi va jamoa a'zolari o'rtasida samarali hamkorlikni osonlashtiradi.
+
+**Jenkinsni** **Gmail** bilan integratsiyalash **Trivy** sttausi va loglarni elektron pochta orqali bildirishnomalar sifatida yuborish imkonini beradi. Ushbu sozlash jamoaga **Trivy** skanerlashlari, shu jumladan holat(status) yangilanishlari va batafsil loglarni bevosita **Gmail** pochta qutisiga zudlik bilan olishini ta'minlaydi. U aloqani soddalashtiradi va jamoani **Trivy** tomonidan aniqlangan xavfsizlik skanerlari va zaifliklar haqida real vaqt rejimida xabardor qiladi, bu esa yuzaga kelishi mumkin bo'lgan muammolarga faol javob berishga yordam beradi.
+
+Jenkinsni email bilan inetgratsiya qilishimiz uchun `Email Extension Template` plagini o'rnatib olishimiz kerak. **->** `manage Jenkins` **->** `Plugins` **->** `Available plugins`.  Plaginlardan [`Email Ext Recipients Column`](https://plugins.jenkins.io/email-ext-recipients-column/) plagini o'rnatib olamiz
+
+![netflix](/images/article/netflix/jenkins3.png)
+
+`[myaccount.google.com](https://myaccount.google.com/security)`-dan `Security` bo'limga o'ting va **2-Step Verification** yoqilganligini tekshiring yoqilmagan bo'lsa yoqing. **2-Step Verification**-ni yoqganizdan keyin qidiruvdan `app` deb qidiring quyidagicha ko'rinishi kerak, `App passwords` ga kiring.
+
+![netflix](/images/article/netflix/gmail1.png)
