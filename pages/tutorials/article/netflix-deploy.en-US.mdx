@@ -313,6 +313,42 @@ Parolni yangilaganizdan keyin quyidagi SonarQube dashboardi ochilishi kerak.
 
 ![netflix](/images/article/netflix/sonar3.png)
 
+Sonar Qubega domen ulab ssl sertifat olish uchun Jenkinsga domen ulab ssl olganimizdek bir hil, Sonar Qube `9000` portda ishlab turibti Nginx bilan `proxy_pass` reverse-proxy qilib expose qilib domen ulaymiz.
+
+```bash
+nano /etc/nginx/sites-available/sonarqube.samidello.uz
+```
+Ushbu faylga quyidagi Nginx configuratsiyani joylashtiramiz.
+
+```nginx filename="/etc/nginx/sites-available/sonarqube.samidello.uz" /proxy_pass/ /9000/ /sonarqube.samidello.uz/
+server {
+    listen 80;
+    server_name sonarqube.samidello.uz;
+
+    location / {
+        proxy_pass http://localhost:9000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+Nginx configuratsiya to'griligini tekshiramiz.
+
+```bash
+sudo nginx -t
+```
+Symbolic link yaratamiz
+
+```bash /sonarqube.samidello.uz/
+sudo ln -s /etc/nginx/sites-available/sonarqube.samidello.uz /etc/nginx/sites-enabled/sonarqube.samidello.uz
+```
+**Let's Encrypt**, **certboot** yordamida **SSL** sertifikat olamiz
+
+```bash
+sudo certbot --nginx -d sonarqube.samidello.uz
+```
 
 ### Trivy o'rnatish
 
@@ -544,7 +580,7 @@ Hammasini ko'rsartilganiday o'zingizga moslab solzab olganingizdan keyin `Apply`
 
 Email Notificationni sozlab olganimizdan keyin Jenkins pipelineda email notificationdan quyidagicha foydalanamiz.
 
-```groovy
+```groovy filename="Jenkinsfile"
 post {
      always {
         emailext attachLog: true,
@@ -559,3 +595,18 @@ post {
 ```
 
 ## Jenkinsga Sonarqube Scanner, OWASP Dependency Check, JDK va Node.js pluginlarini o'rnatish va sozlash
+
+**JDK**, **Sonarqube Scanner**, **Node.js** va **OWASP Dependency Check** kabi plaginlarni o'rnatish Jenkins ichidagi muayyan funksiyalarni yoqish uchun juda muhimdir. Ushbu plaginlar kod kompilyatsiyasi (**JDK**), kod sifati tahlili (**Sonarqube Scanner**), JavaScript-ga asoslangan buildlar (**Node.js**) va xavfsizlik zaifligini tekshirish (**OWASP Dependency Check**) kabi vazifalarni osonlashtiradi. Ushbu plaginlarni integratsiyalash **CI/CD** jarayonini soddalashtiradi, kod sifatini, xavfsizligini va dasturiy ta'minotni ishlab chiqishda umumiy samaradorlikni oshiradi.
+
+**->** `Manage Jenkins` **->** `Plugins` **->** `Available plugins` ga o'tib `Eclipse Temurin Installer`, `SonarQube Scanner` va `NodeJS` o'rnatib jenkinsga restart berishingiz kerak.
+
+![netflix](/images/article/netflix/tools1-new.png)
+
+Plaginlar o'rnatilgandan keyin Global Tool Configuration-da Java va NodeJS configuratsiya qilib olishimiz kerak.
+
+**->** `Manage Jenkins` **->** `Tools`. Java JDK o'rnatish uchun **JDK Installtions** bo'limidan  quyidagicha to'ldiramiz.
+
+![netflix](/images/article/netflix/tools2.png)
+
+##### **NodeJs Installtion** bo'limi quyidagicha  to'ldiramiz.
+![netflix](/images/article/netflix/tools3.png)
