@@ -503,6 +503,35 @@ Jenkinsni email bilan inetgratsiya qilishimiz uchun `Email Extension Template` p
 
 ![netflix](/images/article/netflix/jenkins3.png)
 
-`[myaccount.google.com](https://myaccount.google.com/security)`-dan `Security` bo'limga o'ting va **2-Step Verification** yoqilganligini tekshiring yoqilmagan bo'lsa yoqing. **2-Step Verification**-ni yoqganizdan keyin qidiruvdan `app` deb qidiring quyidagicha ko'rinishi kerak, `App passwords` ga kiring.
+[myaccount.google.com](https://myaccount.google.com/security)-dan `Security` bo'limga o'ting va **2-Step Verification** yoqilganligini tekshiring yoqilmagan bo'lsa yoqing. **2-Step Verification**-ni yoqganizdan keyin qidiruvdan `app` deb qidiring quyidagicha ko'rinishi kerak, `App passwords` ga kiring.
 
 ![netflix](/images/article/netflix/gmail1.png)
+
+**App passwords**ga kirganimzidan keyin `App name`-ga ilovalamiz nomini kiritamiz `Jenkins`. kiritganimizdan keyin `Create` bosib parol app password yaratib olamiz va nusxalab olib qo'yamiz.
+![netflix](/images/article/netflix/gmail2.png)
+
+![netflix](/images/article/netflix/gmail3.png)
+
+Jenkinsga E-mail notification uchun gmail bilan integratsiya qilamiz. Birinchi navbatda credentialslarni qo'shib olamiz. **->** `Manage Jenkins` **->** `Credentials`-ga kirib  `Add credentials`ga o'tamiz.
+
+![netflix](/images/article/netflix/secret1.png)
+
+![netflix](/images/article/netflix/secret2.png)
+
+ushbu qismni rasmda ko'rsatilgandek konfiguratsiya qilib olamiz. 
+
+* **Kind:** username with password
+* **Username:** mygmail.com(hozir 2 step verification yoqib app paswword olgan emailimiz)
+* **Password:** bu yerga Google bergan app passwordni qo'yamiz.
+
+Hammasini to'gri to'ldirib chiqganimzidan keyin `Create` bosib credentials yartatib olamiz. Mail credentials yaratib olganimizdan keyin **->** `Manage Jenkins` **->** `System` bo'limga o'tib **E-mail Notification** qismini topib olamiz varasmdagidek konfiguratsiya qilamiz.
+
+![netflix](/images/article/netflix/gmail4.png)
+
+* **SMTP Server: ** smtp.gmail.com (Gmail bilan integratsiyta qilayotganimiz uchun gmail SMT serveridan foydalanamiz)
+* **Use SMTP Authentication:** ga emailimiz va parolini yozamiz
+* **SMTP Port:** 465(gmail SMTP severi standart porti)
+
+`System` dan **Extented E-mail Notification** qismini topib olamiz va quyidagicha konfiguratsiya qilamiz.
+
+![netflix](/images/article/netflix/gmail5.png)
