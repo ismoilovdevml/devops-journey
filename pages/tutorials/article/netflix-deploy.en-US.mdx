@@ -37,9 +37,9 @@ Keling, ushbu texnik sayohatni birgalikda boshlaymiz va Netflix-ga o'xshash stri
 
 * [Jenkinsga prometheus plagini o'rnatish va monitoring qilish](https://devops-journey.uz/tutorials/article/netflix-deploy#jenkinsga-prometheus-plagini-ornatish-va-monitoring-qilish)
 
-* Jenkinsga email(gmail) integratsiya qilish
+* [Jenkinsga email(gmail) integratsiya qilish](https://devops-journey.uz/tutorials/article/netflix-deploy#jenkinsga-emailgmail-integratsiya-qilish)
 
-* Jenkinsga Sonarqube Scanner, OWASP Dependency Check, JDK va Node.js pluginlarini o'rnatish va sozlash
+* [Jenkinsga Sonarqube Scanner, OWASP Dependency Check, JDK va Node.js pluginlarini o'rnatish va sozlash](https://devops-journey.uz/tutorials/article/netflix-deploy#jenkinsga-sonarqube-scanner-owasp-dependency-check-jdk-va-nodejs-pluginlarini-ornatish-va-sozlash)
 
 * Jenkinsda birinchi CI pipeline yozish
 
@@ -499,7 +499,7 @@ Gfanaga dashboard import qilish bo'yicha qo'llanma yozilgan [Grafana Dashboardni
 
 **Jenkinsni** **Gmail** bilan integratsiyalash **Trivy** sttausi va loglarni elektron pochta orqali bildirishnomalar sifatida yuborish imkonini beradi. Ushbu sozlash jamoaga **Trivy** skanerlashlari, shu jumladan holat(status) yangilanishlari va batafsil loglarni bevosita **Gmail** pochta qutisiga zudlik bilan olishini ta'minlaydi. U aloqani soddalashtiradi va jamoani **Trivy** tomonidan aniqlangan xavfsizlik skanerlari va zaifliklar haqida real vaqt rejimida xabardor qiladi, bu esa yuzaga kelishi mumkin bo'lgan muammolarga faol javob berishga yordam beradi.
 
-Jenkinsni email bilan inetgratsiya qilishimiz uchun `Email Extension Template` plagini o'rnatib olishimiz kerak. **->** `manage Jenkins` **->** `Plugins` **->** `Available plugins`.  Plaginlardan [`Email Ext Recipients Column`](https://plugins.jenkins.io/email-ext-recipients-column/) plagini o'rnatib olamiz
+Jenkinsni email bilan inetgratsiya qilishimiz uchun `Email Extension Template` plagini o'rnatib olishimiz kerak. **->** `Manage Jenkins` **->** `Plugins` **->** `Available plugins`.  Plaginlardan [`Email Ext Recipients Column`](https://plugins.jenkins.io/email-ext-recipients-column/) plagini o'rnatib olamiz
 
 ![netflix](/images/article/netflix/jenkins3.png)
 
@@ -514,9 +514,9 @@ Jenkinsni email bilan inetgratsiya qilishimiz uchun `Email Extension Template` p
 
 Jenkinsga E-mail notification uchun gmail bilan integratsiya qilamiz. Birinchi navbatda credentialslarni qo'shib olamiz. **->** `Manage Jenkins` **->** `Credentials`-ga kirib  `Add credentials`ga o'tamiz.
 
-![netflix](/images/article/netflix/secret1.png)
+![netflix](/images/article/netflix/secret1-new.png)
 
-![netflix](/images/article/netflix/secret2.png)
+![netflix](/images/article/netflix/secret2-new.png)
 
 ushbu qismni rasmda ko'rsatilgandek konfiguratsiya qilib olamiz. 
 
@@ -526,7 +526,7 @@ ushbu qismni rasmda ko'rsatilgandek konfiguratsiya qilib olamiz.
 
 Hammasini to'gri to'ldirib chiqganimzidan keyin `Create` bosib credentials yartatib olamiz. Mail credentials yaratib olganimizdan keyin **->** `Manage Jenkins` **->** `System` bo'limga o'tib **E-mail Notification** qismini topib olamiz varasmdagidek konfiguratsiya qilamiz.
 
-![netflix](/images/article/netflix/gmail4.png)
+![netflix](/images/article/netflix/gmail4-new.png)
 
 * **SMTP Server: ** smtp.gmail.com (Gmail bilan integratsiyta qilayotganimiz uchun gmail SMT serveridan foydalanamiz)
 * **Use SMTP Authentication:** ga emailimiz va parolini yozamiz
@@ -534,4 +534,28 @@ Hammasini to'gri to'ldirib chiqganimzidan keyin `Create` bosib credentials yarta
 
 `System` dan **Extented E-mail Notification** qismini topib olamiz va quyidagicha konfiguratsiya qilamiz.
 
-![netflix](/images/article/netflix/gmail5.png)
+![netflix](/images/article/netflix/gmail5-new.png)
+
+Triggerga **Always**
+
+![netflix](/images/article/netflix/gmail6-new.png)
+
+Hammasini ko'rsartilganiday o'zingizga moslab solzab olganingizdan keyin `Apply` va `Save` bosamiz.
+
+Email Notificationni sozlab olganimizdan keyin Jenkins pipelineda email notificationdan quyidagicha foydalanamiz.
+
+```groovy
+post {
+     always {
+        emailext attachLog: true,
+            subject: "'${currentBuild.result}'",
+            body: "Project: ${env.JOB_NAME}<br/>" +
+                "Build Number: ${env.BUILD_NUMBER}<br/>" +
+                "URL: ${env.BUILD_URL}<br/>",
+            to: 'mygmail@gmail.com',
+            attachmentsPattern: 'trivyfs.txt,trivyimage.txt'
+        }
+    }
+```
+
+## Jenkinsga Sonarqube Scanner, OWASP Dependency Check, JDK va Node.js pluginlarini o'rnatish va sozlash
