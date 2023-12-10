@@ -39,7 +39,9 @@ Keling, ushbu texnik sayohatni birgalikda boshlaymiz va Netflix-ga o'xshash stri
 
 * [Jenkinsga email(gmail) integratsiya qilish](https://devops-journey.uz/tutorials/article/netflix-deploy#jenkinsga-emailgmail-integratsiya-qilish)
 
-* [Jenkinsga Sonarqube Scanner, OWASP Dependency Check, JDK va Node.js pluginlarini o'rnatish va sozlash](https://devops-journey.uz/tutorials/article/netflix-deploy#jenkinsga-sonarqube-scanner-owasp-dependency-check-jdk-va-nodejs-pluginlarini-ornatish-va-sozlash)
+* [SonarQubeni Jenkins uchun sozlash](https://devops-journey.uz/tutorials/article/netflix-deploy#sonarqubeni-jenkins-uchun-sozlash)
+
+* [Jenkinsga OWASP Dependency Check, JDK va Node.js pluginlarini o'rnatish va sozlash](https://devops-journey.uz/tutorials/article/netflix-deploy#jenkinsga-owasp-dependency-check-jdk-va-nodejs-pluginlarini-ornatish-va-sozlash)
 
 * Jenkinsda birinchi CI pipeline yozish
 
@@ -438,13 +440,13 @@ Rasmdagi **Node Exporter Full** Dashboardi `ID`si `1860` havola [Node Exporter F
 
 Jenkinsga prometheus plagini o'rnatish uchun Jenkinsga kirib **->** `Manage Jenkins` **->** `Plugins` bo'limga kiramiz.
 
-![netflix](/images/article/netflix/jenkins1.png)
+> ![netflix](/images/article/netflix/jenkins1.png)
 
-![netflix](/images/article/netflix/jenkins2.png)
+> ![netflix](/images/article/netflix/jenkins2.png)
 
 Prometheus plagini o'rnatilganidan keyin **->** `Manage Jenkisn` **->** `System` ga kirib Prometheus bo'limini topamiz va quyidagicha to'ldirib `Apply` bosib `Save` qilamiz.
 
-![netflix](/images/article/netflix/jenkins3.png)
+> ![netflix](/images/article/netflix/jenkins3.png)
 
 Plaginni o'rnatib sozlab bo'lganimzidan keyin prometheusga jenkins exporterni qo'shib sozlaymiz. `/etc/prometheus/prometheus.yml` fayliga quyida konfiguratsiyani qo'shib qo'yamiz.
 
@@ -537,22 +539,22 @@ Gfanaga dashboard import qilish bo'yicha qo'llanma yozilgan [Grafana Dashboardni
 
 Jenkinsni email bilan inetgratsiya qilishimiz uchun `Email Extension Template` plagini o'rnatib olishimiz kerak. **->** `Manage Jenkins` **->** `Plugins` **->** `Available plugins`.  Plaginlardan [`Email Ext Recipients Column`](https://plugins.jenkins.io/email-ext-recipients-column/) plagini o'rnatib olamiz
 
-![netflix](/images/article/netflix/jenkins3.png)
+> ![netflix](/images/article/netflix/jenkins3.png)
 
 [myaccount.google.com](https://myaccount.google.com/security)-dan `Security` bo'limga o'ting va **2-Step Verification** yoqilganligini tekshiring yoqilmagan bo'lsa yoqing. **2-Step Verification**-ni yoqganizdan keyin qidiruvdan `app` deb qidiring quyidagicha ko'rinishi kerak, `App passwords` ga kiring.
 
-![netflix](/images/article/netflix/gmail1.png)
+> ![netflix](/images/article/netflix/gmail1.png)
 
 **App passwords**ga kirganimzidan keyin `App name`-ga ilovalamiz nomini kiritamiz `Jenkins`. kiritganimizdan keyin `Create` bosib parol app password yaratib olamiz va nusxalab olib qo'yamiz.
-![netflix](/images/article/netflix/gmail2.png)
+> ![netflix](/images/article/netflix/gmail2.png)
 
-![netflix](/images/article/netflix/gmail3.png)
+> ![netflix](/images/article/netflix/gmail3.png)
 
 Jenkinsga E-mail notification uchun gmail bilan integratsiya qilamiz. Birinchi navbatda credentialslarni qo'shib olamiz. **->** `Manage Jenkins` **->** `Credentials`-ga kirib  `Add credentials`ga o'tamiz.
 
-![netflix](/images/article/netflix/secret1-new.png)
+> ![netflix](/images/article/netflix/secret1-new.png)
 
-![netflix](/images/article/netflix/secret2-new.png)
+> ![netflix](/images/article/netflix/secret2-new.png)
 
 ushbu qismni rasmda ko'rsatilgandek konfiguratsiya qilib olamiz. 
 
@@ -562,7 +564,7 @@ ushbu qismni rasmda ko'rsatilgandek konfiguratsiya qilib olamiz.
 
 Hammasini to'gri to'ldirib chiqganimzidan keyin `Create` bosib credentials yartatib olamiz. Mail credentials yaratib olganimizdan keyin **->** `Manage Jenkins` **->** `System` bo'limga o'tib **E-mail Notification** qismini topib olamiz varasmdagidek konfiguratsiya qilamiz.
 
-![netflix](/images/article/netflix/gmail4-new.png)
+> ![netflix](/images/article/netflix/gmail4-new.png)
 
 * **SMTP Server: ** smtp.gmail.com (Gmail bilan integratsiyta qilayotganimiz uchun gmail SMT serveridan foydalanamiz)
 * **Use SMTP Authentication:** ga emailimiz va parolini yozamiz
@@ -570,11 +572,11 @@ Hammasini to'gri to'ldirib chiqganimzidan keyin `Create` bosib credentials yarta
 
 `System` dan **Extented E-mail Notification** qismini topib olamiz va quyidagicha konfiguratsiya qilamiz.
 
-![netflix](/images/article/netflix/gmail5-new.png)
+> ![netflix](/images/article/netflix/gmail5-new.png)
 
 Triggerga **Always**
 
-![netflix](/images/article/netflix/gmail6-new.png)
+> ![netflix](/images/article/netflix/gmail6-new.png)
 
 Hammasini ko'rsartilganiday o'zingizga moslab solzab olganingizdan keyin `Apply` va `Save` bosamiz.
 
@@ -594,19 +596,39 @@ post {
     }
 ```
 
-## Jenkinsga Sonarqube Scanner, OWASP Dependency Check, JDK va Node.js pluginlarini o'rnatish va sozlash
+## Jenkinsga OWASP Dependency Check, JDK va Node.js pluginlarini o'rnatish va sozlash
 
 **JDK**, **Sonarqube Scanner**, **Node.js** va **OWASP Dependency Check** kabi plaginlarni o'rnatish Jenkins ichidagi muayyan funksiyalarni yoqish uchun juda muhimdir. Ushbu plaginlar kod kompilyatsiyasi (**JDK**), kod sifati tahlili (**Sonarqube Scanner**), JavaScript-ga asoslangan buildlar (**Node.js**) va xavfsizlik zaifligini tekshirish (**OWASP Dependency Check**) kabi vazifalarni osonlashtiradi. Ushbu plaginlarni integratsiyalash **CI/CD** jarayonini soddalashtiradi, kod sifatini, xavfsizligini va dasturiy ta'minotni ishlab chiqishda umumiy samaradorlikni oshiradi.
 
 **->** `Manage Jenkins` **->** `Plugins` **->** `Available plugins` ga o'tib `Eclipse Temurin Installer`, `SonarQube Scanner` va `NodeJS` o'rnatib jenkinsga restart berishingiz kerak.
 
-![netflix](/images/article/netflix/tools1-new.png)
+> ![netflix](/images/article/netflix/tools1-new.png)
 
 Plaginlar o'rnatilgandan keyin Global Tool Configuration-da Java va NodeJS configuratsiya qilib olishimiz kerak.
 
 **->** `Manage Jenkins` **->** `Tools`. Java JDK o'rnatish uchun **JDK Installtions** bo'limidan  quyidagicha to'ldiramiz.
 
-![netflix](/images/article/netflix/tools2.png)
+> ![netflix](/images/article/netflix/tools2.png)
 
 ##### **NodeJs Installtion** bo'limi quyidagicha  to'ldiramiz.
-![netflix](/images/article/netflix/tools3.png)
+> ![netflix](/images/article/netflix/tools3.png)
+
+Jenkins pipelineda Sonar Qube ishlatish uchun Sonar Qubeda token va ilovamiz uchun webhook yaratib olamiz. [Sonar Qube o'rnatish](https://devops-journey.uz/tutorials/article/netflix-deploy#docker-trivy-ornatish-va-sonarqubeni-docker-orqali-ornatish-domen-ulash) qismida siz Sonar Qube o'rnatgan bo'lishingiz va domen ulangan bo'lishingiz kerak. Jenkins pipelineda Sonar Qube ishlatish uchun TOKEN generatsiya qilib olamiz.
+
+## SonarQubeni Jenkins uchun sozlash
+
+SonarQube kirib **->** `Administration` **->** `Security` **->** `Users` **->** `Tokens`
+
+> ![netflix](/images/article/netflix/sonar6.png)
+
+> ![netflix](/images/article/netflix/sonar7.png)
+
+SonarQubedan Token geneatsiya qilib olganimzidan keyin uni Jenkins Credentialsga qo'shib qo'yishimiz kerak.
+
+**->** `Manage Jenkins` **->** `Credentials` **->** `System` **->** `Global credentials (unrestricted)`
+
+> ![netflix](/images/article/netflix/secret3.png)
+
+* **Kind:** Secret text
+* **Secret:** bu yerda SonarQube-dan qolgan tokenimizni joylashtiramiz.
+* **ID:** sonar-token
