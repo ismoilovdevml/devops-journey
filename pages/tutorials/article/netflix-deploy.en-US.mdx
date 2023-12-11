@@ -41,7 +41,8 @@ Keling, ushbu texnik sayohatni birgalikda boshlaymiz va Netflix-ga o'xshash stri
 
 * [SonarQubeni Jenkins uchun sozlash](https://devops-journey.uz/tutorials/article/netflix-deploy#sonarqubeni-jenkins-uchun-sozlash)
 
-* [Jenkinsga OWASP Dependency Check, JDK va Node.js pluginlarini o'rnatish va sozlash](https://devops-journey.uz/tutorials/article/netflix-deploy#jenkinsga-owasp-dependency-check-jdk-va-nodejs-pluginlarini-ornatish-va-sozlash)
+* [Jenkinsga OWASP Dependency Check, JDK va Node.js pluginlarini o'rnatish va sozlash](https://devops-journey.uz/tutorials/article/netflix-deployexit
+#jenkinsga-owasp-dependency-check-jdk-va-nodejs-pluginlarini-ornatish-va-sozlash)
 
 * Jenkinsda birinchi CI pipeline yozish
 
@@ -632,3 +633,33 @@ SonarQubedan Token geneatsiya qilib olganimzidan keyin uni Jenkins Credentialsga
 * **Kind:** Secret text
 * **Secret:** bu yerda SonarQube-dan qolgan tokenimizni joylashtiramiz.
 * **ID:** sonar-token
+
+SonarQube uchun token olib Jenkins crdentialsga qo'shganimzidan keyin SonarQube serverni Jenkinsg aulashimiz kerak. 
+
+**->** `Manage Jenkins` **->** `System` **->** `SonarQube servers`
+
+> ![netflix](/images/article/netflix/secret4.png)
+
+Rasmda ko'rsatilganidek configuratsiya qilib olamiz.
+
+* **Server URL:** - sonarqube.samidello.uz(SonaQube serveringiz manizli)
+
+* **Server authentication token:** - hozir qo'shgan tokenimiz(`Sonar-token`)ni ko'rsatib qo'yamiz shunda Jenkins piplineda SonarQubega ulana olamiz. `Apply` v a`Save` ni bosib chiqamiz. 
+
+**Global Tool Configuration**dan SonarQube Scanner o'rnatamiz. 
+
+**->** `Manage Jenkins` **->** `Tools` **->** `SonarQube Scanner installations`
+
+> ![netflix](/images/article/netflix/sonar8.png)
+
+Rasmda ko'rsatilganidek configuratsiya qilib olamiz. Apply` v a`Save` ni bosib chiqamiz va SonarQube serverimizga kirib ilovamiz uchun **webhook** yaratib olamiz.
+
+> ![netflix](/images/article/netflix/sonar4.png)
+
+**->** `Administration` **->** `Configuration` **->** `Webhooks`
+
+> ![netflix](/images/article/netflix/sonar5.png)
+
+**Create** bosib 
+
+> ![netflix](/images/article/netflix/sonar9.png)
