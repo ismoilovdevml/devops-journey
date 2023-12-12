@@ -643,7 +643,7 @@ Rasmda ko'rsatilganidek configuratsiya qilib olamiz.
 
 * **Server URL:** - sonarqube.samidello.uz(SonaQube serveringiz manizli)
 
-* **Server authentication token:** - hozir qo'shgan tokenimiz(`Sonar-token`)ni ko'rsatib qo'yamiz shunda Jenkins piplineda SonarQubega ulana olamiz. `Apply` v a`Save` ni bosib chiqamiz. 
+* **Server authentication token:** - hozir qo'shgan tokenimiz(`Sonar-token`)ni ko'rsatib qo'yamiz shunda Jenkins pipelineda SonarQubega ulana olamiz. `Apply` v a`Save` ni bosib chiqamiz. 
 
 **Global Tool Configuration**dan SonarQube Scanner o'rnatamiz. 
 
@@ -670,16 +670,93 @@ SonarQubeda ilovamiz uchun webhook yaratib olganizdan keyin Jenkinsda birinchi *
 
 Jenkinsdagi birinchi pipeline odatda asosiy continuous integration(**CI**) jarayonini o'rnatishga qaratilgan. Bu versiyani boshqarish tizimidan (masalan, **Git**) manba kodini olish, dasturni yaratish, testlarni o'tkazish va ehtimol sinov muhitiga joylashtirish bosqichlarini o'z ichiga olgan oddiy ish jarayonini aniqlashni o'z ichiga oladi. Ushbu dastlabki pipeline build qilish va sinov bosqichlarini avtomatlashtirish, kod sifatini ta'minlash va kelajakda yanada murakkab **CI/CD** pipelinelari uchun zamin yaratish uchun asos bo'lib xizmat qiladi. Ushbu Jenkins pipeline skripti **GitHub** repostiroyadan kodni oladi, unda SonarQube tahlilini amalga oshiradi, sifat nazoratini kutadi(quality gate check), loyihaga dependencilarni o'rnatadi va build tugagandan so'ng elektron pochtaga loglar va natija yuboradi. U JDK va Node.js ning maxsus versiyalaridan foydalanish uchun tuzilgan, bu esa build qilish muhitida izchillikni ta'minlaydi.
 
-Githubdan private(yopiq) repositoriyadagi kodlarga Jenkins kira olishi va ishlatishi uchun `Github Token(personal access token)` olishimiz kerak. Open Source repostiroyalar uchun bu shart enmas. Ushbu Github qo'llanmasida qanday qilib [personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) olish haqida batafsil yozilgan. Github Token olganizdan keyin undan nusxa olib qo'ying. 
+GitHubdan private(yopiq) repositoriyadagi kodlarga Jenkins kira olishi va ishlatishi uchun `GitHub Token(personal access token)` olishimiz kerak. Open Source repositoriyalar uchun bu shart enmas. Ushbu GitHub qo'llanmasida qanday qilib [personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) olish haqida batafsil yozilgan. GitHub Token olganizdan keyin undan nusxa olib qo'ying. Olingan GitHub Tokenni Jenkins Credentialsga qo'shib qo'yishimiz kerak pipelineda undan foydalanish uchun. 
 
+**->** `Manage Jenkins` **->** `Credentials`-ga kirib  `Add credentials`ga o'tamiz.
 
-Jenkinsga kirib CI/CD pipeline uchun project ochib olamiz. 
+> ![netflix](/images/article/netflix/secret5.png)
+
+Credentialsni rasmdagidek qilib to'ldirib olamiz. 
+
+* **Username:** mygithubuser(github usernamengizni kiritasiz)
+
+* **Password:** bu yerga GitHubdan olgan personal access tokeningizni joylashtirasiz.
+
+* **ID:** pipelineda qanday ID bilan ishlatish uchun nom
+
+`Create` bosib `github-token` crdentials yaratib olamiz. Bu credentials bilan GitHub private repositorilarga Jenkins pipeline foydalana oladi.
+
+Deyarli hammasi tayyor keling endi Jenkinsda birinchi **CI** pipeline yozib ishlatamiz. Jenkinsga kirib CI/CD pipeline uchun project ochib olamiz. 
 
 **->** `Jenkins` **->** `New Item`
 
 > ![netflix](/images/article/netflix/pipeline1.png)
 
-ushbu oynadan `New Item` bosib ilovamiz uhcun job ochib olamiz. Undan keyin sizda quyidagi oyna ochilishi kerak.
+ushbu oynadan `New Item` bosib ilovamiz uchun job ochib olamiz. Undan keyin sizda quyidagi oyna ochilishi kerak.
 > ![netflix](/images/article/netflix/pipeline2.png)
 
-Bu yerda siz itemga nom berasiz masalan **Netflix** keyin **Pipline**-ni tanlab **OK** bosib item yaratib olamiz. keyin sizda quyidagi oyna ochilishi kerak. 
+Bu yerda siz itemga nom berasiz masalan **Netflix** keyin **Pipline**-ni tanlab **OK** bosib item yaratib olamiz, keyin sizda quyidagi oyna ochilishi kerak. 
+
+> ![netflix](/images/article/netflix/pipeline3.png)
+
+Ushbu `Pipeline` qismida biz **CI/CD** pipelinemizni yozamiz u quyidagicha.
+
+```groovy
+pipeline {
+    agent any
+    tools {
+        jdk 'jdk17'
+        nodejs 'node16'
+    }
+    environment {
+        GIT_URL = 'https://github.com/ismoilovdevml/netflix.git'
+        GITHUB_TOKEN = credentials('github-token')
+        API_KEY = 'tokenjqPP'
+        BRANCH_NAME = 'main'
+        SCANNER_HOME = tool 'sonar-scanner'
+    }
+    stages {
+        stage('Clean Workspace') {
+            steps {
+                cleanWs()
+            }
+        }
+        stage('Clone Repository') {
+            steps {
+                git branch: BRANCH_NAME, url: GIT_URL, credentialsId: 'github-token'  
+            }
+        }
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('sonar-server') {
+                    sh """$SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=Netflix \
+                        -Dsonar.projectKey=Netflix"""
+                }
+            }
+        }
+        stage('Quality Gate') {
+            steps {
+                script {
+                    waitForQualityGate abortPipeline: false, credentialsId: 'Sonar-token'
+                }
+            }
+        }
+        stage('Installing Dependencies') {
+            steps {
+                sh "npm install"
+            }
+        }
+    }
+    post {
+        always {
+            emailext attachLog: true,
+                subject: "'${currentBuild.result}'",
+                body: "Project: ${env.JOB_NAME}<br/>" +
+                    "Build Number: ${env.BUILD_NUMBER}<br/>" +
+                    "URL: ${env.BUILD_URL}<br/>",
+                to: 'myemail@gmail.com',
+                attachmentsPattern: 'trivyfs.txt,trivyimage.txt'
+        }
+    }
+}
+```
