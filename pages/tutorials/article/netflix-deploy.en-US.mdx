@@ -760,3 +760,37 @@ pipeline {
     }
 }
 ```
+
+Keling ushbu **CI** pipelineni ko'rib chiqamiz.
+
+* `pipeline {}` Bu pipeline blokining boshlanishi va oxirini belgilaydi, butun pipeline konfiguratsiyasini qamrab oladi.
+
+* `agent any` Bu pipeline har qanday mavjud agentda ishlashi mumkinligini bildiradi.
+
+* `tools {}` Bu bo'lim **JDK** va **Node.js** ning maxsus versiyalari kabi pipeline uchun zarur bo'lgan toollarni aniqlash uchun ishlatiladi.
+
+* `environment {}` pipeline ichida ishlatiladigan environment o'zgaruvchilarini belgilaydi. Bu yerda u **GIT_URL**, **GITHUB_TOKEN**, **API_KEY**, **BRANCH_NAME** va **SCANNER_HOME** kabi o'zgaruvchilarni o'rnatadi.
+
+* `stages {}`  Ushbu bo'lim bir nechta **stage**larni aniqlash uchun ishlatiladi, ularning har biri pipelinedagi muayyan vazifa yoki bosqichni ifodalaydi.
+
+* 1. `stage('Clean Workspace') {}` 'Clean Workspace' stageni belgilaydi. `steps {}` Ushbu bosqichda bajariladigan amallar yoki qadamlarni o'z ichiga oladi, bu yerda workspaceni tozalash uchun `cleanWs()` dan foydalaniladi.
+
+* 2. `stage('Clone Repository') {}` 'Clone Repository' bosqichini ifodalaydi. `steps {}`  Bu qadam berilgan **GIT_URL** va **BRANCH_NAME**dagi o'zgaruvchilarni olib git repostiroyani clone qiladi(manba kodini yuklab oladi).
+
+* 3. `stage('SonarQube Analysis') {}` 'SonarQube tahlili' bosqichini ifodalaydi. `steps {}` Muayyan loyiha tafsilotlari bilan belgilangan `sonar-scanner tooli yordamida SonarQube tahlilini amalga oshiradi.
+
+* 4. `stage('Quality Gate') {}` 'Sifat darvozasi' bosqichini ifodalaydi. SonarQube quality gate tekshiruvi tugashini kutish uchun skriptli blokdan foydalanadi.
+
+* 5. `stage('Installing Dependencies') {}` 'Dependencylarni o'rnatish' bosqichini ifodalaydi. Loyiha dependencilarini o'rnatish uchun shell buyrug'ini **(npm install)** bajaradi.
+
+* 6. `post {}` Bu bo'lim pipeline ishga tushirilgandan keyin bajariladigan post-build amallarini belgilaydi.
+
+* `always {}` Build natijasidan qat'iy nazar bajarilishi kerak bo'lgan amallarni belgilaydi.
+* `emailext {}` Email Extensioni plagini yordamida elektron pochta xabarini yuboradi.
+* `attachLog: true` Build qilish jarayonidagi logllarini elektron pochtaga biriktiradi.
+* `subject` Joriy build natijasi bilan elektron pochta mavzusini o'rnatadi.
+* `body` Loyiha va build ma'lumotlari bilan elektron pochta asosiy mazmunini belgilaydi.
+* `to` Qabul qiluvchining elektron pochta manzilini belgilaydi.
+* `attachmentsPattern` Elektron pochtaga biriktiriladigan fayllar uchun patternlarni belgilaydi, bu yerda **"trivyfs.txt"** va **"trivyimage.txt".**
+
+Ushbu pipeline konfiguratsiyasi workspaceni tozalash, repositoryani klonlash, SonarQube tahlilini o'tkazish, Quality Gate tekshirish va dependencilarni o'rnatish bosqichlarini belgilaydi. Bunga qo'shimcha ravishda, u jarayon tafsilotlari bilan elektron pochta xabarini yuboradi. Umuman olganda, ushbu pipeline **GitHub**'dan kodni clon qilib oladi, **SonarQube** yordamida uni tahlil qiladi, kod sifatini tekshiradi, dependencilarni o'rnatadi, **Trivy** fayl tizimini skanerlashni amalga oshiradi va build bo'lish jarayoni tafsilotlari va tugallangandan so'ng Trivy skanerlash natijalari bilan elektron pochta xabarini yuboradi.
