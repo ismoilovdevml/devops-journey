@@ -41,10 +41,9 @@ Keling, ushbu texnik sayohatni birgalikda boshlaymiz va Netflix-ga o'xshash stri
 
 * [SonarQubeni Jenkins uchun sozlash](https://devops-journey.uz/tutorials/article/netflix-deploy#sonarqubeni-jenkins-uchun-sozlash)
 
-* [Jenkinsga OWASP Dependency Check, JDK va Node.js pluginlarini o'rnatish va sozlash](https://devops-journey.uz/tutorials/article/netflix-deployexit
-#jenkinsga-owasp-dependency-check-jdk-va-nodejs-pluginlarini-ornatish-va-sozlash)
+* [Jenkinsga OWASP Dependency Check, JDK va Node.js pluginlarini o'rnatish va sozlash](https://devops-journey.uz/tutorials/article/netflix-deploy#jenkinsga-owasp-dependency-check-jdk-va-nodejs-pluginlarini-ornatish-va-sozlash)
 
-* Jenkinsda birinchi CI pipeline yozish
+* [Jenkinsda birinchi CI pipeline yozish](https://devops-journey.uz/tutorials/article/netflix-deploy#jenkinsda-birinchi-ci-pipeline-yozish)
 
 * Jenkins pipelinega Docker image yaratish va Docker Registryga push qiladigan bosqich qo'shish
 
@@ -660,6 +659,27 @@ Rasmda ko'rsatilganidek configuratsiya qilib olamiz. Apply` v a`Save` ni bosib c
 
 > ![netflix](/images/article/netflix/sonar5.png)
 
-**Create** bosib 
+**Create** bosib Webhook yaratib olamiz , sizda quyidagi oyna ochilishi kerak.
 
 > ![netflix](/images/article/netflix/sonar9.png)
+
+SonarQubeda ilovamiz uchun webhook yaratib olganizdan keyin Jenkinsda birinchi **CI/CD pipelineni** yozsak bo'ladi. 
+
+
+## Jenkinsda birinchi CI pipeline yozish
+
+Jenkinsdagi birinchi pipeline odatda asosiy continuous integration(**CI**) jarayonini o'rnatishga qaratilgan. Bu versiyani boshqarish tizimidan (masalan, **Git**) manba kodini olish, dasturni yaratish, testlarni o'tkazish va ehtimol sinov muhitiga joylashtirish bosqichlarini o'z ichiga olgan oddiy ish jarayonini aniqlashni o'z ichiga oladi. Ushbu dastlabki pipeline build qilish va sinov bosqichlarini avtomatlashtirish, kod sifatini ta'minlash va kelajakda yanada murakkab **CI/CD** pipelinelari uchun zamin yaratish uchun asos bo'lib xizmat qiladi. Ushbu Jenkins pipeline skripti **GitHub** repostiroyadan kodni oladi, unda SonarQube tahlilini amalga oshiradi, sifat nazoratini kutadi(quality gate check), loyihaga dependencilarni o'rnatadi va build tugagandan so'ng elektron pochtaga loglar va natija yuboradi. U JDK va Node.js ning maxsus versiyalaridan foydalanish uchun tuzilgan, bu esa build qilish muhitida izchillikni ta'minlaydi.
+
+Githubdan private(yopiq) repositoriyadagi kodlarga Jenkins kira olishi va ishlatishi uchun `Github Token(personal access token)` olishimiz kerak. Open Source repostiroyalar uchun bu shart enmas. Ushbu Github qo'llanmasida qanday qilib [personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) olish haqida batafsil yozilgan. Github Token olganizdan keyin undan nusxa olib qo'ying. 
+
+
+Jenkinsga kirib CI/CD pipeline uchun project ochib olamiz. 
+
+**->** `Jenkins` **->** `New Item`
+
+> ![netflix](/images/article/netflix/pipeline1.png)
+
+ushbu oynadan `New Item` bosib ilovamiz uhcun job ochib olamiz. Undan keyin sizda quyidagi oyna ochilishi kerak.
+> ![netflix](/images/article/netflix/pipeline2.png)
+
+Bu yerda siz itemga nom berasiz masalan **Netflix** keyin **Pipline**-ni tanlab **OK** bosib item yaratib olamiz. keyin sizda quyidagi oyna ochilishi kerak. 
