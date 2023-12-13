@@ -45,7 +45,7 @@ Keling, ushbu texnik sayohatni birgalikda boshlaymiz va Netflix-ga o'xshash stri
 
 * [Jenkinsda birinchi CI pipeline yozish](https://devops-journey.uz/tutorials/article/netflix-deploy#jenkinsda-birinchi-ci-pipeline-yozish)
 
-* Jenkins pipelinega Docker image yaratish va Docker Registryga push qiladigan bosqich qo'shish
+* [Jenkins pipelinega Docker image yaratish va Docker Registryga push qiladigan bosqich qo'shish](https://devops-journey.uz/tutorials/article/netflix-deploy#jenkins-pipelinega-docker-image-yaratish-va-docker-registryga-push-qiladigan-bosqich-qoshish)
 
 * Finish. To'liq jarayonni avtomatlashtirish uchun Jenkins pipeline yozamiz va Netflix loyihamizni production uchun tayyorlaymiz.
 </Callout>
@@ -815,6 +815,60 @@ Keling ushbu **CI** pipelineni ko'rib chiqamiz.
 
 Ushbu pipeline konfiguratsiyasi workspaceni tozalash, repositoryani klonlash, SonarQube tahlilini o'tkazish, Quality Gate tekshirish va dependencilarni o'rnatish bosqichlarini belgilaydi. Bunga qo'shimcha ravishda, u jarayon tafsilotlari bilan elektron pochta xabarini yuboradi. Umuman olganda, ushbu pipeline **GitHub**'dan kodni clon qilib oladi, **SonarQube** yordamida uni tahlil qiladi, kod sifatini tekshiradi, dependencilarni o'rnatadi, **Trivy** fayl tizimini skanerlashni amalga oshiradi va build bo'lish jarayoni tafsilotlari va tugallangandan so'ng Trivy skanerlash natijalari bilan elektron pochta xabarini yuboradi.
 
-jenkinsda Projectni yozib yuqoridagi pipeline yozib kirganingizda quyidagi oyna chiqishi kerak, bu yerdan `Build Now` bosib pipelineni ihsga tuhsiramiz agar sizda hech qanday xato9lik va kamchililar bo'lmasa u mufaqqiyatli ishlashi kerak.
+Jenkinsda Projectni yozib yuqoridagi pipeline yozib kirganingizda quyidagi oyna chiqishi kerak, bu yerdan `Build Now` bosib pipelineni ishga tushiramiz agar sizda hech qanday xatolik va kamchililar bo'lmasa u mufaqqiyatli ishlashi kerak.
 
 > ![netflix](/images/article/netflix/jenkins5.png)
+
+Sizda pipeline muvaffaqiyatli ishga tushsa tbariklaymiz siz Jenkinsda birinchi **CI** pipelineni yozib ishga tushirdingiz.
+
+> ![netflix](/images/article/netflix/pipeline4.png)
+
+Sizda **SonarQube** quyidagi ko'rinishda ochilishi kerak.
+
+> ![netflix](/images/article/netflix/sonar15.png)
+
+Nihoyat biz Jenkinsda birinchi CI pipelineni muvaffaqiyatli ishga tushirdik endi CIni CD(continuous deployment) qismini yozib loyihani to'liq Jenkinsda avtomatlashtirshimiz kerak. 
+
+## Jenkins pipelinega Docker image yaratish va Docker Registryga push qiladigan bosqich qo'shish
+
+Bu bosqichda biz **OWASP Dependency Check** plagini jenkinsga o'rnatamiz va sozlaymiz. Loyihamizni konteynerda(docker) ishga tushiramiz. Docker image yaratish va serverda ishga tushirishni avtomatlashtirish uchun **Docker Registry** dan foydalanib pipelineni kengaytiramiz.
+
+**OWASP Dependency Check** plaginlarini o'rnatish loyihaga dependencilardagi ma'lum zaifliklarni aniqlash va bartaraf etish uchun juda muhimdir. U uchinchi tomon kutubxonalari(library) va komponentlarini skanerlaydi, ilovada ishlatiladigan har qanday zaif versiyalarni belgilab beradi. Ushbu proaktiv yondashuv potentsial xavfsizlik xatarlarini kamaytirishga yordam beradi, yanada xavfsizroq va ishonchli dasturiy ta'minotni yaratishni ta'minlaydi.
+
+**OWASP Dependency Check** plagini Jenkinsga o'rnatish uchun **->** `Manage Jenkins` **->** `Plugins` bo'limga kiramiz
+
+> ![netflix](/images/article/netflix/owasp.png)
+
+OWASP Dependency Check plaigini o'rnatib olganimzidan keyion configuratsiya qilib olishimiz kerak.
+
+**->** `Manage Jenkins` **->** `Tools` **->** `Dependency-Check installations`
+
+> ![netflix](/images/article/netflix/owasp1.png)
+
+Rasmda ko'rsatilgandek configuratsiya qilib olamiz.
+
+OWASP Dependency Checkni o'rnatib sozlab olganimizdan keyin pipelinemizga `OWASP FS SCAN` bosqichini(stage) qo'shsak bo'ladi.
+
+```groovy
+stage('OWASP FS SCAN') {
+    steps {
+        dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit', odcInstallation: 'DP-Check'
+        dependencyCheckPublisher pattern: '**/dependency-check-report.xml'  
+    }
+}
+```
+Pipelinega ushbu bosqichni qo'shib qaytadan ishga tushiramiz. Pipelineni to'gri yozgan bo'lsangiz pipeline mufaqqiyatli ishga tushishi kerak.
+
+> ![netflix](/images/article/netflix/owasp2.png)
+
+> ![netflix](/images/article/netflix/owasp3.png)
+
+Hammasi yaxshi hamma bosqichlarda muvaffaqiyatli o'tdi endi ilovamizni dockerda containerda ishga tushirishimiz va serverga vatomatik deploy boqichlarini qo'shishimiz kerak. Undan oldin keling jenkinsda kerakli plaginlarni o'rnatib olamiz.
+
+**->** `Manage Jenkins` **->** `Plugins`
+
+Pipelinemizda Docker bilan ishlash uchun quyidagi plaginlarni o'rnatib olishimiz kerak.
+
+`Docker`, `Docker Common`, `Docker Pipeline`, `Docker API`, `docker-build-step`
+
+> ![netflix](/images/article/netflix/docker1.png)
