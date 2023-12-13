@@ -651,7 +651,7 @@ Rasmda ko'rsatilganidek configuratsiya qilib olamiz.
 
 > ![netflix](/images/article/netflix/sonar8.png)
 
-Rasmda ko'rsatilganidek configuratsiya qilib olamiz. Apply` v a`Save` ni bosib chiqamiz va SonarQube serverimizga kirib ilovamiz uchun **webhook** yaratib olamiz.
+Rasmda ko'rsatilganidek configuratsiya qilib olamiz. Apply` va `Save` ni bosib chiqamiz va SonarQube serverimizga kirib ilovamiz uchun **webhook** yaratib olamiz.
 
 > ![netflix](/images/article/netflix/sonar4.png)
 
@@ -659,11 +659,31 @@ Rasmda ko'rsatilganidek configuratsiya qilib olamiz. Apply` v a`Save` ni bosib c
 
 > ![netflix](/images/article/netflix/sonar5.png)
 
-**Create** bosib Webhook yaratib olamiz , sizda quyidagi oyna ochilishi kerak.
+**Create** bosib Webhook yaratib olamiz, sizda quyidagi oyna ochilishi kerak.
 
 > ![netflix](/images/article/netflix/sonar9.png)
 
-SonarQubeda ilovamiz uchun webhook yaratib olganizdan keyin Jenkinsda birinchi **CI/CD pipelineni** yozsak bo'ladi. 
+SonarQubeda endi loyihamizni analysis qilishi uchun loyihamizni qo'shamiz. SonarQube bosh sahifasiga kirsangiz sizda quyiagi oyna ochilishi kerak siz **Manually** tanlaysiz.
+> ![netflix](/images/article/netflix/sonar10.png)
+
+keyin sizda quyidagi  oyna ochilishi kerak.
+> ![netflix](/images/article/netflix/sonar11.png)
+
+Bu yerda loyihamizni nomini kiriamiz rasmda ko'rsatilganidek va **Set Up** bosib keyingi bosqichga o'tamiz.
+
+> ![netflix](/images/article/netflix/sonar12.png)
+
+Sizda quyidagi oyna ochilishi kerak bu yerdan **Locally**-ni tanlab sozlashni davom etamiz.
+
+> ![netflix](/images/article/netflix/sonar13.png)
+
+Bu yerdan **use existing token**ni tanlab bundan oldinroq generatsiya qilib olgan tokenimizni joylashtiramiz va **Continue** bosib davom etamiz.
+
+> ![netflix](/images/article/netflix/sonar14.png)
+
+Bu yerdan siz ilovangiz qaysi dasturlash tilida yozilganligini va qaysi **OS**(Operatsion Tizim)da ishga tushishini tanlaymiz(bizni holatimizda **Linux**).
+
+SonarQubeda ilovamiz uchun webhook, token va project yaratib olganizdan keyin Jenkinsda birinchi **CI/CD pipelineni** yozsak bo'ladi. 
 
 
 ## Jenkinsda birinchi CI pipeline yozish
@@ -794,3 +814,7 @@ Keling ushbu **CI** pipelineni ko'rib chiqamiz.
 * `attachmentsPattern` Elektron pochtaga biriktiriladigan fayllar uchun patternlarni belgilaydi, bu yerda **"trivyfs.txt"** va **"trivyimage.txt".**
 
 Ushbu pipeline konfiguratsiyasi workspaceni tozalash, repositoryani klonlash, SonarQube tahlilini o'tkazish, Quality Gate tekshirish va dependencilarni o'rnatish bosqichlarini belgilaydi. Bunga qo'shimcha ravishda, u jarayon tafsilotlari bilan elektron pochta xabarini yuboradi. Umuman olganda, ushbu pipeline **GitHub**'dan kodni clon qilib oladi, **SonarQube** yordamida uni tahlil qiladi, kod sifatini tekshiradi, dependencilarni o'rnatadi, **Trivy** fayl tizimini skanerlashni amalga oshiradi va build bo'lish jarayoni tafsilotlari va tugallangandan so'ng Trivy skanerlash natijalari bilan elektron pochta xabarini yuboradi.
+
+jenkinsda Projectni yozib yuqoridagi pipeline yozib kirganingizda quyidagi oyna chiqishi kerak, bu yerdan `Build Now` bosib pipelineni ihsga tuhsiramiz agar sizda hech qanday xato9lik va kamchililar bo'lmasa u mufaqqiyatli ishlashi kerak.
+
+> ![netflix](/images/article/netflix/jenkins5.png)
