@@ -936,7 +936,7 @@ environment {
 * **GITHUB_TOKEN ->** BU credentialsdan `github-token`ni olib keladi yani private repositoriyalarni clon qilib olish uchun
 * **DOCKERHUB_CREDENTIALS ->** credentialsdandan DockerHub username va access tokenni olib keladi.
 * **CONTAINER_NAME -> ** Bu loyihamizni containerda ishga tushirishda unga beriladigan nom
-* **REGISTRY_URL ->** Dokcer Registry URL.
+* **REGISTRY_URL ->** Dokcer Registry URL. Bizni holatimizda yani Dockerhubda bu yerda Dockerhub username yoziladi.
 * **API_KEY ->** TMDB API Key
 * **BRANCH_NAME->** Gitdagi loyihamiz branchi
 * **SCANNER_HOME** SonarQube Scanner
@@ -999,7 +999,7 @@ ENTRYPOINT ["nginx", "-g", "daemon off;"]
 
 Hozirgi holat uchun to'liq Jenkins pipeline uni Jenkinsda yangilab qayta ishga tushiring.
 
-```grovy filename="Jenkins"
+```groovy filename="Jenkins"
 pipeline {
     agent any
     tools {
@@ -1011,7 +1011,7 @@ pipeline {
         GITHUB_TOKEN = credentials('github-token')
         DOCKERHUB_CREDENTIALS = credentials('dockerhub')
         CONTAINER_NAME = 'netflix'
-        REGISTRY_URL = 'dockerhub'
+        REGISTRY_URL = 'devsecopsuser732' // DockerHub username
         API_KEY = 'TEST_a6ffa6aed03d65c8beb9697b674708c3_XATO' // TMDB API KEYni joylashtiring
         BRANCH_NAME = 'main'
         SCANNER_HOME = tool 'sonar-scanner'
@@ -1090,3 +1090,17 @@ pipeline {
     }
 }
 ```
+
+Jenkins pipelineni **Netflix** project ichiga kirib `Configure` dan pipelineni topib yangilab olamiz.
+
+> ![netflix](/images/article/netflix/pipeline5.png)
+
+Jenkins pipelineni yangilab ishga tushirsangiz agar hech qanday xato qilmagan bo'lsangiz va secretlarni to'gri kiritgan bo'lsangiz u muvaffaqiyatli ishlashi kerak.
+
+> ![netflix](/images/article/netflix/pipeline6.png)
+
+DockerHubga kirib ko'rsangiz `netflix` nomli repositoriya ochilib loyihamiz docker imagesi joylashtirilganini ko'rishingiz mumkin.
+
+> ![netflix](/images/article/netflix/docker9.png)
+
+Nihoyat Biz bu boqichni ham tugatdik **OWASP Dependency Check** plagini Jenkinsga o'rnatdik, sozladik va `OWASP FS SCAN` stage(bosqich) qo'shdik. Loyihamizda konteyrnerlashtirish uchun dockerdan foydalandik. Dockerdan foydalanish uchun Jenkinsga kerakli Docker plaginlarini o'rnatib sozladik. Dokcer Registy sifatida Dokcerhubdan foydalandik. DockerHubdan akkount ochib access token olib Jenkins credentialsga qo'shdik. DOkcer image yaratish va Dokcer Registryga push qilish uchun `Build Application` stage(bosqich) qo'shdik. Nihoyat biz keyingi boqichga o'tsak bo'ladi, keyingi boqich Docker imageni Serverga avtomatik deploy qilish bosqichi.
