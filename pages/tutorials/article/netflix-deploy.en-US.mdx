@@ -961,3 +961,132 @@ stage('Build Application') {
     }
 }
 ```
+
+Pipelinedagi ushbu maxsus bosqich Docker konteynerli ilovasini yaratish va deploymentgshni amalga oshiradi.
+
+* **Credentialsdan foydalanish ->** Docker Hub hisob ma'lumotlarini xavfsiz boshqarish uchun `withCredentials `dan foydalanadi `(credentialsId: 'dockerhub')`. Yani bu Jenkins credentialsdan secretlarni olib pipelineda xavfsiz ishlatadi. `dockerhub` credentialsdan user va parol ajratib olinib unga 2ta variable(o'zgaruvchi)ga beriladi va ishlatiladi. 
+Koddagi qism `[usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]`
+
+* **Docker Login ->** Taqdim etilgan hisob ma’lumotlari (`DOCKER_USERNAME` va `DOCKER_PASSWORD`) yordamida Docker login buyrug‘ini bajaradi va Docker Registryga kiradi.
+
+* **Docker Build ->** `docker build` buyrug'i yordamida Docker imageni yaratadi: **TMDB_V3_API_KEY** build argumentini **API_KEY** qiymati bilan o‘rnatadi. Docker Imageni belgilangan `${REGISTRY_URL}/${CONTAINER_NAME}:${BUILD_NUMBER}` bilan teg qo'yiladi va loyihamizdagi Dockerfile ko'rsatib build qilinadi.
+
+Loyihamizdagi Dockerfile
+
+```bash filename="Dockerfile" /TMDB_V3_API_KEY/
+FROM node:16.17.0-alpine as builder
+WORKDIR /app
+COPY ./package.json .
+COPY ./yarn.lock .
+RUN yarn install
+COPY . .
+ARG TMDB_V3_API_KEY
+ENV VITE_APP_TMDB_V3_API_KEY=${TMDB_V3_API_KEY}
+ENV VITE_APP_API_ENDPOINT_URL="https://api.themoviedb.org/3"
+RUN yarn build
+
+FROM nginx:stable-alpine
+WORKDIR /usr/share/nginx/html
+RUN rm -rf ./*
+COPY --from=builder /app/dist .
+EXPOSE 80
+ENTRYPOINT ["nginx", "-g", "daemon off;"]
+```
+
+* **Docker Push ->**  Docker image build tag qo'tib tayyorlanganidan keyin Docker Registryga push qilinadi `docker push ${REGISTRY_URL}/${CONTAINER_NAME}:latest`
+
+* **Docker Imageni tozalash ->** Docker image Docker Registryga push qilinganidan keyin build qilingan docker image tozalanadi va shu bilan bosqich tugaydi. `docker image rm -f ${REGISTRY_URL}/${CONTAINER_NAME}:latest`
+
+Hozirgi holat uchun to'liq Jenkins pipeline uni Jenkinsda yangilab qayta ishga tushiring.
+
+```grovy filename="Jenkins"
+pipeline {
+    agent any
+    tools {
+        jdk 'jdk17'
+        nodejs 'node16'
+    }
+    environment {
+        GIT_URL = 'https://github.com/ismoilovdevml/netflix.git'
+        GITHUB_TOKEN = credentials('github-token')
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub')
+        CONTAINER_NAME = 'netflix'
+        REGISTRY_URL = 'dockerhub'
+        API_KEY = 'TEST_a6ffa6aed03d65c8beb9697b674708c3_XATO' // TMDB API KEYni joylashtiring
+        BRANCH_NAME = 'main'
+        SCANNER_HOME = tool 'sonar-scanner'
+    }
+    stages {
+        stage('Clean Workspace') {
+            steps {
+                cleanWs()
+            }
+        }
+        stage('Clone Repository') {
+            steps {
+                git branch: BRANCH_NAME, url: GIT_URL, credentialsId: 'github-token'  
+            }
+        }
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('sonar-server') {
+                    sh """$SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=Netflix \
+                        -Dsonar.projectKey=Netflix"""
+                }
+            }
+        }
+        stage('Quality Gate') {
+            steps {
+                script {
+                    waitForQualityGate abortPipeline: false, credentialsId: 'Sonar-token'
+                }
+            }
+        }
+        stage('Installing Dependencies') {
+            steps {
+                sh "npm install"
+            }
+        }
+        stage('OWASP FS SCAN') {
+            steps {
+              dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit', odcInstallation: 'DP-Check'
+              dependencyCheckPublisher pattern: '**/dependency-check-report.xml'  
+            }
+        }
+        stage('TRIVY FS SCAN') {
+            steps {
+                sh "trivy fs . > trivyfs.txt"
+            }
+        }
+        stage('Build Application') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                    script {
+                        def dockerlogin = "docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}"
+                        sh dockerlogin
+                        sh """
+                            docker build --build-arg TMDB_V3_API_KEY=${API_KEY} . -t ${REGISTRY_URL}/${CONTAINER_NAME}:${BUILD_NUMBER} -f Dockerfile
+                            docker tag ${REGISTRY_URL}/${CONTAINER_NAME}:${BUILD_NUMBER} ${REGISTRY_URL}/${CONTAINER_NAME}:latest
+                            docker push ${REGISTRY_URL}/${CONTAINER_NAME}:latest
+                            docker push ${REGISTRY_URL}/${CONTAINER_NAME}:${BUILD_NUMBER}
+                            docker image rm -f ${REGISTRY_URL}/${CONTAINER_NAME}:latest
+                            docker image rm -f ${REGISTRY_URL}/${CONTAINER_NAME}:${BUILD_NUMBER}
+                        """
+                    }
+                }    
+            }
+        }
+    }
+    post {
+        always {
+            emailext attachLog: true,
+                subject: "'${currentBuild.result}'",
+                body: "Project: ${env.JOB_NAME}<br/>" +
+                    "Build Number: ${env.BUILD_NUMBER}<br/>" +
+                    "URL: ${env.BUILD_URL}<br/>",
+                to: 'myemail@gmail.com',
+                attachmentsPattern: 'trivyfs.txt,trivyimage.txt'
+        }
+    }
+}
+```
