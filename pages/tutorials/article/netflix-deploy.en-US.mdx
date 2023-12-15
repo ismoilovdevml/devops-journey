@@ -436,6 +436,47 @@ Prometheus, Grafana, Node Exporter o'rnatish sozlash integratsiya qilish uchun q
 Rasmdagi **Node Exporter Full** Dashboardi `ID`si `1860` havola [Node Exporter Full](https://grafana.com/grafana/dashboards/1860-node-exporter-full/)
 </Callout>
 
+Serverga garafana o'rnatganingizdann keyinnkeling unga domen ulab nginx configuratsiya qilamiz.
+
+Mana qisqa qo'llanma
+
+Ilovamiz uchun nginx configuratsiya quyidagicha.
+
+```bash /grafana/
+sudo nano /etc/nginx/sites-available/grfaana.samidello.uz
+```
+
+Grafana `3000` portda ishlab turadi bizni reverse-proxy proxy_pass qilib expose qilamiz.
+
+```bash filename="/etc/nginx/sites-available/grafana.samidello.uz" /grafana.samidello.uz/ /3000/
+server {
+    listen 80;
+    server_name grafana.samidello.uz;
+ 
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+
+```bash /grafana.samidello.uz/
+sudo ln -s /etc/nginx/sites-available/grafana.samidello.uz /etc/nginx/sites-enabled/grafana.samidello.uz
+```
+Nginx configuratsiyamiz to'grilinini tekshiramiz.
+
+```bash
+sudo nginx -t
+```
+HTTP dan HTTPSga o'tish uchun certboot bilan SSL Sertifikat olamiz.
+
+```bash
+sudo certbot --nginx -d grafana.samidello.uz
+```
+
 ## Jenkinsga prometheus plagini o'rnatish va monitoring qilish
 
 ![netflix](/images/article/netflix/grafana-dashboard2.png)
@@ -1279,6 +1320,13 @@ Pipelinedagi `/home/username/deployer.sh` qismini deployer.sh scriptingiz joylas
 
 ![netflix](/images/article/netflix/pipeline7.png)
 
+Sizga emaildan bildirishnoma(notification) kelgan bo'lishi kerak.
+
+
+![netflix](/images/article/netflix/gmail7.png)
+
+![netflix](/images/article/netflix/gmail9.png)
+
 Piplelline muvvaffiqaytli ishini tugatganidan keyin Serverga kirib ishlab turgan docker containerlar ro'yxatini ko'rsangiz loyihamiz docker containerini ko'rishingiz kerak.
 
 ![netflix](/images/article/netflix/server.png)
@@ -1327,3 +1375,122 @@ HTTP dan HTTPSga o'tish uchun certboot bilan SSL Sertifikat olamiz.
 sudo certbot --nginx -d netflix.samidello.uz
 ```
 Brauzer orqali domen bilan ilovangizga kirganingizda u https bilan ishlashi kerak.
+
+Mana loyihaning to'liq Jenkins pipeline
+
+```groovy
+pipeline {
+    agent any
+    tools {
+        jdk 'jdk17'
+        nodejs 'node16'
+    }
+    environment {
+        GIT_URL = 'https://github.com/ismoilovdevml/netflix.git'
+        GITHUB_TOKEN = credentials('github-token')
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub')
+        CONTAINER_NAME = 'netflix'
+        REGISTRY_URL = 'devsecopsuser732'
+        API_KEY = credentials('tmdb-api-key')
+        SERVER_USERNAME = credentials('server-username')
+        SERVER_IP = credentials('server-ip')
+        BRANCH_NAME = 'main'
+        SCANNER_HOME = tool 'sonar-scanner'
+    }
+    stages {
+        stage('Clean Workspace') {
+            steps {
+                cleanWs()
+            }
+        }
+        stage('Clone Repository') {
+            steps {
+                git branch: BRANCH_NAME, url: GIT_URL, credentialsId: 'github-token'  
+            }
+        }
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('sonar-server') {
+                    sh """$SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=Netflix \
+                        -Dsonar.projectKey=Netflix"""
+                }
+            }
+        }
+        stage('Quality Gate') {
+            steps {
+                script {
+                    waitForQualityGate abortPipeline: false, credentialsId: 'Sonar-token'
+                }
+            }
+        }
+        stage('Installing Dependencies') {
+            steps {
+                sh "npm install"
+            }
+        }
+        stage('OWASP FS SCAN') {
+            steps {
+              dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit', odcInstallation: 'DP-Check'
+              dependencyCheckPublisher pattern: '**/dependency-check-report.xml'  
+            }
+        }
+        stage('TRIVY FS SCAN') {
+            steps {
+                sh "trivy fs . > trivyfs.txt"
+            }
+        }
+        stage('Build Application') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                    script {
+                        def dockerlogin = "docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}"
+                        sh dockerlogin
+                        sh """
+                            docker build --build-arg TMDB_V3_API_KEY=${API_KEY} . -t ${REGISTRY_URL}/${CONTAINER_NAME}:${BUILD_NUMBER} -f Dockerfile
+                            docker tag ${REGISTRY_URL}/${CONTAINER_NAME}:${BUILD_NUMBER} ${REGISTRY_URL}/${CONTAINER_NAME}:latest
+                            docker push ${REGISTRY_URL}/${CONTAINER_NAME}:latest
+                            docker push ${REGISTRY_URL}/${CONTAINER_NAME}:${BUILD_NUMBER}
+                            docker image rm -f ${REGISTRY_URL}/${CONTAINER_NAME}:latest
+                            docker image rm -f ${REGISTRY_URL}/${CONTAINER_NAME}:${BUILD_NUMBER}
+                        """
+                    }
+                }    
+            }
+        }
+        stage('Deploy Server') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                    script {
+                        sshagent (credentials: ['server-ssh']) {
+                            sh "ssh -o StrictHostKeyChecking=no ${SERVER_USERNAME}@${SERVER_IP} '/home/ismoilovdev/deployer.sh --image=${REGISTRY_URL}/${CONTAINER_NAME}:${BUILD_NUMBER} --container-port=80 --system-port=8081 --registry-host=${REGISTRY_URL} --container-name=${CONTAINER_NAME} --registry-token=${DOCKER_PASSWORD} --registry-user=${DOCKER_USERNAME}'"
+                        }
+                    }
+                }    
+            }
+        }
+    }
+    post {
+        always {
+            emailext attachLog: true,
+                subject: "'${currentBuild.result}'",
+                body: "Project: ${env.JOB_NAME}<br/>" +
+                    "Build Number: ${env.BUILD_NUMBER}<br/>" +
+                    "URL: ${env.BUILD_URL}<br/>",
+                to: 'iotabek101@gmail.com',
+                attachmentsPattern: 'trivyfs.txt,trivyimage.txt'
+        }
+    }
+}
+```
+
+Loyihamizni monitoring qilish uchun sozlagandik keling uni holatini ko'ramiz.
+
+![netflix](/images/article/netflix/server1.png)
+
+## Xulosa
+
+Nihoyat biz Netflix loyihamizni tugatdik. Ushbu loyiha ko'plab texnologiyalarni ishlatdik va o'rgandik. Bir ko'rishda bu murakkabga o'xshab ko'rinishi mumkin aslida bu boshlanishi hali hammasi oldinda biz endi boshladik )
+
+**Sana:** 2023.12.15(2023-yil 15-dekabr)
+
+**Muallif: Otabek Ismoilov**
