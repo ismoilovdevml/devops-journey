@@ -15,3 +15,23 @@ Tashkilot o'z applicationlariga bo'lgan talabni qondirar ekan, load balanceri qa
 Load balancerlari server va so'nggi nuqta qurilmasi (kompyuter, noutbuk, planshet yoki smartfon) o'rtasidagi ma'lumotlar oqimini boshqaradi. Server on-premises, ma'lumotlar markazida yoki public cloudda bo'lishi mumkin. Server jismoniy yoki virtuallashtirilgan bo'lishi mumkin. Load Balancer serverlarga ma'lumotlarni samarali ko'chirishga yordam beradi, applicationlarni yetkazib berish resurslaridan foydalanishni optimallashtiradi va serverning ortiqcha yuklanishini oldini oladi. Load Balancerlar requestlarni(so'rovlar) bajara olishlariga ishonch hosil qilish uchun serverlarning sog'lig'ini doimiy ravishda tekshiradilar(health checks). Agar kerak bo'lsa, load balancer nosog'lom serverlarni qayta tiklanmaguncha pooldan olib tashlaydi. Ba'zi load balancerlar hatto ortib borayotgan talabni qondirish uchun yangi virtuallashtirilgan dastur serverlarini yaratishni ham boshlaydi.
 
 An'anaga ko'ra, load balancerlar hardware qurilmasidan iborat. Shunga qaramay, ular tobora ko'proq dasturiy ta'minot bilan belgilanadi. Shuning uchun load balancerlar tashkilotning raqamli strategiyasining muhim qismidir.
+
+## Load Balancerlar tarixi
+
+Load Balancing 1990-yillarda tarmoq bo'ylab trafikni tarqatuvchi apparat qurilmalari(hardware appliance) sifatida boshlangan. Tashkilotlar serverlarda ishlaydigan applicationlarning mavjudligini yaxshilashni xohlashdi. Oxir-oqibat, Application Delivery Controllers (**ADC**s)lar paydo bo'lishi bilan Load balancing ko'proq mas'uliyatni o'z zimmasiga oldi. Ular xavfsizlikni ta'minlaydi, shuningdek, peak timelarda applicationlarga uzluksiz kirishni ta'minlaydi.
+
+**ADC**lar uchta toifaga bo'linadi: hardware qurilmalari(**hardware appliance**), **virtual qurilmalar** (asosan, eski apparatdan olingan dasturiy ta'minot) va **software-native** load balancerlari. Hisoblash cloudga o'tayotganda, dasturiy ta'minot ADC'lari apparatga o'xshash vazifalarni bajaradi. Ular, shuningdek, qo'shimcha funksionallik va moslashuvchanlik bilan birga keladi. Ular tashkilotga clouddagi talabdan kelib chiqqan holda dastur xizmatlarini tez va xavfsiz tarzda kengaytirish imkonini beradi. Zamonaviy ADClar tashkilotlarga tarmoqqa asoslangan xizmatlarni birlashtirishga imkon beradi. Ushbu xizmatlarga **SSL/TLS** offload, keshlash(**caching**), siqish(**compression**), hujumni aniqlash(**intrusion detection**) va web application firewallari(**WAF**) kiradi. Bu yetkazib berish muddatini qisqartiradi va kattaroq hajmni yaratadi.
+
+![load-balancing](/images/tutorials/web-server/load-balancing/2.png)
+
+## Load Balancing va SSL
+
+**Secure Sockets Layer(SSL)** bu veb-server va brauzer o'rtasida shifrlangan aloqani o'rnatish uchun standart xavfsizlik texnologiyasidir. SSL trafiki ko'pincha load balancerda shifrlangan(encrypted). Load Balancer so'rovni(request) yuborishdan oldin trafikni shifrlaganda, bu **SSL termination** deb ataladi. Load Balancer veb-serverlarni shifrni ochish(decrypted) uchun zarur bo'lgan qo'shimcha CPU cyclelarini sarflashdan qutqaradi. Bu dastur ish faoliyatini yaxshilaydi.
+
+Biroq, SSL termination xavfsizlik muammosi bilan birga keladi. Load Balancerlar va veb-serverlar o'rtasidagi trafik endi shifrlanmaydi. Bu ilovani ehtimoliy hujumga duchor qilishi mumkin. Biroq, load balancer veb-serverlar bilan bir xil ma'lumotlar markazida bo'lsa, xavf kamayadi.
+
+Yana bir yechim - SSL pass-through(SSL orqali o'tish). Load Balancer faqat shifrlangan so'rovni veb-serverga uzatadi. Keyin veb-server shifrni ochishni amalga oshiradi. Bu veb-serverda ko'proq CPU quvvatini ishlatadi. Ammo qo'shimcha xavfsizlikni talab qiladigan tashkilotlar qo'shimcha xarajatlarni foydali deb topishlari mumkin.
+
+## Load Balancing va xavfsizlik
+
+Load Balancing muhim xavfsizlik rolini o'ynaydi, chunki hisoblash doimo cloudga o'tadi. Load Balancerning off-loading(yukni tushirish) funksiyasi tashkilotni distributed denial-of-service**(DDoS)**  hujumlaridan himoya qiladi. Bu hujum trafigini korporativ serverdan public cloud provayderiga o'tkazish orqali amalga oshiradi. DDoS hujumlari kiberjinoyatlarning katta qismini tashkil etadi, chunki ularning soni va hajmi o'sishda davom etmoqda. Perimeter firewall kabi hardware himoyasi qimmatga tushishi va jiddiy texnik xizmat ko'rsatishni talab qilishi mumkin. Cloud offloadga ega dasturiy ta'minot load balancerlari samarali va tejamkor himoyani ta'minlaydi.
