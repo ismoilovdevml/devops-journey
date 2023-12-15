@@ -4,6 +4,12 @@
       "icon": "▶️",
       "description": "NGINX va NGINX Plus-ni web-server sifatida sozlash",
       "href": "/guides/web-server/configuring-nginx-webserver"
+    },
+    "load-balancing": {
+      "title": "Load Balancing",
+      "icon": "▶️",
+      "description": "Load Balancinga kirish",
+      "href": "/guides/web-server/load-balancing"
     }
   }
   

@@ -1,0 +1,17 @@
+import { Callout } from "nextra-theme-docs";
+
+## Load Balancing
+
+![load-balancing](/images/tutorials/web-server/load-balancing/banner.jpg)
+
+**Load Balancing**(yuklarni muvozanatlash) - bu tarmoq trafigini bir nechta serverlar bo'ylab taqsimlash jarayoni. Bu hech qanday server juda ko'p talabga ega emasligini ta'minlaydi. Ishni teng taqsimlash orqali load balancing(yukni muvozanatlash) applicationning javob berish qobiliyatini yaxshilaydi. Shuningdek, u foydalanuvchilar uchun applicationlar va veb-saytlar mavjudligini oshiradi. Zamonaviy applicationlar yuk balanslagichlarisiz ishlay olmaydi. Vaqt o'tishi bilan load balancerlar(yuk balanslagichlar) xavfsizlik va applicationlarni tezlashtirish kabi qo'shimcha imkoniyatlarni qo'shdilar
+
+![load-balancing](/images/tutorials/web-server/load-balancing/1.jpg)
+
+## Load Balancerlar
+
+Tashkilot o'z applicationlariga bo'lgan talabni qondirar ekan, load balanceri qaysi serverlar ushbu trafikni boshqarishi mumkinligini hal qiladi. Bu yaxshi foydalanuvchi tajribasini saqlaydi.
+
+Load balancerlari server va so'nggi nuqta qurilmasi (kompyuter, noutbuk, planshet yoki smartfon) o'rtasidagi ma'lumotlar oqimini boshqaradi. Server on-premises, ma'lumotlar markazida yoki public cloudda bo'lishi mumkin. Server jismoniy yoki virtuallashtirilgan bo'lishi mumkin. Load Balancer serverlarga ma'lumotlarni samarali ko'chirishga yordam beradi, applicationlarni yetkazib berish resurslaridan foydalanishni optimallashtiradi va serverning ortiqcha yuklanishini oldini oladi. Load Balancerlar requestlarni(so'rovlar) bajara olishlariga ishonch hosil qilish uchun serverlarning sog'lig'ini doimiy ravishda tekshiradilar(health checks). Agar kerak bo'lsa, load balancer nosog'lom serverlarni qayta tiklanmaguncha pooldan olib tashlaydi. Ba'zi load balancerlar hatto ortib borayotgan talabni qondirish uchun yangi virtuallashtirilgan dastur serverlarini yaratishni ham boshlaydi.
+
+An'anaga ko'ra, load balancerlar hardware qurilmasidan iborat. Shunga qaramay, ular tobora ko'proq dasturiy ta'minot bilan belgilanadi. Shuning uchun load balancerlar tashkilotning raqamli strategiyasining muhim qismidir.
