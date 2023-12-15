@@ -160,7 +160,7 @@ Shu nuqtada siz Jenkins-ni muvaffaqiyatli o'rnatdingiz. Keyingi qismga o'tamiz
 
 Serverimizga Jenkins o'rnatdik va uni dastlablki holat uchun zolab oldik lekin biz har doim jenkinsga kirganimizda serverimiz IP mazili va jenkins portini kiritib yozishimiz kerak bu yaxshimas lekin bunga kirish oson bo'lishi va xavfsiz bo'lishi uchun domen ulab ssl sertificat olamiz.
 
-**6.Nginx va certbot o'rnatish uchun quyidagi buyruqdan foyalanasiz.**
+##### 6.Nginx va certbot o'rnatish uchun quyidagi buyruqdan foyalanasiz.
 
 ```bash
 sudo apt update
@@ -1288,4 +1288,42 @@ Server IP manizli bilan `8081` portga kirib ko'rsangiz loyihamiz ishlab turgani 
 ![netflix](/images/article/netflix/netflix.png)
 ![netflix](/images/article/netflix/netflix1.png)
 
-Nihoyat biz Jenkisn bilan to'liq avtomatlashtirilgan `CI/CD` pipelineni yozib bo'ldik va muffaqqiyatli ishlayapti. Keyingi bosqich ilovamiz uchun nginx configuratsiya qilib domen ulab SSL sertifikat olishdir.
+Nihoyat biz Jenkisn bilan to'liq avtomatlashtirilgan `CI/CD` pipelineni yozib bo'ldik va muffaqqiyatli ishlayapti. Keyingi bosqich ilovamiz uchun nginx configuratsiya qilib domen ulab SSL sertifikat olishdir. Buning uchun biz yuqorida Jenkins uchun nginx configuratsiya qilib domen ulab SSL Sertifikat olganimizdek bir hildir. 
+
+Jenkinsga domen ulashda hammasi tushintirilgan mana havola: [Nginx va certboot o'rnatish, domen ulash va SSL Sertifikat olish](#6nginx-va-certbot-ornatish-uchun-quyidagi-buyruqdan-foyalanasiz)
+
+Ilovamiz uchun nginx configuratsiya quyidagicha.
+
+```bash /netflix/
+sudo nano /etc/nginx/sites-available/netflix.samidello.uz
+```
+
+```bash filename="/etc/nginx/sites-available/netflix.samidello.uz" /netflix.samidello.uz/
+server {
+    listen 80;
+    server_name netflix.samidello.uz;
+ 
+    location / {
+        proxy_pass http://localhost:8081;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+
+```bash /netflix.samidello.uz/
+sudo ln -s /etc/nginx/sites-available/netflix.samidello.uz /etc/nginx/sites-enabled/netflix.samidello.uz
+```
+Nginx configuratsiyamiz to'grilinini tekshiramiz.
+
+```bash
+sudo nginx -t
+```
+HTTP dan HTTPSga o'tish uchun certboot bilan SSL Sertifikat olamiz.
+
+```bash
+sudo certbot --nginx -d netflix.samidello.uz
+```
+Brauzer orqali domen bilan ilovangizga kirganingizda u https bilan ishlashi kerak.
