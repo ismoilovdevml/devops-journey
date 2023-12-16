@@ -110,3 +110,15 @@ Load Balancerlar hardware qurilmalari sifatida ishlaydi yoki dasturiy ta'minot(s
 * **Cheklangan moslashuvchanlik(Limited Flexibility)->** Hardware appliancelari moslashtirish va boshqa tizimlar bilan integratsiyalashuv nuqtai nazaridan dasturiy echimlarga(software solutions) nisbatan cheklangan moslashuvchanlikka ega bo'lishi mumkin.
 
 * **Yangilashning murakkabligi** Hardware based load balancerlarni yangilash jismoniy jihozni almashtirishni o'z ichiga olishi mumkin, bu esa yangilanishlar vaqtida potentsial uzilishlar yoki operatsion murakkabliklarga olib kelishi mumkin.
+
+### DNS Load Balancing
+
+DNS Load Balancing - bu DNS javoblarini(response) boshqarish orqali kiruvchi tarmoq trafigini bir nechta serverlar yoki endpointlar bo'ylab tarqatish uchun ishlatiladigan usul. U bir nechta IP manzillarni hal qilish uchun domen nomi bilan bog'langan DNS recordlarini o'zgartirish orqali ishlaydi, bu esa clientlarga DNS ruxsati asosida turli serverlarga ulanish imkonini beradi.
+
+DNS Load Balancing load balancing uchun dasturiy ta'minot bilan belgilangan yondashuv bo'lib, bunda client so'rovlari Domain Name System(DNS) ichidagi domenga turli server mashinalari bo'ylab taqsimlanadi. DNS tizimi har safar yangi client so'roviga javob berishda IP-manzillar ro'yxatining boshqa versiyasini round-robin usuli yordamida yuboradi, shuning uchun overall loadni boshqarish uchun DNS so'rovlarini turli serverlarga teng ravishda taqsimlaydi. Bu, o'z navbatida, javob bermaydigan serverlarni avtomatik ravishda o'chirish orqali DNS load balancingdan himoyalanishni ta'minlaydi.
+
+DNS Load balancing bir necha holatlarda hardware load balancingdan farq qiladi, garchi ikkalasi ham trafikni taqsimlash uchun juda samarali yechim bo'lishi mumkin. DNS darajasidagi load balancing asosiy afzalliklaridan biri bu scalability va narx(cost). DNS load balancer trafikni bir nechta turli IP manzillarga taqsimlaydi, hardware solution esa bitta IP manzildan foydalanadi va unga olib boradigan trafikni bir nechta serverlarga ajratadi. Narxlarga kelsak, hardware load balancerlari katta xarajatlarni talab qiladi, DNS load labancerlari esa kerak bo'lganda scale qilish mumkin.
+
+### Load Balancing turlari
+
+* **SDN->** SDN(software-defined networking) yordamida load balancing dasturni yetkazib berish uchun boshqaruv tekisligini ma'lumotlar tekisligidan ajratib turadi. Bu bir nechta load balancing boshqarish imkonini beradi. Shuningdek, u tarmoqqa hisoblash va saqlashning virtuallashtirilgan versiyalari kabi ishlashiga yordam beradi. Markazlashtirilgan(centralized) boshqaruv bilan network policy va parametrlarini to'g'ridan-to'g'ri yanada sezgir va samarali dastur xizmatlari uchun dasturlash mumkin. Shunday qilib, tarmoqlar yanada tezkor bo'lishi mumkin.
