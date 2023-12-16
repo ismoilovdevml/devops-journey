@@ -8,7 +8,7 @@ import { Callout } from "nextra-theme-docs";
 
 ![load-balancing](/images/tutorials/web-server/load-balancing/1.jpg)
 
-## Load Balancerlar
+### Load Balancerlar
 
 Tashkilot o'z applicationlariga bo'lgan talabni qondirar ekan, load balanceri qaysi serverlar ushbu trafikni boshqarishi mumkinligini hal qiladi. Bu yaxshi foydalanuvchi tajribasini saqlaydi.
 
@@ -16,7 +16,7 @@ Load balancerlari server va so'nggi nuqta qurilmasi (kompyuter, noutbuk, planshe
 
 An'anaga ko'ra, load balancerlar hardware qurilmasidan iborat. Shunga qaramay, ular tobora ko'proq dasturiy ta'minot bilan belgilanadi. Shuning uchun load balancerlar tashkilotning raqamli strategiyasining muhim qismidir.
 
-## Load Balancerlar tarixi
+### Load Balancerlar tarixi
 
 Load Balancing 1990-yillarda tarmoq bo'ylab trafikni tarqatuvchi apparat qurilmalari(hardware appliance) sifatida boshlangan. Tashkilotlar serverlarda ishlaydigan applicationlarning mavjudligini yaxshilashni xohlashdi. Oxir-oqibat, Application Delivery Controllers (**ADC**s)lar paydo bo'lishi bilan Load balancing ko'proq mas'uliyatni o'z zimmasiga oldi. Ular xavfsizlikni ta'minlaydi, shuningdek, peak timelarda applicationlarga uzluksiz kirishni ta'minlaydi.
 
@@ -24,7 +24,7 @@ Load Balancing 1990-yillarda tarmoq bo'ylab trafikni tarqatuvchi apparat qurilma
 
 ![load-balancing](/images/tutorials/web-server/load-balancing/2.png)
 
-## Load Balancing va SSL
+### Load Balancing va SSL
 
 **Secure Sockets Layer(SSL)** bu veb-server va brauzer o'rtasida shifrlangan aloqani o'rnatish uchun standart xavfsizlik texnologiyasidir. SSL trafiki ko'pincha load balancerda shifrlangan(encrypted). Load Balancer so'rovni(request) yuborishdan oldin trafikni shifrlaganda, bu **SSL termination** deb ataladi. Load Balancer veb-serverlarni shifrni ochish(decrypted) uchun zarur bo'lgan qo'shimcha CPU cyclelarini sarflashdan qutqaradi. Bu dastur ish faoliyatini yaxshilaydi.
 
@@ -32,6 +32,28 @@ Biroq, SSL termination xavfsizlik muammosi bilan birga keladi. Load Balancerlar 
 
 Yana bir yechim - SSL pass-through(SSL orqali o'tish). Load Balancer faqat shifrlangan so'rovni veb-serverga uzatadi. Keyin veb-server shifrni ochishni amalga oshiradi. Bu veb-serverda ko'proq CPU quvvatini ishlatadi. Ammo qo'shimcha xavfsizlikni talab qiladigan tashkilotlar qo'shimcha xarajatlarni foydali deb topishlari mumkin.
 
-## Load Balancing va xavfsizlik
+### Load Balancing va xavfsizlik
 
-Load Balancing muhim xavfsizlik rolini o'ynaydi, chunki hisoblash doimo cloudga o'tadi. Load Balancerning off-loading(yukni tushirish) funksiyasi tashkilotni distributed denial-of-service**(DDoS)**  hujumlaridan himoya qiladi. Bu hujum trafigini korporativ serverdan public cloud provayderiga o'tkazish orqali amalga oshiradi. DDoS hujumlari kiberjinoyatlarning katta qismini tashkil etadi, chunki ularning soni va hajmi o'sishda davom etmoqda. Perimeter firewall kabi hardware himoyasi qimmatga tushishi va jiddiy texnik xizmat ko'rsatishni talab qilishi mumkin. Cloud offloadga ega dasturiy ta'minot load balancerlari samarali va tejamkor himoyani ta'minlaydi.
+Load Balancing muhim xavfsizlik rolini o'ynaydi, chunki hisoblash doimo cloudga o'tadi. Load Balancerning off-loading(yukni tushirish) funksiyasi tashkilotni distributed denial-of-service **(DDoS)**  hujumlaridan himoya qiladi. Bu hujum trafigini korporativ serverdan public cloud provayderiga o'tkazish orqali amalga oshiradi. DDoS hujumlari kiberjinoyatlarning katta qismini tashkil etadi, chunki ularning soni va hajmi o'sishda davom etmoqda. Perimeter firewall kabi hardware himoyasi qimmatga tushishi va jiddiy texnik xizmat ko'rsatishni talab qilishi mumkin. Cloud offloadga ega dasturiy ta'minot load balancerlari samarali va tejamkor himoyani ta'minlaydi.
+
+### Load Balancing Algoritmlari
+
+Muayyan vaziyat uchun eng mos keladigan turli xil algoritmlardan foydalanadigan turli xil load balancing metodlari mavjud. Load Balancing Algoritmlar ikki turga bo'linadi bular Dynamic load balancing algoritlar va Static load balancing algoritlardir.
+
+![load-balancing](/images/tutorials/web-server/load-balancing/load.jpg)
+
+#### Dynamic load balancing algoritmlar
+
+* **Least connection->** Qaysi serverlar eng kam ulanishga ega ekanligini tekshiradi va trafikni ushbu serverlarga yuboradi. Bu barcha ulanishlar taxminan teng ishlov berish quvvatini talab qiladi. Serverlar o'rtasida notekis taqsimlangan trafikda ko'p sonli doimiy ulanishlar mavjud bo'lganda bu metod eng foydalidir.
+
+* **Weighted least connection->** Ba'zi serverlar boshqalardan ko'ra ko'proq ulanishlarni boshqarishi mumkin deb hisoblagan holda, tizim adminlarga har bir serverga turli og'irliklarni belgilash imkoniyatini beradi. Weighted least connectionlarda yuk(load) taqsimoti ikkala omilga - har bir serverga joriy va faol ulanishlar soniga va serverning nisbiy sig'imiga asoslanadi.
+
+* **Resource-based->** Har bir serverda mavjud bo'lgan resurslarga qarab yukni(load) taqsimlaydi. Har bir serverda ishlaydigan maxsus dasturiy ta'minot ("agent" deb ataladi) serverning mavjud protsessorini va xotirasini o'lchaydi va load balancer ushbu serverga trafikni tarqatishdan oldin agentdan so'raydi.
+
+#### Static load balancing algoritmlar
+
+* **Round Robin->** Round robin load balancing eng oddiy va eng ko'p ishlatiladigan load balancing algoritmidir. Client so'rovlari(request) oddiy aylanishda dastur serverlariga tarqatiladi. Misol uchun, agar sizda uchta application serveri bo'lsa: birinchi client so'rovi ro'yxatdagi birinchi application serveriga, ikkinchi client so'rovi ikkinchi application serveriga, uchinchi client so'rovi uchinchi application serveriga, to'rtinchi client so'rovi esa birinchi application serverga yuboriladi. Round robin load balancing Domain Name System (DNS) yordamida aylanadigan serverlar ro'yxatiga trafikni taqsimlaydi. Authoritative nameserveri domen uchun turli A recordlari ro'yxatiga ega bo'ladi va har bir DNS so'roviga javoban boshqasini taqdim etadi.
+
+* **Weighted round robin->** AWeighted round robin balancing  Round Robin load balancing algoritmiga o'xshaydi, har bir serverning nisbiy sig'imi(capacity) bo'yicha kiruvchi client so'rovlarini serverlari bo'ylab tarqatish qobiliyatini qo'shadi. Weighted round robin  administratorga har bir serverga turli vaznlarni(weight) belgilashga ruxsat beradi. Og'irligi(weight) yuqori bo'lgan serverlar name serveridan ko'proq kiruvchi applicationlar trafigini oladi.
+
+* **IP hash->** Kiruvchi trafikning source va destination IP manzillarini birlashtiradi va uni hashga aylantirish uchun matematik funksiyadan foydalanadi. Hash asosida ulanish ma'lum bir serverga tayinlanadi. Source IP hash load balancing algoritmi clientni ma'lum bir serverga ajratish uchun ishlatiladigan noyob hash kalitini(unique hash key) yaratish uchun client so'rovining source va destination IP manzillaridan foydalanadi. Agar seans buzilgan bo'lsa, kalit qayta tiklanishi mumkinligi sababli, client so'rovi avval foydalanilgan serverga yo'naltiriladi.
