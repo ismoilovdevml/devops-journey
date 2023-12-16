@@ -54,6 +54,59 @@ Muayyan vaziyat uchun eng mos keladigan turli xil algoritmlardan foydalanadigan 
 
 * **Round Robin->** Round robin load balancing eng oddiy va eng ko'p ishlatiladigan load balancing algoritmidir. Client so'rovlari(request) oddiy aylanishda dastur serverlariga tarqatiladi. Misol uchun, agar sizda uchta application serveri bo'lsa: birinchi client so'rovi ro'yxatdagi birinchi application serveriga, ikkinchi client so'rovi ikkinchi application serveriga, uchinchi client so'rovi uchinchi application serveriga, to'rtinchi client so'rovi esa birinchi application serverga yuboriladi. Round robin load balancing Domain Name System (DNS) yordamida aylanadigan serverlar ro'yxatiga trafikni taqsimlaydi. Authoritative nameserveri domen uchun turli A recordlari ro'yxatiga ega bo'ladi va har bir DNS so'roviga javoban boshqasini taqdim etadi.
 
-* **Weighted round robin->** AWeighted round robin balancing  Round Robin load balancing algoritmiga o'xshaydi, har bir serverning nisbiy sig'imi(capacity) bo'yicha kiruvchi client so'rovlarini serverlari bo'ylab tarqatish qobiliyatini qo'shadi. Weighted round robin  administratorga har bir serverga turli vaznlarni(weight) belgilashga ruxsat beradi. Og'irligi(weight) yuqori bo'lgan serverlar name serveridan ko'proq kiruvchi applicationlar trafigini oladi.
+* **Weighted round robin->** Weighted round robin balancing  Round Robin load balancing algoritmiga o'xshaydi, har bir serverning nisbiy sig'imi(capacity) bo'yicha kiruvchi client so'rovlarini serverlari bo'ylab tarqatish qobiliyatini qo'shadi. Weighted round robin  administratorga har bir serverga turli vaznlarni(weight) belgilashga ruxsat beradi. Og'irligi(weight) yuqori bo'lgan serverlar name serveridan ko'proq kiruvchi applicationlar trafigini oladi.
 
 * **IP hash->** Kiruvchi trafikning source va destination IP manzillarini birlashtiradi va uni hashga aylantirish uchun matematik funksiyadan foydalanadi. Hash asosida ulanish ma'lum bir serverga tayinlanadi. Source IP hash load balancing algoritmi clientni ma'lum bir serverga ajratish uchun ishlatiladigan noyob hash kalitini(unique hash key) yaratish uchun client so'rovining source va destination IP manzillaridan foydalanadi. Agar seans buzilgan bo'lsa, kalit qayta tiklanishi mumkinligi sababli, client so'rovi avval foydalanilgan serverga yo'naltiriladi.
+
+### Load Balancing afzalliklari
+
+Load Balancing network traffic cop sifatida ishlashdan ko'proq narsani amalga oshirishi mumkin. Software load balancerlar prognozli tahlil(predictive analytic) kabi afzalliklarni ta'minlaydi, ular paydo bo'lishidan oldin tirbandliklarni(traffic bottleneck) aniqlaydi. Natijada, software load balancer vositasi tashkilotga amaliy tushunchalarni beradi. Bular avtomatlashtirishning kalitidir va biznes qarorlarini qabul qilishga yordam beradi.
+
+Yetti layeri Open System Interconnection (**OSI**) modelida network firewallari birdan uchinchi darajagacha (L1-Physical Wiring, L2-Data Link and L3-Network) bo'ladi. Shu bilan birga, load balancer to'rtinchidan yettigacha layerlar orasida amalga oshiriladi (L4-Transport, L5-Session, L6-Presentation and L7-Application).
+
+![load-balancing](/images/tutorials/web-server/load-balancing/osi.jpeg)
+
+
+* **Layer 4 Load Balancer(L4) ->** IP manzili va TCP porti kabi tarmoq va transport layer protokollari maʼlumotlari asosida trafikni boshqaradi. 
+
+* **Layer 7 Load Balancer(L7) ->** Load balancing uchun content switchingni qo'shadi. Bu HTTP headeri, yagona resurs identifikatori(uniform resource identifier), SSL seans identifikatori(session ID) va HTML data formlari kabi atributlarga asoslangan marshrutlash qarorlarini qabul qilishga imkon beradi.
+
+* **GSLB ->** - Global Server Load Balancing L4 va L7 imkoniyatlarini turli geografik joylashuvlardagi serverlarga kengaytiradi.
+Ko'proq korxonalar data centerlari va public cloudlarda cloud-native applicationlarni deploy qilishga intilmoqda. Bu load balancerarining qobiliyatida sezilarli o'zgarishlarga olib keladi. O'z navbatida, bu infratuzilma va operatsion rahbarlar uchun ham qiyinchiliklar, ham imkoniyatlar yaratadi.
+
+![load-balancing](/images/tutorials/web-server/load-balancing/gslb.png)
+
+### Software Load Balancerlar vs. Hardware Load Balancerlar
+
+Load Balancerlar hardware qurilmalari sifatida ishlaydi yoki dasturiy ta'minot(software) bilan belgilanadi. Hardware Load Balancerlar - bu load balancing vazifalari uchun maxsus mo'ljallangan jismoniy qurilmalar. Ushbu qurilmalar tarmoq trafigini boshqarish uchun optimallashtirilgan maxsus hardware komponentlari bilan maqsadga muvofiq ishlab chiqilgan. Software Load Balancerlar standart serverlar yoki virtual mashinalarda ishlaydigan software application yoki servicelar sifatida amalga oshiriladi. Ular load balancing funksiyalarini bajarish uchun host tizimining CPU va xotirasidan ishlov berish quvvatidan foydalanadilar.
+
+#### Software Load Balancerlar afzalliklari
+
+* **Flexibility va  Scalability->** O'zgaruvchan ehtiyojlarga moslashish uchun moslashuvchanlik(flexibility). Hosting serverlarida qo'shimcha instance qo'shish yoki apparat resurslarini yangilash orqali gorizontal ravishda scale osonroq.
+
+* **Tejamkorlik(Cost-Effective)->** Ko'pincha hardware vositalariga qaraganda ancha tejamkor. Jismoniy mashinalarni sotib olish va ularga xizmat ko'rsatishdan ko'ra arzonroq narx. Dasturiy ta'minot har qanday standart qurilmada ishlashi mumkin, bu esa arzonroq.
+
+* **Oson Deployment va sozlash->**  tez o'rnatilishi va standart dasturiy ta'minotni o'rnatish jarayonlari yordamida sozlanishi mumkin.
+
+* **Customizatsiya va Integratsiya ->** Software-based tabiati tufayli ko'proq moslashtirish(customizatsioya) va integratsiya imkoniyatlarini taklif qiladi, bu esa boshqa dasturiy ta'minot komponentlari bilan oson integratsiyalashish imkonini beradi.
+
+#### Software Load Balancerlar kamchiliklari
+
+* **Performance->** Hardware Load Balancer bilan solishtirganda, software Load balancerning asosiy kamchiliklari uning performancedir.
+
+#### Hardware Load Balancerlar afzalliklari
+
+* **Performance->** Ixtisoslashgan hardware komponentlari va ajratilgan arxitektura tufayli ko'pincha software-based yechimlarga nisbatan yuqori unumdorlik(higher performance) va o'tkazuvchanlikni(throughput) ta'minlaydi.
+
+* **Reliability(Ishonchlilik)** Stability(barqarorli) va Reliability(ishonchlilik) uchun ishlab chiqilgan bo'lib, host-based dasturiy ta'minot yechimlari(software solution) bilan bog'liq nosozliklar yoki performance bottleneck xavfini kamaytiradi.
+
+* **Scalability->** Ko'pincha dasturiy yechimlar(software solutionlar) duch kelishi mumkin bo'lgan unumdorlikni pasaytirmasdan katta hajmdagi trafikni boshqarishi mumkin.
+
+* **Security xususiyatlari->** Hardware appliancelari ko'pincha firewallar, SSL offloading va hujumni aniqlash(intrusion detection) tizimlari kabi o'rnatilgan xavfsizlik xususiyatlariga ega.
+
+#### Hardware Load Balancerlar kamchiliklari
+
+* **Narxi(Cost)->** Odatda maxsus hardware va ixtisoslashtirilgan komponentlar tufayli oldindan qimmatroq.
+* **Cheklangan moslashuvchanlik(Limited Flexibility)->** Hardware appliancelari moslashtirish va boshqa tizimlar bilan integratsiyalashuv nuqtai nazaridan dasturiy echimlarga(software solutions) nisbatan cheklangan moslashuvchanlikka ega bo'lishi mumkin.
+
+* **Yangilashning murakkabligi** Hardware based load balancerlarni yangilash jismoniy jihozni almashtirishni o'z ichiga olishi mumkin, bu esa yangilanishlar vaqtida potentsial uzilishlar yoki operatsion murakkabliklarga olib kelishi mumkin.
