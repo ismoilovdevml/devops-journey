@@ -2,7 +2,7 @@ import { Callout } from "nextra-theme-docs";
 
 ## Load Balancing
 
-![load-balancing](/images/tutorials/web-server/load-balancing/banner.jpg)
+![load-balancing](/images/tutorials/web-server/load-balancing/banner1.png)
 
 **Load Balancing**(yuklarni muvozanatlash) - bu tarmoq trafigini bir nechta serverlar bo'ylab taqsimlash jarayoni. Bu hech qanday server juda ko'p talabga ega emasligini ta'minlaydi. Ishni teng taqsimlash orqali load balancing(yukni muvozanatlash) applicationning javob berish qobiliyatini yaxshilaydi. Shuningdek, u foydalanuvchilar uchun applicationlar va veb-saytlar mavjudligini oshiradi. Zamonaviy applicationlar yuk balanslagichlarisiz ishlay olmaydi. Vaqt o'tishi bilan load balancerlar(yuk balanslagichlar) xavfsizlik va applicationlarni tezlashtirish kabi qo'shimcha imkoniyatlarni qo'shdilar
 
@@ -146,3 +146,24 @@ DNS Load balancing bir necha holatlarda hardware load balancingdan farq qiladi, 
 * **Geographic->** Geographic Load Balancing maksimal samaradorlik va xavfsizlik uchun application trafigini turli joylarda joylashgan data centerlar boʻylab qayta taqsimlaydi. Local Load Balancing bitta data centerda amalga oshirilsa-da, Geographic Load Balancing ko'p joylarda bir nechta data centerlardan foydalanadi. Geographic Load Balancing foydalanuvchilarning geografik joylashuvi asosida kiruvchi tarmoq trafigini taqsimlashni o'z ichiga oladi. Ushbu yondashuv foydalanuvchilarni geografik yaqinlik asosida eng yaqin yoki eng mos server yoki data-centerga yo'naltirish orqali kechikishni(latency) minimallashtirish va ishlashni optimallashtirishga qaratilgan. Geographic Load Balancing, ayniqsa, global foydalanuvchi bazasiga ega bo'lgan yoki turli mintaqalarda tarqalgan foydalanuvchilar uchun xizmatlarini optimallashtirishga intilayotgan korxonalar uchun foydalidir. Bu geografik yaqinlik asosida trafikni eng mos serverlarga yo'naltirish orqali uzluksiz, sezgir va ishonchli foydalanuvchi tajribasini ta'minlashda muhim rol o'ynaydi.
 
 * **Multi-site->**  **G**lobal **S**erver **L**oad **B**alancing(**GSLB**) deb ham ataladigan multi site load balancing butun dunyo bo'ylab bir nechta saytlar yoki joylarda joylashgan serverlar bo'ylab trafikni taqsimlaydi. Serverlar on-premises yoki public yoki private cloudda joylashtirilishi mumkin. Multi-site load balancing global foydalanishga intilayotgan korxonalar uchun juda muhim bo'lib, resurslardan foydalanishni optimallashtirish, unumdorlikni oshirish va turli geografik joylarda xizmatlar mavjudligini(service availability) saqlab qolish yo'lini taklif qiladi.
+
+### Stateful vs Stateless Load Balancing
+
+#### Stateful Load Balancing
+
+Stateful Load Balancing sessiya jadvali(session table) yordamida barcha joriy seanslarni kuzatib borishi mumkin. So'rovni bajarish uchun to'g'ri serverni tanlashdan oldin, u turli serverlarning yuki(load) kabi distributed load balancingdan foydalangan holda bir qator narsalarni ko'rib chiqishi mumkin. Stateful Load Balancing  seans ma'lumotlarini(session information) saqlab, bir clientdan keyingi so'rovlar bir xil backend serveriga yo'naltirilishini ta'minlaydi. Client va server o'rtasidagi o'zaro aloqalar o'rtasidagi kontekst va seans holatini saqlaydi. Seans boshlanganidan va load distribution algorithmlari o'z manzil serverini tanlagandan so'ng, u barcha kelayotgan paketlarni sessiya tugaguniga qadar serverga yuboradi. Stateful Load Balancing algoritmlariga **Least Connection, IP Hash**ni misol qilish mumkin.
+
+#### Stateless Load Balancing
+
+Stateful Load Balancing jarayonidan farqli o'laroq, Stateless Load Balancing ancha sodda jarayondir. Stateless Load Balancerining eng keng tarqalgan usuli bu clientning IP-manzilini kichik raqamga tushirishdir. Raqam balancer uchun qaysi server so'rovni qabul qilishini hal qilish uchun ishlatiladi. Stateless Load Balancing client soʻrovlari va backend serverlari oʻrtasida seans maʼlumotlari yoki kontekstni saqlamaydi. Har bir so'rov oldingi o'zaro aloqalarni hisobga olmasdan mustaqil ravishda ko'rib chiqiladi. Stateless Load Balancing algoritmlariga **Round Robin, Weighted Round Robin**ni misol qilish mumkin.
+
+### Qo'shimcha
+
+<Callout type="info" emoji="">
+
+**Foydalanilgan manbalar:** [avinetworks.com](https://avinetworks.com/what-is-load-balancing/), [cloudflare.com](https://www.cloudflare.com/learning/performance/types-of-load-balancing-algorithms/)
+
+**Sana:** 2023.12.16(2023-yil 16-dekabr)
+
+**Muallif: Otabek Ismoilov**
+</Callout>
