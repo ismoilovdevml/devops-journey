@@ -2,6 +2,7 @@
  * @type {import('nextra-theme-docs').DocsThemeConfig}
  */
 import { useRouter } from 'next/router';
+import { GithubSponsors } from '@components/icons/github-sponsors';
 
 const github = 'https://github.com/ismoilovdevml/devops-journey';
 
@@ -54,6 +55,9 @@ const config: DocsThemeConfig = {
   },
   footer: {
     text: `CC0-1.0 Licensed | Hamma xuquqlar himoyalangan ${new Date().getFullYear()} ©Uzinfocom Open Source.`,
+  },
+  navbar: {
+    extraContent: <GithubSponsors />,
   },
   logo() {
     // eslint-disable-next-line react-hooks/rules-of-hooks
