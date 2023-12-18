@@ -168,17 +168,17 @@ sudo apt update
 sudo apt install nginx
 sudo apt install certbot python3-certbot-nginx
 ```
-Jenkinsga domen ulash uchun NGINX configuratsiya qilishimiz kerak. `/etc/nginx/sites-available/` jildida domenimiz uchun konfiguratsiya fayl ochamiz. Masalan, domenimiz `jenkins.samidello.uz`.
+Jenkinsga domen ulash uchun NGINX configuratsiya qilishimiz kerak. `/etc/nginx/sites-available/` jildida domenimiz uchun konfiguratsiya fayl ochamiz. Masalan, domenimiz `jenkins.xilol.uz`.
 
-```bash /jenkins.samidello.uz/
-sudo nano /etc/nginx/sites-available/jenkins.samidello.uz
+```bash /jenkins.xilol.uz/
+sudo nano /etc/nginx/sites-available/jenkins.xilol.uz
 ```
 Fayl `nano` matn muhrarrida ochilganidan keyin quyidagi NGINX konfiguratsiyani joylashtiring.
 
-```bash filename="/etc/nginx/sites-available/jenkins.samidello.uz"
+```bash filename="/etc/nginx/sites-available/jenkins.xilol.uz"
 server {
     listen 80;
-    server_name jenkins.samidello.uz;
+    server_name jenkins.xilol.uz;
 
     location / {
         proxy_pass http://localhost:8080;
@@ -189,18 +189,18 @@ server {
     }
 }
 ```
-**NGINX**dagi ushbu konfiguratsiya bloki `80`-portda `jenkins.samidello.uz` domeni orqali Jenkinsga kirish uchun `reverse proxy-`serverni o'rnatish uchun zarur. Ushbu NGINX konfiguratsiyani qismlarga bo'lib ko'rib chiqamiz.
+**NGINX**dagi ushbu konfiguratsiya bloki `80`-portda `jenkins.xilol.uz` domeni orqali Jenkinsga kirish uchun `reverse proxy-`serverni o'rnatish uchun zarur. Ushbu NGINX konfiguratsiyani qismlarga bo'lib ko'rib chiqamiz.
 
 ```bash /server/ /listen/ /server_name/
 server {
     listen 80;
-    server_name jenkins.samidello.uz;
+    server_name jenkins.xilol.uz;
 ```
 * `server` Bu blok NGINX-da server konfiguratsiya blokining boshlanishini bildiradi.
 
 * `listen 80` NGINX standart **HTTP** porti bo'lgan **80**-portni tinglaydi (listen).
 
-* `server_name jenkins.samidello.uz;` Ushbu server blokiga mos keladigan domen nomi yoki nomlarini belgilaydi. Bu holda, u `jenkins.samidello.uz` ga o'rnatiladi.
+* `server_name jenkins.xilol.uz;` Ushbu server blokiga mos keladigan domen nomi yoki nomlarini belgilaydi. Bu holda, u `jenkins.xilol.uz` ga o'rnatiladi.
 
 ```bash /proxy_set_header/ /location/ /proxy_pass/
     location / {
@@ -211,21 +211,21 @@ server {
         proxy_set_header X-Forwarded-Proto $scheme;
     }
 ```
-* `location /` Bu blok - ushbu server bloki boshqaradigan joyni belgilaydi. Bunday holda, u ildiz(root) `/` ga o'rnatiladi, shuning uchun `jenkins.samidello.uz` saytiga har qanday so'rov ushbu blok tomonidan ko'rib chiqiladi.
+* `location /` Bu blok - ushbu server bloki boshqaradigan joyni belgilaydi. Bunday holda, u ildiz(root) `/` ga o'rnatiladi, shuning uchun `jenkins.xilol.uz` saytiga har qanday so'rov ushbu blok tomonidan ko'rib chiqiladi.
 
-* `proxy_pass http://localhost:8080;` Bu qator Jenkins ishlayotgan server backend serverini belgilaydi. NGINX `jenkins.samidello.uz` saytiga kelgan so'rovlarni Jenkins ishlashi kutilayotgan `http://localhost:8080` manziliga yo'naltiradi.
+* `proxy_pass http://localhost:8080;` Bu qator Jenkins ishlayotgan server backend serverini belgilaydi. NGINX `jenkins.xilol.uz` saytiga kelgan so'rovlarni Jenkins ishlashi kutilayotgan `http://localhost:8080` manziliga yo'naltiradi.
 
 * `proxy_set_header` Bu qatorlar proksi-server so'rovi bilan birga uzatiladigan **header**larni o'rnatadi. Ular asl client IP, host, protokol va boshqalar haqidagi ma'lumotlarni o'z ichiga oladi. Bu Jenkinsga NGINX orqali kelgan so'rovlarni to'g'ri bajarishga yordam beradi.
 
-Ushbu konfiguratsiya **NGINX**-ni **Jenkins** uchun reverse proxy-server sifatida o'rnatadi. **80**-portda `jenkins.samidello.uz` manziliga NGINX tomonidan qabul qilingan har qanday so'rov(request) **8080**-portda local ravishda ishlaydigan Jenkins serveriga yo'naltiriladi. Shuningdek, so'rov Jenkinsga yetib kelganida client ma'lumotlari yaxlitligini saqlash uchun zarur headerlar o'rnatilishini ta'minlaydi.
+Ushbu konfiguratsiya **NGINX**-ni **Jenkins** uchun reverse proxy-server sifatida o'rnatadi. **80**-portda `jenkins.xilol.uz` manziliga NGINX tomonidan qabul qilingan har qanday so'rov(request) **8080**-portda local ravishda ishlaydigan Jenkins serveriga yo'naltiriladi. Shuningdek, so'rov Jenkinsga yetib kelganida client ma'lumotlari yaxlitligini saqlash uchun zarur headerlar o'rnatilishini ta'minlaydi.
 
 #### 7. SSL sertifikat olish va HTTP trafikni HTTPS ga yo'naltirish
 
 NGINX konfiguratsiya uchun symbolic link yaratish
 ```bash
-sudo ln -s /etc/nginx/sites-available/jenkins.samidello.uz //etc/nginx/sites-enabled/jenkins.samidello.uz
+sudo ln -s /etc/nginx/sites-available/jenkins.xilol.uz //etc/nginx/sites-enabled/jenkins.xilol.uz
 ```
-Bu buyruq `/etc/nginx/sites-available` jildida Jenkins uchun yaratgan konfiguratsiya fayli (jenkins.samidello.uz) va `/etc/nginx/sites-enabled` jildi o'rtasida symbolic link hosil qiladi. Ushbu ulanishning maqsadi NGINX serveriga siz Jenkins uchun o'rnatgan konfiguratsiyani saytlar faollashtirilgan jildda mavjud qilish orqali o'qish va foydalanish imkonini berishdir.
+Bu buyruq `/etc/nginx/sites-available` jildida Jenkins uchun yaratgan konfiguratsiya fayli (jenkins.xilol.uz) va `/etc/nginx/sites-enabled` jildi o'rtasida symbolic link hosil qiladi. Ushbu ulanishning maqsadi NGINX serveriga siz Jenkins uchun o'rnatgan konfiguratsiyani saytlar faollashtirilgan jildda mavjud qilish orqali o'qish va foydalanish imkonini berishdir.
 
 **NGINX konfiguratsiya sintaksisini tekshirish**
 ```bash
@@ -238,7 +238,7 @@ Ushbu buyruq hech qanday sintaksis xatosi yo'qligiga ishonch hosil qilish uchun 
 ```bash
 sudo certbot
 ```
-Bu buyruq Certbot ilovasini ishga tushiradi. U bepul Sertifikat organi **Let's Encrypt**'dan **SSL/TLS** sertifikatini olish uchun bir qator takliflar orqali foydalanuvchi bilan o'zaro aloqada bo'ladi. Certbot sizdan SSL sertifikatini olmoqchi bo'lgan NGINX server blokini tanlashni taklif qiladi. Bunday holda, u `jenkins.samidello.uz` saytini domen konfiguratsiyasi sifatida aniqlaydi va sertifikat berish jarayoni bo'yicha sizga yo'l ko'rsatadi. Ko'rsatmalar xizmat shartlariga rozi bo'lishni, yangilash bildirishnomalari uchun elektron pochta manzilini taqdim etishni va **HTTP** trafigini **HTTPS**ga yo'naltirishni tanlashni o'z ichiga oladi.
+Bu buyruq Certbot ilovasini ishga tushiradi. U bepul Sertifikat organi **Let's Encrypt**'dan **SSL/TLS** sertifikatini olish uchun bir qator takliflar orqali foydalanuvchi bilan o'zaro aloqada bo'ladi. Certbot sizdan SSL sertifikatini olmoqchi bo'lgan NGINX server blokini tanlashni taklif qiladi. Bunday holda, u `jenkins.xilol.uz` saytini domen konfiguratsiyasi sifatida aniqlaydi va sertifikat berish jarayoni bo'yicha sizga yo'l ko'rsatadi. Ko'rsatmalar xizmat shartlariga rozi bo'lishni, yangilash bildirishnomalari uchun elektron pochta manzilini taqdim etishni va **HTTP** trafigini **HTTPS**ga yo'naltirishni tanlashni o'z ichiga oladi.
 
 ## Docker, Trivy o'rnatish va SonarQube'ni docker orqali o'rnatish, domen ulash
 
@@ -319,14 +319,14 @@ Parolni yangilaganizdan keyin quyidagi SonarQube dashboardi ochilishi kerak:
 SonarQubega domen ulab SSL sertifat olish, Jenkinsga domen ulab ssl olganimizdek bir xil, SonarQube `9000` portda ishlab turibdi NGINX bilan `proxy_pass` reverse-proxy qilib expose qilib domen ulaymiz.
 
 ```bash
-nano /etc/nginx/sites-available/sonarqube.samidello.uz
+nano /etc/nginx/sites-available/sonarqube.xilol.uz
 ```
 Ushbu faylga quyidagi NGINX configuratsiyani joylashtiramiz.
 
-```nginx filename="/etc/nginx/sites-available/sonarqube.samidello.uz" /proxy_pass/ /9000/ /sonarqube.samidello.uz/
+```nginx filename="/etc/nginx/sites-available/sonarqube.xilol.uz" /proxy_pass/ /9000/ /sonarqube.xilol.uz/
 server {
     listen 80;
-    server_name sonarqube.samidello.uz;
+    server_name sonarqube.xilol.uz;
 
     location / {
         proxy_pass http://localhost:9000;
@@ -344,13 +344,13 @@ sudo nginx -t
 ```
 Symbolic link yaratamiz:
 
-```bash /sonarqube.samidello.uz/
-sudo ln -s /etc/nginx/sites-available/sonarqube.samidello.uz /etc/nginx/sites-enabled/sonarqube.samidello.uz
+```bash /sonarqube.xilol.uz/
+sudo ln -s /etc/nginx/sites-available/sonarqube.xilol.uz /etc/nginx/sites-enabled/sonarqube.xilol.uz
 ```
 **Let's Encrypt**, **certboot** yordamida **SSL** sertifikat olamiz:
 
 ```bash
-sudo certbot --nginx -d sonarqube.samidello.uz
+sudo certbot --nginx -d sonarqube.xilol.uz
 ```
 
 ### Trivy o'rnatish
@@ -451,15 +451,15 @@ Mana qisqa qo'llanma.
 Ilovamiz uchun NGINX konfiguratsiyasi quyidagicha:
 
 ```bash /grafana/
-sudo nano /etc/nginx/sites-available/grfaana.samidello.uz
+sudo nano /etc/nginx/sites-available/grfaana.xilol.uz
 ```
 
 Grafana `3000` portda ishlab turadi bizni reverse-proxy proxy_pass qilib expose qilamiz.
 
-```bash filename="/etc/nginx/sites-available/grafana.samidello.uz" /grafana.samidello.uz/ /3000/
+```bash filename="/etc/nginx/sites-available/grafana.xilol.uz" /grafana.xilol.uz/ /3000/
 server {
     listen 80;
-    server_name grafana.samidello.uz;
+    server_name grafana.xilol.uz;
  
     location / {
         proxy_pass http://localhost:3000;
@@ -471,8 +471,8 @@ server {
 }
 ```
 
-```bash /grafana.samidello.uz/
-sudo ln -s /etc/nginx/sites-available/grafana.samidello.uz /etc/nginx/sites-enabled/grafana.samidello.uz
+```bash /grafana.xilol.uz/
+sudo ln -s /etc/nginx/sites-available/grafana.xilol.uz /etc/nginx/sites-enabled/grafana.xilol.uz
 ```
 NGINX konfiguratsiyamiz to'grilinini tekshiramiz:
 
@@ -482,7 +482,7 @@ sudo nginx -t
 HTTP dan HTTPSga o'tish uchun certboot bilan SSL sertifikat olamiz:
 
 ```bash
-sudo certbot --nginx -d grafana.samidello.uz
+sudo certbot --nginx -d grafana.xilol.uz
 ```
 
 ## Jenkinsga prometheus plaginini o'rnatish va monitoring qilish
@@ -694,7 +694,7 @@ SonarQube uchun token olib Jenkins credentialsga qo'shganimizdan keyin SonarQube
 
 Rasmda ko'rsatilganidek configuratsiya qilib olamiz.
 
-* **Server URL->**  sonarqube.samidello.uz(SonaQube serveringiz manzili)
+* **Server URL->**  sonarqube.xilol.uz(SonaQube serveringiz manzili)
 
 * **Server authentication token->** hozir qo'shgan tokenimiz(`Sonar-token`)ni ko'rsatib qo'yamiz shunda Jenkins pipelineda SonarQubega ulana olamiz. `Apply` va `Save` ni bosib chiqamiz. 
 
@@ -1351,13 +1351,13 @@ Jenkinsga domen ulashda hammasi tushintirilgan mana havola: [Nginx va certboot o
 Ilovamiz uchun nginx configuratsiya quyidagicha.
 
 ```bash /netflix/
-sudo nano /etc/nginx/sites-available/netflix.samidello.uz
+sudo nano /etc/nginx/sites-available/netflix.xilol.uz
 ```
 
-```bash filename="/etc/nginx/sites-available/netflix.samidello.uz" /netflix.samidello.uz/
+```bash filename="/etc/nginx/sites-available/netflix.xilol.uz" /netflix.xilol.uz/
 server {
     listen 80;
-    server_name netflix.samidello.uz;
+    server_name netflix.xilol.uz;
  
     location / {
         proxy_pass http://localhost:8081;
@@ -1369,8 +1369,8 @@ server {
 }
 ```
 
-```bash /netflix.samidello.uz/
-sudo ln -s /etc/nginx/sites-available/netflix.samidello.uz /etc/nginx/sites-enabled/netflix.samidello.uz
+```bash /netflix.xilol.uz/
+sudo ln -s /etc/nginx/sites-available/netflix.xilol.uz /etc/nginx/sites-enabled/netflix.xilol.uz
 ```
 Nginx configuratsiyamiz to'grilinini tekshiramiz.
 
@@ -1380,7 +1380,7 @@ sudo nginx -t
 HTTP dan HTTPSga o'tish uchun certboot bilan SSL Sertifikat olamiz.
 
 ```bash
-sudo certbot --nginx -d netflix.samidello.uz
+sudo certbot --nginx -d netflix.xilol.uz
 ```
 Brauzer orqali domen bilan ilovangizga kirganingizda u https bilan ishlashi kerak.
 
