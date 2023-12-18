@@ -15,7 +15,7 @@ Hamjamiyat [Telegram
 community](https://t.me/devopsuzb) guruhiga qo'shilish
 
 <div className="mt-8">
-  <Tabs items={['CI/CD', 'Konteynerlash', 'Kubernetes', 'Database']}>
+  <Tabs items={['CI/CD', 'Konteynerlash', 'Kubernetes(k8s)', 'Database', 'Web Serverlar']}>
     <Tab>
       <div className="mb-8">
         DevOps sayohatini biz bilang boshlang!
@@ -130,6 +130,35 @@ community](https://t.me/devopsuzb) guruhiga qo'shilish
       </Cards>
       <div className="text-right mt-4">
         <Link href="/guides/database">Hammasini ko'rish →</Link>
+      </div>
+    </Tab>
+    <Tab>
+      <div className="mb-8">
+        Web Serverlar bilan sayohatni boshlang!
+      </div>
+      <div className="mb-4 text-xl font-bold">Qo'llanmalar</div>
+      <Cards num={3}>
+        <Card
+          title="NGINX web-server sozlash"
+          description="NGINX va NGINX Plus-ni web-server sifatida sozlash"
+          icon="▶️"
+          href="/guides/web-server/configuring-nginx-webserver"
+        />
+        <Card
+          title="Load Balancing"
+          description="Load Balancingga kirish, tushunchalar va asoslar"
+          icon="▶️"
+          href="/guides/web-server/load-balancing"
+        />
+        <Card
+          title="NGINX Load Balancing"
+          description="NGINXda HTTP va TCP/UDP Load Balancing"
+          icon="▶️"
+          href="/guides/web-server/nginx-load-balancing"
+        />
+      </Cards>
+      <div className="text-right mt-4">
+        <Link href="/guides/web-server">Hammasini ko'rish →</Link>
       </div>
     </Tab>
   </Tabs>

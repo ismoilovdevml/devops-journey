@@ -67,6 +67,20 @@ Hamjamiyat tomonidan yozilgan dokumentatsiya va qo'llanmalar. Mavzular CI/CD, Ko
       ))}
     />
   </Tab>
+  <Tab>
+    <Cards
+      num={3}
+      children={Object.keys(databaseGuides).map((key, i) => (
+        <Card
+          key={i}
+          title={databaseGuides[key].title}
+          description={databaseGuides[key].description}
+          icon={databaseGuides[key].icon}
+          href={databaseGuides[key].href}
+        />
+      ))}
+    />
+  </Tab>
   <Tab style={{ paddingTop: 8 }}>
     <Cards
       num={3}
