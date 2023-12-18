@@ -198,7 +198,7 @@ server {
 ```
 * `server` Bu blok NGINX-da server konfiguratsiya blokining boshlanishini bildiradi.
 
-* `listen 80` NGINX standart **HTTP** porti bo'lgan **80**-portni tinglaydi (listen).
+* `listen 80` NGINX standart **HTTP** porti bo'lgan **80**-portda tinglaydi (listen).
 
 * `server_name jenkins.xilol.uz;` Ushbu server blokiga mos keladigan domen nomi yoki nomlarini belgilaydi. Bu holda, u `jenkins.xilol.uz` ga o'rnatiladi.
 
@@ -383,7 +383,7 @@ sudo chmod +x trivy.sh
 
 ## TMDB API key olish
 
-**TMDB** API KEY Kino ma'lumotlar bazasidan (**The Movie Database - TMDB**) kino va teleko'rsatuv ma'lumotlariga kirish va olish uchun zarurdir. Bu ilovalarga filmlar xulosalari, translatsiya ma'lumotlari, reytinglar va NGINX'ga o'xshash keng qamrovli filmlar streaminng platformasini yaratish uchun zarur bo'lgan boshqa metama'lumotlar kabi tafsilotlarni olish imkonini beradi.
+**TMDB** API KEY Kino ma'lumotlar bazasidan (**The Movie Database - TMDB**) kino va teleko'rsatuv ma'lumotlariga kirish va olish uchun zarurdir. Bu ilovalarga filmlar xulosalari, translatsiya ma'lumotlari, reytinglar va Netflix'ga o'xshash keng qamrovli filmlar streaminng platformasini yaratish uchun zarur bo'lgan boshqa metama'lumotlar kabi tafsilotlarni olish imkonini beradi.
 
 TMDB API key olish uchun uning saytiga kirishimiz kerak: [themoviedb.org](https://www.themoviedb.org/)
 
@@ -409,7 +409,7 @@ Ma'lumotlarni to'ldirib chiqamiz:
 Ma'lumotlarni to'ldirib chiqganimizdan keyin quyidagi oynada bizga API key beradi. `API Key`
 ![netflix](/images/article/netflix/tmdb5.png)
 
-API Keyni nusxalab olib qo'yamiz loyihamizda ishlatamiz. TMDB API KEYni olganimizdan keyin uni Jenkins credentialsga qo'shib qo'yishimiz kerak.
+API Keyni nusxalab olib qo'yamiz loyihamizda ishlatamiz. TMDB API KEYni olganimizdan keyin uni Jenkins credentials'ga qo'shib qo'yishimiz kerak.
 
 **->** `Manage Jenkins` **->** `Credentials`
 
