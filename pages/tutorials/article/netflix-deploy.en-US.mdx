@@ -6,9 +6,9 @@ import { Callout } from "nextra-theme-docs";
 
 DevOps va monitoringda ilg'or texnologiyalardan foydalangan holda Netflix klonini deploy qilish bo'yicha texnik qo'llanmaga xush kelibsiz. Ushbu qo'llanmada biz **Jenkins**-dan **CI/CD** dasturi sifatida, konteynerlashtirish uchun **Docker**, monitoring uchun va **Grafana**, **Prometheus** va **Node Exporter** kabi monitoring dasturlaridan foydalangan holda keng qamrovli devops sayohatini boshlaymiz.
 
-Bizning maqsadimiz? **Netflix**-ga o'xshash streaming platformasining funksionalligini takrorlash, shu bilan birga mustahkam deployment amaliyotlari, qat'iy xavfsizlik choralari va tizim ishlashini sinchkovlik bilan kuzatish.
+Bizning maqsadimiz: **Netflix**-ga o'xshash streaming platformasining funksionalligini takrorlash, shu bilan birga mustahkam deployment amaliyotlari, qat'iy xavfsizlik choralari va tizim ishlashini sinchkovlik bilan kuzatish.
 
-Ushbu qo'llanma davomida biz zaifliklarni skanerlash uchun **Trivy**, kod sifatini tahlil qilish uchun **Sonarqube ** va xavfsizlikni baholash uchun** OWASP Dependency Check** kabi dasturalarning uzluksiz integratsiyasini(CI continuous integration) ta'minlab, ushbu ilovani ishga tushirish va deploy qilish uchun zarur bo'lgan murakkab bosqichlarni ko'rib chiqamiz.
+Ushbu qo'llanma davomida biz zaifliklarni skanerlash uchun **Trivy**, kod sifatini tahlil qilish uchun **SonarQube** va xavfsizlikni baholash uchun **OWASP Dependency Check** kabi dasturalarning uzluksiz integratsiyasini(CI continuous integration) ta'minlab, ushbu ilovani ishga tushirish va deploy qilish uchun zarur bo'lgan murakkab bosqichlarni ko'rib chiqamiz.
 
 Ushbu loyiha Ubuntu servernini sozlashdan boshlanadi, u yerda biz **Jenkins**, **Docker** va **Node.js**, **Sonarqube Scanner** va **JDK** kabi muhim plaginlarni o'rnatamiz va sozlaymiz. Bundan tashqari, biz kino va teleko'rsatuv ma'lumotlarini olish uchun asosiy komponent bo'lgan **TMDB API** integratsiyasini o'rganamiz.
 
@@ -16,7 +16,7 @@ Deploymentni kuchaytirish uchun biz **Prometheus** va **Grafana**-ni o'rnatish, 
 
 Doimiy takomillashtirish va xavfsizlikka e'tibor qaratgan holda, biz ilovamizdagi har qanday zaifliklarni aniqlash va yumshatishni kafolatlaydigan **OWASP Dependency Check** dasturini qo'shish bo'yicha sizni sinchkovlik bilan yo'naltiramiz.
 
-Va nihoyat, biz Netflix klonimiz uchun kengaytiriladigan va bardoshli infratuzilmani ta'minlab, Docker imagelarini yaratish, ularni docker registryga psuh qilish va serverimizda ilovamizni deploy qilish va domen ulahs orqali sayohatimizni yakunlaymiz.
+Va nihoyat, biz Netflix klonimiz uchun kengaytiriladigan va bardoshli infratuzilmani ta'minlab, Docker imagelarini yaratish, ularni docker registryga push qilish va serverimizda ilovamizni deploy qilish va domen ulash orqali sayohatimizni yakunlaymiz.
 
 Ushbu qo'llanma zamonaviy DevOps muhitida murakkab ilovalarni qo'llashni amaliy tushunishga intilayotgan ishqibozlar va mutaxassislar uchun keng qamrovli rejani taqdim etishga qaratilgan. **CI/CD**, konteynerlashtirish va ishonchli monitoringning eng yaxshi amaliyotlarini qamrab olgan holda ushbu deploymentni muvaffaqiyatli takrorlash imkonini berish uchun har bir qadam diqqat bilan batafsil bayon etilgan.
 
@@ -41,7 +41,7 @@ Keling, ushbu texnik sayohatni birgalikda boshlaymiz va Netflix-ga o'xshash stri
 
 * [SonarQubeni Jenkins uchun sozlash](#sonarqubeni-jenkins-uchun-sozlash)
 
-* [Jenkinsga OWASP Dependency Check, JDK va Node.js pluginlarini o'rnatish va sozlash](#jenkinsga-owasp-dependency-check-jdk-va-nodejs-pluginlarini-ornatish-va-sozlash)
+* [Jenkinsga OWASP Dependency Check, JDK va Node.js plaginlarini o'rnatish va sozlash](#jenkinsga-owasp-dependency-check-jdk-va-nodejs-pluginlarini-ornatish-va-sozlash)
 
 * [Jenkinsda birinchi CI pipeline yozish](#jenkinsda-birinchi-ci-pipeline-yozish)
 
@@ -52,7 +52,7 @@ Keling, ushbu texnik sayohatni birgalikda boshlaymiz va Netflix-ga o'xshash stri
 
 ## Ubuntu 20.04 server sozlash
 
-Loyihani boshlash uchun bizga minmum 1ta server maksimum  3ta server kerak bo'ladi.
+Loyihani boshlash uchun bizga minimum 1ta server maksimum  3ta server kerak bo'ladi.
 
 Minimum Server talabi
 
@@ -86,9 +86,10 @@ Serverni yangilab kerakli dasturlarni o'rnatib olganimizdan keyin keyingi bosqic
 
 Jenkins o'rnatish bo'yicha to'liq qo'llanmani [Linux Serverlarga Jenkins o'rnatish](https://devops-journey.uz/guides/ci-cd/jenkins-ornatish) qo'llanmasida topishingiz mumkin. Yoki keling qisqa o'rnatishni boshlaymiz.
 
-**1. Java o'rnatish**
 
-Jenkins ishga tushirish uchun Java-ni talab qiladi, ammo ba'zi distributivlar standart bo'yicha buni o'z ichiga olmaydi va ba'zi Java versiyalari Jenkins bilan mos kelmaydi. Siz foydalanishingiz mumkin bo'lgan bir nechta Java ilovalari mavjud. OpenJDK hozirda eng ommabop, biz undan ushbu qo'llanmada foydalanamiz. Debian apt repositoriyalarini yangilang, OpenJDK 17 ni o'rnating va buyruqlar bilan o'rnatishni tekshiring:
+#### 1. Java o'rnatish
+
+Jenkins ishga tushirish uchun Java-ni talab qiladi, ammo ba'zi distributivlar standart bo'yicha buni o'z ichiga olmaydi va ba'zi Java versiyalari Jenkins bilan mos kelmaydi. Siz foydalanishingiz mumkin bo'lgan bir nechta Java ilovalari mavjud. **OpenJDK** hozirda eng ommabop, biz undan ushbu qo'llanmada foydalanamiz. Debian apt repositoriyalarini yangilang, OpenJDK 17 ni o'rnating va buyruqlar bilan o'rnatishni tekshiring:
 
 ```bash
 sudo apt update
@@ -96,7 +97,7 @@ sudo apt install openjdk-17-jre
 java -version
 ```
 
-**2. LTS versiyali jenkinsni o'rnatish**
+#### 2. LTS versiyali Jenkinsni o'rnatish
 
 LTS (Uzoq muddatli qo'llab-quvvatlash) versiyasi har 12 haftada muntazam releaselar oqimidan o'sha vaqt uchun barqaror release sifatida tanlanadi. U debian-stable apt repositorydan o'rnatilishi mumkin.
 
@@ -110,7 +111,7 @@ sudo apt-get update
 sudo apt-get install jenkins
 ```
 
-**3. Jenkinsni ishga tushirish**
+#### 3. Jenkinsni ishga tushirish
 
 Jenkinsni serviceni yoqish start berish va ishlayotgan statusni ko'rish uchun quyidagi buyruqlardan foydalaning.
 
@@ -119,13 +120,13 @@ sudo systemctl enable jenkins
 sudo systemctl start jenkins
 sudo systemctl status jenkins
 ```
-**4. Jenkins qulfini ochish**
+#### 4. Jenkins qulfini ochish
 
-Yangi Jenkins misoliga birinchi marta kirganingizda, uni avtomatik ravishda yaratilgan parol yordamida qulfdan chiqarish so'raladi. http://localhost:8080 (yoki uni o'rnatishda Jenkins uchun qaysi portni sozlagan bo'lsangiz) sahifasini ko'rib chiqing va `Unlock Jenkins` sahifasi paydo bo'lguncha kuting.
+Yangi Jenkins misoliga birinchi marta kirganingizda, uni avtomatik ravishda yaratilgan parol yordamida qulfdan chiqarish so'raladi. http://localhost:8080 (yoki uni o'rnatishda Jenkins uchun qaysi portni sozlagan bo'lsangiz) sahifasini ko'rib chiqing va **Unlock Jenkins** sahifasi paydo bo'lguncha kuting.
 
 ![jenkins](/images/ci-cd/1.jpg)
 
-parolni ko'rish uchun jenkisn parol qayerda turganini ko'rsatib parol fayliga yo'l ko'rstaib qo'yadi yani `/var/lib/jenkins/secrets/initialAdminPassword`. parolni olish quyidagi buyruqdan foydalanamiz.
+parolni ko'rish uchun Jenkins parol qayerda turganini ko'rsatib parol fayliga yo'l ko'rstaib qo'yadi yani `/var/lib/jenkins/secrets/initialAdminPassword`. parolni olish quyidagi buyruqdan foydalanamiz.
 
 ```bash
 sudo cat /var/lib/jenkins/secrets/initialAdminPassword
@@ -134,7 +135,7 @@ Bu buyruq `sudo cat /var/lib/jenkins/secrets/initialAdminPassword` parolni konso
 
 ![jenkins](/images/ci-cd/2.png)
 
-Biz `suggested plugins` opsiyasini bosamiz, bu darhol o'rnatish jarayonini boshlaydi.
+Biz `Install suggested plugins` opsiyasini bosamiz, bu darhol o'rnatish jarayonini boshlaydi.
 
 ![jenkins](/images/ci-cd/3.png)
 
@@ -156,18 +157,18 @@ Asosiy Jenkins boshqaruv paneliga tashrif buyurish uchun `Start using Jenkins` t
 
 Shu nuqtada siz Jenkins-ni muvaffaqiyatli o'rnatdingiz. Keyingi qismga o'tamiz
 
-**5. Nginx, certbot o'rnatish va domen ulab ssl sertifikat olish**
+#### 5. Nginx, certbot o'rnatish va domen ulab ssl sertifikat olish
 
-Serverimizga Jenkins o'rnatdik va uni dastlablki holat uchun zolab oldik lekin biz har doim jenkinsga kirganimizda serverimiz IP mazili va jenkins portini kiritib yozishimiz kerak bu yaxshimas lekin bunga kirish oson bo'lishi va xavfsiz bo'lishi uchun domen ulab ssl sertificat olamiz.
+Serverimizga Jenkins o'rnatdik va uni dastlablki holat uchun zolab oldik lekin biz har doim Jenkinsga kirganimizda serverimiz IP mazili va Jenkins portini kiritib yozishimiz kerak bu yaxshimas lekin bunga kirish oson bo'lishi va xavfsiz bo'lishi uchun domen ulab SSL sertificat olamiz.
 
-##### 6.Nginx va certbot o'rnatish uchun quyidagi buyruqdan foyalanasiz.
+#### 6.Nginx va certbot o'rnatish uchun quyidagi buyruqdan foyalanasiz.
 
 ```bash
 sudo apt update
 sudo apt install nginx
 sudo apt install certbot python3-certbot-nginx
 ```
-jenkinsga domen ulash uchun nginx configuratsiya qilishimiz kerak. `/etc/nginx/sites-available/` jildida domenimiz uchun configuratsiya fayl ochamiz. MAsalan domenimiz `jenkins.samidello.uz`.
+Jenkinsga domen ulash uchun Nginx configuratsiya qilishimiz kerak. `/etc/nginx/sites-available/` jildida domenimiz uchun configuratsiya fayl ochamiz. MAsalan domenimiz `jenkins.samidello.uz`.
 
 ```bash /jenkins.samidello.uz/
 sudo nano /etc/nginx/sites-available/jenkins.samidello.uz
@@ -216,9 +217,9 @@ server {
 
 * `proxy_set_header` Bu qatorlar proksi-server so'rovi bilan birga uzatiladigan **header**halarni o'rnatadi. Ular asl client IP, host, protokol va boshqalar haqidagi ma'lumotlarni o'z ichiga oladi. Bu Jenkinsga Nginx orqali kelgan so'rovlarni to'g'ri bajarishga yordam beradi.
 
-Ushbu konfiguratsiya **Nginx**-ni **Jenkins** uchun reverse proxy-server sifatida o'rnatadi. **80**-portda `jenkins.samidello.uz` manziliga Nginx tomonidan qabul qilingan har qanday so'rov(request) **8080**-portda lokal ravishda ishlaydigan Jenkins serveriga yo'naltiriladi. Shuningdek, so'rov Jenkinsga yetib kelganida mijoz ma'lumotlari yaxlitligini saqlash uchun zarur headerlar o'rnatilishini ta'minlaydi.
+Ushbu konfiguratsiya **Nginx**-ni **Jenkins** uchun reverse proxy-server sifatida o'rnatadi. **80**-portda `jenkins.samidello.uz` manziliga Nginx tomonidan qabul qilingan har qanday so'rov(request) **8080**-portda lokal ravishda ishlaydigan Jenkins serveriga yo'naltiriladi. Shuningdek, so'rov Jenkinsga yetib kelganida client ma'lumotlari yaxlitligini saqlash uchun zarur headerlar o'rnatilishini ta'minlaydi.
 
-**7. SSL sertifikat olish va HTTP trafikni HTTPS ga yo'naltirish**
+#### 7. SSL sertifikat olish va HTTP trafikni HTTPS ga yo'naltirish
 
 Nginx configuratsiya uchun symbolic link yaratish
 ```bash
@@ -232,16 +233,16 @@ sudo nginx -t
 ```
 Ushbu buyruq hech qanday sintaksis xatosi yo'qligiga ishonch hosil qilish uchun Nginx konfiguratsiya fayllari sintaksisini tekshiradi. Bu Nginx-ning noto'g'ri konfiguratsiyalar tufayli ishga tushmasligining oldini olish uchun muhim qadamdir.
 
-**SSL sertifikatini olish uchun Certbot-dan foydalanish.**
+#### SSL sertifikatini olish uchun Certbot-dan foydalanish.
 
 ```bash
 sudo certbot
 ```
-Bu buyruq Certbot ilovasini ishga tushiradi. U bepul Sertifikat organi **Let's Encrypt**dan **SSL/TLS** sertifikatini olish uchun bir qator takliflar orqali foydalanuvchi bilan o'zaro aloqada bo'ladi. Certbot sizdan SSL sertifikatini olmoqchi bo'lgan Nginx server blokini tanlashni taklif qiladi. Bunday holda, u jenkins.samidello.uz saytini domen konfiguratsiyasi sifatida aniqlaydi va sertifikat berish jarayoni bo'yicha sizga yo'l ko'rsatadi. Ko'rsatmalar xizmat shartlariga rozi bo'lishni, yangilash bildirishnomalari uchun elektron pochta manzilini taqdim etishni va **HTTP** trafigini **HTTPS**ga yo'naltirishni tanlashni o'z ichiga oladi.
+Bu buyruq Certbot ilovasini ishga tushiradi. U bepul Sertifikat organi **Let's Encrypt**dan **SSL/TLS** sertifikatini olish uchun bir qator takliflar orqali foydalanuvchi bilan o'zaro aloqada bo'ladi. Certbot sizdan SSL sertifikatini olmoqchi bo'lgan Nginx server blokini tanlashni taklif qiladi. Bunday holda, u `jenkins.samidello.uz` saytini domen konfiguratsiyasi sifatida aniqlaydi va sertifikat berish jarayoni bo'yicha sizga yo'l ko'rsatadi. Ko'rsatmalar xizmat shartlariga rozi bo'lishni, yangilash bildirishnomalari uchun elektron pochta manzilini taqdim etishni va **HTTP** trafigini **HTTPS**ga yo'naltirishni tanlashni o'z ichiga oladi.
 
 ## Docker, Trivy o'rnatish va SonarQubeni docker orqali o'rnatish, domen ulash
 
-**Docker**-ni o'rnatish infratuzilmangizda bir nechta maqsadlarga xizmat qiladi, ayniqsa SonarQube-ni o'rnatish va uni domen orqali ulashda va applicationlarimzida deploy qilshimizda ishga tushirishimizda.
+**Docker**-ni o'rnatish infratuzilmangizda bir nechta maqsadlarga xizmat qiladi, ayniqsa SonarQube-ni o'rnatish va uni domen orqali ulashda va applicationlarimizda deploy qilshimizda ishga tushirishimizda.
 
 Keling docker o'rnatish uchun bash scriptdan foydalanamiz. `nano` matn muharrir bilan `docker.sh` nomli fayl ochib olamiz.
 
@@ -315,7 +316,7 @@ Parolni yangilaganizdan keyin quyidagi SonarQube dashboardi ochilishi kerak.
 
 ![netflix](/images/article/netflix/sonar3.png)
 
-Sonar Qubega domen ulab ssl sertifat olish uchun Jenkinsga domen ulab ssl olganimizdek bir hil, Sonar Qube `9000` portda ishlab turibti Nginx bilan `proxy_pass` reverse-proxy qilib expose qilib domen ulaymiz.
+Sonar Qubega domen ulab SSL sertifat olish uchun Jenkinsga domen ulab ssl olganimizdek bir hil, Sonar Qube `9000` portda ishlab turibti Nginx bilan `proxy_pass` reverse-proxy qilib expose qilib domen ulaymiz.
 
 ```bash
 nano /etc/nginx/sites-available/sonarqube.samidello.uz
@@ -362,7 +363,7 @@ Keling **Trivy**ni bash script yordamida o'rnatamiz. nano matn muharriri yordami
 nano trivy.sh
 ```
 
-nani matn muharirir ochilganidan keyin quyidagi scriptni joylashtiramiz.
+nano matn muharriri ochilganidan keyin quyidagi scriptni joylashtiramiz.
 
 ```bash filename="trivy.sh"
 #!/bin/bash
@@ -382,13 +383,13 @@ sudo chmod +x trivy.sh
 
 ## TMDB API key olish
 
-**TMDB** API keyi Kino ma'lumotlar bazasidan (**The Movie Database - TMDB**) kino va teleko'rsatuv ma'lumotlariga kirish va olish uchun zarurdir. Bu ilovalarga filmlar xulosalari, translatsiya maʼlumotlari, reytinglar va Netflixʼga oʻxshash keng qamrovli filmlar streaminng platformasini yaratish uchun zarur boʻlgan boshqa metamaʼlumotlar kabi tafsilotlarni olish imkonini beradi.
+**TMDB** API KEY Kino ma'lumotlar bazasidan (**The Movie Database - TMDB**) kino va teleko'rsatuv ma'lumotlariga kirish va olish uchun zarurdir. Bu ilovalarga filmlar xulosalari, translatsiya ma'lumotlari, reytinglar va Netflix'ga o'xshash keng qamrovli filmlar streaminng platformasini yaratish uchun zarur bo'lgan boshqa metam'lumotlar kabi tafsilotlarni olish imkonini beradi.
 
-TMDB API key olish uchun uning saytiga kirishimiz kerak. [themoviedb.org(https://www.themoviedb.org/)]
+TMDB API key olish uchun uning saytiga kirishimiz kerak. [themoviedb.org](https://www.themoviedb.org/)
 
 ![netflix](/images/article/netflix/tmdb1.png)
 
-**TMDB**da akkountingiz bo'lsa akkountizga kirasiz yoki akkount ochib olasiz. Quyidagi oynadan `Settings` bo'limga o'tib keyin `API` bo'limga kirasiz.
+**TMDB**da akkountingiz bo'lsa akkountingizga kirasiz yoki akkount ochib olasiz. Quyidagi oynadan `Settings` bo'limiga o'tib keyin `API` bo'limga kirasiz.
 
 ![netflix](/images/article/netflix/tmdb2.png)
 
@@ -434,13 +435,20 @@ Prometheus, Grafana, Node Exporter o'rnatish sozlash integratsiya qilish uchun q
 ![netflix](/images/article/netflix/grafana-dashboard1.png)
 
 Rasmdagi **Node Exporter Full** Dashboardi `ID`si `1860` havola [Node Exporter Full](https://grafana.com/grafana/dashboards/1860-node-exporter-full/)
+
+Node Exporter uchun Prometheus configuratsiyasi
+```yaml filename="/etc/prometheus/prometheus.yml"
+  - job_name: "node_exporter"
+    static_configs:
+      - targets: ["localhost:9100"]
+```
 </Callout>
 
-Serverga garafana o'rnatganingizdann keyinnkeling unga domen ulab nginx configuratsiya qilamiz.
+Serverga garafana o'rnatganingizdann keyin keling unga domen ulab Nginx configuratsiya qilamiz.
 
 Mana qisqa qo'llanma
 
-Ilovamiz uchun nginx configuratsiya quyidagicha.
+Ilovamiz uchun Nginx configuratsiya quyidagicha.
 
 ```bash /grafana/
 sudo nano /etc/nginx/sites-available/grfaana.samidello.uz
@@ -471,7 +479,7 @@ Nginx configuratsiyamiz to'grilinini tekshiramiz.
 ```bash
 sudo nginx -t
 ```
-HTTP dan HTTPSga o'tish uchun certboot bilan SSL Sertifikat olamiz.
+HTTP dan HTTPSga o'tish uchun certboot bilan SSL sertifikat olamiz.
 
 ```bash
 sudo certbot --nginx -d grafana.samidello.uz
@@ -481,7 +489,7 @@ sudo certbot --nginx -d grafana.samidello.uz
 
 ![netflix](/images/article/netflix/grafana-dashboard2.png)
 
-**Jenkins**-ga Prometheus plaginini o'rnatish va monitoring qilish Jenkinsga xos ko'rsatkichlarni(metrics) to'plash va kuzatish imkonini beradi. Bu Jenkinsning ishlashi, resurslardan foydalanish va ish holatini kuzatishga yordam beradi, Jenkinsning sog'lig'ini yaxshiroq ko'rish imkonini beradi va CI/CD pipelinedagi muammolarni aniqlash va hal qilishda yordam beradi.
+**Jenkins**-ga Prometheus plaginini o'rnatish va monitoring qilish Jenkinsga xos ko'rsatkichlarni(metrics) to'plash va kuzatish imkonini beradi. Bu Jenkinsning ishlashi, resurslardan foydalanish va ish holatini kuzatishga yordam beradi, Jenkinsning salomatligini yaxshiroq ko'rish imkonini beradi va CI/CD pipelinedagi muammolarni aniqlash va hal qilishda yordam beradi.
 
 Jenkinsga prometheus plagini o'rnatish uchun Jenkinsga kirib **->** `Manage Jenkins` **->** `Plugins` bo'limga kiramiz.
 
@@ -580,11 +588,11 @@ Gfanaga dashboard import qilish bo'yicha qo'llanma yozilgan [Grafana Dashboardni
 
 **Jenkins** va plaginlarni sozlash bilan elektron pochta integratsiyasi avtomatik bildirishnomalar(notification) va build statusi, nosozliklar yoki tizim muammolari haqida ogohlantirishlarga imkon beradi. Bu ishlab chiqish guruhi bilan o'z vaqtida aloqa o'rnatishni ta'minlaydi, CI/CD pipelinedagi mumkin bo'lgan muammolarga tezkor javob beradi va jamoa a'zolari o'rtasida samarali hamkorlikni osonlashtiradi.
 
-**Jenkinsni** **Gmail** bilan integratsiyalash **Trivy** sttausi va loglarni elektron pochta orqali bildirishnomalar sifatida yuborish imkonini beradi. Ushbu sozlash jamoaga **Trivy** skanerlashlari, shu jumladan holat(status) yangilanishlari va batafsil loglarni bevosita **Gmail** pochta qutisiga zudlik bilan olishini ta'minlaydi. U aloqani soddalashtiradi va jamoani **Trivy** tomonidan aniqlangan xavfsizlik skanerlari va zaifliklar haqida real vaqt rejimida xabardor qiladi, bu esa yuzaga kelishi mumkin bo'lgan muammolarga faol javob berishga yordam beradi.
+**Jenkinsni** **Gmail** bilan integratsiyalash **Trivy** statusi va loglarni elektron pochta orqali bildirishnomalar(notification) sifatida yuborish imkonini beradi. Ushbu sozlash jamoaga **Trivy** skanerlashlari, shu jumladan holat(status) yangilanishlari va batafsil loglarni bevosita **Gmail** pochta qutisiga zudlik bilan olishini ta'minlaydi. U aloqani soddalashtiradi va jamoani **Trivy** tomonidan aniqlangan xavfsizlik skanerlari va zaifliklar haqida real vaqt rejimida xabardor qiladi, bu esa yuzaga kelishi mumkin bo'lgan muammolarga faol javob berishga yordam beradi.
 
 Jenkinsni email bilan inetgratsiya qilishimiz uchun `Email Extension Template` plagini o'rnatib olishimiz kerak. **->** `Manage Jenkins` **->** `Plugins` **->** `Available plugins`.  Plaginlardan [`Email Ext Recipients Column`](https://plugins.jenkins.io/email-ext-recipients-column/) plagini o'rnatib olamiz
 
-> ![netflix](/images/article/netflix/jenkins3.png)
+> ![netflix](/images/article/netflix/jenkins4.png)
 
 [myaccount.google.com](https://myaccount.google.com/security)-dan `Security` bo'limga o'ting va **2-Step Verification** yoqilganligini tekshiring yoqilmagan bo'lsa yoqing. **2-Step Verification**-ni yoqganizdan keyin qidiruvdan `app` deb qidiring quyidagicha ko'rinishi kerak, `App passwords` ga kiring.
 
@@ -611,9 +619,9 @@ Hammasini to'gri to'ldirib chiqganimzidan keyin `Create` bosib credentials yarta
 
 > ![netflix](/images/article/netflix/gmail4-new.png)
 
-* **SMTP Server: ** smtp.gmail.com (Gmail bilan integratsiyta qilayotganimiz uchun gmail SMT serveridan foydalanamiz)
-* **Use SMTP Authentication:** ga emailimiz va parolini yozamiz
-* **SMTP Port:** 465(gmail SMTP severi standart porti)
+* **SMTP Server->** smtp.gmail.com (Gmail bilan integratsiyta qilayotganimiz uchun gmail SMT serveridan foydalanamiz)
+* **Use SMTP Authentication->** ga emailimiz va parolini yozamiz
+* **SMTP Port->** 465(gmail SMTP severi standart porti)
 
 `System` dan **Extented E-mail Notification** qismini topib olamiz va quyidagicha konfiguratsiya qilamiz.
 
@@ -623,7 +631,7 @@ Triggerga **Always**
 
 > ![netflix](/images/article/netflix/gmail6-new.png)
 
-Hammasini ko'rsartilganiday o'zingizga moslab solzab olganingizdan keyin `Apply` va `Save` bosamiz.
+Hammasini rasmda ko'rsatilganiday o'zingizga moslab sozlab olganingizdan keyin `Apply` va `Save` bosamiz.
 
 Email Notificationni sozlab olganimizdan keyin Jenkins pipelineda email notificationdan quyidagicha foydalanamiz.
 
@@ -641,7 +649,7 @@ post {
     }
 ```
 
-## Jenkinsga OWASP Dependency Check, JDK va Node.js pluginlarini o'rnatish va sozlash
+## Jenkinsga OWASP Dependency Check, JDK va Node.js plaginlarini o'rnatish va sozlash
 
 **JDK**, **Sonarqube Scanner**, **Node.js** va **OWASP Dependency Check** kabi plaginlarni o'rnatish Jenkins ichidagi muayyan funksiyalarni yoqish uchun juda muhimdir. Ushbu plaginlar kod kompilyatsiyasi (**JDK**), kod sifati tahlili (**Sonarqube Scanner**), JavaScript-ga asoslangan buildlar (**Node.js**) va xavfsizlik zaifligini tekshirish (**OWASP Dependency Check**) kabi vazifalarni osonlashtiradi. Ushbu plaginlarni integratsiyalash **CI/CD** jarayonini soddalashtiradi, kod sifatini, xavfsizligini va dasturiy ta'minotni ishlab chiqishda umumiy samaradorlikni oshiradi.
 
@@ -655,7 +663,7 @@ Plaginlar o'rnatilgandan keyin Global Tool Configuration-da Java va NodeJS confi
 
 > ![netflix](/images/article/netflix/tools2.png)
 
-##### **NodeJs Installtion** bo'limi quyidagicha  to'ldiramiz.
+**NodeJs Installtion** bo'limi quyidagicha  to'ldiramiz.
 > ![netflix](/images/article/netflix/tools3.png)
 
 Jenkins pipelineda Sonar Qube ishlatish uchun Sonar Qubeda token va ilovamiz uchun webhook yaratib olamiz. [Sonar Qube o'rnatish](https://devops-journey.uz/tutorials/article/netflix-deploy#docker-trivy-ornatish-va-sonarqubeni-docker-orqali-ornatish-domen-ulash) qismida siz Sonar Qube o'rnatgan bo'lishingiz va domen ulangan bo'lishingiz kerak. Jenkins pipelineda Sonar Qube ishlatish uchun TOKEN generatsiya qilib olamiz.
@@ -668,17 +676,17 @@ SonarQube kirib **->** `Administration` **->** `Security` **->** `Users` **->** 
 
 > ![netflix](/images/article/netflix/sonar7.png)
 
-SonarQubedan Token geneatsiya qilib olganimzidan keyin uni Jenkins Credentialsga qo'shib qo'yishimiz kerak.
+SonarQubedan Token generatsiya qilib olganimzidan keyin uni Jenkins Credentialsga qo'shib qo'yishimiz kerak.
 
-**->** `Manage Jenkins` **->** `Credentials` **->** `System` **->** `Global credentials (unrestricted)`
+**->** `Manage Jenkins` **->** `Credentials`
 
 > ![netflix](/images/article/netflix/secret3.png)
 
 * **Kind:** Secret text
-* **Secret:** bu yerda SonarQube-dan qolgan tokenimizni joylashtiramiz.
+* **Secret:** bu yerda SonarQube-dan olgan tokenimizni joylashtiramiz.
 * **ID:** sonar-token
 
-SonarQube uchun token olib Jenkins crdentialsga qo'shganimzidan keyin SonarQube serverni Jenkinsg aulashimiz kerak. 
+SonarQube uchun token olib Jenkins credentialsga qo'shganimizdan keyin SonarQube serverni Jenkinsga ulashimiz kerak. 
 
 **->** `Manage Jenkins` **->** `System` **->** `SonarQube servers`
 
@@ -686,9 +694,9 @@ SonarQube uchun token olib Jenkins crdentialsga qo'shganimzidan keyin SonarQube 
 
 Rasmda ko'rsatilganidek configuratsiya qilib olamiz.
 
-* **Server URL:** - sonarqube.samidello.uz(SonaQube serveringiz manizli)
+* **Server URL->**  sonarqube.samidello.uz(SonaQube serveringiz manzili)
 
-* **Server authentication token:** - hozir qo'shgan tokenimiz(`Sonar-token`)ni ko'rsatib qo'yamiz shunda Jenkins pipelineda SonarQubega ulana olamiz. `Apply` v a`Save` ni bosib chiqamiz. 
+* **Server authentication token->** hozir qo'shgan tokenimiz(`Sonar-token`)ni ko'rsatib qo'yamiz shunda Jenkins pipelineda SonarQubega ulana olamiz. `Apply` va `Save` ni bosib chiqamiz. 
 
 **Global Tool Configuration**dan SonarQube Scanner o'rnatamiz. 
 
@@ -696,7 +704,7 @@ Rasmda ko'rsatilganidek configuratsiya qilib olamiz.
 
 > ![netflix](/images/article/netflix/sonar8.png)
 
-Rasmda ko'rsatilganidek configuratsiya qilib olamiz. Apply` va `Save` ni bosib chiqamiz va SonarQube serverimizga kirib ilovamiz uchun **webhook** yaratib olamiz.
+Rasmda ko'rsatilganidek configuratsiya qilib olamiz. `Apply` va `Save` ni bosib chiqamiz va SonarQube serverimizga kirib ilovamiz uchun **webhook** yaratib olamiz.
 
 > ![netflix](/images/article/netflix/sonar4.png)
 
@@ -708,13 +716,13 @@ Rasmda ko'rsatilganidek configuratsiya qilib olamiz. Apply` va `Save` ni bosib c
 
 > ![netflix](/images/article/netflix/sonar9.png)
 
-SonarQubeda endi loyihamizni analysis qilishi uchun loyihamizni qo'shamiz. SonarQube bosh sahifasiga kirsangiz sizda quyiagi oyna ochilishi kerak siz **Manually** tanlaysiz.
+SonarQubeda endi loyihamizni analiz qilishi uchun loyihamizni qo'shamiz. SonarQube bosh sahifasiga kirsangiz sizda quyiagi oyna ochilishi kerak siz **Manually** tanlaysiz.
 > ![netflix](/images/article/netflix/sonar10.png)
 
 keyin sizda quyidagi  oyna ochilishi kerak.
 > ![netflix](/images/article/netflix/sonar11.png)
 
-Bu yerda loyihamizni nomini kiriamiz rasmda ko'rsatilganidek va **Set Up** bosib keyingi bosqichga o'tamiz.
+Bu yerda loyihamizni nomini kiritamiz rasmda ko'rsatilganidek va **Set Up** bosib keyingi bosqichga o'tamiz.
 
 > ![netflix](/images/article/netflix/sonar12.png)
 
@@ -733,9 +741,9 @@ SonarQubeda ilovamiz uchun webhook, token va project yaratib olganizdan keyin Je
 
 ## Jenkinsda birinchi CI pipeline yozish
 
-Jenkinsdagi birinchi pipeline odatda asosiy continuous integration(**CI**) jarayonini o'rnatishga qaratilgan. Bu versiyani boshqarish tizimidan (masalan, **Git**) manba kodini olish, dasturni yaratish, testlarni o'tkazish va ehtimol sinov muhitiga joylashtirish bosqichlarini o'z ichiga olgan oddiy ish jarayonini aniqlashni o'z ichiga oladi. Ushbu dastlabki pipeline build qilish va sinov bosqichlarini avtomatlashtirish, kod sifatini ta'minlash va kelajakda yanada murakkab **CI/CD** pipelinelari uchun zamin yaratish uchun asos bo'lib xizmat qiladi. Ushbu Jenkins pipeline skripti **GitHub** repostiroyadan kodni oladi, unda SonarQube tahlilini amalga oshiradi, sifat nazoratini kutadi(quality gate check), loyihaga dependencilarni o'rnatadi va build tugagandan so'ng elektron pochtaga loglar va natija yuboradi. U JDK va Node.js ning maxsus versiyalaridan foydalanish uchun tuzilgan, bu esa build qilish muhitida izchillikni ta'minlaydi.
+Jenkinsdagi birinchi pipeline odatda asosiy continuous integration(**CI**) jarayonini o'rnatishga qaratilgan. Bu versiyani boshqarish tizimidan (masalan, **Git**) manba kodini olish, dasturni yaratish, testlarni o'tkazish va ehtimol sinov muhitiga joylashtirish bosqichlarini o'z ichiga olgan oddiy ish jarayonini aniqlashni o'z ichiga oladi. Ushbu dastlabki pipeline build qilish va sinov bosqichlarini avtomatlashtirish, kod sifatini ta'minlash va kelajakda yanada murakkab **CI/CD** pipelinelari uchun zamin yaratish uchun asos bo'lib xizmat qiladi. Ushbu Jenkins pipeline skripti **GitHub** repositoriyadan kodni oladi, unda SonarQube tahlilini amalga oshiradi, sifat nazoratini kutadi(quality gate check), loyihaga dependencilarni o'rnatadi va build tugagandan so'ng elektron pochtaga loglar va natija yuboradi. U JDK va Node.js ning maxsus versiyalaridan foydalanish uchun tuzilgan, bu esa build qilish muhitida izchillikni ta'minlaydi.
 
-GitHubdan private(yopiq) repositoriyadagi kodlarga Jenkins kira olishi va ishlatishi uchun `GitHub Token(personal access token)` olishimiz kerak. Open Source repositoriyalar uchun bu shart enmas. Ushbu GitHub qo'llanmasida qanday qilib [personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) olish haqida batafsil yozilgan. GitHub Token olganizdan keyin undan nusxa olib qo'ying. Olingan GitHub Tokenni Jenkins Credentialsga qo'shib qo'yishimiz kerak pipelineda undan foydalanish uchun. 
+GitHubdan private(yopiq) repositoriyadagi kodlarga Jenkins kira olishi va ishlatishi uchun `GitHub Token(personal access token)` olishimiz kerak. Open Source repositoriyalar uchun bu shart emas. Ushbu GitHub qo'llanmasida qanday qilib [personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) olish haqida batafsil yozilgan. GitHub Token olganingizdan keyin undan nusxa olib qo'ying. Olingan GitHub Tokenni Jenkins Credentialsga qo'shib qo'yishimiz kerak pipelineda undan foydalanish uchun. 
 
 **->** `Manage Jenkins` **->** `Credentials`-ga kirib  `Add credentials`ga o'tamiz.
 

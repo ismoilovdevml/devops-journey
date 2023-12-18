@@ -84,7 +84,7 @@ const config: DocsThemeConfig = {
       "DevOps bo'yicha bepul ta'lim platformasi bo'lgan DevOps Journey-ga xush kelibsiz";
     const image = frontMatter?.type
       ? `https://devops-journey.uz/api/og?title=${frontMatter?.ogImageText}&category=Developing`
-      : frontMatter?.image || '/og.jpg';
+      : frontMatter?.image || '/banner.png';
     const folder = theme === 'light' ? '/light' : '/dark';
 
     const composedTitle = `${title} – DevOps Journey`;
