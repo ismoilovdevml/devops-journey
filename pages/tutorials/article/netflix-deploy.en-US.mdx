@@ -1193,15 +1193,15 @@ Buyruq bajarilgandan so'ng siz odatda ikkita faylni olasiz:
 > ![netflix](/images/article/netflix/ssh1.png)
 
 ```bash
-cat netflix >> authorized_keys
+cat netflix.pub >> authorized_keys
 ```
-`cat netflix >> authorized_keys` Ushbu buyruq `netflix` faylining mazmunini `authorized_keys` faylining oxiriga qo'shadi.
+`cat netflix >> authorized_keys` Ushbu buyruq `netflix.pub` faylining mazmunini `authorized_keys` faylining oxiriga qo'shadi.
 
 * `cat` - fayl mazmunini ko'rsatish uchun ishlatiladigan buyruq.
 * `>>` - faylga chiqish qo'shish uchun ishlatiladigan qayta yo'naltirish operatori.
 
 `authorized_keys` public kalit autentifikatsiyasi uchun SSH da qoʻllaniladigan fayldir. SSH serveri ulanish so'rovini olganida, kirish public kaliti u yerda sanab o'tilgan kalitlardan biriga mos kelishini tekshirish uchun `authorized_keys` faylini ko'rib chiqadi. Agar shunday bo'lsa, kirish huquqi beriladi.
-Ushbu buyruqlar ketma-ketligining maqsadi `netflix` faylida saqlangan public kalitni avtorizatsiya qilingan kalitlar ro'yxatiga (avtorized_keys) qo'shishi. Kimda tegishli private kalit (netflix) bo'lsa, endi ushbu private kalit yordamida ushbu tizim bilan autentifikatsiya qilish mumkin. U autentifikatsiya qilish uchun o'rnatilgan public-private kalit juftligidan foydalanib, parol talab qilmasdan kirish imkonini beradi. Bu pipeline orqali serverga kirishga imkon beradi.
+Ushbu buyruqlar ketma-ketligining maqsadi `netflix.pub` faylida saqlangan public kalitni avtorizatsiya qilingan kalitlar ro'yxatiga (avtorized_keys) qo'shishi. Kimda tegishli private kalit (netflix) bo'lsa, endi ushbu private kalit yordamida ushbu tizim bilan autentifikatsiya qilish mumkin. U autentifikatsiya qilish uchun o'rnatilgan public-private kalit juftligidan foydalanib, parol talab qilmasdan kirish imkonini beradi. Bu pipeline orqali serverga kirishga imkon beradi.
 
 ```bash
 cat ~/.ssh/netflix
