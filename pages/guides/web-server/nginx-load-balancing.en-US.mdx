@@ -1,9 +1,53 @@
 import { Callout } from "nextra-theme-docs";
 
-## NGINX Load Balancing
+# NGINX Load Balancing
 
 ![nginx-lb](/images/tutorials/web-server/nginx-lb/banner.png)
+
+<Callout type="info" emoji="">
+Eslatma: Ushbu qo'llanmani o'qishdan oldin [Load Balancing](https://devops-journey.uz/guides/web-server/load-balancing) qo'llanmasini o'qib chiqishingizni maslahat beramiz.
+</Callout>
 
 Load Balancing zamonaviy veb-infratuzilmaning muhim jihati bo'lib, kiruvchi trafikni bir nechta serverlar bo'ylab samarali taqsimlashga imkon beradi. **NGINX**, high-performance web server, proxy server va reverse proxy server load balancinning mustahkam imkoniyatlarini taklif etadi. Ushbu qo'llanmada biz **NGINX** yordamida load balancing tushunchalari(concept) va amaliy amalga oshirilishini ko'rib chiqamiz.
 
 **NGINX** o'zining high performance, kengaytirilishi(scalability) va advanced xususiyatlari(feature) bilan mashhur bo'lgan ko'p qirrali dasturiy ta'minotdir. U **HTTP, HTTPS, TCP** va **UDP** trafigini load balancing qilishi mumkin bo'lgan reverse proxy server sifatida ishlaydi. NGINX ning Load Balancing imkoniyatlari DevOpslarga/Adminlarga trafikni serverlar o'rtasida samarali taqsimlash uchun turli strategiyalarni o'rnatish imkoniyatini beradi. Ushbu tushunchalarni tushunish va load balancing uchun NGINX-ni to'g'ri sozlash mustahkam va samarali veb-infratuzilmani saqlash uchun asosiy hisoblanadi.
+
+
+## NGINX'da Load Balancing metodlar
+
+* **Round Robin->** - bu NGINX-da load balancinning default metodi. U kiruvchi so'rovlarni mavjud serverlar bo'ylab ketma-ket ravishda teng ravishda taqsimlaydi. Har bir keyingi so'rov server pool bo'ylab o'tish orqali navbatdagi serverga yo'naltiriladi.
+
+* **Least Connection->** Least Connection metodi kiruvchi so'rovlarni hozirda eng kam faol ulanishga ega serverga yo'naltiradi. Ushbu strategiya trafikni serverlarga joriy ish yukiga qarab yo'naltirish orqali yanada muvozanatli taqsimlashni ta'minlaydi.
+
+* **IP Hash->** IP Hash load balancing clientning IP manzilini ma'lum bir serverga ko'rsatadigan hash funksiyasidan foydalanadi. Ushbu metod bir xil mijoz IP-dan so'rovlar har doim bir xil serverga yo'naltirilishini ta'minlaydi, bu seansning barqarorligi va izchilligini osonlashtiradi.
+
+* **Weighted Load Balancing->** Weighted Load Balancing devops/adminlarga serverlarga ularning imkoniyatlari yoki imkoniyatlaridan kelib chiqqan holda turli og'irliklarni(weight) belgilash imkonini beradi. Og'irligi yuqori bo'lgan serverlar kiruvchi trafikning mutanosib ravishda katta qismini oladi, bu esa resurslarni yaxshiroq taqsimlashga imkon beradi.
+
+* **Dynamic Load Balancing->** NGINX Plus, commercial versiyasi, real-time ishlash ko'rsatkichlari asosida server og'irliklarini dinamik ravishda sozlaydigan moslashuvchan load balancerni taklif qiladi. Bu xususiyat trafik taqsimotini optimallashtiradi va so'rovlarni kam ishlaydigan serverlardan uzoqlashtiradi.
+
+
+## NGINX bilan load balancing qilish
+
+![nginx-lb](/images/tutorials/web-server/nginx-lb/nginx.png)
+
+Bizda quyidagi holat bor: [devops-journey.uz](https://devops-journey.uz/) platformasiga juda ko'p userlar ko'plab so'rovlar yubormoqda. Bizda atiga bitta server bor va clientlardan kelgan so'rovlar bosimini NGINX bilan load balancing qilishimiz kerak. Bu amaliyotni amalga oshirish uchun bizga 4ta server kerak bo'ladi.
+
+<Callout type="info" emoji="">
+**Minimum Server talabi**
+
+| OS            | RAM            | CPU           | Xotira       | Static IP  |  Server vazifasi     |
+| ------------- | -------------- | ------------- |------------- | ---------- | -------------------- |
+| Ubuntu 20.04  | 4GB            | 2vCPU 2 core  | 50GB         | Ha kerak   | NGINX(Load Balancer) |
+| Ubuntu 20.04  | 4GB            | 2vCPU 2 core  | 50GB         | Shart emas | Application Server 1 |
+| Ubuntu 20.04  | 4GB            | 2vCPU 2 core  | 50GB         | Shart emas | Application Server 2 |
+| Ubuntu 20.04  | 4GB            | 2vCPU 2 core  | 50GB         | Shart emas | Application Server 3 |
+
+Qo'llanmada ishlatilgan Serverlar IP mazilillari
+
+| Server               | IP manzili   | 
+| -------------------- | ------------ |
+| NGINX(Load Balancer) | 185.168.1.20 |
+| Application Server 1 | 185.168.1.21 |
+| Application Server 2 | 185.168.1.22 |
+| Application Server 3 | 185.168.1.23 |
+</Callout>
