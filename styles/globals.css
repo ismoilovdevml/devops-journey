@@ -76,3 +76,17 @@ h2,
 h3 {
   line-height: 1.2;
 }
+
+.logo-text {
+  display: block;
+}
+
+@media screen and (max-width: 769px) {
+  .logo-text {
+    display: none;
+  }
+
+  .logo-img {
+    max-width: 60%;
+  }
+}

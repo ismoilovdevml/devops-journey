@@ -4,11 +4,11 @@ export function GithubSponsors() {
       <a
         href="https://github.com/sponsors/ismoilovdevml"
         target="_blank"
-        className="hidden sm:block"
+        className="sm:block"
       >
         <iframe
           src="https://github.com/sponsors/ismoilovdevml/button"
-          title="Sponsor ismoilovdev"
+          title=""
           height="32"
           width="114"
           className="rounded-md border-0 dark:invert invert-0"
