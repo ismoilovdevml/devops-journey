@@ -98,9 +98,75 @@ sudo systemctl enable nginx
 
 NGINX o'rnatganimizdan keyin NGINX Load Balancer sozlashni boshlasak bo'ladi.
 
-### NGINX Load Balacing sozlash
+## NGINX Load Balancing sozlash
 
 [devops-journey.uz](https://devops-journey.uz/) uchun `/etc/nginx/sites-available` jildida NGINX configuratsiya yaratib olamiz.
+
+<Callout type="info" emoji="">
+Eslatma: Ushbu loyida NGINX Load Balancingni tekshirish uchun SonarQube containeridan foydalanamiz sababi Docker orqali tezda ishga tushira olamiz va ro'yxatdan o'tish/kirish bo'lgani uchun Load Balancingni tekshirib olishimiz mumkin.
+</Callout>
+
+Uchta application serverimizga ham docker o'rnatib SonarQubeni docker orali ishga tushiramiz.
+
+1. Dockerni bash script yozib o'rntaamiz.
+
+```bash
+nano docker.sh
+```
+
+```bash filename="docker.sh"
+#!/bin/bash
+ 
+# Get the current username
+CURRENT_USERNAME=$(whoami)
+ 
+# Update and upgrade system packages
+sudo apt update && sudo apt upgrade -y
+# Install additional utilities
+sudo apt install -y curl gnupg2 software-properties-common apt-transport-https 
+ 
+# Add Docker's official GPG key:
+sudo apt-get update
+sudo apt-get -y install ca-certificates curl gnupg
+sudo install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+sudo chmod a+r /etc/apt/keyrings/docker.gpg
+ 
+# Add the repository to Apt sources:
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt-get update
+ 
+sudo apt-get -y install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin docker-compose
+ 
+# Adjust Docker socket permissions
+sudo chmod 666 /var/run/docker.sock
+sudo chown $CURRENT_USERNAME:docker /var/run/docker.sock
+ 
+# Restart and enable Docker service
+sudo systemctl daemon-reload
+sudo systemctl restart docker
+sudo systemctl enable docker
+```
+
+
+Docker o'rnatilganidan keyin SonarQubeni ishga tushiramiz. SonarQube default `9000` ishga tushadi
+
+```bash
+docker run -d --name sonar -p 9000:9000 sonarqube:lts-community
+```
+
+SonarQube 3ta application serverimizda ham ulanganidan keyin har biriga kirib **Login**ga `admin` **Passowrdg**a `admin` yozib kiramiz va yangi parol qo'yihsda quyidagicha parol qo'yamiz.
+
+| Server   | Login | Password | 
+| -------- | ----- |--------- |
+| Server A | admin | node1    |
+| Server B | admin | node2    |
+| Server C | admin | node3    |
+
+Bunday ko'rinishda login parol qo'yishnik o'ziga xos xususiyati bor u orqali biz load balancer qaysi serverdagi SonarQubega yo'naltirganini bilib olishimiz va Load Balancing metodlari to'gri ishlayotganini bilib olamiz.
 
 ```bash
 cd /etc/nginx/sites-available/
@@ -111,9 +177,9 @@ nano devops-journey.uz
 ```bash filename="/etc/nginx/sites-available/devop-journey.uz"
 
 upstream backend {
-  server 185.168.1.21:3000;
-  server 185.168.1.21:3000;
-  server 185.168.1.21:3000;
+  server 185.168.1.21:9000;
+  server 185.168.1.21:9000;
+  server 185.168.1.21:9000;
 }
 server {
     listen 80;
@@ -127,4 +193,20 @@ server {
         proxy_set_header X-Forwarded-Proto $scheme;
     }
 }
+```
+
+```bash
+sudo ln -s /etc/nginx/sites-available/devop-journey.uz /etc/nginx/sites-enabled/devop-journey.uz
+sudo systemctl reload nginx
+```
+
+SSL sertifikat olib HTTP HTTPS qilish uchun certbot o'rnatib SSL sertifikat olamiz
+
+```bash
+sudo apt update
+sudo apt install certbot python3-certbot-nginx
+```
+
+```bash
+sudo certbot --nginx -d devops-journey.uz
 ```
