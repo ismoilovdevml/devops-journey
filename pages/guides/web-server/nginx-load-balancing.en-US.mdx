@@ -69,3 +69,62 @@ Biz gorizontal scalingni tanlaymiz va bizda bitta application serverimiz bor edi
 **Rasmda holat tasvirlangan.**
 
 ![nginx-lb](/images/tutorials/web-server/nginx-lb/nginx2.png)
+
+1. NGINX serverimizni sozlab NGINX o'rnatib olamiz.
+
+Serverni yangilab olamiz.
+
+```bash
+sudo apy update && sudo apt upgrade -y
+```
+
+NGINX o'rnatamiz
+
+```bash
+sudo apt install nginx nginx-extras
+```
+
+SSL sertifikat olish uchun certbot o'rnatamiz.
+
+```bash
+sudo apt install certbot python3-certbot-nginx -y
+```
+NGINX o'rnatilganidan keyin uni statusini ko'ramiz.
+
+```bash
+sudo systemctl status nginx
+sudo systemctl enable nginx
+```
+
+NGINX o'rnatganimizdan keyin NGINX Load Balancer sozlashni boshlasak bo'ladi.
+
+### NGINX Load Balacing sozlash
+
+[devops-journey.uz](https://devops-journey.uz/) uchun `/etc/nginx/sites-available` jildida NGINX configuratsiya yaratib olamiz.
+
+```bash
+cd /etc/nginx/sites-available/
+nano devops-journey.uz
+```
+`devops-journey.uz` konfiguratsiya ochib olganimzidan keyin quyidagicha Load Balancin konfiguratsiya qilamiz.
+
+```bash filename="/etc/nginx/sites-available/devop-journey.uz"
+
+upstream backend {
+  server 185.168.1.21:3000;
+  server 185.168.1.21:3000;
+  server 185.168.1.21:3000;
+}
+server {
+    listen 80;
+    server_name devops-journey.uz;
+
+    location / {
+        proxy_pass http://backend/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
