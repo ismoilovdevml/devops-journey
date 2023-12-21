@@ -42,7 +42,9 @@ Bizda quyidagi holat bor: [devops-journey.uz](https://devops-journey.uz/) platfo
 | Ubuntu 20.04  | 4GB            | 2vCPU 2 core  | 50GB         | Shart emas | Application Server 2 |
 | Ubuntu 20.04  | 4GB            | 2vCPU 2 core  | 50GB         | Shart emas | Application Server 3 |
 
-Qo'llanmada ishlatilgan Serverlar IP mazilillari
+Agar serverlar hammasi bir tarmoqda bo'lsa faqat **NGINX(Load Balancer)** serverida static IP(public IP) bo'lishi kerak serverlar ichki tarmog'i bilan o'zaro aloqa qila oladi. Agar serverlar tarmog'i alohida alohida bo'lsa unda hammasiga static IP kerak.
+
+**Qo'llanmada ishlatilgan Serverlar IP mazilllari**
 
 | Server               | IP manzili   | 
 | -------------------- | ------------ |
@@ -51,3 +53,19 @@ Qo'llanmada ishlatilgan Serverlar IP mazilillari
 | Application Server 2 | 185.168.1.22 |
 | Application Server 3 | 185.168.1.23 |
 </Callout>
+
+Biz vaziyatimizda devops-journey.uz saytini gorizontal kengaytirishimiz(horizontal scaling) va load balancing qilishimiz kerak.
+
+![nginx-lb](/images/tutorials/web-server/nginx-lb/scaling.png)
+
+Kengaytirish(Scaling) ikki xil bo'ladi bu vertikal va gorizontal.
+
+* **Vertical Scaling->** Bu bitta serverning resurslarini ko'paytirishni o'z ichiga oladi. Masalan, protsessorni yangilash, qo'shimcha RAM qo'shish yoki serverdagi xotirani kengaytirish. Bu kompyuterga qo‘shimcha imkoniyatlar qo‘shish orqali uni yanada kuchliroq qilish kabi. Biroq, bitta serverni qancha yangilashingiz mumkinligining chegarasi bor va bir nuqtada u juda qimmatga tushishi yoki masshtabni kengaytirishni davom ettirish imkonsiz bo'lishi mumkin. Qisqa qilib aytganda server resurslarini(CPU,RAM,Storage,Network) ko'paytirish orqali kengatirish(scaling)
+
+* **Horizontal Scaling->** Tarmoq yoki tizimga qo'shimcha serverlar yoki nodelarni qo'shishni o'z ichiga oladi. Bir serverni kuchliroq qilish o'rniga, yukni taqsimlash uchun ko'proq machinelarni qo'shasiz. Bu ish yukini(workload) yengish uchun bir nechta serverlarning birgalikda ishlashiga o'xshaydi. Ushbu yondashuv kengaytirilishi mumkin va kerak bo'lganda qo'shimcha serverlarni qo'shish orqali ortib borayotgan talablarni qondirishi mumkin. Qisqa qilib aytganda bitta serverni resurlarini kuchaytirgandan ko'ra serverlar sonini ko'paytirib bosimni teng taqsimlash.
+
+Biz gorizontal scalingni tanlaymiz va bizda bitta application serverimiz bor edi uni gorizontal kengaytirib 3ta application server qilamiz va bitta NGINX(Load Balancer) server sozlab olamiz. Endi bizda 3ta application sevrer bor yani sta serverda **devops-journey.uz** platformasi **3000** portda ishlab turibti. Ushbu holatda NGINX(Load Balancing)ni ko'rib chiqamiz. 
+
+**Rasmda holat tasvirlangan.**
+
+![nginx-lb](/images/tutorials/web-server/nginx-lb/nginx2.png)
