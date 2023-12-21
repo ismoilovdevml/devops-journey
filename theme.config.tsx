@@ -28,8 +28,8 @@ const Logo = ({ height, width }: { height: number; width: number }) => {
       >
         <use href="public/logos/logo-dark.svg" />
       </svg>
-      <img src="/hero.png" alt="Hero" height="50" width="50"/>
-      <span style={{ fontWeight: 'bold', fontSize: 18 }}>DevOps Journey</span>
+      <img className='logo-img' src="/hero.png" alt="Hero" height="50" width="50"/>
+      <span className='logo-text' style={{ fontWeight: 'bold', fontSize: 18 }}>DevOps Journey</span>
     </div>
   );
 };
