@@ -64,7 +64,7 @@ Kengaytirish(Scaling) ikki xil bo'ladi bu vertikal va gorizontal.
 
 * **Horizontal Scaling->** Tarmoq yoki tizimga qo'shimcha serverlar yoki nodelarni qo'shishni o'z ichiga oladi. Bir serverni kuchliroq qilish o'rniga, yukni taqsimlash uchun ko'proq machinelarni qo'shasiz. Bu ish yukini(workload) yengish uchun bir nechta serverlarning birgalikda ishlashiga o'xshaydi. Ushbu yondashuv kengaytirilishi mumkin va kerak bo'lganda qo'shimcha serverlarni qo'shish orqali ortib borayotgan talablarni qondirishi mumkin. Qisqa qilib aytganda bitta serverni resurlarini kuchaytirgandan ko'ra serverlar sonini ko'paytirib bosimni teng taqsimlash.
 
-Biz gorizontal scalingni tanlaymiz va bizda bitta application serverimiz bor edi uni gorizontal kengaytirib 3ta application server qilamiz va bitta NGINX(Load Balancer) server sozlab olamiz. Endi bizda 3ta application sevrer bor yani sta serverda **devops-journey.uz** platformasi **e0** portda ishlab turibti. Ushbu holatda NGINX(Load Balancing)ni ko'rib chiqamiz. 
+Biz gorizontal scalingni tanlaymiz va bizda bitta application serverimiz bor edi uni gorizontal kengaytirib 3ta application server qilamiz va bitta NGINX(Load Balancer) server sozlab olamiz. Endi bizda 3ta application sevrer bor yani sta serverda **devops-journey.uz** platformasi **300** portda ishlab turibti. Ushbu holatda NGINX(Load Balancing)ni ko'rib chiqamiz. 
 
 **Rasmda holat tasvirlangan.**
 
@@ -264,3 +264,68 @@ certbot orqali muvafaqqiyatli SSL sertifikat olganingizdan keyin brauzerdan appl
 <Callout type="info" emoji="">
 **ESLATMA:** Ushbu NGINX konfiguratsiyamizda Load Balancing qilish uchun Load Balancing metodlarini tanladik. Bu holatda NGINX default **Round Robin** load balancing metodini qo'llaydi.
 </Callout>
+
+`devops-jourey.uz`(bu yerda sizning ilovangiz domeni bo'ladi)ga brauzerda tashrif buyurganingizda sizda quyidagi oyna ochilishi kerak.
+
+![nginx-lb](/images/tutorials/web-server/nginx-lb/sonar-login.png)
+
+Endi qiziq joyi boshlandi, esingizda bo'lsa biz 3ta serverga 3ta **SonarQube** o'rnatib hammasiga loginga `admin` parolga esa serverlarga qarab **node1, node2, node3** deb parol qo'yib sozlagan edik. Hozir domen orqali applicationimizga kiramiz sizda SonarQubega kirish oynasi ochiladi u yerdan **Login**ga admin yozamiz va parolga node1 yozamiz agar xato desa node2, node3 sabab NGINX qaysi serverga yo'naltirganini bilishimiz uchun. Maksimum 3ta urinish bilan to'gri parolni topasiz parol to'gri deydi va kirganida yana SonarQube kirish sahifasiga qaytaradi. Xo'sh buning sababi nima? Sababi shundaki NGINX configuratsiyamizga Load Balancing metodlarini kiritmadik bu holda NGINX default **Round Robin** metodidan foydalanib load balancing qiladi.
+
+![nginx-lb](/images/tutorials/web-server/nginx-lb/round-robin.png)
+
+Rasmda hozirgi holatimiz tasvirlangan yani birinchi so'rovda SonarQube kirish sahifasiga kirdik va to'gri logn parol kiritib kirishni bosganimzida 2chi so'rov ketti va bu biz ulangan serverga emas balki boshqa serverga yo'naltirildi boshqa serverda esa boshqa login parol mavjud shuning uchun biz login qilib kira olmaymiz SonarQube tanlagnini sababi ham aslida shu edi Load Balancing qanday ishlashini ishlayotganini bilish uchun edi.
+
+Round Robin load balancing metodi Stateless Load balancingga kiradi bu haqida **[Load Balancing](https://devops-journey.uz/guides/web-server/load-balancing#stateful-vs-stateless-load-balancing)** qo'llanmasida yozilgan. 
+
+Demak bizni holatimizda Round Robin load balancing to'gri kelmas ekan chunki stateless sessiya ushlamaydi. Xo'sh biz qanday yo'l tutamiz. 
+
+
+Keling NGINX COnfiguratsiyamizga laod balancing metodlarini qo'shamiz va **IP/URL Hash** metodidan foydalanib ko'ramiz.
+
+NGINX configuratsiyamizga quyidagi o'zgartisihni kiritamiz NGINXga reload beramiz.
+
+```bash
+sudo nano /etc/nginx/sites-available/devop-journey.uz
+```
+
+```bash filename="/etc/nginx/sites-available/devop-journey.uz" /ip_hash;/
+upstream backend {
+  ip_hash;
+  server 185.168.1.21:9000;
+  server 185.168.1.21:9000;
+  server 185.168.1.21:9000;
+}
+server {
+    listen 80;
+    server_name devops-journey.uz;
+ 
+    location / {
+        proxy_pass http://backend/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+
+`upstream` blokiga `ip_hash;` qo'shib qo'ydik va endi nginx reload berib sinab ko'ramiz.
+
+```bash
+sudo systemctl reload nginx
+```
+
+Brauzerdan applicationimizga domen orqali kiramiz va maximum 3ta urinish bilan parolni topib login qilib kira olamiz. Bu safar bu muvaffaqqiytali bo'ldi yana biz login qilib kira oldik. Endi boshqa kompyuterlaran kirib ko'ramiz ular boshqa serverlarga tushib qolishadi. Xo'sh bu qanday ishladi qanday qilib kira oldik va qanday ishlab turibti?
+
+![nginx-lb](/images/tutorials/web-server/nginx-lb/ip_hash.png)
+
+Ushbu bizning holatimiz Rasmda tasvirlangan. **IP/URL Hash** load balancing Stateful Load Balancingga kiradi yani sessiyani saqlab bir marta ulanib olgan serveringiz keyingi so'rovlaringiz ham shu serverga yo'naltiriladi.
+
+Bizda keyingi muammoli vaziyat bor. 3ta application serverimiz resurslari bir xil emas ular quyidagicha deb tassavur qilamiz.
+
+
+| CPU            | RAM | Storage  | Server   |
+| -------------- | ----- |------- | -------- |
+| 2vCPU 2 core   | 4GB   | 20GB   | Server A |
+| 4vCPU 4 core   | 8GB   | 50GB   | Server B |
+| 20vCPU 18 core | 24GB  | 160GB  | Server C |
