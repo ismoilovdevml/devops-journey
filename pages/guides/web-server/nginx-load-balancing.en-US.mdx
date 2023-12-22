@@ -64,7 +64,7 @@ Kengaytirish(Scaling) ikki xil bo'ladi bu vertikal va gorizontal.
 
 * **Horizontal Scaling->** Tarmoq yoki tizimga qo'shimcha serverlar yoki nodelarni qo'shishni o'z ichiga oladi. Bir serverni kuchliroq qilish o'rniga, yukni taqsimlash uchun ko'proq machinelarni qo'shasiz. Bu ish yukini(workload) yengish uchun bir nechta serverlarning birgalikda ishlashiga o'xshaydi. Ushbu yondashuv kengaytirilishi mumkin va kerak bo'lganda qo'shimcha serverlarni qo'shish orqali ortib borayotgan talablarni qondirishi mumkin. Qisqa qilib aytganda bitta serverni resurlarini kuchaytirgandan ko'ra serverlar sonini ko'paytirib bosimni teng taqsimlash.
 
-Biz gorizontal scalingni tanlaymiz va bizda bitta application serverimiz bor edi uni gorizontal kengaytirib 3ta application server qilamiz va bitta NGINX(Load Balancer) server sozlab olamiz. Endi bizda 3ta application sevrer bor yani sta serverda **devops-journey.uz** platformasi **3000** portda ishlab turibti. Ushbu holatda NGINX(Load Balancing)ni ko'rib chiqamiz. 
+Biz gorizontal scalingni tanlaymiz va bizda bitta application serverimiz bor edi uni gorizontal kengaytirib 3ta application server qilamiz va bitta NGINX(Load Balancer) server sozlab olamiz. Endi bizda 3ta application sevrer bor yani sta serverda **devops-journey.uz** platformasi **e0** portda ishlab turibti. Ushbu holatda NGINX(Load Balancing)ni ko'rib chiqamiz. 
 
 **Rasmda holat tasvirlangan.**
 
@@ -103,7 +103,7 @@ NGINX o'rnatganimizdan keyin NGINX Load Balancer sozlashni boshlasak bo'ladi.
 [devops-journey.uz](https://devops-journey.uz/) uchun `/etc/nginx/sites-available` jildida NGINX configuratsiya yaratib olamiz.
 
 <Callout type="info" emoji="">
-Eslatma: Ushbu loyida NGINX Load Balancingni tekshirish uchun SonarQube containeridan foydalanamiz sababi Docker orqali tezda ishga tushira olamiz va ro'yxatdan o'tish/kirish bo'lgani uchun Load Balancingni tekshirib olishimiz mumkin.
+**ESLATMA:** Ushbu loyida NGINX Load Balancingni tekshirish uchun SonarQube containeridan foydalanamiz sababi Docker orqali tezda ishga tushira olamiz va ro'yxatdan o'tish/kirish bo'lgani uchun Load Balancingni tekshirib olishimiz mumkin.
 </Callout>
 
 Uchta application serverimizga ham docker o'rnatib SonarQubeni docker orali ishga tushiramiz.
@@ -175,7 +175,6 @@ nano devops-journey.uz
 `devops-journey.uz` konfiguratsiya ochib olganimzidan keyin quyidagicha Load Balancin konfiguratsiya qilamiz.
 
 ```bash filename="/etc/nginx/sites-available/devop-journey.uz"
-
 upstream backend {
   server 185.168.1.21:9000;
   server 185.168.1.21:9000;
@@ -195,6 +194,55 @@ server {
 }
 ```
 
+Bu NGINX konfiguratsiya devops-hourney.uz kelgan requestlarni 3ta applciation serverga Load balancing qilib turishi kerak.
+
+Keling konfiguratsiyani ko'rib chiqamiz.
+
+```bash /backend/
+upstream backend {
+  server 185.168.1.21:9000;
+  server 185.168.1.21:9000;
+  server 185.168.1.21:9000;
+}
+``` 
+NGINX `upstream` load balancing uchun klaster ochish va boshqarishni bildiradi. konfiguratsiyadagi `backend` esa klasterimiz nomi. `backend` klasterimiz ichida serverlarimiz IP manzillari va applicationimiz ishlab turgan portlari ko'rsatilgan. Qancha server bo'lsa shuncha server qo'shib borilaveradi yoki bitta serverda bitta application bir nechta portda ishlab turgan bo'lsa qo'shilaveradi.
+
+```bash
+server {
+    listen 80;
+    server_name devops-journey.uz;
+```
+* `server` bloki ma'lum bir server yoki domen uchun so'rovlarni qayta ishlashga xos konfiguratsiyani qamrab oladi. 
+
+* `listen 80;` server bloki HTTP trafigi uchun standart port bo'lgan `80`-portdagi kiruvchi ulanishlarni tinglashini(listen) bildiradi. 
+
+* `server_name devops-journey.uz;` `server` blokidagi konfiguratsiyani `devops-journey.uz` domeni bilan bog‘laydi. Ushbu domen uchun so'rov kelib tushganda, ushbu server blokida belgilangan konfiguratsiyalar qo'llaniladi.
+
+```bash
+    location / {
+        proxy_pass http://backend/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+```
+
+* `location / {...}` Bu blok ildiz(root) URL (**/**) ga qilingan so'rovlarni oladi. Ushbu patternga mos keladigan barcha so'rovlar ushbu blokdagi direktivalar tomonidan qayta ishlanadi.
+
+* `proxy_pass http://backend/;` Ushbu direktiv Nginx-ga joylashuvga (**/**) mos keladigan barcha kiruvchi so'rovlarni `backend` deb nomlangan `upstream` blokida belgilangan serverlar guruhiga proksi-serverdan o'tkazishni aytadi. Bunday holda, root URL manziliga kelgan har qanday so'rov `backend` `upstream` guruhida belgilangan serverlardan biriga yo'naltiriladi.
+
+* `proxy_set_header Host $host;` Proksilangan soʻrovning Host headerini odatda client soʻrovida mavjud host nomini ifodalovchi `$host` qiymatiga oʻrnatadi.
+
+* `proxy_set_header X-Real-IP $remote_addr;` Proksi-so'rovning `X-Real-IP` headerini `$remote_addr` qiymatiga o'rnatadi, unda so'rov yuborayotgan clientning IP-manzili mavjud.
+
+* `proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;` Clientning IP manzilini mavjud `X-Forwarded-For` headriiga qo'shib, mavjud qiymatlarni saqlaydi. Ushbu header asl clientning IP-manzilini kuzatish uchun ishlatiladi, ayniqsa so'rovlar proksi-serverlar yoki load balancerlar orqali o'tganda.
+
+* `proxy_set_header X-Forwarded-Proto $scheme;` Proksilangan soʻrovning `X-Forwarded-Proto` headerini client soʻrovida ishlatiladigan protokolni (`http` yoki `https`) ifodalovchi $scheme qiymatiga oʻrnatadi.
+
+Qisqa qilib aytganda, ushbu konfiguratsiya bloki serverning root URL(**/**) keladigan har qanday so'rovlarni `upstream`dagi serverlari guruhi `backend`dagi barcha serverlarga yo'naltirishni bildiradi va shu bilan birga client ma'lumotlarini saqlash va yo'naltirilgan so'rovga maxsus headerlarni o'zgartirish yoki qo'shish bilan ma'lum tafsilotlarni `backend` serverlariga yuboradi. 
+
+NGINX-da symbolic link yaratib uni reload qilamiz.
 ```bash
 sudo ln -s /etc/nginx/sites-available/devop-journey.uz /etc/nginx/sites-enabled/devop-journey.uz
 sudo systemctl reload nginx
@@ -210,3 +258,9 @@ sudo apt install certbot python3-certbot-nginx
 ```bash
 sudo certbot --nginx -d devops-journey.uz
 ```
+
+certbot orqali muvafaqqiyatli SSL sertifikat olganingizdan keyin brauzerdan applicatiomizga tashrif buyurishingiz mumkin va `https` orqali ochilishi kerak.
+
+<Callout type="info" emoji="">
+**ESLATMA:** Ushbu NGINX konfiguratsiyamizda Load Balancing qilish uchun Load Balancing metodlarini tanladik. Bu holatda NGINX default **Round Robin** load balancing metodini qo'llaydi.
+</Callout>
