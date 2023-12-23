@@ -2,7 +2,7 @@ import { Callout } from "nextra-theme-docs";
 
 # NGINX Load Balancing
 
-![nginx-lb](/images/tutorials/web-server/nginx-lb/banner.png)
+![nginx-lb](/images/tutorials/web-server/nginx-lb/main-banner.png)
 
 <Callout type="info" emoji="">
 Eslatma: Ushbu qo'llanmani o'qishdan oldin [Load Balancing](https://devops-journey.uz/guides/web-server/load-balancing) qo'llanmasini o'qib chiqishingizni maslahat beramiz.
@@ -28,7 +28,7 @@ Load Balancing zamonaviy veb-infratuzilmaning muhim jihati bo'lib, kiruvchi traf
 
 ## NGINX bilan load balancing qilish
 
-![nginx-lb](/images/tutorials/web-server/nginx-lb/nginx.png)
+![nginx-lb](/images/tutorials/web-server/nginx-lb/nginx-main.png)
 
 Bizda quyidagi holat bor: [devops-journey.uz](https://devops-journey.uz/) platformasiga juda ko'p userlar ko'plab so'rovlar yubormoqda. Bizda atiga bitta server bor va clientlardan kelgan so'rovlar bosimini NGINX bilan load balancing qilishimiz kerak. Bu amaliyotni amalga oshirish uchun bizga 4ta server kerak bo'ladi.
 
@@ -68,7 +68,7 @@ Biz gorizontal scalingni tanlaymiz va bizda bitta application serverimiz bor edi
 
 **Rasmda holat tasvirlangan.**
 
-![nginx-lb](/images/tutorials/web-server/nginx-lb/nginx2.png)
+![nginx-lb](/images/tutorials/web-server/nginx-lb/nginx-main.png)
 
 1. NGINX serverimizni sozlab NGINX o'rnatib olamiz.
 
@@ -177,8 +177,8 @@ nano devops-journey.uz
 ```bash filename="/etc/nginx/sites-available/devop-journey.uz"
 upstream backend {
   server 185.168.1.21:9000;
-  server 185.168.1.21:9000;
-  server 185.168.1.21:9000;
+  server 185.168.1.22:9000;
+  server 185.168.1.23:9000;
 }
 server {
     listen 80;
@@ -201,8 +201,8 @@ Keling konfiguratsiyani ko'rib chiqamiz.
 ```bash /backend/
 upstream backend {
   server 185.168.1.21:9000;
-  server 185.168.1.21:9000;
-  server 185.168.1.21:9000;
+  server 185.168.1.22:9000;
+  server 185.168.1.23:9000;
 }
 ``` 
 NGINX `upstream` load balancing uchun klaster ochish va boshqarishni bildiradi. konfiguratsiyadagi `backend` esa klasterimiz nomi. `backend` klasterimiz ichida serverlarimiz IP manzillari va applicationimiz ishlab turgan portlari ko'rsatilgan. Qancha server bo'lsa shuncha server qo'shib borilaveradi yoki bitta serverda bitta application bir nechta portda ishlab turgan bo'lsa qo'shilaveradi.
@@ -292,8 +292,8 @@ sudo nano /etc/nginx/sites-available/devop-journey.uz
 upstream backend {
   ip_hash;
   server 185.168.1.21:9000;
-  server 185.168.1.21:9000;
-  server 185.168.1.21:9000;
+  server 185.168.1.22:9000;
+  server 185.168.1.23:9000;
 }
 server {
     listen 80;
