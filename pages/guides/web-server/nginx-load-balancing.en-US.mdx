@@ -401,3 +401,74 @@ server {
 }
 ```
 
+NGINXda yana bir load balancing metodini qo'llashimiz mumkin bu **Least Connections** load balancing metodidir. Ushbu load balancing metodi qaysi serverda connection kam bo'lsa shu serverga so'rovlarni yuboradi. **Least Connections** load balancing metodi Stateful Load Balancing bo'lib sessiya bilan ishlaydi.
+
+**Least Connections** uchun NGINX configuratsiya quyidagicha
+
+```bash filename="/etc/nginx/sites-available/devop-journey.uz" /least_conn;/
+upstream backend {
+  ip_hash;
+  server 185.168.1.21:9000 weight=10;
+  server 185.168.1.22:9000 weight=8;
+  server 185.168.1.23:9000 weight=4;
+}
+server {
+    listen 80;
+    server_name devops-journey.uz;
+ 
+    location / {
+        proxy_pass http://backend/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+
+Ushbu configuratsiya bilan NGINXni ishga tushirsak quyidagi rasmdagidek ishlaydi.
+
+![nginx-lb](/images/tutorials/web-server/nginx-lb/least-connections.png)
+
+Endi bizda yana bir muammoli vaziyat paydo bo'ldi. 3ta application serverimiz bor lekin ular so'rovlarga har xil tezlikda javob beradi. Load Balancer esa barcha serverlarga so'rovlarni teng taqsimlayapti lekin ba'zi serverlar so'rovlarga sekin javob beryapti bu unga ko'proq yuk tushishiga olib keladi. Xo'sh buni vaziyatga qanday yechimk berishimiz mumkin? Bu vaziyatada biz **Least Connections** load bvalancing metodidan foydalanamiz bu load balancing metod qaysi serverlar so'rovlarga tez javob bersa shu serverga ko'proq so'rovlar yuboradi sekin javob qayrtaradigan serverlarga esa kam so'rov yuboradi. 
+
+Keling bu uchun NGINX Load Balancing konfiguratsiyamizni yangilab NGINXga reload berib ishga tushiramiz.
+
+<Callout type="info" emoji="">
+**ESLATMA:** **Least Connections** load balancing metodi faqat **NGINX Plus**da ishlaydi
+</Callout>
+
+```bash
+sudo nano /etc/nginx/sites-available/devop-journey.uz
+```
+
+```bash filename="/etc/nginx/sites-available/devop-journey.uz" /weight/ /least_time header;/
+upstream backend {
+  least_time header;
+  server 185.168.1.21:9000 weight=10;
+  server 185.168.1.22:9000 weight=8;
+  server 185.168.1.23:9000 weight=4;
+}
+server {
+    listen 80;
+    server_name devops-journey.uz;
+ 
+    location / {
+        proxy_pass http://backend/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+
+`upstream` blokiga `least_conn` load balancing metodini qo'shib qo'ydik va endi nginx reload berib sinab ko'ramiz.
+
+```bash
+sudo systemctl reload nginx
+```
+
+Ushbu holat quyidagi rasmda tasvirlangan.
+
+![nginx-lb](/images/tutorials/web-server/nginx-lb/least_time.png)
