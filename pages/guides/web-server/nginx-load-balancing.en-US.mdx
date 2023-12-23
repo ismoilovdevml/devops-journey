@@ -324,8 +324,80 @@ Ushbu bizning holatimiz Rasmda tasvirlangan. **IP/URL Hash** load balancing Stat
 Bizda keyingi muammoli vaziyat bor. 3ta application serverimiz resurslari bir xil emas ular quyidagicha deb tassavur qilamiz.
 
 
-| CPU            | RAM | Storage  | Server   |
-| -------------- | ----- |------- | -------- |
-| 2vCPU 2 core   | 4GB   | 20GB   | Server A |
-| 4vCPU 4 core   | 8GB   | 50GB   | Server B |
-| 20vCPU 18 core | 24GB  | 160GB  | Server C |
+| CPU            | RAM | Storage  | Server   | IP             |
+| -------------- | ----- |------- | -------- | -------------- |
+| 20vCPU 18 core | 24GB  | 160GB  | Server C |  185.168.1.21  |
+| 12vCPU 8 core  | 15GB  | 80GB   | Server B |  185.168.1.22  |
+| 2vCPU 2 core   | 4GB   | 20GB   | Server A |  185.168.1.23  |
+
+
+
+Agar hozir Round Robin yoki IP/URL Hash load balancing algoritmlaridan foydalanadigan bo'lsak resurlari kichik serverlarda bosim ortib ketadi va buni ko'tarolmay qoladi. Yani load balancing metodlari serverlarga sorovlarni teng taqsimlaydi bu holda hamma serverlar resurslari bir xil bo'lsagini yaxshi natija beradi. 
+
+Bu vaziyat uchun serverlarga **weight** berish orqali bu vaziyatdan chiqa olamiz. Yani resyurlari ko;p serverlga yuqori **weight** beriladi resurlari kamroq serverlga **weight** kam beriladi. Bu holatda load balancer **weight** yuqori bo'lgan serverlarga so'rovlarni ko'proq yo'naltiradi **weight** kichik serverlarga esa kamroq so'rovlar yuboriladi. 
+
+
+Buning uchun NGINX configuratsiyamizni quyidagidek yangilaymiz va NGINXga reload berib ishga tushiramiz.
+
+```bash
+sudo nano /etc/nginx/sites-available/devop-journey.uz
+```
+
+```bash filename="/etc/nginx/sites-available/devop-journey.uz" /weight/
+upstream backend {
+  server 185.168.1.21:9000 weight=10;
+  server 185.168.1.22:9000 weight=8;
+  server 185.168.1.23:9000 weight=4;
+}
+server {
+    listen 80;
+    server_name devops-journey.uz;
+ 
+    location / {
+        proxy_pass http://backend/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+
+`upstream` blokiga `weight` qo'shib qo'ydik va endi nginx reload berib sinab ko'ramiz.
+
+```bash
+sudo systemctl reload nginx
+```
+
+Ushbu holat rasmda tasvirlanganidek ishlaydi. Bu **Weighted Round Robin** load balancing metodida serverlar holatidan kleib chiqib so'rovlarni taqsimlaydi. Bunda `Sserver A` da resurlar ko'pligi va **weight** yuqoriligi sabab ko'proq so'rovlar yuboriladi `Server C` da esa resurslar kamligi va **weight** kichikligi sabab kamroq so'rovlar yuboriladi. Bu Load Balancing server resurlari bir xilm bo'lmaganida qo'l keladi. 
+
+![nginx-lb](/images/tutorials/web-server/nginx-lb/weighted_round_robin.png)
+
+Bizni applicationimiz uchun Round Robin load balabncing metodi to'gri kelmagani uchun ushbu configuratsiyani IP/URL Hash laod balancing metodida ham ishlata olamiz. Quyida IP/URL Hash Load Balancing metodida serverlarga **weight** berib load balancing qilish NGINX konfiguratsiyasi.
+
+```bash
+sudo nano /etc/nginx/sites-available/devop-journey.uz
+```
+
+
+```bash filename="/etc/nginx/sites-available/devop-journey.uz" /weight/ /ip_hash;/
+upstream backend {
+  ip_hash;
+  server 185.168.1.21:9000 weight=10;
+  server 185.168.1.22:9000 weight=8;
+  server 185.168.1.23:9000 weight=4;
+}
+server {
+    listen 80;
+    server_name devops-journey.uz;
+ 
+    location / {
+        proxy_pass http://backend/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+

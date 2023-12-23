@@ -3,7 +3,7 @@
 <h4 align="center">DevOps Journey is an open-source educational platform dedicated to advancing the DevOps industry.</h4>
 
 <img src="https://devops-journey.uz/hero.png" alt="logo" height="40" align="left">
-<h2 style="display: inline">Devops Journey</h2>
+<h2 style="display: inline">DevOps Journey</h2>
 <br>
 
 
