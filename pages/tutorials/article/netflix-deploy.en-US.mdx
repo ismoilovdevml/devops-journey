@@ -35,13 +35,13 @@ Keling, ushbu texnik sayohatni birgalikda boshlaymiz va Netflix-ga o'xshash stri
 
 * [Prometheus va Grafana o'rnatish, tizimni monitoring qilish.](#prometheus-va-grafana-ornatish-tizimni-monitoring-qilish)
 
-* [Jenkinsga prometheus plagini o'rnatish va monitoring qilish.](#jenkinsga-prometheus-plagini-ornatish-va-monitoring-qilish)
+* [Jenkinsga prometheus plaginini o'rnatish va monitoring qilish.](#jenkinsga-prometheus-plaginini-ornatish-va-monitoring-qilish)
 
 * [Jenkins'ga email(gmail) integratsiya qilish.](#jenkinsga-emailgmail-integratsiya-qilish)
 
 * [SonarQube'ni Jenkins uchun sozlash.](#sonarqubeni-jenkins-uchun-sozlash)
 
-* [Jenkins'ga OWASP Dependency Check, JDK va Node.js plaginlarini o'rnatish va sozlash.](#jenkinsga-owasp-dependency-check-jdk-va-nodejs-pluginlarini-ornatish-va-sozlash)
+* [Jenkins'ga OWASP Dependency Check, JDK va Node.js plaginlarini o'rnatish va sozlash.](#jenkinsga-owasp-dependency-check-jdk-va-nodejs-plaginlarini-ornatish-va-sozlash)
 
 * [Jenkins'da birinchi CI pipeline yozish.](#jenkinsda-birinchi-ci-pipeline-yozish)
 
@@ -427,7 +427,7 @@ Prometheus va Grafana'ni monitoring va vizualizatsiya uchun o'rnatamiz. Promethe
 
 Prometheus, Grafana, Node Exporter o'rnatish sozlash integratsiya qilish uchun quyidagi qo'llanmadan foydalanasiz.
 
-**Pometheus:** [Prometheus nima?](https://devops-journey.uz/tutorials/article/gnp-monitoring#prometheus-nima), [Prometheus o'ratish va sozlash](https://devops-journey.uz/tutorials/article/gnp-monitoring#prometheus-oratish-va-sozlash), [Client Nodelarini kuzatish uchun Prometheusni sozlash](https://devops-journey.uz/tutorials/article/gnp-monitoring#client-nodelarini-kuzatish-uchun-prometheusni-sozlash), [Grafana va Prometheusni integratsiya qilish](https://devops-journey.uz/tutorials/article/gnp-monitoring#grafana-va-prometheusni-integratsiya-qilish)
+**Prometheus:** [Prometheus nima?](https://devops-journey.uz/tutorials/article/gnp-monitoring#prometheus-nima), [Prometheus o'ratish va sozlash](https://devops-journey.uz/tutorials/article/gnp-monitoring#prometheus-oratish-va-sozlash), [Client Nodelarini kuzatish uchun Prometheusni sozlash](https://devops-journey.uz/tutorials/article/gnp-monitoring#client-nodelarini-kuzatish-uchun-prometheusni-sozlash), [Grafana va Prometheusni integratsiya qilish](https://devops-journey.uz/tutorials/article/gnp-monitoring#grafana-va-prometheusni-integratsiya-qilish)
 
 **Grafana:** [Grafana nima?](https://devops-journey.uz/tutorials/article/gnp-monitoring#grafana-nima), [Grafana serverini qanday o'rnatish va sozlash
 ](https://devops-journey.uz/tutorials/article/gnp-monitoring#grafana-serverini-qanday-ornatish-va-sozlash), [Grafana Dashboardni import qilish](https://devops-journey.uz/tutorials/article/gnp-monitoring#grafana-dashboardni-import-qilish)
@@ -499,11 +499,11 @@ Jenkinsga Prometheus plaginini o'rnatish uchun Jenkinsda **->** `Manage Jenkins`
 
 > ![netflix](/images/article/netflix/jenkins2.png)
 
-Prometheus plagini o'rnatilganidan keyin **->** `Manage Jenkisn` **->** `System` ga kirib Prometheus bo'limini topamiz va quyidagicha to'ldirib `Apply` bosib `Save` qilamiz.
+Prometheus plagini o'rnatilganidan keyin **->** `Manage Jenkins` **->** `System` ga kirib Prometheus bo'limini topamiz va quyidagicha to'ldirib `Apply` bosib `Save` qilamiz.
 
 > ![netflix](/images/article/netflix/jenkins3.png)
 
-Plaginni o'rnatib sozlab bo'lganimzidan keyin prometheusga jenkins exporterni qo'shib sozlaymiz. `/etc/prometheus/prometheus.yml` fayliga quyida konfiguratsiyani qo'shib qo'yamiz.
+Plaginni o'rnatib sozlab bo'lganimzidan keyin Prometheus'ga jenkins exporterni qo'shib sozlaymiz. `/etc/prometheus/prometheus.yml` fayliga quyidagi konfiguratsiyani qo'shib qo'yamiz.
 
 ```yaml
 nano /etc/prometheus/prometheus.yml
@@ -516,7 +516,7 @@ nano /etc/prometheus/prometheus.yml
       - targets: ['0.0.0.0:8080']
 ```
 
-`0.0.0.0:8080` bu yerda siz jenkins o'rnatilgan serveringiz **IP** manzilini kiritasiz. Quyida to'liq `prometheus.yml` faylining to'liq ko'rinishi.
+`0.0.0.0:8080` bu yerda siz jenkins o'rnatilgan serveringiz **IP** manzilini kiritasiz. Quyida `prometheus.yml` faylining to'liq ko'rinishi.
 
 ```yaml filename="/etc/prometheus/prometheus.yml" /static_configs/ /targets/
 # my global config
@@ -560,7 +560,7 @@ scrape_configs:
       - targets: ['0.0.0.0:8080']
 ```
 
-Configuratsiyani yozib sozlab bo'lganimzidan keyin uni `promtool` bilan tekshirib ko'ramiz.
+Konfiguratsiyani yozib sozlab bo'lganimzidan keyin uni `promtool` bilan tekshirib ko'ramiz:
 
 ```bash
 promtool check config /etc/prometheus/prometheus.yml
@@ -570,8 +570,8 @@ promtool check config /etc/prometheus/prometheus.yml
 Checking /etc/prometheus/prometheus.yml
  SUCCESS: /etc/prometheus/prometheus.yml is valid prometheus config file syntax
 ```
-Configuratsiya to'gri yozilgan bo'lssa sizda quyidagi natija chiqishi kerak agar xato chiqsa configuratsiyani yana bir bor ko'rib chiqing.
-**prometheus**ni restart qilib qayta ishga tushirishimiz kerak.
+Konfiguratsiya to'gri yozilgan bo'lsa sizda quyidagi natija chiqishi kerak, agar xato chiqsa konfiguratsiyani yana bir bor ko'rib chiqing.
+**Prometheus**ni restart qilib qayta ishga tushirishimiz kerak.
 
 ```bash
 sudo systemctl restart prometheus
@@ -584,7 +584,7 @@ Grafana orqali Jenkins metrikalarni vizualizatsiya qilish uchun Jenkins dashboar
 ![netflix](/images/article/netflix/grafana-dashboard2.png)
 
 Rasmdagi Dashboard `ID`si `9964` [Jenkins: Performance and Health Overview](https://grafana.com/grafana/dashboards/9964-jenkins-performance-and-health-overview/)
-Gfanaga dashboard import qilish bo'yicha qo'llanma yozilgan [Grafana Dashboardni import qilish](https://devops-journey.uz/tutorials/article/gnp-monitoring#grafana-dashboardni-import-qilish) qo'llanmasidan foydalanasiz.
+Grafanaga dashboard import qilish bo'yicha yozilgan [Grafana Dashboardni import qilish](https://devops-journey.uz/tutorials/article/gnp-monitoring#grafana-dashboardni-import-qilish) qo'llanmasidan foydalanasiz.
 
 ## Jenkinsga email(gmail) integratsiya qilish
 
@@ -592,7 +592,7 @@ Gfanaga dashboard import qilish bo'yicha qo'llanma yozilgan [Grafana Dashboardni
 
 **Jenkinsni** **Gmail** bilan integratsiyalash **Trivy** statusi va loglarni elektron pochta orqali bildirishnomalar(notification) sifatida yuborish imkonini beradi. Ushbu sozlash jamoaga **Trivy** skanerlashlari, shu jumladan holat(status) yangilanishlari va batafsil loglarni bevosita **Gmail** pochta qutisiga zudlik bilan olishini ta'minlaydi. U aloqani soddalashtiradi va jamoani **Trivy** tomonidan aniqlangan xavfsizlik skanerlari va zaifliklar haqida real vaqt rejimida xabardor qiladi, bu esa yuzaga kelishi mumkin bo'lgan muammolarga faol javob berishga yordam beradi.
 
-Jenkinsni email bilan inetgratsiya qilishimiz uchun `Email Extension Template` plagini o'rnatib olishimiz kerak. **->** `Manage Jenkins` **->** `Plugins` **->** `Available plugins`.  Plaginlardan [`Email Ext Recipients Column`](https://plugins.jenkins.io/email-ext-recipients-column/) plagini o'rnatib olamiz
+Jenkinsni email bilan inetgratsiya qilishimiz uchun `Email Extension Template` plagini o'rnatib olishimiz kerak. **->** `Manage Jenkins` **->** `Plugins` **->** `Available plugins`.  Plaginlardan [`Email Ext Recipients Column`](https://plugins.jenkins.io/email-ext-recipients-column/) plagini o'rnatib olamiz:
 
 > ![netflix](/images/article/netflix/jenkins4.png)
 
@@ -600,7 +600,7 @@ Jenkinsni email bilan inetgratsiya qilishimiz uchun `Email Extension Template` p
 
 > ![netflix](/images/article/netflix/gmail1.png)
 
-**App passwords**ga kirganimzidan keyin `App name`-ga ilovalamiz nomini kiritamiz `Jenkins`. kiritganimizdan keyin `Create` bosib parol app password yaratib olamiz va nusxalab olib qo'yamiz.
+**App passwords**ga kirganimzidan keyin `App name`-ga ilovalamiz nomini kiritamiz: `Jenkins`. Kiritganimizdan keyin `Create` bosib parol app password yaratib olamiz va nusxalab olib qo'yamiz.
 > ![netflix](/images/article/netflix/gmail2.png)
 
 > ![netflix](/images/article/netflix/gmail3.png)
@@ -611,13 +611,13 @@ Jenkinsga E-mail notification uchun gmail bilan integratsiya qilamiz. Birinchi n
 
 > ![netflix](/images/article/netflix/secret2-new.png)
 
-ushbu qismni rasmda ko'rsatilgandek konfiguratsiya qilib olamiz. 
+Ushbu qismni rasmda ko'rsatilgandek konfiguratsiya qilib olamiz. 
 
 * **Kind:** username with password
 * **Username:** mygmail.com(hozir 2 step verification yoqib app paswword olgan emailimiz)
 * **Password:** bu yerga Google bergan app passwordni qo'yamiz.
 
-Hammasini to'gri to'ldirib chiqganimzidan keyin `Create` bosib credentials yartatib olamiz. Mail credentials yaratib olganimizdan keyin **->** `Manage Jenkins` **->** `System` bo'limga o'tib **E-mail Notification** qismini topib olamiz varasmdagidek konfiguratsiya qilamiz.
+Hammasini to'gri to'ldirib chiqganimzidan keyin `Create` bosib credentials yartatib olamiz. Mail credentials yaratib olganimizdan keyin **->** `Manage Jenkins` **->** `System` bo'limga o'tib **E-mail Notification** qismini topib olamiz va rasmdagidek konfiguratsiya qilamiz.
 
 > ![netflix](/images/article/netflix/gmail4-new.png)
 
@@ -625,7 +625,7 @@ Hammasini to'gri to'ldirib chiqganimzidan keyin `Create` bosib credentials yarta
 * **Use SMTP Authentication->** ga emailimiz va parolini yozamiz
 * **SMTP Port->** 465(gmail SMTP severi standart porti)
 
-`System` dan **Extented E-mail Notification** qismini topib olamiz va quyidagicha konfiguratsiya qilamiz.
+`System` dan **Extented E-mail Notification** qismini topib olamiz va quyidagicha konfiguratsiya qilamiz:
 
 > ![netflix](/images/article/netflix/gmail5-new.png)
 
@@ -633,9 +633,9 @@ Triggerga **Always**
 
 > ![netflix](/images/article/netflix/gmail6-new.png)
 
-Hammasini rasmda ko'rsatilganiday o'zingizga moslab sozlab olganingizdan keyin `Apply` va `Save` bosamiz.
+Hammasini rasmda ko'rsatilganidek o'zingizga moslab sozlab olganingizdan keyin `Apply` va `Save` bosamiz.
 
-Email Notificationni sozlab olganimizdan keyin Jenkins pipelineda email notificationdan quyidagicha foydalanamiz.
+Email Notificationni sozlab olganimizdan keyin Jenkins pipelineda email notificationdan quyidagicha foydalanamiz:
 
 ```groovy filename="Jenkinsfile"
 post {
@@ -659,16 +659,16 @@ post {
 
 > ![netflix](/images/article/netflix/tools1-new.png)
 
-Plaginlar o'rnatilgandan keyin Global Tool Configuration-da Java va NodeJS configuratsiya qilib olishimiz kerak.
+Plaginlar o'rnatilgandan keyin **Global Tool Configuration**-da Java va NodeJS konfiguratsiya qilib olishimiz kerak.
 
 **->** `Manage Jenkins` **->** `Tools`. Java JDK o'rnatish uchun **JDK Installtions** bo'limidan  quyidagicha to'ldiramiz.
 
 > ![netflix](/images/article/netflix/tools2.png)
 
-**NodeJs Installtion** bo'limi quyidagicha  to'ldiramiz.
+**NodeJs Installtion** bo'limi quyidagicha  to'ldiramiz:
 > ![netflix](/images/article/netflix/tools3.png)
 
-Jenkins pipelineda Sonar Qube ishlatish uchun Sonar Qubeda token va ilovamiz uchun webhook yaratib olamiz. [Sonar Qube o'rnatish](https://devops-journey.uz/tutorials/article/netflix-deploy#docker-trivy-ornatish-va-sonarqubeni-docker-orqali-ornatish-domen-ulash) qismida siz Sonar Qube o'rnatgan bo'lishingiz va domen ulangan bo'lishingiz kerak. Jenkins pipelineda Sonar Qube ishlatish uchun TOKEN generatsiya qilib olamiz.
+Jenkins pipelineda SonarQube ishlatish uchun SonarQube'da token va ilovamiz uchun webhook yaratib olamiz. [SonarQube o'rnatish](https://devops-journey.uz/tutorials/article/netflix-deploy#docker-trivy-ornatish-va-sonarqubeni-docker-orqali-ornatish-domen-ulash) qismida siz SonarQube o'rnatgan bo'lishingiz va domen ulangan bo'lishingiz kerak. Jenkins pipelineda SonarQube ishlatish uchun TOKEN generatsiya qilib olamiz.
 
 ## SonarQubeni Jenkins uchun sozlash
 
@@ -694,7 +694,7 @@ SonarQube uchun token olib Jenkins credentialsga qo'shganimizdan keyin SonarQube
 
 > ![netflix](/images/article/netflix/secret4.png)
 
-Rasmda ko'rsatilganidek configuratsiya qilib olamiz.
+Rasmda ko'rsatilganidek konfiguratsiya qilib olamiz.
 
 * **Server URL->**  sonarqube.xilol.uz(SonaQube serveringiz manzili)
 
@@ -706,7 +706,7 @@ Rasmda ko'rsatilganidek configuratsiya qilib olamiz.
 
 > ![netflix](/images/article/netflix/sonar8.png)
 
-Rasmda ko'rsatilganidek configuratsiya qilib olamiz. `Apply` va `Save` ni bosib chiqamiz va SonarQube serverimizga kirib ilovamiz uchun **webhook** yaratib olamiz.
+Rasmda ko'rsatilganidek konfiguratsiya qilib olamiz. `Apply` va `Save` ni bosib chiqamiz va SonarQube serverimizga kirib ilovamiz uchun **webhook** yaratib olamiz.
 
 > ![netflix](/images/article/netflix/sonar4.png)
 
@@ -714,21 +714,21 @@ Rasmda ko'rsatilganidek configuratsiya qilib olamiz. `Apply` va `Save` ni bosib 
 
 > ![netflix](/images/article/netflix/sonar5.png)
 
-**Create** bosib Webhook yaratib olamiz, sizda quyidagi oyna ochilishi kerak.
+`Create` bosib Webhook yaratib olamiz, sizda quyidagi oyna ochilishi kerak:
 
 > ![netflix](/images/article/netflix/sonar9.png)
 
 SonarQubeda endi loyihamizni analiz qilishi uchun loyihamizni qo'shamiz. SonarQube bosh sahifasiga kirsangiz sizda quyiagi oyna ochilishi kerak siz **Manually** tanlaysiz.
 > ![netflix](/images/article/netflix/sonar10.png)
 
-keyin sizda quyidagi  oyna ochilishi kerak.
+keyin sizda quyidagi  oyna ochilishi kerak:
 > ![netflix](/images/article/netflix/sonar11.png)
 
 Bu yerda loyihamizni nomini kiritamiz rasmda ko'rsatilganidek va **Set Up** bosib keyingi bosqichga o'tamiz.
 
 > ![netflix](/images/article/netflix/sonar12.png)
 
-Sizda quyidagi oyna ochilishi kerak bu yerdan **Locally**-ni tanlab sozlashni davom etamiz.
+Sizda yuqoridagi kabi oyna ochilishi kerak bu yerdan **Locally**-ni tanlab sozlashni davom etamiz.
 
 > ![netflix](/images/article/netflix/sonar13.png)
 
@@ -745,7 +745,7 @@ SonarQubeda ilovamiz uchun webhook, token va project yaratib olganizdan keyin Je
 
 Jenkinsdagi birinchi pipeline odatda asosiy continuous integration(**CI**) jarayonini o'rnatishga qaratilgan. Bu versiyani boshqarish tizimidan (masalan, **Git**) manba kodini olish, dasturni yaratish, testlarni o'tkazish va ehtimol sinov muhitiga joylashtirish bosqichlarini o'z ichiga olgan oddiy ish jarayonini aniqlashni o'z ichiga oladi. Ushbu dastlabki pipeline build qilish va sinov bosqichlarini avtomatlashtirish, kod sifatini ta'minlash va kelajakda yanada murakkab **CI/CD** pipelinelari uchun zamin yaratish uchun asos bo'lib xizmat qiladi. Ushbu Jenkins pipeline skripti **GitHub** repositoriyadan kodni oladi, unda SonarQube tahlilini amalga oshiradi, sifat nazoratini kutadi(quality gate check), loyihaga dependencilarni o'rnatadi va build tugagandan so'ng elektron pochtaga loglar va natija yuboradi. U JDK va Node.js ning maxsus versiyalaridan foydalanish uchun tuzilgan, bu esa build qilish muhitida izchillikni ta'minlaydi.
 
-GitHubdan private(yopiq) repositoriyadagi kodlarga Jenkins kira olishi va ishlatishi uchun `GitHub Token(personal access token)` olishimiz kerak. Open Source repositoriyalar uchun bu shart emas. Ushbu GitHub qo'llanmasida qanday qilib [personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) olish haqida batafsil yozilgan. GitHub Token olganingizdan keyin undan nusxa olib qo'ying. Olingan GitHub Tokenni Jenkins Credentialsga qo'shib qo'yishimiz kerak pipelineda undan foydalanish uchun. 
+**GitHub**dan private(yopiq) repositoriyadagi kodlarga Jenkins kira olishi va ishlatishi uchun `GitHub Token(personal access token)` olishimiz kerak. Open Source repositoriyalar uchun bu shart emas. Ushbu GitHub qo'llanmasida qanday qilib [personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) olish haqida batafsil yozilgan. GitHub Token olganingizdan keyin undan nusxa olib qo'ying. Olingan GitHub Tokenni Jenkins Credentialsga qo'shib qo'yishimiz kerak pipelineda undan foydalanish uchun. 
 
 **->** `Manage Jenkins` **->** `Credentials`-ga kirib  `Add credentials`ga o'tamiz.
 
@@ -874,7 +874,7 @@ Jenkinsda Projectni yozib yuqoridagi pipeline yozib kirganingizda quyidagi oyna 
 
 > ![netflix](/images/article/netflix/jenkins5.png)
 
-Sizda pipeline muvaffaqiyatli ishga tushsa tbariklaymiz siz Jenkinsda birinchi **CI** pipelineni yozib ishga tushirdingiz.
+Sizda pipeline muvaffaqiyatli ishga tushsa tabariklaymiz siz Jenkinsda birinchi **CI** pipelineni yozib ishga tushirdingiz.
 
 > ![netflix](/images/article/netflix/pipeline4.png)
 
@@ -894,15 +894,15 @@ Bu bosqichda biz **OWASP Dependency Check** plagini jenkinsga o'rnatamiz va sozl
 
 > ![netflix](/images/article/netflix/owasp.png)
 
-OWASP Dependency Check plaigini o'rnatib olganimzidan keyion configuratsiya qilib olishimiz kerak.
+OWASP Dependency Check plaigini o'rnatib olganimzidan keyin konfiguratsiya qilib olishimiz kerak.
 
 **->** `Manage Jenkins` **->** `Tools` **->** `Dependency-Check installations`
 
 > ![netflix](/images/article/netflix/owasp1.png)
 
-Rasmda ko'rsatilgandek configuratsiya qilib olamiz.
+Rasmda ko'rsatilgandek konfiguratsiya qilib olamiz.
 
-OWASP Dependency Checkni o'rnatib sozlab olganimizdan keyin pipelinemizga `OWASP FS SCAN` bosqichini(stage) qo'shsak bo'ladi.
+OWASP Dependency Check'ni o'rnatib sozlab olganimizdan keyin pipelinemizga `OWASP FS SCAN` bosqichini(stage) qo'shsak bo'ladi.
 
 ```groovy
 stage('OWASP FS SCAN') {
@@ -918,7 +918,7 @@ Pipelinega ushbu bosqichni qo'shib qaytadan ishga tushiramiz. Pipelineni to'gri 
 
 > ![netflix](/images/article/netflix/owasp3.png)
 
-Hammasi yaxshi hamma bosqichlarda muvaffaqiyatli o'tdi endi ilovamizni dockerda containerda ishga tushirishimiz va serverga vatomatik deploy boqichlarini qo'shishimiz kerak. Undan oldin keling jenkinsda kerakli plaginlarni o'rnatib olamiz.
+Hammasi yaxshi hamma bosqichlarda muvaffaqiyatli o'tdi endi, ilovamizni dockerda konteynerda ishga tushirishimiz va serverga avatomatik deploy bosqichlarini qo'shishimiz kerak. Undan oldin keling Jenkinsda kerakli plaginlarni o'rnatib olamiz.
 
 **->** `Manage Jenkins` **->** `Plugins`
 
@@ -955,7 +955,7 @@ Access Tokenga nom berib unga **Read,Write,Delete** permisonlarni beramiz **`Gen
 
 > ![netflix](/images/article/netflix/docker7.png)
 
-Sizga access token generatsiya qilib beraildi siz uni nusxa olib qo'yishingiz kerak aks holda uni qaytib ololmaysiz. Sizga docker login qilish uchun namuna CLI command ham beriladi 
+Sizga access token generatsiya qilib berialdi va siz undan nusxa olib qo'yishingiz kerak, aks holda uni qaytib ololmaysiz. Sizga docker login qilish uchun namuna CLI command ham beriladi 
 
 ```bash
 docker login -u devsecopsuser4732
@@ -971,9 +971,9 @@ Jenkins pipelineda DockerHub Registrydan foydalanishimiz uchun Jenkins crdential
 
 Dockerhubdan ro'yxatdan o'tdik, access token oldik hammasini Jenkins credentialsga **dockerhub** ID bilan saqladik endi Jenkins pipelinega *CD*(continuous delivery)qismini qo'shsak bo'ladi.
 
-Jenkins pipelenimizga quyidagi bosqichni qo'shamiz. Bu bosqich ilovamizdan docker image yaratib build qilib Docker Registyga push qiladi yani DockerHubga.
+Jenkins pipelenimizga quyidagi bosqichni qo'shamiz. Bu bosqich ilovamizdan docker image yaratib, build qilib, Docker Registyga push qiladi ya'ni DockerHubga.
 
-Pipelinega yangi environmentlar qo'shib olamiz.
+Pipelinega yangi environmentlar qo'shib olamiz:
 
 ```groovy /DOCKERHUB_CREDENTIALS/ /REGISTRY_URL/ /CONTAINER_NAME/
 environment {
@@ -987,8 +987,8 @@ environment {
     SCANNER_HOME = tool 'sonar-scanner'
 }
 ```
-* **GIT_URL ->** Loyihamiz git urili(manzili).
-* **GITHUB_TOKEN ->** BU credentialsdan `github-token`ni olib keladi yani private repositoriyalarni clon qilib olish uchun
+* **GIT_URL ->** Loyihamiz git urli(manzili).
+* **GITHUB_TOKEN ->** Bu credentialsdan `github-token`ni olib keladi yani private repositoriyalarni clon qilib olish uchun
 * **DOCKERHUB_CREDENTIALS ->** credentialsdandan DockerHub username va access tokenni olib keladi.
 * **CONTAINER_NAME -> ** Bu loyihamizni containerda ishga tushirishda unga beriladigan nom
 * **REGISTRY_URL ->** Dokcer Registry URL. Bizni holatimizda yani Dockerhubda bu yerda Dockerhub username yoziladi.
@@ -1017,9 +1017,9 @@ stage('Build Application') {
 }
 ```
 
-Pipelinedagi ushbu maxsus bosqich Docker konteynerli ilovasini yaratish va deploymentgshni amalga oshiradi.
+Pipelinedagi ushbu maxsus bosqich Docker konteynerli ilovasini yaratish va deploymentni amalga oshiradi.
 
-* **Credentialsdan foydalanish ->** Docker Hub hisob ma'lumotlarini xavfsiz boshqarish uchun `withCredentials `dan foydalanadi `(credentialsId: 'dockerhub')`. Yani bu Jenkins credentialsdan secretlarni olib pipelineda xavfsiz ishlatadi. `dockerhub` credentialsdan user va parol ajratib olinib unga 2ta variable(o'zgaruvchi)ga beriladi va ishlatiladi. 
+* **Credentialsdan foydalanish ->** DockerHub hisob ma'lumotlarini xavfsiz boshqarish uchun `withCredentials `dan foydalanadi `(credentialsId: 'dockerhub')`. Yani bu Jenkins credentialsdan secretlarni olib pipelineda xavfsiz ishlatadi. `dockerhub` credentialsdan user va parol ajratib olinib unga 2ta variable(o'zgaruvchi)ga beriladi va ishlatiladi. 
 Koddagi qism `[usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]`
 
 * **Docker Login ->** Taqdim etilgan hisob ma’lumotlari (`DOCKER_USERNAME` va `DOCKER_PASSWORD`) yordamida Docker login buyrug‘ini bajaradi va Docker Registryga kiradi.
@@ -1158,13 +1158,13 @@ DockerHubga kirib ko'rsangiz `netflix` nomli repositoriya ochilib loyihamiz dock
 
 > ![netflix](/images/article/netflix/docker9.png)
 
-Nihoyat Biz bu boqichni ham tugatdik **OWASP Dependency Check** plagini Jenkinsga o'rnatdik, sozladik va `OWASP FS SCAN` stage(bosqich) qo'shdik. Loyihamizda konteyrnerlashtirish uchun dockerdan foydalandik. Dockerdan foydalanish uchun Jenkinsga kerakli Docker plaginlarini o'rnatib sozladik. Dokcer Registy sifatida Dokcerhubdan foydalandik. DockerHubdan akkount ochib access token olib Jenkins credentialsga qo'shdik. DOkcer image yaratish va Dokcer Registryga push qilish uchun `Build Application` stage(bosqich) qo'shdik. Nihoyat biz keyingi boqichga o'tsak bo'ladi, keyingi boqich Docker imageni Serverga avtomatik deploy qilish bosqichi.
+Nihoyat Biz bu boqichni ham tugatdik **OWASP Dependency Check** plagini Jenkinsga o'rnatdik, sozladik va `OWASP FS SCAN` stage(bosqich) qo'shdik. Loyihamizda konteyrnerlashtirish uchun dockerdan foydalandik. Dockerdan foydalanish uchun Jenkinsga kerakli Docker plaginlarini o'rnatib sozladik. Docker Registy sifatida DockerHub'dan foydalandik. DockerHub'dan akkount ochib access token olib Jenkins credentialsga qo'shdik. Docker image yaratish va Docker Registryga push qilish uchun `Build Application` stage(bosqich) qo'shdik. Nihoyat biz keyingi boqichga o'tsak bo'ladi, keyingi boqich Docker imageni Serverga avtomatik deploy qilish bosqichi.
 
 ## Finish. To'liq jarayonni avtomatlashtirish uchun Jenkins pipeline yozamiz va Netflix loyihamizni production uchun tayyorlaymiz.
 
-Nihoyat biz eng oxirgi bosqichga yetib keldik. Bu bosqichda pipelineda **ssh** bilan serverga ulanimiz va Docker imageni Docker registrydan pull qilib uni ishga tushiradigan stage(bosqich) qo'shamiz. Loyihamizni productionga tayyorlaymiz. Loyihamizni ishga tushirib, Serverga NGinx o'rnatib domen olib SSL sertifat olamiz.
+Nihoyat biz eng oxirgi bosqichga yetib keldik. Bu bosqichda pipelineda **ssh** bilan serverga ulanimiz va Docker imageni Docker registrydan pull qilib uni ishga tushiradigan stage(bosqich) qo'shamiz. Loyihamizni productionga tayyorlaymiz. Loyihamizni ishga tushirib, serverga NGINX o'rnatib, domen olib SSL sertifikat olamiz.
 
-Loyihamizda serverimizda ishga tushirishimiz uchun Jenkins pipeline serverga kira olishi kerak. Biz buning uchun SSH(ssh-agent) dan foydalanamiz. ssh-ganet plagini Jenkinsga o'rnatib olishimiz kerak. 
+Loyihamizni serverimizda ishga tushirishimiz uchun Jenkins pipeline serverga kira olishi kerak. Biz buning uchun SSH(ssh-agent) dan foydalanamiz. ssh-agent plagini Jenkinsga o'rnatib olishimiz kerak. 
 
 **->** `Manage Jenkins` **->** `Plugins`
 
@@ -1225,13 +1225,13 @@ whoami
 
 SSh key generatsiya qilib sozlab oldik endi Serverga kirib Docker registyrdan imageni pull qilib olib uni run qiladigan bosqich qo'shishimiz kerak.
 
-Jenkins pipeleni Serverga kira olishi uchun 2ta Jenkins credentials yaratish kerak bular Server usernamesi va Server IP manzilidir.
+Jenkins pipeleni Serverga kira olishi uchun 2 ta Jenkins credentials yaratish kerak bular: Server username'si va Server IP manzilidir.
 
 **->** `Manage Jenkins` **->** `Credentials`
 
 > ![netflix](/images/article/netflix/secret7.png)
 
-Bu qismda `Secret`ga serverimiz usernamesi yoziladi(whoami buyrug'i bilan bilib olishingiz mumkin)
+Bu qismda `Secret`ga serverimiz username'si yoziladi(whoami buyrug'i bilan bilib olishingiz mumkin)
 
 > ![netflix](/images/article/netflix/secret9.png)
 
@@ -1268,7 +1268,7 @@ stage('Deploy Server') {
 }
 ```
 
-Shu qismda bizda bitta muammo bor yani oldindan shu nomli container ishlab turgan bo'lsa conflict kelib chiqadi buni oldini olish uchun serverda `deployer.sh` nomlibash script yozamiz. U script vazifasi quyidagicha unga Jenkins pipelineda tashqi argumentlar beriladi shu nomli ishlab turgan container bo'lsa uni o'chirib tozalab yangi containerni berilgan portda ishfga tushirib qo'yadi. Bash script quyidagicha.
+Shu qismda bizda bitta muammo bor yani oldindan shu nomli container ishlab turgan bo'lsa conflict kelib chiqadi. Buni oldini olish uchun serverda `deployer.sh` nomli bash script yozamiz. U script vazifasi quyidagicha unga Jenkins pipelineda tashqi argumentlar beriladi shu nomli ishlab turgan container bo'lsa uni o'chirib tozalab yangi containerni berilgan portda ishga tushirib qo'yadi. Bash script quyidagicha:
 
 
 ```bash
@@ -1326,7 +1326,7 @@ Bash scriptni executable qilib qo'yamiz.
 ```bash
 sudo chmod +x deployer.sh
 ```
-Pipelinedagi `/home/username/deployer.sh` qismini deployer.sh scriptingiz joylashgan yo'lni(path)ni ko'rsatib qo'yishingiz kerak. Ushbu bosqich ssh bilan serverga kirib `deployer.sh` bash scriptga tashqi argumentlar berib uni ishgfa tuhsiradi. Pipelineni yangilab uni ishga tushiramiz agar sizda hammasi to'gri qilingan bo'lsa u muvaffiqyatli ishlashi kerak.
+Pipelinedagi `/home/username/deployer.sh` qismini deployer.sh scriptingiz joylashgan yo'lni(path)ni ko'rsatib qo'yishingiz kerak. Ushbu bosqich ssh bilan serverga kirib `deployer.sh` bash scriptga tashqi argumentlar berib uni ishga tuhsiradi. Pipelineni yangilab uni ishga tushiramiz agar sizda hammasi to'gri qilingan bo'lsa u muvaffiqyatli ishlashi kerak.
 
 ![netflix](/images/article/netflix/pipeline7.png)
 
@@ -1337,7 +1337,7 @@ Sizga emaildan bildirishnoma(notification) kelgan bo'lishi kerak.
 
 ![netflix](/images/article/netflix/gmail9.png)
 
-Piplelline muvvaffiqaytli ishini tugatganidan keyin Serverga kirib ishlab turgan docker containerlar ro'yxatini ko'rsangiz loyihamiz docker containerini ko'rishingiz kerak.
+Pipeline ishini muvaffaqiyatli tugatganidan keyin serverga kirib ishlab turgan docker konteynerlar ro'yxatini ko'rsangiz, loyihamiz docker konteynerini ko'rishingiz kerak.
 
 ![netflix](/images/article/netflix/server.png)
 
@@ -1346,11 +1346,11 @@ Server IP manizli bilan `8081` portga kirib ko'rsangiz loyihamiz ishlab turgani 
 ![netflix](/images/article/netflix/netflix.png)
 ![netflix](/images/article/netflix/netflix1.png)
 
-Nihoyat biz Jenkisn bilan to'liq avtomatlashtirilgan `CI/CD` pipelineni yozib bo'ldik va muffaqqiyatli ishlayapti. Keyingi bosqich ilovamiz uchun nginx configuratsiya qilib domen ulab SSL sertifikat olishdir. Buning uchun biz yuqorida Jenkins uchun nginx configuratsiya qilib domen ulab SSL Sertifikat olganimizdek bir hildir. 
+Nihoyat biz Jenkins bilan to'liq avtomatlashtirilgan `CI/CD` pipelineni yozib bo'ldik va muvaffaqiyatli ishlayapti. Keyingi bosqich ilovamiz uchun NGINX konfiguratsiya qilib, domen ulab, SSL sertifikat olishdir. Buning uchun biz yuqorida Jenkins uchun NGINX konfiguratsiya qilib, domen ulab, SSL Sertifikat olganimizdek bir xildir. 
 
-Jenkinsga domen ulashda hammasi tushintirilgan mana havola: [Nginx va certboot o'rnatish, domen ulash va SSL Sertifikat olish](#6nginx-va-certbot-ornatish-uchun-quyidagi-buyruqdan-foyalanasiz)
+Jenkinsga domen ulashda hammasi tushintirilgan, mana havola: [NGINX va certboot o'rnatish, domen ulash va SSL Sertifikat olish](#6nginx-va-certbot-ornatish-uchun-quyidagi-buyruqdan-foyalanasiz)
 
-Ilovamiz uchun nginx configuratsiya quyidagicha.
+Ilovamiz uchun NGINX konfiguratsiya quyidagicha.
 
 ```bash /netflix/
 sudo nano /etc/nginx/sites-available/netflix.xilol.uz
@@ -1374,7 +1374,7 @@ server {
 ```bash /netflix.xilol.uz/
 sudo ln -s /etc/nginx/sites-available/netflix.xilol.uz /etc/nginx/sites-enabled/netflix.xilol.uz
 ```
-Nginx configuratsiyamiz to'grilinini tekshiramiz.
+NGINX konfiguratsiyamiz to'g'riligini tekshiramiz.
 
 ```bash
 sudo nginx -t
@@ -1386,7 +1386,7 @@ sudo certbot --nginx -d netflix.xilol.uz
 ```
 Brauzer orqali domen bilan ilovangizga kirganingizda u https bilan ishlashi kerak.
 
-Mana loyihaning to'liq Jenkins pipeline
+Mana loyihaning to'liq Jenkins pipeline:
 
 ```groovy
 pipeline {
@@ -1493,18 +1493,18 @@ pipeline {
 }
 ```
 
-Loyihamizni monitoring qilish uchun sozlagandik keling uni holatini ko'ramiz.
+Loyihamizni monitoring qilish uchun sozlagandik, keling uni holatini ko'ramiz:
 
 ![netflix](/images/article/netflix/server1.png)
 
 ## Xulosa
 <Callout type="info" emoji="">
 
-Nihoyat biz Netflix loyihamizni tugatdik. Ushbu loyiha ko'plab texnologiyalarni ishlatdik va o'rgandik. Bir ko'rishda bu murakkabga o'xshab ko'rinishi mumkin aslida bu boshlanishi hali hammasi oldinda biz endi boshladik )
+Nihoyat biz Netflix loyihamizni tugatdik. Ushbu loyihada ko'plab texnologiyalarni ishlatdik va o'rgandik. Bir ko'rishda bu murakkabga o'xshab ko'rinishi mumkin, aslida bu boshlanishi hali hammasi oldinda biz endi boshladik )
 
-Ushbu loyiha GitHub repositoriyasi: [github.com/devop-journey-uz/netflix-public](https://github.com/devops-journey-uz/netflix)
+Ushbu loyiha GitHub repositoriyasi: [github.com/devops-journey-uz/netflix-public](https://github.com/devops-journey-uz/netflix)
 
-**Sana:** 2023.12.15(2023-yil 15-dekabr)
+**Sana:** 2023.12.15 (2023-yil 15-dekabr)
 
 **Muallif: Otabek Ismoilov**
 
