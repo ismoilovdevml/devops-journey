@@ -98,7 +98,7 @@ sudo systemctl enable nginx
 
 NGINX o'rnatganimizdan keyin NGINX Load Balancer sozlashni boshlasak bo'ladi.
 
-## NGINX Load Balancing sozlash
+## NGINX HTTP Load Balancing sozlash
 
 [devops-journey.uz](https://devops-journey.uz/) uchun `/etc/nginx/sites-available` jildida NGINX configuratsiya yaratib olamiz.
 
@@ -108,7 +108,7 @@ NGINX o'rnatganimizdan keyin NGINX Load Balancer sozlashni boshlasak bo'ladi.
 
 Uchta application serverimizga ham docker o'rnatib SonarQubeni docker orali ishga tushiramiz.
 
-1. Dockerni bash script yozib o'rntaamiz.
+1. Dockerni bash script yozib o'rntamiz.
 
 ```bash
 nano docker.sh
@@ -194,7 +194,7 @@ server {
 }
 ```
 
-Bu NGINX konfiguratsiya devops-hourney.uz kelgan requestlarni 3ta applciation serverga Load balancing qilib turishi kerak.
+Bu NGINX konfiguratsiya devops-journey.uz kelgan requestlarni(so'rovlarni) 3ta applciation serverga Load balancing qilib turishi kerak.
 
 Keling konfiguratsiyani ko'rib chiqamiz.
 
@@ -472,3 +472,15 @@ sudo systemctl reload nginx
 Ushbu holat quyidagi rasmda tasvirlangan.
 
 ![nginx-lb](/images/tutorials/web-server/nginx-lb/least_time.png)
+
+
+Ushbu mavzuda biz NGINX'da HTTP Load balancing configuratsiya qilishni va loyihamizga serverlarimiz holatiga qarab load balancing metodlarini qo'llashni ko'rib chiqdik. Buni hammasi NGINX Open Sourceda ishlaydi. Qolgan Health Check va advanced load balancing uchun NGINX Plus yoki qo'shimcha dasturlar kerak bo'ladi. Keyingi qismlarda TCP/UDP Load balancingni ko'rib chiqamiz.
+
+## Qo'shimcha
+
+<Callout type="info" emoji="">
+
+**Sana:** 2023.12.25(2023-yil 25-dekabr)
+
+**Muallif: Otabek Ismoilov**
+</Callout>
