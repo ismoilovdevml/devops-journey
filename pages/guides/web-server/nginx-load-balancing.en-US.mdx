@@ -5,19 +5,19 @@ import { Callout } from "nextra-theme-docs";
 ![nginx-lb](/images/tutorials/web-server/nginx-lb/main-banner.png)
 
 <Callout type="info" emoji="">
-Eslatma: Ushbu qo'llanmani o'qishdan oldin [Load Balancing](https://devops-journey.uz/guides/web-server/load-balancing) qo'llanmasini o'qib chiqishingizni maslahat beramiz.
+**Eslatma:** Ushbu qo'llanmani o'qishdan oldin **[Load Balancing](https://devops-journey.uz/guides/web-server/load-balancing)** qo'llanmasini o'qib chiqishingizni maslahat beramiz.
 </Callout>
 
-Load Balancing zamonaviy veb-infratuzilmaning muhim jihati bo'lib, kiruvchi trafikni bir nechta serverlar bo'ylab samarali taqsimlashga imkon beradi. **NGINX**, high-performance web server, proxy server va reverse proxy server load balancinning mustahkam imkoniyatlarini taklif etadi. Ushbu qo'llanmada biz **NGINX** yordamida load balancing tushunchalari(concept) va amaliy amalga oshirilishini ko'rib chiqamiz.
+**Load Balancing** zamonaviy veb-infratuzilmaning muhim jihati bo'lib, kiruvchi trafikni bir nechta serverlar bo'ylab samarali taqsimlashga imkon beradi. **NGINX**, high-performance web server, proxy server va reverse proxy server load balancing mustahkam imkoniyatlarini taklif etadi. Ushbu qo'llanmada biz **NGINX** yordamida load balancing tushunchalari(concept) va amaliy amalga oshirilishini ko'rib chiqamiz.
 
-**NGINX** o'zining high performance, kengaytirilishi(scalability) va advanced xususiyatlari(feature) bilan mashhur bo'lgan ko'p qirrali dasturiy ta'minotdir. U **HTTP, HTTPS, TCP** va **UDP** trafigini load balancing qilishi mumkin bo'lgan reverse proxy server sifatida ishlaydi. NGINX ning Load Balancing imkoniyatlari DevOpslarga/Adminlarga trafikni serverlar o'rtasida samarali taqsimlash uchun turli strategiyalarni o'rnatish imkoniyatini beradi. Ushbu tushunchalarni tushunish va load balancing uchun NGINX-ni to'g'ri sozlash mustahkam va samarali veb-infratuzilmani saqlash uchun asosiy hisoblanadi.
+**NGINX** o'zining high performance, kengaytirilishi(scalability) va advanced xususiyatlari(feature) bilan mashhur bo'lgan ko'p qirrali dasturiy ta'minotdir. U **HTTP, HTTPS, TCP** va **UDP** trafigini load balancing qilishi mumkin bo'lgan reverse proxy server sifatida ishlaydi. NGINX-ning Load Balancing imkoniyatlari DevOpslarga/Adminlarga trafikni serverlar o'rtasida samarali taqsimlash uchun turli strategiyalarni o'rnatish imkoniyatini beradi. Ushbu tushunchalarni tushunish va load balancing uchun NGINX-ni to'g'ri sozlash mustahkam va samarali veb-infratuzilmani saqlash uchun asosiy hisoblanadi.
 
 
 ## NGINX'da Load Balancing metodlar
 
 * **Round Robin->** - bu NGINX-da load balancinning default metodi. U kiruvchi so'rovlarni mavjud serverlar bo'ylab ketma-ket ravishda teng ravishda taqsimlaydi. Har bir keyingi so'rov server pool bo'ylab o'tish orqali navbatdagi serverga yo'naltiriladi.
 
-* **Least Connection->** Least Connection metodi kiruvchi so'rovlarni hozirda eng kam faol ulanishga ega serverga yo'naltiradi. Ushbu strategiya trafikni serverlarga joriy ish yukiga qarab yo'naltirish orqali yanada muvozanatli taqsimlashni ta'minlaydi.
+* **Least Connection->** Least Connection metodi kiruvchi so'rovlarni hozirda eng kam faol ulanishga ega serverga yo'naltiradi. Ushbu strategiya trafikni serverlarga joriy ish yukiga(workload) qarab yo'naltirish orqali yanada muvozanatli taqsimlashni ta'minlaydi.
 
 * **IP Hash->** IP Hash load balancing clientning IP manzilini ma'lum bir serverga ko'rsatadigan hash funksiyasidan foydalanadi. Ushbu metod bir xil mijoz IP-dan so'rovlar har doim bir xil serverga yo'naltirilishini ta'minlaydi, bu seansning barqarorligi va izchilligini osonlashtiradi.
 
@@ -54,7 +54,7 @@ Agar serverlar hammasi bir tarmoqda bo'lsa faqat **NGINX(Load Balancer)** server
 | Application Server 3 | 185.168.1.23 |
 </Callout>
 
-Biz vaziyatimizda devops-journey.uz saytini gorizontal kengaytirishimiz(horizontal scaling) va load balancing qilishimiz kerak.
+Biz vaziyatimizda [devops-journey.uz](https://devops-journey.uz/) saytini gorizontal kengaytirishimiz(horizontal scaling) va load balancing qilishimiz kerak.
 
 ![nginx-lb](/images/tutorials/web-server/nginx-lb/scaling.png)
 
@@ -62,9 +62,9 @@ Kengaytirish(Scaling) ikki xil bo'ladi bu vertikal va gorizontal.
 
 * **Vertical Scaling->** Bu bitta serverning resurslarini ko'paytirishni o'z ichiga oladi. Masalan, protsessorni yangilash, qo'shimcha RAM qo'shish yoki serverdagi xotirani kengaytirish. Bu kompyuterga qo‘shimcha imkoniyatlar qo‘shish orqali uni yanada kuchliroq qilish kabi. Biroq, bitta serverni qancha yangilashingiz mumkinligining chegarasi bor va bir nuqtada u juda qimmatga tushishi yoki masshtabni kengaytirishni davom ettirish imkonsiz bo'lishi mumkin. Qisqa qilib aytganda server resurslarini(CPU,RAM,Storage,Network) ko'paytirish orqali kengatirish(scaling)
 
-* **Horizontal Scaling->** Tarmoq yoki tizimga qo'shimcha serverlar yoki nodelarni qo'shishni o'z ichiga oladi. Bir serverni kuchliroq qilish o'rniga, yukni taqsimlash uchun ko'proq machinelarni qo'shasiz. Bu ish yukini(workload) yengish uchun bir nechta serverlarning birgalikda ishlashiga o'xshaydi. Ushbu yondashuv kengaytirilishi mumkin va kerak bo'lganda qo'shimcha serverlarni qo'shish orqali ortib borayotgan talablarni qondirishi mumkin. Qisqa qilib aytganda bitta serverni resurlarini kuchaytirgandan ko'ra serverlar sonini ko'paytirib bosimni teng taqsimlash.
+* **Horizontal Scaling->** Tarmoq yoki tizimga qo'shimcha serverlar yoki nodelarni qo'shishni o'z ichiga oladi. Bir serverni kuchliroq qilish o'rniga, yukni taqsimlash uchun ko'proq serverlarni qo'shasiz. Bu ish yukini(workload) yengish uchun bir nechta serverlarning birgalikda ishlashiga o'xshaydi. Ushbu yondashuv kengaytirilishi mumkin va kerak bo'lganda qo'shimcha serverlarni qo'shish orqali ortib borayotgan talablarni qondirishi mumkin. Qisqa qilib aytganda bitta serverni resurlarini kuchaytirgandan ko'ra serverlar sonini ko'paytirib bosimni teng taqsimlash.
 
-Biz gorizontal scalingni tanlaymiz va bizda bitta application serverimiz bor edi uni gorizontal kengaytirib 3ta application server qilamiz va bitta NGINX(Load Balancer) server sozlab olamiz. Endi bizda 3ta application sevrer bor yani sta serverda **devops-journey.uz** platformasi **300** portda ishlab turibti. Ushbu holatda NGINX(Load Balancing)ni ko'rib chiqamiz. 
+Biz gorizontal scalingni tanlaymiz va bizda bitta application serverimiz bor edi uni gorizontal kengaytirib 3ta application server qilamiz va bitta NGINX(Load Balancer) server sozlab olamiz. Endi bizda 3ta application sevrer bor yani 3ta serverda **devops-journey.uz** platformasi **300** portda ishlab turibti. Ushbu holatda NGINX(Load Balancing)ni ko'rib chiqamiz. 
 
 **Rasmda holat tasvirlangan.**
 
@@ -103,7 +103,7 @@ NGINX o'rnatganimizdan keyin NGINX Load Balancer sozlashni boshlasak bo'ladi.
 [devops-journey.uz](https://devops-journey.uz/) uchun `/etc/nginx/sites-available` jildida NGINX configuratsiya yaratib olamiz.
 
 <Callout type="info" emoji="">
-**ESLATMA:** Ushbu loyida NGINX Load Balancingni tekshirish uchun SonarQube containeridan foydalanamiz sababi Docker orqali tezda ishga tushira olamiz va ro'yxatdan o'tish/kirish bo'lgani uchun Load Balancingni tekshirib olishimiz mumkin.
+**Eslatma:** Ushbu loyida NGINX Load Balancingni tekshirish uchun SonarQube containeridan foydalanamiz sababi Docker orqali tezda ishga tushira olamiz va ro'yxatdan o'tish/kirish bo'lgani uchun Load Balancingni tekshirib olishimiz mumkin.
 </Callout>
 
 Uchta application serverimizga ham docker o'rnatib SonarQubeni docker orali ishga tushiramiz.
@@ -142,6 +142,7 @@ sudo apt-get update
 sudo apt-get -y install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin docker-compose
  
 # Adjust Docker socket permissions
+sudo usermod -aG docker $CURRENT_USERNAME
 sudo chmod 666 /var/run/docker.sock
 sudo chown $CURRENT_USERNAME:docker /var/run/docker.sock
  
@@ -152,13 +153,13 @@ sudo systemctl enable docker
 ```
 
 
-Docker o'rnatilganidan keyin SonarQubeni ishga tushiramiz. SonarQube default `9000` ishga tushadi
+Docker o'rnatilganidan keyin SonarQubeni ishga tushiramiz. SonarQube default `9000`-portda ishga tushadi
 
 ```bash
 docker run -d --name sonar -p 9000:9000 sonarqube:lts-community
 ```
 
-SonarQube 3ta application serverimizda ham ulanganidan keyin har biriga kirib **Login**ga `admin` **Passowrdg**a `admin` yozib kiramiz va yangi parol qo'yihsda quyidagicha parol qo'yamiz.
+SonarQube 3ta application serverimizda ham ulanganidan keyin har biriga kirib **Login**ga `admin` **Passowrd**ga `admin` yozib kiramiz va yangi parol qo'yishda quyidagicha parol qo'yamiz.
 
 | Server   | Login | Password | 
 | -------- | ----- |--------- |
@@ -166,13 +167,13 @@ SonarQube 3ta application serverimizda ham ulanganidan keyin har biriga kirib **
 | Server B | admin | node2    |
 | Server C | admin | node3    |
 
-Bunday ko'rinishda login parol qo'yishnik o'ziga xos xususiyati bor u orqali biz load balancer qaysi serverdagi SonarQubega yo'naltirganini bilib olishimiz va Load Balancing metodlari to'gri ishlayotganini bilib olamiz.
+Bunday ko'rinishda login parol qo'yishning o'ziga xos xususiyati bor u orqali biz load balancer qaysi serverdagi SonarQubega yo'naltirganini bilib olishimiz va Load Balancing metodlari to'gri ishlayotganini bilib olamiz.
 
 ```bash
 cd /etc/nginx/sites-available/
 nano devops-journey.uz
 ```
-`devops-journey.uz` konfiguratsiya ochib olganimzidan keyin quyidagicha Load Balancin konfiguratsiya qilamiz.
+`devops-journey.uz` konfiguratsiya ochib olganimzidan keyin quyidagicha Load Balancing konfiguratsiya qilamiz.
 
 ```bash filename="/etc/nginx/sites-available/devop-journey.uz"
 upstream backend {
@@ -194,7 +195,7 @@ server {
 }
 ```
 
-Bu NGINX konfiguratsiya devops-journey.uz kelgan requestlarni(so'rovlarni) 3ta applciation serverga Load balancing qilib turishi kerak.
+Bu NGINX konfiguratsiya [devops-journey.uz](https://devops-journey.uz/) kelgan requestlarni(so'rovlarni) 3ta application serverga Load balancing qilib turishi kerak.
 
 Keling konfiguratsiyani ko'rib chiqamiz.
 
@@ -206,6 +207,19 @@ upstream backend {
 }
 ``` 
 NGINX `upstream` load balancing uchun klaster ochish va boshqarishni bildiradi. konfiguratsiyadagi `backend` esa klasterimiz nomi. `backend` klasterimiz ichida serverlarimiz IP manzillari va applicationimiz ishlab turgan portlari ko'rsatilgan. Qancha server bo'lsa shuncha server qo'shib borilaveradi yoki bitta serverda bitta application bir nechta portda ishlab turgan bo'lsa qo'shilaveradi.
+
+Misol uchun bitta serverda bitta application bir nechta portda Docker containerda ishlab turgan bo'lsa quyidagicha bo'ladi.
+
+```bash /backend/
+upstream backend {
+  server 185.168.1.21:9000;
+  server 185.168.1.21:9001;
+  server 185.168.1.21:9002;
+}
+``` 
+Ushbu holatda `185.168.1.21` IP manzilli serverda 1ta application replica bo'lib 3ta portda ishlab turibti.
+
+
 
 ```bash
 server {
@@ -236,9 +250,9 @@ server {
 
 * `proxy_set_header X-Real-IP $remote_addr;` Proksi-so'rovning `X-Real-IP` headerini `$remote_addr` qiymatiga o'rnatadi, unda so'rov yuborayotgan clientning IP-manzili mavjud.
 
-* `proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;` Clientning IP manzilini mavjud `X-Forwarded-For` headriiga qo'shib, mavjud qiymatlarni saqlaydi. Ushbu header asl clientning IP-manzilini kuzatish uchun ishlatiladi, ayniqsa so'rovlar proksi-serverlar yoki load balancerlar orqali o'tganda.
+* `proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;` Clientning IP manzilini mavjud `X-Forwarded-For` headeriga qo'shib, mavjud qiymatlarni saqlaydi. Ushbu header asl clientning IP-manzilini kuzatish uchun ishlatiladi, ayniqsa so'rovlar proksi-serverlar yoki load balancerlar orqali o'tganda.
 
-* `proxy_set_header X-Forwarded-Proto $scheme;` Proksilangan soʻrovning `X-Forwarded-Proto` headerini client soʻrovida ishlatiladigan protokolni (`http` yoki `https`) ifodalovchi $scheme qiymatiga oʻrnatadi.
+* `proxy_set_header X-Forwarded-Proto $scheme;` Proksilangan soʻrovning `X-Forwarded-Proto` headerini client soʻrovida ishlatiladigan protokolni (`http` yoki `https`) ifodalovchi `$scheme` qiymatiga oʻrnatadi.
 
 Qisqa qilib aytganda, ushbu konfiguratsiya bloki serverning root URL(**/**) keladigan har qanday so'rovlarni `upstream`dagi serverlari guruhi `backend`dagi barcha serverlarga yo'naltirishni bildiradi va shu bilan birga client ma'lumotlarini saqlash va yo'naltirilgan so'rovga maxsus headerlarni o'zgartirish yoki qo'shish bilan ma'lum tafsilotlarni `backend` serverlariga yuboradi. 
 
@@ -248,7 +262,7 @@ sudo ln -s /etc/nginx/sites-available/devop-journey.uz /etc/nginx/sites-enabled/
 sudo systemctl reload nginx
 ```
 
-SSL sertifikat olib HTTP HTTPS qilish uchun certbot o'rnatib SSL sertifikat olamiz
+SSL sertifikat olib HTTP'ni HTTPS qilish uchun certbot o'rnatib SSL sertifikat olamiz
 
 ```bash
 sudo apt update
@@ -262,25 +276,25 @@ sudo certbot --nginx -d devops-journey.uz
 certbot orqali muvafaqqiyatli SSL sertifikat olganingizdan keyin brauzerdan applicatiomizga tashrif buyurishingiz mumkin va `https` orqali ochilishi kerak.
 
 <Callout type="info" emoji="">
-**ESLATMA:** Ushbu NGINX konfiguratsiyamizda Load Balancing qilish uchun Load Balancing metodlarini tanladik. Bu holatda NGINX default **Round Robin** load balancing metodini qo'llaydi.
+**Eslatma:** Ushbu NGINX konfiguratsiyamizda Load Balancing qilish uchun Load Balancing metodlarini tanladik. Bu holatda NGINX default **Round Robin** load balancing metodini qo'llaydi.
 </Callout>
 
 `devops-jourey.uz`(bu yerda sizning ilovangiz domeni bo'ladi)ga brauzerda tashrif buyurganingizda sizda quyidagi oyna ochilishi kerak.
 
 ![nginx-lb](/images/tutorials/web-server/nginx-lb/sonar-login.png)
 
-Endi qiziq joyi boshlandi, esingizda bo'lsa biz 3ta serverga 3ta **SonarQube** o'rnatib hammasiga loginga `admin` parolga esa serverlarga qarab **node1, node2, node3** deb parol qo'yib sozlagan edik. Hozir domen orqali applicationimizga kiramiz sizda SonarQubega kirish oynasi ochiladi u yerdan **Login**ga admin yozamiz va parolga node1 yozamiz agar xato desa node2, node3 sabab NGINX qaysi serverga yo'naltirganini bilishimiz uchun. Maksimum 3ta urinish bilan to'gri parolni topasiz parol to'gri deydi va kirganida yana SonarQube kirish sahifasiga qaytaradi. Xo'sh buning sababi nima? Sababi shundaki NGINX configuratsiyamizga Load Balancing metodlarini kiritmadik bu holda NGINX default **Round Robin** metodidan foydalanib load balancing qiladi.
+Endi qiziq joyi boshlandi, esingizda bo'lsa biz 3ta serverga 3ta **SonarQube** o'rnatib hammasiga loginga `admin` parolga esa serverlarga qarab **node1, node2, node3** deb parol qo'yib sozlagan edik. Hozir domen orqali applicationimizga kiramiz sizda SonarQubega kirish oynasi ochiladi u yerdan **Login**ga admin yozamiz va parolga node1 yozamiz agar xato bo'lsa node2, node3 sabab NGINX qaysi serverga yo'naltirganini bilishimiz uchun. Maksimum 3ta urinish bilan to'gri parolni topasiz parol to'gri deydi va kirganida yana SonarQube kirish sahifasiga qaytaradi. Xo'sh buning sababi nima? Sababi shundaki NGINX configuratsiyamizga Load Balancing metodlarini kiritmadik bu holda NGINX default **Round Robin** metodidan foydalanib load balancing qiladi.
 
 ![nginx-lb](/images/tutorials/web-server/nginx-lb/round-robin.png)
 
-Rasmda hozirgi holatimiz tasvirlangan yani birinchi so'rovda SonarQube kirish sahifasiga kirdik va to'gri logn parol kiritib kirishni bosganimzida 2chi so'rov ketti va bu biz ulangan serverga emas balki boshqa serverga yo'naltirildi boshqa serverda esa boshqa login parol mavjud shuning uchun biz login qilib kira olmaymiz SonarQube tanlagnini sababi ham aslida shu edi Load Balancing qanday ishlashini ishlayotganini bilish uchun edi.
+Rasmda hozirgi holatimiz tasvirlangan yani birinchi so'rovda SonarQube kirish sahifasiga kirdik va to'gri login parol kiritib kirishni bosganimzida 2chi so'rov ketti va bu biz ulangan serverga emas balki boshqa serverga yo'naltirildi boshqa serverda esa boshqa login parol mavjud shuning uchun biz login qilib kira olmaymiz SonarQube tanlanganini sababi ham aslida shu edi Load Balancing qanday ishlashini ishlayotganini bilish uchun edi.
 
 Round Robin load balancing metodi Stateless Load balancingga kiradi bu haqida **[Load Balancing](https://devops-journey.uz/guides/web-server/load-balancing#stateful-vs-stateless-load-balancing)** qo'llanmasida yozilgan. 
 
 Demak bizni holatimizda Round Robin load balancing to'gri kelmas ekan chunki stateless sessiya ushlamaydi. Xo'sh biz qanday yo'l tutamiz. 
 
 
-Keling NGINX COnfiguratsiyamizga laod balancing metodlarini qo'shamiz va **IP/URL Hash** metodidan foydalanib ko'ramiz.
+Keling NGINX Configuratsiyamizga laod balancing metodlarini qo'shamiz va **IP/URL Hash** metodidan foydalanib ko'ramiz.
 
 NGINX configuratsiyamizga quyidagi o'zgartisihni kiritamiz NGINXga reload beramiz.
 
@@ -315,7 +329,7 @@ server {
 sudo systemctl reload nginx
 ```
 
-Brauzerdan applicationimizga domen orqali kiramiz va maximum 3ta urinish bilan parolni topib login qilib kira olamiz. Bu safar bu muvaffaqqiytali bo'ldi yana biz login qilib kira oldik. Endi boshqa kompyuterlaran kirib ko'ramiz ular boshqa serverlarga tushib qolishadi. Xo'sh bu qanday ishladi qanday qilib kira oldik va qanday ishlab turibti?
+Brauzerdan applicationimizga domen orqali kiramiz va maximum 3ta urinish bilan parolni topib login qilib kira olamiz. Bu safar bu muvaffaqqiytali bo'ldi yana biz login qilib kira oldik. Endi boshqa kompyuterlardan kirib ko'ramiz ular boshqa serverlarga tushib qolishadi. Xo'sh bu qanday ishladi qanday qilib kira oldik va qanday ishlab turibti?
 
 ![nginx-lb](/images/tutorials/web-server/nginx-lb/ip_hash.png)
 
@@ -332,9 +346,9 @@ Bizda keyingi muammoli vaziyat bor. 3ta application serverimiz resurslari bir xi
 
 
 
-Agar hozir Round Robin yoki IP/URL Hash load balancing algoritmlaridan foydalanadigan bo'lsak resurlari kichik serverlarda bosim ortib ketadi va buni ko'tarolmay qoladi. Yani load balancing metodlari serverlarga sorovlarni teng taqsimlaydi bu holda hamma serverlar resurslari bir xil bo'lsagini yaxshi natija beradi. 
+Agar hozir **Round Robin** yoki **IP/URL Hash** load balancing algoritmlaridan foydalanadigan bo'lsak resurslari kichik serverlarda bosim ortib ketadi va buni ko'tarolmay qoladi. Yani load balancing metodlari serverlarga sorovlarni teng taqsimlaydi bu holda hamma serverlar resurslari bir xil bo'lsagini yaxshi natija beradi. 
 
-Bu vaziyat uchun serverlarga **weight** berish orqali bu vaziyatdan chiqa olamiz. Yani resyurlari ko;p serverlga yuqori **weight** beriladi resurlari kamroq serverlga **weight** kam beriladi. Bu holatda load balancer **weight** yuqori bo'lgan serverlarga so'rovlarni ko'proq yo'naltiradi **weight** kichik serverlarga esa kamroq so'rovlar yuboriladi. 
+Bu vaziyat uchun serverlarga **weight** berish orqali bu vaziyatdan chiqa olamiz. Yani resurslari ko'p serverlga yuqori **weight** beriladi resurlari kamroq serverlga **weight** kam beriladi. Bu holatda load balancer **weight** yuqori bo'lgan serverlarga so'rovlarni ko'proq yo'naltiradi **weight** kichik serverlarga esa kamroq so'rovlar yuboriladi. 
 
 
 Buning uchun NGINX configuratsiyamizni quyidagidek yangilaymiz va NGINXga reload berib ishga tushiramiz.
@@ -369,11 +383,11 @@ server {
 sudo systemctl reload nginx
 ```
 
-Ushbu holat rasmda tasvirlanganidek ishlaydi. Bu **Weighted Round Robin** load balancing metodida serverlar holatidan kleib chiqib so'rovlarni taqsimlaydi. Bunda `Sserver A` da resurlar ko'pligi va **weight** yuqoriligi sabab ko'proq so'rovlar yuboriladi `Server C` da esa resurslar kamligi va **weight** kichikligi sabab kamroq so'rovlar yuboriladi. Bu Load Balancing server resurlari bir xilm bo'lmaganida qo'l keladi. 
+Ushbu holat rasmda tasvirlanganidek ishlaydi. Bu **Weighted Round Robin** load balancing metodida serverlar holatidan kelib chiqib so'rovlarni taqsimlaydi. Bunda `Sserver A` da resurlar ko'pligi va **weight** yuqoriligi sabab ko'proq so'rovlar yuboriladi `Server C` da esa resurslar kamligi va **weight** kichikligi sabab kamroq so'rovlar yuboriladi. Bu Load Balancing server resurlari bir xil bo'lmaganida qo'l keladi. 
 
 ![nginx-lb](/images/tutorials/web-server/nginx-lb/weighted_round_robin.png)
 
-Bizni applicationimiz uchun Round Robin load balabncing metodi to'gri kelmagani uchun ushbu configuratsiyani IP/URL Hash laod balancing metodida ham ishlata olamiz. Quyida IP/URL Hash Load Balancing metodida serverlarga **weight** berib load balancing qilish NGINX konfiguratsiyasi.
+Bizni applicationimiz uchun Round Robin load balancing metodi to'gri kelmagani uchun ushbu configuratsiyani IP/URL Hash laod balancing metodida ham ishlata olamiz. Quyida **IP/URL Hash** Load Balancing metodida serverlarga **weight** berib load balancing qilish NGINX konfiguratsiyasi.
 
 ```bash
 sudo nano /etc/nginx/sites-available/devop-journey.uz
@@ -407,7 +421,7 @@ NGINXda yana bir load balancing metodini qo'llashimiz mumkin bu **Least Connecti
 
 ```bash filename="/etc/nginx/sites-available/devop-journey.uz" /least_conn;/
 upstream backend {
-  ip_hash;
+  least_conn;
   server 185.168.1.21:9000 weight=10;
   server 185.168.1.22:9000 weight=8;
   server 185.168.1.23:9000 weight=4;
@@ -430,12 +444,12 @@ Ushbu configuratsiya bilan NGINXni ishga tushirsak quyidagi rasmdagidek ishlaydi
 
 ![nginx-lb](/images/tutorials/web-server/nginx-lb/least-connections.png)
 
-Endi bizda yana bir muammoli vaziyat paydo bo'ldi. 3ta application serverimiz bor lekin ular so'rovlarga har xil tezlikda javob beradi. Load Balancer esa barcha serverlarga so'rovlarni teng taqsimlayapti lekin ba'zi serverlar so'rovlarga sekin javob beryapti bu unga ko'proq yuk tushishiga olib keladi. Xo'sh buni vaziyatga qanday yechimk berishimiz mumkin? Bu vaziyatada biz **Least Connections** load bvalancing metodidan foydalanamiz bu load balancing metod qaysi serverlar so'rovlarga tez javob bersa shu serverga ko'proq so'rovlar yuboradi sekin javob qayrtaradigan serverlarga esa kam so'rov yuboradi. 
+Endi bizda yana bir muammoli vaziyat paydo bo'ldi. 3ta application serverimiz bor lekin ular so'rovlarga har xil tezlikda javob beradi. Load Balancer esa barcha serverlarga so'rovlarni teng taqsimlayapti lekin ba'zi serverlar so'rovlarga sekin javob beryapti bu unga ko'proq yuk tushishiga olib keladi. Xo'sh buni vaziyatga qanday yechimk berishimiz mumkin? Bu vaziyatada biz **Least Time** load balancing metodidan foydalanamiz bu load balancing metod qaysi serverlar so'rovlarga tez javob bersa shu serverga ko'proq so'rovlar yuboradi sekin javob qayrtaradigan serverlarga esa kam so'rov yuboradi. 
 
 Keling bu uchun NGINX Load Balancing konfiguratsiyamizni yangilab NGINXga reload berib ishga tushiramiz.
 
 <Callout type="info" emoji="">
-**ESLATMA:** **Least Connections** load balancing metodi faqat **NGINX Plus**da ishlaydi
+**Eslatma:** **Least Time** load balancing metodi faqat **NGINX Plus**da ishlaydi
 </Callout>
 
 ```bash
@@ -463,7 +477,7 @@ server {
 }
 ```
 
-`upstream` blokiga `least_conn` load balancing metodini qo'shib qo'ydik va endi nginx reload berib sinab ko'ramiz.
+`upstream` blokiga `least_time header;` load balancing metodini qo'shib qo'ydik va endi nginx reload berib sinab ko'ramiz.
 
 ```bash
 sudo systemctl reload nginx
