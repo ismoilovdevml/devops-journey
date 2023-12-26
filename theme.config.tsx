@@ -58,6 +58,8 @@ const config: DocsThemeConfig = {
   },
   navbar: {
     extraContent: <GithubSponsors />,
+
+
   },
   logo() {
     // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -177,7 +179,7 @@ const config: DocsThemeConfig = {
             ]
           }
         </>
-      );cd
+      );
     },
   },
   i18n: [{ locale: 'en-US', text: 'English' }],
