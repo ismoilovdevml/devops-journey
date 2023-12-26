@@ -1,4 +1,4 @@
-name: React App CI
+name: DevOps Journey CI
 
 on:
   push:
