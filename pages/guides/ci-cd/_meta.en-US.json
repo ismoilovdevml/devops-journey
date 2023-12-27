@@ -22,5 +22,11 @@
     "icon": "▶️",
     "description": "Gitlab CI bilan ishlaymiz",
     "href": "/guides/ci-cd/start-gitlabci"
+  },
+  "android-github-actions": {
+    "title": "Android CI/CD",
+    "icon": "▶️",
+    "description": "Github Actionda Android CI/CD",
+    "href": "/guides/ci-cd/android-github-actions"
   }
 }
