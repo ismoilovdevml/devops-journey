@@ -1,3 +1,4 @@
+import { KeyObject } from "crypto";
 import { Callout } from "nextra-theme-docs";
 
 # NGINX Load Balancing
@@ -103,7 +104,14 @@ NGINX o'rnatganimizdan keyin NGINX Load Balancer sozlashni boshlasak bo'ladi.
 [devops-journey.uz](https://devops-journey.uz/) uchun `/etc/nginx/sites-available` jildida NGINX configuratsiya yaratib olamiz.
 
 <Callout type="info" emoji="">
-**Eslatma:** Ushbu loyida NGINX Load Balancingni tekshirish uchun SonarQube containeridan foydalanamiz sababi Docker orqali tezda ishga tushira olamiz va ro'yxatdan o'tish/kirish bo'lgani uchun Load Balancingni tekshirib olishimiz mumkin.
+**Eslatma:** Ushbu loyida NGINX Load Balancingni tekshirish uchun **SonarQube** containeridan foydalanamiz sababi Docker orqali tezda ishga tushira olamiz va ro'yxatdan o'tish/kirish bo'lgani uchun Load Balancingni tekshirib olishimiz mumkin.
+
+DevOps Journey platformasini ham docker orqali serveringizda ishga tushirishingiz mumkin.
+
+```bash
+docker run -d -p 3000:3000 --name devops-journey --restart always devopsjourneyuz/devopsjourneyuz:latest
+```
+Platforma **3000**-chi portda ishga tushadi bu tizimga ko'proq **Round Robin** load balancing metodi to'gri keladi.
 </Callout>
 
 Uchta application serverimizga ham docker o'rnatib SonarQubeni docker orali ishga tushiramiz.

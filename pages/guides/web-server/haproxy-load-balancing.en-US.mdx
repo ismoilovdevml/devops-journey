@@ -15,3 +15,94 @@ Bundan tashqari, HAProxy HTTP headerlari, cookielar va URL yo'llari(path) kabi c
 Bundan tashqari, HAProxy-ning low latency(past kechikish) bilan yuqori trafik(high traffic) hajmlarini boshqarish qobiliyati uni web applicationlar uchun high availability va performanceni ta'minlashni istagan ko'plab tashkilotlar uchun afzalroq tanlov qiladi. U ko'pincha turli xil deployment senariylarida, jumladan **C**ontent **D**elivery **N**etworklarida (**CDN**), web hosting environmentda,cloud infrastructurelarda va yirik korporativ(enterprise) sozlashlarda qo'llaniladi.
 
 O'zining mustahkamligi(robustness), moslashuvchanligi(adaptability) va katta hajmdagi trafikni boshqarish qobiliyati bilan HAProxy ko'plab applicationlar va servicelar uchun muhim web infrastructureni qo'llab-quvvatlovchi ishonchli va samarali load balanceri va proxy server yechimi sifatida industryda keng qo'llanildi.
+
+
+## Ishni boshlash va HAProxy o'rnatish
+
+HAProxy bilan load balancing qilishimiz uhcun minimum 3ta server kerak bo'ladi bitta HAProxy load balancer server va 2ta backend application server.
+
+<Callout type="info" emoji="">
+**Minimum Server talabi**
+
+| OS            | RAM            | CPU           | Xotira       | Static IP  |  Server vazifasi       |
+| ------------- | -------------- | ------------- |------------- | ---------- | ---------------------- |
+| Ubuntu 20.04  | 4GB            | 2vCPU 2 core  | 50GB         | Ha kerak   | HAProxy(Load Balancer) |
+| Ubuntu 20.04  | 4GB            | 2vCPU 2 core  | 50GB         | Shart emas | Application Server 1   |
+| Ubuntu 20.04  | 4GB            | 2vCPU 2 core  | 50GB         | Shart emas | Application Server 2   |
+
+**Qo'llanmada ishlatilgan Serverlar IP mazilllari**
+
+| Server                 | IP manzili   | 
+| ---------------------- | ------------ |
+| HAProxy(Load Balancer) | 185.168.1.20 |
+| Application Server 1   | 185.168.1.21 |
+| Application Server 2   | 185.168.1.22 |
+
+</Callout>
+
+**HAProxy** serverimizni sozlashni boshlaymiz.
+1. Tizimingizni yangilang.
+
+```bash
+sudo apt-get update && sudo apt-get upgrade -y
+```
+
+2. HAProxy o'rnating. HAProxy ko'pgina Linux distributivlarining package management systemlariga kiritilgan:
+
+Debian based uchun. Debian va Ubuntu uchun maxsus HAProxy versiylarini o'rnatish uchun quyidagi websaytdan foydalanishingiz mumkin. [haproxy.debian.net](https://haproxy.debian.net/)
+
+```bash
+sudo apt install haproxy -y
+```
+Fedora uchun
+
+```bash
+sudo yum install haproxy
+```
+
+3. HAProxy o'rnatilganidan keyin statusini tekshiring.
+
+```bash
+sudo systemctl status haproxy
+sudo systemctl enable haproxy
+```
+## HAProxy load balancer konfiguratsiya qilish.
+
+HAProxy'ni serverimizga muvafaqqiyatli o'rnatib ishga tushirganimizdan keyin load balancer sifatida konfiguratsiya qilishni boshlasak bo'ladi. O'rnatish vaqtida avtomatik ravishda yaratiladigan `/etc/haproxy/haproxy.cfg` manzilidagi default konfiguratsiya faylini ko'rib chiqing. Ushbu fayl hech qanday load balancersiz standart sozlashni belgilaydi:
+
+```bash filename="/etc/haproxy/haproxy.cfg"
+global
+	log /dev/log	local0
+	log /dev/log	local1 notice
+	chroot /var/lib/haproxy
+	stats socket /run/haproxy/admin.sock mode 660 level admin expose-fd listeners
+	stats timeout 30s
+	user haproxy
+	group haproxy
+	daemon
+
+	# Default SSL material locations
+	ca-base /etc/ssl/certs
+	crt-base /etc/ssl/private
+
+	# See: https://ssl-config.mozilla.org/#server=haproxy&server-version=2.0.3&config=intermediate
+    ssl-default-bind-ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384
+    ssl-default-bind-ciphersuites TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256
+    ssl-default-bind-options ssl-min-ver TLSv1.2 no-tls-tickets
+
+defaults
+	log	global
+	mode	http
+	option	httplog
+	option	dontlognull
+    timeout connect 5000
+    timeout client  50000
+    timeout server  50000
+	errorfile 400 /etc/haproxy/errors/400.http
+	errorfile 403 /etc/haproxy/errors/403.http
+	errorfile 408 /etc/haproxy/errors/408.http
+	errorfile 500 /etc/haproxy/errors/500.http
+	errorfile 502 /etc/haproxy/errors/502.http
+	errorfile 503 /etc/haproxy/errors/503.http
+	errorfile 504 /etc/haproxy/errors/504.http
+```
