@@ -4,3 +4,14 @@ import { Callout } from "nextra-theme-docs";
 
 ![haproxy](/images/tutorials/web-server/haproxy/banner.png)
 
+**HAProxy** yoki **H**igh **A**vailability **P**roxy - bu yuqori samarali(high-performance) **TCP/HTTP** load balancer va proksi-server sifatida ishlaydigan open-source dasturiy ta'minot. U kiruvchi trafikni(incoming traffic) bir nechta serverlar yoki backend tizimlari bo'ylab taqsimlashda muhim rol o'ynaydi, optimal resurslardan foydalanishni, high availabilityni va web-applicationlar uchun kengaytirilishini(scalability) ta'minlaydi.
+
+**HAProxy** client va server o'rtasida joylashgan reverse proxy sifatida ishlaydi. U kiruvchi client so'rovlarini(request) ushlab turadi va ularni oldindan belgilangan qoidalar(rules) va algoritmlar to'plami asosida tegishli backend serveriga yo'naltiradi. Ushbu jarayon **HAProxy**-ga bir nechta serverlar bo'ylab yukni(load) samarali muvozanatlash imkonini beradi, bu esa har qanday bitta serverning ishlamay qolishining oldini oladi, shu bilan birga barqaror(consistent) va responsive service deliveryni ta'minlaydi.
+
+HAProxy ning muhim kuchli tomonlaridan biri uning moslashuvchanligi(flexibility) va sozlanishidadir(configurability). U keng ko'lamli konfiguratsiya opsiyalarini taklif qiladi va turli xil load balancing algoritmlarini qo'llab-quvvatlaydi, shu jumladan **Round Robin**, **Least Connections**, **Source IP Hash**, **Weighted Round Robin**, **Weighted Least Connections**. Ushbu ko'p qirralilik devops/adminlarga maxsus dastur talablariga mos(application specific) keladigan load-balancing behaviorini sozlash imkonini beradi.
+
+Bundan tashqari, HAProxy HTTP headerlari, cookielar va URL yo'llari(path) kabi complex mezonlar(criteria) asosida SSL termination, content switching, health check va so'rovlarni yo'naltirish(request routing) kabi advanced xususiyatlarni taqdim etadi. Bu xususiyatlar devops/adminlarga murakkab trafik boshqaruvini amalga oshirish va web servicelarni yetkazib berishni optimallashtirish imkonini beradi.
+
+Bundan tashqari, HAProxy-ning low latency(past kechikish) bilan yuqori trafik(high traffic) hajmlarini boshqarish qobiliyati uni web applicationlar uchun high availability va performanceni ta'minlashni istagan ko'plab tashkilotlar uchun afzalroq tanlov qiladi. U ko'pincha turli xil deployment senariylarida, jumladan **C**ontent **D**elivery **N**etworklarida (**CDN**), web hosting environmentda,cloud infrastructurelarda va yirik korporativ(enterprise) sozlashlarda qo'llaniladi.
+
+O'zining mustahkamligi(robustness), moslashuvchanligi(adaptability) va katta hajmdagi trafikni boshqarish qobiliyati bilan HAProxy ko'plab applicationlar va servicelar uchun muhim web infrastructureni qo'llab-quvvatlovchi ishonchli va samarali load balanceri va proxy server yechimi sifatida industryda keng qo'llanildi.
