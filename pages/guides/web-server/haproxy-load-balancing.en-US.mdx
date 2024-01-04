@@ -106,3 +106,27 @@ defaults
 	errorfile 503 /etc/haproxy/errors/503.http
 	errorfile 504 /etc/haproxy/errors/504.http
 ```
+
+**HAProxy** konfiguratsiya fayli (ko'pincha `haproxy.cfg` deb nomlanadi) ikkita asosiy bo'limdan iborat: **global** va **default**. global section butun **HAProxy** jarayoniga taalluqli sozlamalarni belgilaydi, default bo'lim esa ma'lum frontend yoki backend bo'limlarida bekor qilinmasa, frontend va backendlar uchun default parametrlarni o'rnatadi.
+
+### global section
+
+* **log /dev/log local0** va **log /dev/log	local1 notice ->** Logga kirish manzillari va darajalarini belgilaydi. Log messagelari turli log darajalariga(log level) ega **local0** va **local1** obyektlariga yuboriladi (**lokal1** uchun eslatma).
+
+* **chroot /var/lib/haproxy->** HAProxy fayl tizimi koʻrinishini(filesystem view) cheklash orqali xavfsizlikni oshirish uchun **chroot** directoryni oʻrnatadi.
+
+* **stats socket /run/haproxy/admin.sock mode 660 level admin expose-fd listeners->** Statistika uchun UNIX socketini sozlaydi. Bu tashqi dasturlarga (monitoring toollar kabi) HAProxy bilan o'zaro ta'sir qilish imkonini beradi.
+
+* **stats timeout 30s->** Statistik so'rovlar(requestlar) uchun kutish vaqtini(timeout) 30 soniyagacha belgilaydi.
+
+* **user haproxy va group haproxy->** HAProxy ishlaydigan foydalanuvchi(user) va guruhni(group) belgilaydi.
+
+* **daemon->** HAProxy-ga fonda demon sifatida ishlashni buyuradi.
+
+* **ca-base va crt-base->** SSL sertifikatlari va kalitlari(key) uchun default manzillar.
+
+**SSL bilan bog'liq konfiguratsiyalar**
+
+* **ssl-default-bind-ciphers va ssl-default-bind-ciphersuites->** Kiruvchi ulanishlar(incoming connection) uchun ruxsat etilgan SSL shifrlari va shifrlar to'plamini o'rnatadi.
+
+* **ssl-default-bind-options->** Standart ulanish uchun **SSL/TLS** opsiyalarini sozlaydi. U minimal **TLS** versiyasini **TLSv1.2** sifatida belgilaydi va **TLS** session ticketlarini o'chiradi.
