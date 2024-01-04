@@ -14,8 +14,14 @@
     "nginx-load-balancing": {
       "title": "NGINX Load Balancing",
       "icon": "▶️",
-      "description": "NGINXda HTTP va TCP/UDP Load Balancing",
+      "description": "NGINX'da HTTP va TCP/UDP Load Balancing",
       "href": "/guides/web-server/nginx-load-balancing"
+    },
+    "haproxy-load-balancing": {
+      "title": "HAProxy Load Balancing",
+      "icon": "▶️",
+      "description": "HAProxy bilan trafficni HTTP/TCP load balancing qilish",
+      "href": "/guides/web-server/haproxy-load-balancing"
     }
   }
   
