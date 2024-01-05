@@ -16,6 +16,10 @@ Bundan tashqari, HAProxy-ning low latency(past kechikish) bilan yuqori trafik(hi
 
 O'zining mustahkamligi(robustness), moslashuvchanligi(adaptability) va katta hajmdagi trafikni boshqarish qobiliyati bilan HAProxy ko'plab applicationlar va servicelar uchun muhim web infrastructureni qo'llab-quvvatlovchi ishonchli va samarali load balanceri va proxy server yechimi sifatida industryda keng qo'llanildi.
 
+<Callout type="info" emoji="">
+**ESLATMA->** Ushbu qo'llanma mazmuni yaxshi tushunish uchun bundan oldingi **[Load Balancing](https://devops-journey.uz/guides/web-server/load-balancing)** va **[NGINX Load Balancing](https://devops-journey.uz/guides/web-server/nginx-load-balancing)** qo'llanmalarini o'qib chiqishingiz kerak!
+</Callout>
+
 
 ## Ishni boshlash va HAProxy o'rnatish
 
@@ -41,13 +45,13 @@ HAProxy bilan load balancing qilishimiz uhcun minimum 3ta server kerak bo'ladi b
 </Callout>
 
 **HAProxy** serverimizni sozlashni boshlaymiz.
-1. Tizimingizni yangilang.
+**1.** Tizimingizni yangilang.
 
 ```bash
 sudo apt-get update && sudo apt-get upgrade -y
 ```
 
-2. HAProxy o'rnating. HAProxy ko'pgina Linux distributivlarining package management systemlariga kiritilgan:
+**2.** HAProxy o'rnating. HAProxy ko'pgina Linux distributivlarining package management systemlariga kiritilgan:
 
 Debian based uchun. Debian va Ubuntu uchun maxsus HAProxy versiylarini o'rnatish uchun quyidagi websaytdan foydalanishingiz mumkin. [haproxy.debian.net](https://haproxy.debian.net/)
 
@@ -60,7 +64,7 @@ Fedora uchun
 sudo yum install haproxy
 ```
 
-3. HAProxy o'rnatilganidan keyin statusini tekshiring.
+**3.** HAProxy o'rnatilganidan keyin statusini tekshiring.
 
 ```bash
 sudo systemctl status haproxy
@@ -141,3 +145,49 @@ defaults
 * **errorfile** Maxsus HTTP xato(error) kodlari uchun maxsus(custom) xato fayllarini belgilaydi va foydalanuvchi tajribasini(user experience) yaxshilash uchun maxsus xato sahifalarini taqdim etadi.
 
 ## HAProxy load balancer konfiguratsiya qilish.
+
+HAProxy-dan foydalangan holda load-balancer sozlashda ikkita turdagi nodelar(server) aniqlanishi kerak: **frontend** va **backend**. **Frontend** - bu HAProxy ulanishlarni tinglaydigan(listen) node. Backend nodelari HAProxy so'rovlarini yo'naltirishi mumkin bo'lgan nodelardir. Uchinchi node turi, statistik node load-balancerni va boshqa ikkita nodeni kuzatish(monitoring) uchun ishlatilishi mumkin.
+
+**1.** `nano` matn muharririda `/etc/haproxy/haproxy.cfg` faylini oching va frontend qism uchun konfiguratsiyani qo'shing:
+
+```bash
+sudo nano /etc/haproxy/haproxy.cfg
+```
+
+```bash filename="/etc/haproxy/haproxy.cfg" /frontend/
+frontend haproxynode
+    bind *:80
+    mode http
+    default_backend backendnodes
+```
+
+Ushbu konfiguratsiya kiruvchi **HTTP** trafigini **80**-portda tinglaydigan(listen) frontendni yaratadi va default ushbu trafikni **backendnodes** deb nomlangan backendga yuboradi. Ushbu sozlash sizga turli serverlar yoki servicelar o'rtasida trafik qanday yo'naltirilishi va load balancingni nazorat qilish uchun qoidalar, ACL (**A**ccess **C**ontrol **L**ists), yoki boshqa shartlarni qo'shimcha aniqlash imkonini beradi. Bu konfiguratsiya bloki **80**-portdagi barcha tarmoq interfeyslari bilan bog'langan **haproxynode** nomli frontend nodeni belgilaydi. U HTTP ulanishlarini tinglaydi (boshqa maqsadlarda TCP rejimidan foydalanish mumkin) va u backendning backend nodelaridan foydalanadi.
+
+**2.** backend konfiguratsiyasini qo'shing:
+
+```bash filename="/etc/haproxy/haproxy.cfg" /balance/ /server/
+backend backendnodes
+    balance roundrobin
+    option forwardfor
+    http-request set-header X-Forwarded-Port %[dst_port]
+    http-request add-header X-Forwarded-Proto https if { ssl_fc }
+    option httpchk HEAD / HTTP/1.1\r\nHost:localhost
+    server node1 185.168.1.21:3000 check
+    server node2 185.168.1.22:3000 check
+```
+
+Bu backend nodelarni belgilaydi va bir nechta konfiguratsiya variantlarini belgilaydi. Keling backend configuratsiyani ko'rib chiqamiz.
+
+* **`backend backendnodes`** HAProxy konfiguratsiyasida odatda kiruvchi so'rovlarni bajaradigan serverlar yoki nodelar guruhini ifodalovchi backend qismini belgilaydi.
+* **`balance roundrobin`** Kiruvchi so'rovlarni backenddagi mavjud serverlar o'rtasida teng taqsimlab, load balancing algoritmini round-robinga o'rnatadi. Har bir keyingi so'rov navbatdagi keyingi serverga yuboriladi.
+
+* **`option forwardfor`** **HAProxy**-ga serverlarga yuborilgan **HTTP** so'rovlariga **X-Forwarded-For** headerini qo'shish imkonini beradi. Ushbu headerda asl clientning **IP**-manzili mavjud bo'lib, backend serverlariga kelib chiqqan clientni aniqlash imkonini beradi.
+
+* **`http-request set-header X-Forwarded-Port %[dst_port]`** Backend serverlariga yuborilgan HTTP so'rovlarida **X-Forwarded-Port** headerini o'rnatadi. U so'rov yuborilgan HAProxy serverining destination portini o'z ichiga oladi.
+
+* **`http-request add-header X-Forwarded-Proto https if { ssl_fc }`** HAProxy'ga kiruvchi so‘rov **HTTPS**(ssl_fc) orqali qabul qilingan bo‘lsa, **X-Forwarded-Proto** headerini HTTP so‘rovlariga qo‘shadi. Ushbu header client tomonidan so'rovni amalga oshirishda foydalaniladigan protokolni ko'rsatadi.
+* **`option httpchk HEAD / HTTP/1.1\r\nHost:localhost`** Backend serverlari uchun HTTP health checkni sozlaydi. U serverlarning sog'lig'ini tekshirish(health check) uchun HTTP versiyasi va **Host** headeri **localhost** ga o'rnatilgan holda root(ildiz) yo'liga ("`/`") **HTTP HEAD** so'rovini yuboradi. HAProxy ushbu tekshiruvdan kiruvchi so'rovlarni ko'rib chiqish uchun server mavjudligini aniqlash uchun foydalanadi.
+
+* **`server node1 185.168.1.21:3000 check` va `server node2 185.168.1.22:3000 check`** Backend **backendnodes** ichida ikkita serverni (node1 va node2) belgilaydi. Har bir server IP manzili va port raqami (mos ravishda 185.168.1.21:3000 va 185.168.1.22:3000) bilan aniqlanadi. Tekshirish(check) kalit so'zi HAProxy sozlangan health check metodi (**option httpchk**) yordamida ushbu serverlarning sog'lig'ini muntazam ravishda tekshirishi kerakligini bildiradi. Ushbu serverlar kiruvchi so'rovlarni bajarishga tayyor.
+
+Umumiy qilib aytganda HAProxy-dagi ushbu backend konfiguratsiyasi headerlar (**X-Forwarded-For**, **X-Forwarded-Port**, **X-Forwarded-Proto**), health check va ikkita backend serverlari uchun maxsus sozlamalar bilan load balancer muhitini (roundrobin) o'rnatadi. node1 va node2 kiruvchi trafikni boshqarish uchun tayyor serverlar(backend serverlar).
