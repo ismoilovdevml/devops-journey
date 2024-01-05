@@ -1,8 +1,8 @@
 import { Tab, Tabs } from 'nextra-theme-docs';
 import Card, { Cards } from '@components/core/Card';
-import developingGuides from './ci-cd/_meta.en-US.json';
-import orchestratingGuides from './konteyner/_meta.en-US.json';
-import delegatingGuides from './k8s/_meta.en-US.json';
+import cicdGuides from './ci-cd/_meta.en-US.json';
+import konteynerGuides from './konteyner/_meta.en-US.json';
+import k8sGuides from './k8s/_meta.en-US.json';
 import databaseGuides from './database/_meta.en-US.json';
 import webserverGuides from './web-server/_meta.en-US.json';
 
@@ -14,13 +14,13 @@ Hamjamiyat tomonidan yozilgan dokumentatsiya va qo'llanmalar. Mavzular CI/CD, Ko
   <Tab style={{ paddingTop: 8 }}>
     <Cards
       num={3}
-      children={Object.keys(developingGuides).map((key, i) => (
+      children={Object.keys(cicdGuides).map((key, i) => (
         <Card
           key={i}
-          title={developingGuides[key].title}
-          description={developingGuides[key].description}
-          icon={developingGuides[key].icon}
-          href={developingGuides[key].href}
+          title={cicdGuides[key].title}
+          description={cicdGuides[key].description}
+          icon={cicdGuides[key].icon}
+          href={cicdGuides[key].href}
         />
       ))}
     />
@@ -28,13 +28,13 @@ Hamjamiyat tomonidan yozilgan dokumentatsiya va qo'llanmalar. Mavzular CI/CD, Ko
   <Tab>
     <Cards
       num={3}
-      children={Object.keys(orchestratingGuides).map((key, i) => (
+      children={Object.keys(konteynerGuides).map((key, i) => (
         <Card
           key={i}
-          title={orchestratingGuides[key].title}
-          description={orchestratingGuides[key].description}
-          icon={orchestratingGuides[key].icon}
-          href={orchestratingGuides[key].href}
+          title={konteynerGuides[key].title}
+          description={konteynerGuides[key].description}
+          icon={konteynerGuides[key].icon}
+          href={konteynerGuides[key].href}
         />
       ))}
     />
@@ -42,13 +42,13 @@ Hamjamiyat tomonidan yozilgan dokumentatsiya va qo'llanmalar. Mavzular CI/CD, Ko
   <Tab>
     <Cards
       num={3}
-      children={Object.keys(delegatingGuides).map((key, i) => (
+      children={Object.keys(k8sGuides).map((key, i) => (
         <Card
           key={i}
-          title={delegatingGuides[key].title}
-          description={delegatingGuides[key].description}
-          icon={delegatingGuides[key].icon}
-          href={delegatingGuides[key].href}
+          title={k8sGuides[key].title}
+          description={k8sGuides[key].description}
+          icon={k8sGuides[key].icon}
+          href={k8sGuides[key].href}
         />
       ))}
     />

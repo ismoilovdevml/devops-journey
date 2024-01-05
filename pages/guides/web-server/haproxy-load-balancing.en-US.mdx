@@ -66,7 +66,7 @@ sudo yum install haproxy
 sudo systemctl status haproxy
 sudo systemctl enable haproxy
 ```
-## HAProxy load balancer konfiguratsiya qilish.
+## HAProxy boshlang'ich konfiguratsiya.
 
 HAProxy'ni serverimizga muvafaqqiyatli o'rnatib ishga tushirganimizdan keyin load balancer sifatida konfiguratsiya qilishni boshlasak bo'ladi. O'rnatish vaqtida avtomatik ravishda yaratiladigan `/etc/haproxy/haproxy.cfg` manzilidagi default konfiguratsiya faylini ko'rib chiqing. Ushbu fayl hech qanday load balancersiz standart sozlashni belgilaydi:
 
@@ -130,3 +130,14 @@ defaults
 * **ssl-default-bind-ciphers va ssl-default-bind-ciphersuites->** Kiruvchi ulanishlar(incoming connection) uchun ruxsat etilgan SSL shifrlari va shifrlar to'plamini o'rnatadi.
 
 * **ssl-default-bind-options->** Standart ulanish uchun **SSL/TLS** opsiyalarini sozlaydi. U minimal **TLS** versiyasini **TLSv1.2** sifatida belgilaydi va **TLS** session ticketlarini o'chiradi.
+
+### default section
+
+* **log	global** Loglar global logging manzillariga yuborilishi kerakligini bildiradi.
+* **mode	http** Modeni HTTP sifatida belgilaydi, bu HAProxy HTTP proksi-server sifatida ishlashini ko'rsatadi(HTTP Load Balancing).
+* **option	httplog** HTTP so'rovlari(request) va javoblarini(response) logga yozishni yoqadi.
+* **option	dontlognull** dontlognull directive opsiyasi tizimga hech qanday ma'lumot o'tkazmaydigan ulanishlarni logga yozmaslikni buyuradi. Boshqacha qilib aytadigan bo'lsak, u health check tekshiruvlari yoki haqiqiy HTTP so'rovlarini o'z ichiga olmaydigan ulanishlarni loglarga yozmaslikni istisno qiladi.
+* **timeout connect, timeout client, timeout server** Ulanishning(connection) turli bosqichlari (connect(ulanish), client, server) uchun kutish vaqtini(timeout) o'rnatadi.
+* **errorfile** Maxsus HTTP xato(error) kodlari uchun maxsus(custom) xato fayllarini belgilaydi va foydalanuvchi tajribasini(user experience) yaxshilash uchun maxsus xato sahifalarini taqdim etadi.
+
+## HAProxy load balancer konfiguratsiya qilish.
