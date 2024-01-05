@@ -191,3 +191,91 @@ Bu backend nodelarni belgilaydi va bir nechta konfiguratsiya variantlarini belgi
 * **`server node1 185.168.1.21:3000 check` va `server node2 185.168.1.22:3000 check`** Backend **backendnodes** ichida ikkita serverni (node1 va node2) belgilaydi. Har bir server IP manzili va port raqami (mos ravishda 185.168.1.21:3000 va 185.168.1.22:3000) bilan aniqlanadi. Tekshirish(check) kalit so'zi HAProxy sozlangan health check metodi (**option httpchk**) yordamida ushbu serverlarning sog'lig'ini muntazam ravishda tekshirishi kerakligini bildiradi. Ushbu serverlar kiruvchi so'rovlarni bajarishga tayyor.
 
 Umumiy qilib aytganda HAProxy-dagi ushbu backend konfiguratsiyasi headerlar (**X-Forwarded-For**, **X-Forwarded-Port**, **X-Forwarded-Proto**), health check va ikkita backend serverlari uchun maxsus sozlamalar bilan load balancer muhitini (roundrobin) o'rnatadi. node1 va node2 kiruvchi trafikni boshqarish uchun tayyor serverlar(backend serverlar).
+
+**3.** Konfiguratsiyaga ixtiyoriy stats nodeni qo'shing:
+
+```bash filename="/etc/haproxy/haproxy.cfg"
+listen stats
+    bind :32700
+    stats enable
+    stats uri /
+    stats hide-version
+    stats auth admin:password_405
+```
+Ushbu konfiguratsiya HAProxy-da stats nomli stats endpointni o'rnatadi:
+
+* **listen stats** Odatda HAProxy instance uchun statistik maʼlumotlar va monitoring maʼlumotlariga kirishni taʼminlaydigan stats listen endpointni belgilaydi.
+* **bind :32700** Ushbu stats endpoint  barcha mavjud tarmoq interfeyslarida **32700** portiga ulanishini bildiradi (`:` barcha interfeyslarni bildiradi). Bu statistika sahifasiga kirish mumkin bo'lgan port.
+* **stats enable** Foydalanuvchilarga HAProxy statistikasi va monitoringiga kirish imkonini beruvchi ushbu endpoint uchun statistik sahifani yoqadi.
+* **stats uri /** Statistik ma'lumotlar sahifasiga kirish uchun **URI** (**U**niform **R**esource **I**dentifier)ni o'rnatadi. Bunday holda, root URI ("`/`") ga kirish statistika va monitoring ma'lumotlarini ko'rsatadi.
+* **stats hide-version** HAProxy versiyasi ma'lumotlarini statistika sahifasidan yashiradi, bu esa potentsial tajovuzkorlarga ma'lum versiya tafsilotlarini oshkor qilmaslik orqali xavfsizlikni oshiradi.
+* **stats auth admin:password_405**  Statistika sahifasiga kirish uchun HTTP asosiy autentifikatsiyasini sozlaydi. Foydalanuvchi nomi **admin**, parol esa **password_405**. Statistik ma'lumotlar va monitoring ma'lumotlariga kirish uchun foydalanuvchilardan ushbu hisob ma'lumotlarini kiritish so'raladi.
+
+Ushbu konfiguratsiya **32700**-portda asosiy autentifikatsiyaga ega monitoring endpointini (stats) o'rnatadi, bu esa xavfsizlikni yaxshilash uchun versiya tafsilotlarini yashirish bilan birga HAProxy statistikasi va monitoring ma'lumotlariga kirish imkonini beradi.
+
+**4.** O'zgartirishlardan keyin to'liq konfiguratsiya fayli:
+
+```bash filename="/etc/haproxy/haproxy.cfg"
+global
+	log /dev/log	local0
+	log /dev/log	local1 notice
+	chroot /var/lib/haproxy
+	stats socket /run/haproxy/admin.sock mode 660 level admin expose-fd listeners
+	stats timeout 30s
+	user haproxy
+	group haproxy
+	daemon
+ 
+	# Default SSL material locations
+	ca-base /etc/ssl/certs
+	crt-base /etc/ssl/private
+ 
+	# See: https://ssl-config.mozilla.org/#server=haproxy&server-version=2.0.3&config=intermediate
+    ssl-default-bind-ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384
+    ssl-default-bind-ciphersuites TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256
+    ssl-default-bind-options ssl-min-ver TLSv1.2 no-tls-tickets
+ 
+defaults
+	log	global
+	mode	http
+	option	httplog
+	option	dontlognull
+    timeout connect 5000
+    timeout client  50000
+    timeout server  50000
+	errorfile 400 /etc/haproxy/errors/400.http
+	errorfile 403 /etc/haproxy/errors/403.http
+	errorfile 408 /etc/haproxy/errors/408.http
+	errorfile 500 /etc/haproxy/errors/500.http
+	errorfile 502 /etc/haproxy/errors/502.http
+	errorfile 503 /etc/haproxy/errors/503.http
+	errorfile 504 /etc/haproxy/errors/504.http
+
+frontend haproxynode
+    bind *:80
+    mode http
+    default_backend backendnodes
+
+backend backendnodes
+    balance roundrobin
+    option forwardfor
+    http-request set-header X-Forwarded-Port %[dst_port]
+    http-request add-header X-Forwarded-Proto https if { ssl_fc }
+    option httpchk HEAD / HTTP/1.1\r\nHost:localhost
+    server node1 185.168.1.21:3000 check
+    server node2 185.168.1.22:3000 check
+
+listen stats
+    bind :32700
+    stats enable
+    stats uri /
+    stats hide-version
+    stats auth admin:password_405
+```
+
+**5.** HAProxy load balancerni restart berib qayta ishga tushiramiz.
+
+```bash
+sudo service haproxy restart
+sudo service haproxy status
+```
