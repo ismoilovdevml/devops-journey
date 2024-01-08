@@ -163,6 +163,18 @@ frontend haproxynode
 
 Ushbu konfiguratsiya kiruvchi **HTTP** trafigini **80**-portda tinglaydigan(listen) frontendni yaratadi va default ushbu trafikni **backendnodes** deb nomlangan backendga yuboradi. Ushbu sozlash sizga turli serverlar yoki servicelar o'rtasida trafik qanday yo'naltirilishi va load balancingni nazorat qilish uchun qoidalar, ACL (**A**ccess **C**ontrol **L**ists), yoki boshqa shartlarni qo'shimcha aniqlash imkonini beradi. Bu konfiguratsiya bloki **80**-portdagi barcha tarmoq interfeyslari bilan bog'langan **haproxynode** nomli frontend nodeni belgilaydi. U HTTP ulanishlarini tinglaydi (boshqa maqsadlarda TCP rejimidan foydalanish mumkin) va u backendning backend nodelaridan foydalanadi.
 
+<Callout type="info" emoji="">
+**frontend** qismini yana qo'shimcha sozlash mumkin.
+
+| bind                  | Vazifasi                                                                          |
+| --------------------- | --------------------------------------------------------------------------------- |
+| **bind 0.0.0.0:80**   | **80**-portda ushbu serverga tayinlangan barcha IP manzillarni tinglaydi(listen). |
+| **bind :80**          | Address uchun **0.0.0.0** ni belgilash bilan bir xil.                             |
+| **bind :80,:8080**    | **80** va **8080** portlarida tinglaydi. (Portlar orasiga bo'sh joy qo'shilmaydi) |
+| **bind :6379-6390**   | **6379** dan **6390** gacha bo'lgan barcha portlarni tinglang(listen).            |
+</Callout>
+
+
 **2.** backend konfiguratsiyasini qo'shing:
 
 ```bash filename="/etc/haproxy/haproxy.cfg" /balance/ /server/
@@ -304,7 +316,7 @@ HAProxy turli xil laod-balancingh algoritmlari va konfiguratsiyalarini qo'llab-q
 
 ### Round Robin
 
-```bash
+```bash filename="/etc/haproxy/haproxy.cfg"
 backend backendnodes
     balance roundrobin
     server server1 192.168.1.10:80 check
@@ -314,7 +326,7 @@ backend backendnodes
 
 ### Least Connections
 
-```bash
+```bash filename="/etc/haproxy/haproxy.cfg"
 backend backendnodes
     balance leastconn
     server server1 192.168.1.10:80 check
@@ -323,7 +335,7 @@ backend backendnodes
 ```
 ### Source IP Hash
 
-```bash
+```bash filename="/etc/haproxy/haproxy.cfg"
 backend backendnodes
     balance source
     server server1 192.168.1.10:80 check
@@ -333,7 +345,7 @@ backend backendnodes
 
 ### URI Hash
 
-```bash
+```bash filename="/etc/haproxy/haproxy.cfg"
 backend backendnodes
     balance uri
     server server1 192.168.1.10:80 check
@@ -343,7 +355,7 @@ backend backendnodes
 
 ### URL Parameters
 
-```bash
+```bash filename="/etc/haproxy/haproxy.cfg"
 backend backendnodes
     balance url_param sid
     server server1 192.168.1.10:80 check
@@ -352,7 +364,7 @@ backend backendnodes
 ```
 ### Random
 
-```bash
+```bash filename="/etc/haproxy/haproxy.cfg"
 backend backendnodes
     balance random
     server server1 192.168.1.10:80 check
@@ -361,7 +373,7 @@ backend backendnodes
 ```
 ### Dynamic Weight
 
-```bash
+```bash filename="/etc/haproxy/haproxy.cfg"
 backend backendnodes
     balance rdp-cookie
     cookie SRV_ID insert indirect nocache
@@ -369,3 +381,118 @@ backend backendnodes
     server server2 192.168.1.11:80 check cookie srv2 weight 5
     server server3 192.168.1.12:80 check cookie srv3 weight 3
 ```
+
+## ACL bilan ishlash(domen ulash)
+
+HAProxy-da **ACL**(**A**ccess **C**ontrol **L**ists) turli mezonlar asosida shartli moslashtirishni amalga oshirish uchun ishlatiladi, bu sizga trafikni tanlab yo'naltirish yoki boshqarish imkonini beradi. Ular maxsus so'rovlarni belgilangan **backend**larga yo'naltirishda yoki belgilangan shartlar asosida qoidalarni(rule) qo'llashda hal qiluvchi rol o'ynaydi.
+
+HAProxy'dagi **ACL**'lar kiruvchi so'rovlarning headerlari, URL manzillari yoki boshqa atributlar kabi muayyan elementlarini tahlil qilish va oldindan belgilangan qoidalar(rule) asosida shartli marshrutlash(onditional routing) yoki trafikni manipulyatsiya qilish uchun kuchli usulni taklif qiladi. Bu qobiliyat load-balancer ichidagi turli xil trafik turlari yoki manbalarini granulyar boshqarish(granular control) va moslashtirilgan boshqarish(tailored handling) imkonini beradi.
+
+HAProxyda domen bilan ishlash uchun **Access Control List Mapping**dan foydalanmiz. Masalan bizda [**devops-journey.uz**](https://devops-journey.uz/) domenimiz bor bu uchun HAProxy konfiguratsiya quyidagicha bo'ladi.
+
+```bash filename="/etc/haproxy/haproxy.cfg" /acl/ /use_backend/ /devops_journey_acl/
+frontend haproxynode
+    bind *:80
+    mode http
+	acl devops_journey_acl hdr(host) -i devops-journey.uz
+	use_backend devops_journey_backend if devops_journey_acl
+    default_backend backendnodes
+
+backend devops_journey_backend
+    balance roundrobin
+    option forwardfor
+    http-request set-header X-Forwarded-Port %[dst_port]
+    http-request add-header X-Forwarded-Proto https if { ssl_fc }
+    option httpchk HEAD / HTTP/1.1\r\nHost:localhost
+    server node1 185.168.1.21:3000 check
+    server node2 185.168.1.22:3000 check
+
+backend backendnodes
+    balance roundrobin
+    option forwardfor
+    http-request set-header X-Forwarded-Port %[dst_port]
+    http-request add-header X-Forwarded-Proto https if { ssl_fc }
+    option httpchk HEAD / HTTP/1.1\r\nHost:localhost
+    server node1 185.168.1.21:3000 check
+    server node2 185.168.1.22:3000 check
+ 
+listen stats
+    bind :32700
+    stats enable
+    stats uri /
+    stats hide-version
+    stats auth admin:password_405
+```
+
+`acl devops_journey_acl hdr(host) -i devops-journey.uz` **Host** headerida [**devops-journey.uz**](https://devops-journey.uz/) so'rovlarini tekshiradigan `devops_journey_acl` nomli **ACL** yaratadi. `hdr(host)` ACL kiruvchi HTTP so'rovlarining **Host** headeriini tekshirishini bildiradi. `i` Katta-kichik harflarsiz moslikni bajaradi.
+
+`use_backend devops_journey_backend if devops_journey_acl` Kiruvchi so'rovning **Host** headerida `devops-journey.uz` bo'lsa, va **devops_journey_acl** ga mos keladigan so'rovlarni **devops_journey_backend** nomli maxsus backend serverlarga yo'naltiradi. `devops_journey_acl` shartiga mos kelmaydigan so‘rovlar `backendnodes` backendga yo‘naltiriladi.
+
+
+Qisqa qilib aytganda, **Host** headeriga asoslangan so'rovlarni moslashtirish uchun **ACL** (`devops_journey_acl`) dan foydalanadi, xususan, domen [**devops-journey.uz**](https://devops-journey.uz/) bo'lgan so'rovlarni yo'naltiradi. Ushbu shartga mos keladigan so'rovlar **devops_journey_backend**dagi serverlarga yo'naltiriladi, qolgan barcha so'rovlar esa default backend **backendnodes**ga yo'naltiriladi.
+
+## Bir nechta backend serverlar va domenlar bilan ishlash.
+
+Agar sizda bir nechta loyihalar va domenlar bo'lsa HAProxyda quyidagicha load balancer configuratsiya qilishingiz mumkin. Ushbu konfiguratsiyada numuna sifatida [**google.com**](https://www.google.com/), [**github.com**](https://github.com/), [**youtube.com**](https://www.youtube.com/) ko'rsatilgan.
+
+
+```bash filename="/etc/haproxy/haproxy.cfg" /acl/ /use_backend/
+frontend haproxynode
+    bind *:80
+    mode http
+
+	acl google_acl hdr(host) -i google.com
+	acl github_acl hdr(host) -i github.com
+	acl youtube_acl hdr(host) -i youtube.com
+
+	use_backend google_backend if google_acl
+	use_backend github_backend if github_acl
+	use_backend youtube_backend if youtube_acl
+    default_backend backendnodes
+
+backend google_backend
+    balance roundrobin
+    option forwardfor
+    http-request set-header X-Forwarded-Port %[dst_port]
+    http-request add-header X-Forwarded-Proto https if { ssl_fc }
+    option httpchk HEAD / HTTP/1.1\r\nHost:localhost
+    server node1 185.168.1.21:3000 check
+    server node2 185.168.1.22:3000 check
+
+backend github_backend
+    balance roundrobin
+    option forwardfor
+    http-request set-header X-Forwarded-Port %[dst_port]
+    http-request add-header X-Forwarded-Proto https if { ssl_fc }
+    option httpchk HEAD / HTTP/1.1\r\nHost:localhost
+    server node1 185.168.1.23:5000 check
+    server node2 185.168.1.24:5000 check
+
+backend google_github
+    balance roundrobin
+    option forwardfor
+    http-request set-header X-Forwarded-Port %[dst_port]
+    http-request add-header X-Forwarded-Proto https if { ssl_fc }
+    option httpchk HEAD / HTTP/1.1\r\nHost:localhost
+    server node1 185.168.1.25:9000 check
+    server node2 185.168.1.26:9000 check
+
+backend backendnodes
+    balance roundrobin
+    option forwardfor
+    http-request set-header X-Forwarded-Port %[dst_port]
+    http-request add-header X-Forwarded-Proto https if { ssl_fc }
+    option httpchk HEAD / HTTP/1.1\r\nHost:localhost
+    server node1 185.168.1.21:3000 check
+    server node2 185.168.1.22:3000 check
+ 
+listen stats
+    bind :32700
+    stats enable
+    stats uri /
+    stats hide-version
+    stats auth admin:password_405
+```
+
+## SSL Sertifikat bilan ishlash
+
