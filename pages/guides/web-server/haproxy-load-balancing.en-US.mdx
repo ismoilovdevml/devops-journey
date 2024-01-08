@@ -273,9 +273,99 @@ listen stats
     stats auth admin:password_405
 ```
 
-**5.** HAProxy load balancerni restart berib qayta ishga tushiramiz.
+**5.** HAProxy konfiguratsiyani yozib bo'lganimizdan keyin uni sintaksis xatolarini tekshirib olamiz.
+
+```bash
+haproxy -c -f /etc/haproxy/haproxy.cfg
+```
+**6.** HAProxy load balancerni restart berib qayta ishga tushiramiz.
 
 ```bash
 sudo service haproxy restart
 sudo service haproxy status
+```
+
+Endi **185.168.1.20** IP manzilidagi HAProxy nodega(server) kiruvchi har qanday so'rovlar IP manzili **185.168.1.21** yoki **185.168.1.22** bo'lgan backend nodelarga yo'naltiriladi. Ushbu backend nodelari HTTP so'rovlariga xizmat qiladi. Agar istalgan vaqtda ushbu nodelardan biri health checkdan o'ta olmasa, ular testdan o'tmaguncha hech qanday so'rovlarni bajarish uchun foydalanilmaydi.
+
+Statistikani ko'rish va nodelarning holatini kuzatish uchun belgilangan portdagi veb-brauzerda frontend nodening IP manziliga yoki domen nomiga o'ting, masalan, http://185.168.1.20:32700. Bu so'rovning ma'lum bir nodega necha marta yuborilganligi, shuningdek, oldingi node tomonidan bajarilgan joriy va oldingi sessionlar soni kabi statistik ma'lumotlarni ko'rsatadi.
+
+![haproxy](/images/tutorials/web-server/haproxy/stats.png)
+
+## Haproxy Load balancing metodlar
+
+HAProxy turli xil laod-balancingh algoritmlari va konfiguratsiyalarini qo'llab-quvvatlaydi, bu devopos/adminlarga kiruvchi trafikni muayyan ehtiyojlar asosida taqsimlash imkonini beradi. HAProxy tomonidan qo'llab-quvvatlanadigan load balancing metodlari va konfiguratsiyalari:
+
+<Callout type="info" emoji="">
+**ESLATMA->** Ushbu Load Balaning metodlar haqida **[Load Balancing](https://devops-journey.uz/guides/web-server/load-balancing)** va **[NGINX Load Balancing](https://devops-journey.uz/guides/web-server/nginx-load-balancing)** qo'llanmalarinida yaxshi yoritilgan!. Bu qismda shu load balancing metodlarini HAProxy configuratsiya qilish ko'rsatilgan.
+</Callout>
+
+
+![haproxy](/images/tutorials/web-server/load-balancing/load.jpg)
+
+### Round Robin
+
+```bash
+backend backendnodes
+    balance roundrobin
+    server server1 192.168.1.10:80 check
+    server server2 192.168.1.11:80 check
+    server server3 192.168.1.12:80 check
+```
+
+### Least Connections
+
+```bash
+backend backendnodes
+    balance leastconn
+    server server1 192.168.1.10:80 check
+    server server2 192.168.1.11:80 check
+    server server3 192.168.1.12:80 check
+```
+### Source IP Hash
+
+```bash
+backend backendnodes
+    balance source
+    server server1 192.168.1.10:80 check
+    server server2 192.168.1.11:80 check
+    server server3 192.168.1.12:80 check
+```
+
+### URI Hash
+
+```bash
+backend backendnodes
+    balance uri
+    server server1 192.168.1.10:80 check
+    server server2 192.168.1.11:80 check
+    server server3 192.168.1.12:80 check
+```
+
+### URL Parameters
+
+```bash
+backend backendnodes
+    balance url_param sid
+    server server1 192.168.1.10:80 check
+    server server2 192.168.1.11:80 check
+    server server3 192.168.1.12:80 check
+```
+### Random
+
+```bash
+backend backendnodes
+    balance random
+    server server1 192.168.1.10:80 check
+    server server2 192.168.1.11:80 check
+    server server3 192.168.1.12:80 check
+```
+### Dynamic Weight
+
+```bash
+backend backendnodes
+    balance rdp-cookie
+    cookie SRV_ID insert indirect nocache
+    server server1 192.168.1.10:80 check cookie srv1 weight 10
+    server server2 192.168.1.11:80 check cookie srv2 weight 5
+    server server3 192.168.1.12:80 check cookie srv3 weight 3
 ```
