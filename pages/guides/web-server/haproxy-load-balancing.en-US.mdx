@@ -496,3 +496,63 @@ listen stats
 
 ## SSL Sertifikat bilan ishlash
 
+Yuqorida **ACL** bilan domen uladik lekin loyihamiz **http**da ishlab turibti uni **https** o'zgartirishimiz kerak. Buning uchun bizga **SSL** sertifikat kerak bo'ladi, sertifikatni **certbot** yordami olamiz. Boshlash uchun **Certbot** yordamida SSL sertifikatini olish va uni HAProxy bilan sozlash bir necha bosqichlarni o'z ichiga oladi.
+
+**1->** Certbot o'rnatib oling.
+
+```bash
+sudo apt update
+sudo apt-get install certbot -y
+```
+Bu buyruq bepul sertifikat organi **Let's Encrypt**dan SSL sertifikatlarini olish uchun foydalaniladigan **Certbot**-ni o'rnatadi.
+
+**2->** SSL Sertifikatini olamiz.
+Birinchi navbatda **80** portda ishlab turgan haproxyni stop qilamiz.
+
+```bash
+sudo systemctl stop haproxy
+```
+SSL sertifikat olamiz.
+```bash
+sudo certbot certonly --standalone -d devops-journey.uz
+```
+**3->** Birlashtirilgan SSL faylini yaratish
+
+```bash
+cd /etc/letsencrypt/live/devops-journey.uz
+cat fullchain.pem > ssl.pem
+cat privkey.pem >> ssl.pem
+```
+
+Ushbu birlashtirilgan fayl (`ssl.pem`) HAProxy yoki sertifikat va private keyni o'z ichiga olgan bitta faylni talab qiluvchi boshqa servicelarda ishlatilishi mumkin.
+
+**3->** **HAProxy**'ni **SSL** sertifikati bilan sozlash
+
+`haproxy.cfg` faylimizdagi `frontend` qismiga quyigadi qo'shimchani qo'shamiz.
+
+```bash filename="/etc/haproxy/haproxy.cfg"
+frontend haproxynode
+    bind *:443 ssl crt /etc/letsencrypt/live/haproxy.xilol.uz/ssl.pem
+    mode http
+    acl devops_journey_acl hdr(host) -i haproxy.xilol.uz
+    use_backend devops_journey_backend if devops_journey_acl
+    default_backend backendnodes
+```
+
+Ushbu konfiguratsiya **HTTPS** porti bo'lgan `*:443` portni tinglashni(listen) bildiradi va SSL uchun sertifikat faylini ko'rsatadi.
+
+**4->** HAProxy'ni qayta ishga tushiramiz.
+
+HAProxy konfiguratsiyasini xatoliklari boirligi yoki yo'qligini tekshirib olamiz.
+
+```bash
+haproxy -c -f /etc/haproxy/haproxy.cfg
+```
+Natija muvafaqqiyatli bo'lganidan keyin HAProxyni qayta ishga tushiramiz.
+
+```bash
+sudo systemctl restart haproxy
+sudo systemctl status haproxy
+```
+
+Haproxy ishga tuhsganidan keyin domen orqali applicationimizga kirganimizda u https bilan ishlashi kerak.
