@@ -557,3 +557,53 @@ listen stats
     stats hide-version
     stats auth admin:password_405
 ```
+
+## Grafana va Prometheus bilan HAProxy monitoring
+
+![haproxy](/images/tutorials/web-server/haproxy/grfana.png)
+
+HAProxy'ni monitoring qilib kuzatib borish uchun **haproxy_exporter, prometheus** va vizualizatsiya uchun **Gfana** ishlatamiz.
+
+[**Serverlarni monitoring qilish**](https://devops-journey.uz/tutorials/article/gnp-monitoring) qo'llanmasida Prometheus va Grafana o'rnatib sozlash ko'rsatilgan. Prometheus va Grafana o'rnatish uchun quyidag qo'llanmalardan foydalaning.
+
+[Prometheus o'ratish va sozlash](https://devops-journey.uz/tutorials/article/gnp-monitoring#prometheus-oratish-va-sozlash), [Prometheusni service sifatida sozlash](https://devops-journey.uz/tutorials/article/gnp-monitoring#prometheusni-service-sifatida-sozlash), [Grafana serverini qanday o'rnatish va sozlash](https://devops-journey.uz/tutorials/article/gnp-monitoring#grafana-serverini-qanday-ornatish-va-sozlash), [Grafana va Prometheusni integratsiya qilish](https://devops-journey.uz/tutorials/article/gnp-monitoring#grafana-va-prometheusni-integratsiya-qilish), [Grafana Dashboardni import qilish
+](https://devops-journey.uz/tutorials/article/gnp-monitoring#grafana-dashboardni-import-qilish)
+
+Prometheus va Grafanai o'rnatib sozlaganizdan keyin haproxy serverimizga haproxy_exporter o'rnatamiz.
+
+```bash
+docker run -d -p 9101:9101 --name haproxy-exporter quay.io/prometheus/haproxy-exporter:latest --haproxy.scrape-uri="http://admin:password_405@185.168.1.20:32700/haproxy?stats;csv"
+```
+Bu buyruqda haproxy serveri IP mazili va stats node porti, kirish uchun login parol yozib docker orqali ishga tushiriladi.
+
+Haproxy exporterni ishga tushirganingizdan keyin promethus konfiguratsiyaga quyidagi bo'lakni qo'shib qo'yasiz.
+
+```bash filename="/etc/prometheus/prometheus.yml" /haproxy_exporter/
+
+  - job_name: "haproxy_exporter"
+    static_configs:
+      - targets: ["185.168.1.20:9101"]
+```
+
+Prometheus configuratsiyaga haproxy_expoterni qo'shib qo'yganingizdan keyin prometheusga restart beramiz.
+
+```bash
+sudo systemctl restart prometheus
+sudo systemctl status prometheus
+```
+
+Grafanada haproxy metrikalarini vizualizatsiya qilib ko'rish uchun HAProxy uchun ishlab chiqilgan dashboardni import qilib olamiz. [Grafana Dashboardni import qilish
+](https://devops-journey.uz/tutorials/article/gnp-monitoring#grafana-dashboardni-import-qilish)
+
+
+
+Grafana [**HAProxy**](https://grafana.com/grafana/dashboards/2428-haproxy/) dashboard `ID:` **2428**
+
+## Qo'shimcha
+
+<Callout type="info" emoji="">
+
+**Sana:** 2024.01.08(2024-yil 8-yanvar)
+
+**Muallif: Otabek Ismoilov**
+</Callout>
