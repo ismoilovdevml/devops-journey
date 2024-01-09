@@ -145,6 +145,14 @@ defaults
 * **timeout connect, timeout client, timeout server** Ulanishning(connection) turli bosqichlari (connect(ulanish), client, server) uchun kutish vaqtini(timeout) o'rnatadi.
 * **errorfile** Maxsus HTTP xato(error) kodlari uchun maxsus(custom) xato fayllarini belgilaydi va foydalanuvchi tajribasini(user experience) yaxshilash uchun maxsus xato sahifalarini taqdim etadi.
 
+<Callout type="info" emoji="">
+Serverlarda web-ilovani ishga tushirib load-balancerni tekshirib ko'irish uchun [**devops-journey.uz**](https://devops-journey.uz) platformasi Docker imagedan foydalanamiz.
+
+```bash
+docker run -d -p 3000:3000 --name devops-journey --restart always devopsjourneyuz/devopsjourneyuz:latest
+```
+</Callout>
+
 ## HAProxy load balancer konfiguratsiya qilish.
 
 HAProxy-dan foydalangan holda load-balancer sozlashda ikkita turdagi nodelar(server) aniqlanishi kerak: **frontend** va **backend**. **Frontend** - bu HAProxy ulanishlarni tinglaydigan(listen) node. Backend nodelari HAProxy so'rovlarini yo'naltirishi mumkin bo'lgan nodelardir. Uchinchi node turi, statistik node load-balancerni va boshqa ikkita nodeni kuzatish(monitoring) uchun ishlatilishi mumkin.
