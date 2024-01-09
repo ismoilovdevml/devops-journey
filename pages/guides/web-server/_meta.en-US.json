@@ -20,7 +20,7 @@
     "haproxy-load-balancing": {
       "title": "HAProxy Load Balancing",
       "icon": "▶️",
-      "description": "HAProxy bilan trafficni HTTP/TCP load balancing qilish",
+      "description": "HAProxy bilan HTTP/TCP load balancing va monitoring",
       "href": "/guides/web-server/haproxy-load-balancing"
     }
   }
