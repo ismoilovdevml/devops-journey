@@ -177,7 +177,7 @@ sudo nano /etc/nginx/sites-available/jenkins.xilol.uz
 ```
 Fayl `nano` matn muhrarrida ochilganidan keyin quyidagi NGINX konfiguratsiyani joylashtiring.
 
-```bash filename="/etc/nginx/sites-available/jenkins.xilol.uz"
+```bash filename="/etc/nginx/sites-available/jenkins.xilol.uz" {3,6}
 server {
     listen 80;
     server_name jenkins.xilol.uz;
@@ -325,7 +325,7 @@ nano /etc/nginx/sites-available/sonarqube.xilol.uz
 ```
 Ushbu faylga quyidagi NGINX configuratsiyani joylashtiramiz.
 
-```nginx filename="/etc/nginx/sites-available/sonarqube.xilol.uz" /proxy_pass/ /9000/ /sonarqube.xilol.uz/
+```nginx filename="/etc/nginx/sites-available/sonarqube.xilol.uz" /proxy_pass/ /9000/ /sonarqube.xilol.uz/ {3,6}
 server {
     listen 80;
     server_name sonarqube.xilol.uz;
@@ -458,7 +458,7 @@ sudo nano /etc/nginx/sites-available/grfaana.xilol.uz
 
 Grafana `3000` portda ishlab turadi bizni reverse-proxy proxy_pass qilib expose qilamiz.
 
-```bash filename="/etc/nginx/sites-available/grafana.xilol.uz" /grafana.xilol.uz/ /3000/
+```bash filename="/etc/nginx/sites-available/grafana.xilol.uz" /grafana.xilol.uz/ /3000/ {3,6}
 server {
     listen 80;
     server_name grafana.xilol.uz;
@@ -518,7 +518,7 @@ nano /etc/prometheus/prometheus.yml
 
 `0.0.0.0:8080` bu yerda siz jenkins o'rnatilgan serveringiz **IP** manzilini kiritasiz. Quyida `prometheus.yml` faylining to'liq ko'rinishi.
 
-```yaml filename="/etc/prometheus/prometheus.yml" /static_configs/ /targets/
+```yaml filename="/etc/prometheus/prometheus.yml" /static_configs/ /targets/ {28-29, 32-34, 36-39}
 # my global config
 global:
   scrape_interval: 15s # Set the scrape interval to every 15 seconds. Default is every 1 minute.
@@ -637,7 +637,7 @@ Hammasini rasmda ko'rsatilganidek o'zingizga moslab sozlab olganingizdan keyin `
 
 Email Notificationni sozlab olganimizdan keyin Jenkins pipelineda email notificationdan quyidagicha foydalanamiz:
 
-```groovy filename="Jenkinsfile"
+```groovy filename="Jenkinsfile" {8-9}
 post {
      always {
         emailext attachLog: true,
@@ -776,7 +776,7 @@ Bu yerda siz itemga nom berasiz masalan **Netflix** keyin **Pipline**-ni tanlab 
 
 Ushbu `Pipeline` qismida biz **CI/CD** pipelinemizni yozamiz u quyidagicha.
 
-```groovy
+```groovy {8-12,15, 20,25,33,40}
 pipeline {
     agent any
     tools {
@@ -975,7 +975,7 @@ Jenkins pipelenimizga quyidagi bosqichni qo'shamiz. Bu bosqich ilovamizdan docke
 
 Pipelinega yangi environmentlar qo'shib olamiz:
 
-```groovy /DOCKERHUB_CREDENTIALS/ /REGISTRY_URL/ /CONTAINER_NAME/
+```groovy /DOCKERHUB_CREDENTIALS/ /REGISTRY_URL/ /CONTAINER_NAME/ {4-6}
 environment {
     GIT_URL = 'https://github.com/ismoilovdevml/netflix.git'
     GITHUB_TOKEN = credentials('github-token')
@@ -1028,7 +1028,7 @@ Koddagi qism `[usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'D
 
 Loyihamizdagi Dockerfile
 
-```bash filename="Dockerfile" /TMDB_V3_API_KEY/
+```bash filename="Dockerfile" /TMDB_V3_API_KEY/ {7-8}
 FROM node:16.17.0-alpine as builder
 WORKDIR /app
 COPY ./package.json .
@@ -1054,7 +1054,7 @@ ENTRYPOINT ["nginx", "-g", "daemon off;"]
 
 Hozirgi holat uchun to'liq Jenkins pipeline uni Jenkinsda yangilab qayta ishga tushiring.
 
-```groovy filename="Jenkins"
+```groovy filename="Jenkins" {10-12,48-53,59-77}
 pipeline {
     agent any
     tools {
@@ -1239,7 +1239,7 @@ Bu qismda esa `Secret`ga Serverimiz IP manzilini yozishimiz kerak.
 
 Endi Serverimizga kerakli `environment`larni qo'shib chiqishimiz kerak.
 
-```groovy /SERVER_USERNAME/ /SERVER_IP/
+```groovy /SERVER_USERNAME/ /SERVER_IP/ {8-9}
 environment {
     GIT_URL = 'https://github.com/ismoilovdevml/netflix.git'
     GITHUB_TOKEN = credentials('github-token')
@@ -1275,7 +1275,7 @@ Shu qismda bizda bitta muammo bor yani oldindan shu nomli container ishlab turga
 nano deployer.sh
 ```
 
-```bash filename="deployer.sh"
+```bash filename="deployer.sh" {44}
 !/bin/bash
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -1356,7 +1356,7 @@ Ilovamiz uchun NGINX konfiguratsiya quyidagicha.
 sudo nano /etc/nginx/sites-available/netflix.xilol.uz
 ```
 
-```bash filename="/etc/nginx/sites-available/netflix.xilol.uz" /netflix.xilol.uz/
+```bash filename="/etc/nginx/sites-available/netflix.xilol.uz" /netflix.xilol.uz/ {3,6}
 server {
     listen 80;
     server_name netflix.xilol.uz;

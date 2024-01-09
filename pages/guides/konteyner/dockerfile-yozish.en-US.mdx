@@ -13,7 +13,7 @@ Ushbu qo'llanma Dockerfilelar qanday yozishni uni elementlarini ko'rib chiqamiz.
 
 Dockerfiledagi `FROM` instructioni sizning imagengiz asosida quriladigan asosiy imageni belgilash uchun ishlatiladi. Bu yangi konteyner imegaseni yaratish uchun boshlang'ich nuqtadir. Docker imageni yaratishni boshlaganingizda, odatda uni ma'lum muhit yoki funksiyalar to'plamini ta'minlaydigan mavjud imagega asoslashni xohlaysiz. `FROM` instructioni ushbu asosiy imageni belgilaydi.
 
-```bash /FROM/
+```bash /FROM/ {1}
 FROM <image>[:<tag>] [@<digest>]
 #Node.js namunalar
 FROM node
@@ -33,7 +33,7 @@ Dockerfile-dagi `MAINTAINER` instructioni qurilayotgan imagening muallifi yoki m
 
 Maintainerni ko'rsatish uchun `LABEL` dan qanday foydalanish mumkinligiga misol:
 
-```bash /MAINTAINER/ /LABEL/
+```bash /MAINTAINER/ /LABEL/ {2,4}
 FROM node:18
 MAINTAINER Otabek Ismoilov
 # LABEL bilan
@@ -46,7 +46,7 @@ Docker faylidagi `RUN` buyrug'i Docker imagedagi buyruqlarni bajarish uchun ishl
 
 `RUN` qanday ishlatilishiga misol:
 
-```bash /RUN/
+```bash /RUN/ {4-7}
 FROM ubuntu:latest
 
 # Konteynerni yangilash va konteynerga zip, git, unzip o'rnatish
@@ -58,7 +58,7 @@ RUN apt-get update && apt-get install -y \
 
 Javascript applicationlar uchun misol
 
-```bash /RUN/
+```bash /RUN/ {3-4}
 FROM node:18
 
 RUN npm install
@@ -70,7 +70,7 @@ Dockerfiledagi `WORKDIR` ko'rsatmasi(instructioni) Dockerfiledagi har qanday key
 
 `WORKDIR` ga misol:
 
-```bash /WORKDIR/
+```bash /WORKDIR/ {2}
 FROM python:3.9-slim
 WORKDIR /usr/src/app
 ```
@@ -85,7 +85,7 @@ Dockerfiledagi `COPY` buyrug'i fayllar yoki jildlarni host mashinasidan qurilayo
 
 `COPY` qanday ishlatilishiga misol:
 
-```bash /COPY/
+```bash /COPY/ {4}
 FROM ubuntu:latest
 RUN mkdir /myapp
 
@@ -96,7 +96,7 @@ app-files jildidagi fayllarni host mashinasidan image ichidagi `/myapp` jildiga 
 
 Python applicationlari uchun real namuna
 
-```bash /COPY/
+```bash /COPY/ {3}
 FROM python:3.9-slim
 WORKDIR /usr/src/app
 COPY . /usr/src/app
@@ -110,7 +110,7 @@ Dockerfiledagi `ENV` buyrug'i konteyner ichidagi muhit o'zgaruvchilarini(environ
 
 `ENV` insturctionlaridan foydalanishni ko'rsatadigan oddiy Dockerfile misoli:
 
-```bash /ENV/
+```bash /ENV/ {3-4}
 FROM node:14
 
 ENV NODE_ENV=production
@@ -118,7 +118,7 @@ ENV PORT=3000
 ```
 Real mysql database uchun `ENV` ishlatilishi
 
-```bash /ENV/
+```bash /ENV/ {3-6}
 FROM mysql:latest
 
 ENV MYSQL_ROOT_PASSWORD=my-secret-pw
@@ -133,7 +133,7 @@ Dockerfile-dagi `ADD` insturctioni fayllarni, jildlarni yoki masofaviy URL-larni
 
 `ADD` insturctioni sintaksisi quyidagicha:
 
-```bash /ADD/
+```bash /ADD/ {3}
 FROM node:14
 
 ADD myapp /usr/src/app
@@ -142,7 +142,7 @@ Bu yerda Docker build kontekstidan `myapp` nomli local jildni image ichidagi `/u
 
 Masofaviy fayl qo'shsih quyidagicha
 
-```bash /ADD/
+```bash /ADD/ {3}
 FROM python:3.9
 
 ADD https://example.com/file.txt /app/file.txt
@@ -155,7 +155,7 @@ ADD https://example.com/file.txt /app/file.txt
 
 CMD insturctioni sintaksisi quyidagicha:
 
-```bash /CMD/
+```bash /CMD/ {3}
 FROM python:3.9
 
 CMD ["python", "app.py"]
@@ -164,7 +164,7 @@ Ushbu misolda, ushbu imagega asoslangan konteyner ishga tushirilganda, u standar
 
 Web Serverni ishga tushirishga misol
 
-```bash
+```bash {3}
 FROM nginx:latest
 
 CMD ["nginx", "-g", "daemon off;"]
@@ -177,7 +177,7 @@ Bu yerda CMD instructioni Nginx veb-serverini konteyner ichida ishga tushirish b
 
 `ENTRYPOINT` instructioni sintaksisi `CMD` ga o'xshaydi:
 
-```bash /ENTRYPOINT/
+```bash /ENTRYPOINT/ {3}
 FROM python:3.9
 
 ENTRYPOINT ["python", "app.py"]
@@ -186,7 +186,7 @@ Bunday holda, `ENTRYPOINT` instructioni konteyner ishga tushirilganda Python skr
 
 `CMD` bilan birga ishlatilishi
 
-```bash /ENTRYPOINT/ /CMD/
+```bash /ENTRYPOINT/ /CMD/ {3-4}
 FROM nginx:latest
 
 ENTRYPOINT ["nginx", "-g", "daemon off;"]
@@ -203,7 +203,7 @@ Ushbu Dockerfile Nginx serverini standart sozlamalar bilan ishga tushirish uchun
 
 `EXPOSE` insturctionining sintaksisi oddiy:
 
-```bash /EXPOSE/
+```bash /EXPOSE/ {4}
 FROM nginx:latest
 
 # HTTP trafigi uchun 80 portini ochadi(expose)
@@ -224,7 +224,7 @@ Bu buyruq Docker-ga `80`-portni konteynerdan hostdagi `8080`-portga publish qili
 
 Misol uchun Node.js dasturiga namuna Dockerfile
 
-```bash /EXPOSE/
+```bash /EXPOSE/ {15}
 FROM node:14
 
 WORKDIR /usr/src/app
@@ -252,7 +252,7 @@ Ushbu Node.js misolida `EXPOSE` insturctioni konteyner ichidagi Node.js ilovasi 
 
 `VOLUME` instructioni sintaksisiga misol:
 
-```bash /VOLUME/
+```bash /VOLUME/ {5}
 # Use a base image
 FROM ubuntu:latest
 
@@ -301,7 +301,7 @@ USER <username yoki UID>
 `<username yoki UID>` asosiy imagedagi mavjud foydalanuvchining yoki Dockerfile-da yaratilgan foydalanuvchining usernamesi yoki UID boʻlishi mumkin.
 Docker faylida USER instructionian foydalanishni ko'rsatadigan bir nechta misollar:
 
-```bash /USER/
+```bash /USER/ {5}
 FROM ubuntu:latest
 
 # Yangi foydalanuvchi "appuser" yaratadi va o'sha foydalanuvchiga o'tadi
@@ -317,7 +317,7 @@ Ushbu misolda, `useradd` yordamida `appuser` nomli yangi foydalanuvchi yaratilga
 
 UID dan foyalanishga misol
 
-```bash /USER/
+```bash /USER/ {7}
 FROM node:14
 WORKDIR /usr/src/app
 

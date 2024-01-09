@@ -126,7 +126,7 @@ Qo'shimcha parametrlarsiz ushbu buyruq local serverdagi default `27017` portida 
 mongosh
 ```
 
-```txt filename="Natija"
+```txt filename="Natija" /7.0.3/ /2.0.2/
 Current Mongosh Log ID:	655782d3c03672d6c9f0e9aa
 Connecting to:		mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+2.0.2
 Using MongoDB:		7.0.3
@@ -159,7 +159,7 @@ switched to db admin
 3. Administrator yaratish uchun `db.createUser` buyrug'idan foydalaning. Foydalanuvchi uchun foydalanuvchi nomini `user` va `pwd` uchun parolni kiriting. Yaxshiroq xavfsizlik uchun `pwd` maydonining qiymati sifatida `passwordPrompt()` buyrug'idan foydalaning. Bu MongoDB ga parolni so'rashni aytadi. Administratorga ikkita rol bering, `userAdminAnyDatabase` va `readWriteAnyDatabase`. MongoDB sheldagi buyruqni quyidagi tarzda kiriting va `userAdmin` o'rniga haqiqiy administrator nomini almashtiring.
 
 
-```json
+```json {3}
 db.createUser(
     {
         user: "userAdmin",
@@ -250,7 +250,7 @@ net:
 
 Mana `mongod.conf` ni to'liq ko'rinishi
 
-```conf filename="/etc/mongod.conf" /security:/ /authorization:/ /enabled/ /net:/ /port:/ /bindIp:/ /0.0.0.0/ /27017/
+```conf filename="/etc/mongod.conf" {19-21,28-29}
 # mongod.conf
 
 # for documentation of all options, see:

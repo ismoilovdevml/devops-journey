@@ -55,9 +55,9 @@ Buni  environment variable yordamida o'rnating. Bu yerda biz `DATA_SOURCE_NAME` 
 ```bash
 cd /opt/postgres_exporter
 sudo nano postgres_exporter.env
-```bash
+```
 
-```bash filename="/opt/postgres_exporter/postgres_exporter.env"
+```bash filename="/opt/postgres_exporter/postgres_exporter.env" {2,4}
 # birorta databaseni kuzatish uchun quyidagi configratsiyani o'zingizga moslab oling
 DATA_SOURCE_NAME="postgresql://username:password@localhost:5432/database-name?sslmode=disable"
 # yoki barcha databaselarni monitoring qilmoqchi bo'lsangi quyidagi configratsiyani o'zingizga moslab oling
@@ -74,7 +74,7 @@ sudo useradd -rs /bin/false postgres
 sudo nano /etc/systemd/system/postgres_exporter.service
 ```
 
-```bash filename="/etc/systemd/system/postgres_exporter.service"
+```bash filename="/etc/systemd/system/postgres_exporter.service" {8-10}
 [Unit]
 Description=Prometheus exporter for Postgresql
 Wants=network-online.target

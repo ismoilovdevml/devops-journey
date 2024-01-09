@@ -183,7 +183,7 @@ nano devops-journey.uz
 ```
 `devops-journey.uz` konfiguratsiya ochib olganimzidan keyin quyidagicha Load Balancing konfiguratsiya qilamiz.
 
-```bash filename="/etc/nginx/sites-available/devop-journey.uz"
+```bash filename="/etc/nginx/sites-available/devop-journey.uz" {1-5,8,11}
 upstream backend {
   server 185.168.1.21:9000;
   server 185.168.1.22:9000;
@@ -240,7 +240,7 @@ server {
 
 * `server_name devops-journey.uz;` `server` blokidagi konfiguratsiyani `devops-journey.uz` domeni bilan bog‘laydi. Ushbu domen uchun so'rov kelib tushganda, ushbu server blokida belgilangan konfiguratsiyalar qo'llaniladi.
 
-```bash
+```bash {2}
     location / {
         proxy_pass http://backend/;
         proxy_set_header Host $host;
@@ -310,7 +310,7 @@ NGINX configuratsiyamizga quyidagi o'zgartisihni kiritamiz NGINXga reload berami
 sudo nano /etc/nginx/sites-available/devop-journey.uz
 ```
 
-```bash filename="/etc/nginx/sites-available/devop-journey.uz" /ip_hash;/
+```bash filename="/etc/nginx/sites-available/devop-journey.uz" /ip_hash;/ {2,9,12}
 upstream backend {
   ip_hash;
   server 185.168.1.21:9000;
@@ -365,7 +365,7 @@ Buning uchun NGINX configuratsiyamizni quyidagidek yangilaymiz va NGINXga reload
 sudo nano /etc/nginx/sites-available/devop-journey.uz
 ```
 
-```bash filename="/etc/nginx/sites-available/devop-journey.uz" /weight/
+```bash filename="/etc/nginx/sites-available/devop-journey.uz" /weight/ {1-5,8,11}
 upstream backend {
   server 185.168.1.21:9000 weight=10;
   server 185.168.1.22:9000 weight=8;
@@ -402,7 +402,7 @@ sudo nano /etc/nginx/sites-available/devop-journey.uz
 ```
 
 
-```bash filename="/etc/nginx/sites-available/devop-journey.uz" /weight/ /ip_hash;/
+```bash filename="/etc/nginx/sites-available/devop-journey.uz" /weight/ /ip_hash;/ {2,9,12}
 upstream backend {
   ip_hash;
   server 185.168.1.21:9000 weight=10;
@@ -427,7 +427,7 @@ NGINXda yana bir load balancing metodini qo'llashimiz mumkin bu **Least Connecti
 
 **Least Connections** uchun NGINX configuratsiya quyidagicha
 
-```bash filename="/etc/nginx/sites-available/devop-journey.uz" /least_conn;/
+```bash filename="/etc/nginx/sites-available/devop-journey.uz" /least_conn;/ {2,9,12}
 upstream backend {
   least_conn;
   server 185.168.1.21:9000 weight=10;
@@ -464,7 +464,7 @@ Keling bu uchun NGINX Load Balancing konfiguratsiyamizni yangilab NGINXga reload
 sudo nano /etc/nginx/sites-available/devop-journey.uz
 ```
 
-```bash filename="/etc/nginx/sites-available/devop-journey.uz" /weight/ /least_time header;/
+```bash filename="/etc/nginx/sites-available/devop-journey.uz" /weight/ /least_time header;/ {2,9,12}
 upstream backend {
   least_time header;
   server 185.168.1.21:9000 weight=10;
