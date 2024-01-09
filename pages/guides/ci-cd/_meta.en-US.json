@@ -28,5 +28,11 @@
     "icon": "▶️",
     "description": "Github Actionda Android CI/CD",
     "href": "/guides/ci-cd/android-github-actions"
+  },
+  "jenkins-docker-ci-cd": {
+    "title": "Jenkins bilan Docker CI/CD",
+    "icon": "▶️",
+    "description": "Docker image build qilib deploy qilish",
+    "href": "/guides/ci-cd/jenkins-docker-ci-cd"
   }
 }
