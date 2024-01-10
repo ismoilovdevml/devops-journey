@@ -1,2 +1,19 @@
-## Koddan Servergacha: Jenkins bilan Docker CI/CD
+import { Callout } from "nextra-theme-docs";
+
+## Koddan Servergacha: Jenkins bilan Docker CI/CD va Discord bilan integratsiya
+
+![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/banner.png)
+
+
+**Jenkins** - bu doimiy **C**ontinuous **I**ntegration/**C**ontinuous **D**eployment (**CI/CD**) pipelinei uchun ajoyib tool, ayniqsa Docker konteynerlari bilan ishlashda.
+
+Jenkins **CI/CD** jarayonini osonlashtiradigan open-source avtomatlashtirish serveri boʻlib, ishlab chiquvchilarga applicationlarni build qilish, sinovdan oʻtkazish va deploymentni avtomatlashtirish imkonini beradi. Docker bilan birlashganda, u konteynerlashtirilgan workflowlari uchun kuchli yechim taklif qiladi, bu turli muhitlarda izchillik(consistency) va portativlikni ta'minlaydi.
+
+Jenkins Docker bilan birgalikda izchil va samarali development workflowni yaratish uchun konteynerlashtirishdan foydalangan holda **CI/CD** jarayonini soddalashtiradi. Jenkins pipelinelarida Docker imkoniyatlaridan foydalanish orqali jamoalar dasturiy ta'minotni tezroq va ishonchli yetkazib berishga erishishlari mumkin. 
+
+Bugun ushbu qo'llanmamizda konteynerlashtirilgan ilovalarni Jenkins orqali CI/CD avtomatizatsiya qilamiz.
+
+Ushbu jarayon quyidagic bosqichlarsan iborat bo'ladi.
+
+* **CI** CI qismida biz loyiha source kodlari joylashgan github yoki gitlab bilan ishlaymiz. Github yoki Gitlabda yangi kod qo'shilsa Jenkins **CI** pipeline avtomatik ishga tushadigan qilamiz. Keyingi qismida o'zgarish bo'lganinidan keyin Github yoki Gitlabdan loyiha repositoriyasi va belgilangan branchdan loyiha source kodlarini runner yuklab oladi. Loyiah source kodlari yuklab olinganidan keyin test uchun Docker image build qilinadi, agara Docker image build bo'lsa keyingi bosqichda **CD** o'tadi aks holda shu joyida jarayon to'xtaydi. Docker image muvaffaqiyatli build bo'lganidan keyin birorta Docker Registryga push qilinadi. Shu jarayonlar hammasi bajarilganida **CI** bosqichimiz tugab **CD** bosqichiga o'tiladi.
 

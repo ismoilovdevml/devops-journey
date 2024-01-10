@@ -225,7 +225,7 @@ Ushbu konfiguratsiya **NGINX**-ni **Jenkins** uchun reverse proxy-server sifatid
 
 NGINX konfiguratsiya uchun symbolic link yaratish
 ```bash
-sudo ln -s /etc/nginx/sites-available/jenkins.xilol.uz //etc/nginx/sites-enabled/jenkins.xilol.uz
+sudo ln -s /etc/nginx/sites-available/jenkins.xilol.uz /etc/nginx/sites-enabled/jenkins.xilol.uz
 ```
 Bu buyruq `/etc/nginx/sites-available` jildida Jenkins uchun yaratgan konfiguratsiya fayli (jenkins.xilol.uz) va `/etc/nginx/sites-enabled` jildi o'rtasida symbolic link hosil qiladi. Ushbu ulanishning maqsadi NGINX serveriga siz Jenkins uchun o'rnatgan konfiguratsiyani saytlar faollashtirilgan jildda mavjud qilish orqali o'qish va foydalanish imkonini berishdir.
 
