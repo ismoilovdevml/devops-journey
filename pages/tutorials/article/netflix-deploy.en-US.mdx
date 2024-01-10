@@ -95,7 +95,7 @@ Jenkins ishga tushishi uchun Java-ni talab qiladi, ammo ba'zi distributivlar sta
 
 ```bash
 sudo apt update
-sudo apt install openjdk-17-jre
+sudo apt install fontconfig openjdk-17-jre -y
 java -version
 ```
 
@@ -104,13 +104,13 @@ java -version
 LTS (**L**ong-**T**erm **S**upport) versiyasi har 12 haftada muntazam releaselar oqimidan o'sha vaqt uchun barqaror release sifatida tanlanadi. U debian-stable apt repositorydan o'rnatilishi mumkin.
 
 ```bash
-curl -fsSL https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key | sudo tee \
-  /usr/share/keyrings/jenkins-keyring.asc > /dev/null
+sudo wget -O /usr/share/keyrings/jenkins-keyring.asc \
+  https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
 echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] \
   https://pkg.jenkins.io/debian-stable binary/ | sudo tee \
   /etc/apt/sources.list.d/jenkins.list > /dev/null
 sudo apt-get update
-sudo apt-get install jenkins
+sudo apt-get install jenkins -y
 ```
 
 #### 3. Jenkinsni ishga tushirish
@@ -167,8 +167,8 @@ Serverimizga Jenkins o'rnatdik va uni dastlablki holat uchun sozlab oldik, lekin
 
 ```bash
 sudo apt update
-sudo apt install nginx
-sudo apt install certbot python3-certbot-nginx
+sudo apt install nginx -y
+sudo apt install certbot python3-certbot-nginx -y
 ```
 Jenkinsga domen ulash uchun NGINX configuratsiya qilishimiz kerak. `/etc/nginx/sites-available/` jildida domenimiz uchun konfiguratsiya fayl ochamiz. Masalan, domenimiz `jenkins.xilol.uz`.
 
@@ -373,7 +373,7 @@ sudo apt-get install wget apt-transport-https gnupg lsb-release
 wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
 echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee -a /etc/apt/sources.list.d/trivy.list
 sudo apt-get update
-sudo apt-get install trivy
+sudo apt-get install trivy -y
 ```
 
 Scriptni ishga tushiramiz:
