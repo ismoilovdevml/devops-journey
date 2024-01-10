@@ -54,7 +54,7 @@ const config: DocsThemeConfig = {
     light: 212,
   },
   footer: {
-    text: `CC0-1.0 Licensed | Hamma xuquqlar himoyalangan ${new Date().getFullYear()} ©Uzinfocom Open Source.`,
+    text: `GPL-3.0 Licensed | Hamma huquqlar himoyalangan ${new Date().getFullYear()} ©Fincube Open Source.`,
   },
   navbar: {
     extraContent: <GithubSponsors />,
