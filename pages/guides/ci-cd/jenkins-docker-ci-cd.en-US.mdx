@@ -5,6 +5,7 @@ import { Callout } from "nextra-theme-docs";
 ![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/banner.png)
 
 
+## Kirish
 **Jenkins** - bu doimiy **C**ontinuous **I**ntegration/**C**ontinuous **D**eployment (**CI/CD**) pipelinei uchun ajoyib tool, ayniqsa Docker konteynerlari bilan ishlashda.
 
 Jenkins **CI/CD** jarayonini osonlashtiradigan open-source avtomatlashtirish serveri boʻlib, ishlab chiquvchilarga applicationlarni build qilish, sinovdan oʻtkazish va deploymentni avtomatlashtirish imkonini beradi. Docker bilan birlashganda, u konteynerlashtirilgan workflowlari uchun kuchli yechim taklif qiladi, bu turli muhitlarda izchillik(consistency) va portativlikni ta'minlaydi.
@@ -13,7 +14,42 @@ Jenkins Docker bilan birgalikda izchil va samarali development workflowni yarati
 
 Bugun ushbu qo'llanmamizda konteynerlashtirilgan ilovalarni Jenkins orqali CI/CD avtomatizatsiya qilamiz.
 
-Ushbu jarayon quyidagic bosqichlarsan iborat bo'ladi.
+Ushbu jarayon quyidagicha bosqichlarsan iborat bo'ladi. (qisqa tushuntirish)
 
 * **CI** CI qismida biz loyiha source kodlari joylashgan github yoki gitlab bilan ishlaymiz. Github yoki Gitlabda yangi kod qo'shilsa Jenkins **CI** pipeline avtomatik ishga tushadigan qilamiz. Keyingi qismida o'zgarish bo'lganinidan keyin Github yoki Gitlabdan loyiha repositoriyasi va belgilangan branchdan loyiha source kodlarini runner yuklab oladi. Loyiah source kodlari yuklab olinganidan keyin test uchun Docker image build qilinadi, agara Docker image build bo'lsa keyingi bosqichda **CD** o'tadi aks holda shu joyida jarayon to'xtaydi. Docker image muvaffaqiyatli build bo'lganidan keyin birorta Docker Registryga push qilinadi. Shu jarayonlar hammasi bajarilganida **CI** bosqichimiz tugab **CD** bosqichiga o'tiladi.
 
+* **CD** CI qismida applicationimiz testlardan o'tib Docker image build qilinib Docker Registyga push qilingan bo'ladi. CD qismida ssh orqali serverga kirib bundan oldingi docker containerni to'xtatib, o'chirib yangi docker imageni Docker Registydan pull qilib olib uni DOcker container qilib ishga tushirib qo'yishimiz kerak.
+
+* **Notification** Agar CI/CD jarayoni muvaffaqiyatli yoki muvaffaqiyatsiz bo'lsa Discord serverga notification yuboradigan qilib Discord bilan integratsiya qilamiz.
+
+
+## Ishni boshlash
+
+Ushbu amaliyotni amalga oshirish uchun bizga quyidagi minimum server talablaridai server kerak bo'ladi.
+
+
+<Callout type="info" emoji="">
+**Minimum Server talabi**
+
+| OS            | RAM            | CPU           | Xotira       | Static IP  |
+| ------------- | -------------- | ------------- |------------- | ---------- |
+| Ubuntu 20.04  | 8GB            | 4vCPU 2 core  | 50GB         | Ha kerak   |
+
+**Tavsiya qilinadigan mimimum server talabi**
+
+| OS            | RAM            | CPU           | Xotira       | Static IP  | Server nomi        |
+| ------------- | -------------- | ------------- |------------- | ---------- | ------------------ |
+| Ubuntu 20.04  | 4GB            | 4vCPU 2 core  | 50GB         | Ha kerak   | Jenkins Server     |
+| Ubuntu 20.04  | 8GB            | 4vCPU 2 core  | 50GB         | Ha kerak   | Application Server |
+
+</Callout>
+
+Ushbu amaliyotda biz **Jenkins, Docker, Container Registry** (**Dockerhub** va **GCR**(**G**oogle **C**ontainer **R**egistry)), **Github** yoki **Gitlab, Discord** va **Ubuntu server** ishlatamiz
+
+## Jenkins o'rnatish
+
+Amaliyotning birinchi qadami bu Serverga Jenkins o'rnatishdan boshlanadi. Bundan oldingi qo'llanmalarda Jenkins o'rnatish haqida yozilgan. [**Linux Serverlarga Jenkins o'rnatish**](https://devops-journey.uz/guides/ci-cd/jenkins-ornatish) qo'llanmasidan foydalanib seerveringizga jenkins o'rnatib olishingiz mumkin. Serveringizga Jenkins o'rnatib boshlang'ich sozlab olganiningzidan keyin keyingi bosqichga o'tsak bo'ladi.
+
+## Docker o'rnatish
+
+Biz ilovamizni Docker  containerlarda ishga tushiramiz shuning uchun serverimizga Docker o'rnatib olishmiz kerak bo'ladi. [**Linux serverlarga Docker o'rnatish**](https://devops-journey.uz/guides/konteyner/docker-ornatish) qo'llanasidan foydalanib sereveringizga Docker o'rnatib oling.
