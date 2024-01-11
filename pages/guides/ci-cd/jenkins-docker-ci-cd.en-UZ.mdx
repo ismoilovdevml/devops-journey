@@ -53,3 +53,33 @@ Amaliyotning birinchi qadami bu Serverga Jenkins o'rnatishdan boshlanadi. Bundan
 ## Docker o'rnatish
 
 Biz ilovamizni Docker  containerlarda ishga tushiramiz shuning uchun serverimizga Docker o'rnatib olishmiz kerak bo'ladi. [**Linux serverlarga Docker o'rnatish**](https://devops-journey.uz/guides/konteyner/docker-ornatish) qo'llanasidan foydalanib sereveringizga Docker o'rnatib oling.
+
+## Git bilan ishlash
+
+Applicationlarimiz kodlarini birorta **VCS**(**V**ersion **C**ontrol **S**ystem)da saqlanadi ushbu amaliyotda **Github** va **Gitlab** bilan ishlaydigan Jenkins CI pipeline yozamiz. Gitdan private repositoriyalarni klon qilib olish uchun ushbu repositoriyalarga ruxsati bor userlardan **Personal access token** tokenlar olinadi va Jenkins credendialsga qo'shib qo'yiladi. Bundan maqsad Jenkins pipeline ushbu Personal access token orqali Github yoki Gitlabdan private repositoriyalarni clon qila olishi va ishlata olishidir.
+
+**Personal access token olish**
+
+### Github uchun
+
+Github profilingizga kirib **Settings** sozlamalar bo'limga kiring.
+
+>![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/github1.png)
+
+Keyin **Developer settings** bo'limga kiring.
+
+>![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/github2.png)
+
+**Personal access tokens** **->** **Tokens(classic)**
+>![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/github3.png)
+
+**->Generate new token(classic)**
+>![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/github4.png)
+
+**Personal access token**ga nom berib va ishlash mudatini belgilab admin accesslarni beramiz va **Generate token** bosib token generatsiya qilib olamiz.
+>![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/github5.png)
+
+Sizga Github Personal access token generatsiya qilib beradinsiz uni nusxalab olib qo'yishingiz kerak bo'ladi. Bu Personal access tokenni Jenkinsda credentialsga qo'shib qo'yib Jenkins pipelineda ishlatamiz.
+>![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/github6.png)
+
+### Gitlab uchun
