@@ -1,12 +1,13 @@
 import Card, { Cards } from '@components/core/Card';
-import guides from './database/_meta.en-US.json';
+import guides from './k8s/_meta.en-UZ.json';
 
-# Database
+# Kubernetes (k8s) 
 
-Hamjamiyat tomonidan yozilgan Databaselar bilan ishlash uchun yozilgan dokumentatsiya va qo'llanmalar.
+Hamjamiyat tomonidan yozilgan Kubernetes (k8s) uchun yozilgan dokumentatsiya va qo'llanmalar.
 
 <Cards
   num={3}
+  items={guides}
   children={Object.keys(guides).map((key, i) => (
     <Card
       key={i}

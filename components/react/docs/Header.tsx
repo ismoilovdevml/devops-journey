@@ -1,11 +1,11 @@
 import { useRouter } from 'next/router';
 
 const TITLE_WITH_TRANSLATIONS: Record<string, string> = {
-  'en-US': 'livepeer.js',
+  'en-UZ': 'livepeer.js',
 };
 
 export function Header() {
-  const { locale, defaultLocale = 'en-US' } = useRouter();
+  const { locale, defaultLocale = 'en-UZ' } = useRouter();
   const resolvedLocale = locale || defaultLocale;
   const title = TITLE_WITH_TRANSLATIONS[resolvedLocale];
 

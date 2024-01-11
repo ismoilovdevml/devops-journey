@@ -7,11 +7,11 @@ import { GithubSponsors } from '@components/icons/github-sponsors';
 const github = 'https://github.com/ismoilovdevml/devops-journey';
 
 const TITLE_WITH_TRANSLATIONS = {
-  'en-US': 'DevOps Journey',
+  'en-UZ': 'DevOps Journey',
 } as const;
 
 const EDIT_LINK_WITH_TRANSLATIONS = {
-  'en-US': "GitHub-da o'zgartirish →",
+  'en-UZ': "GitHub-da o'zgartirish ->",
 } as const;
 
 import { DocsThemeConfig, useConfig, useTheme } from 'nextra-theme-docs';
@@ -87,7 +87,7 @@ const config: DocsThemeConfig = {
       : frontMatter?.image || '/banner.png';
     const folder = theme === 'light' ? '/light' : '/dark';
 
-    const composedTitle = `${title} – DevOps Journey`;
+    const composedTitle = `${title} - DevOps Journey`;
 
     return (
       <>
@@ -173,14 +173,14 @@ const config: DocsThemeConfig = {
         <>
           {
             EDIT_LINK_WITH_TRANSLATIONS[
-              (locale as keyof typeof EDIT_LINK_WITH_TRANSLATIONS) ?? 'en-US'
+              (locale as keyof typeof EDIT_LINK_WITH_TRANSLATIONS) ?? 'en-UZ'
             ]
           }
         </>
       );
     },
   },
-  i18n: [{ locale: 'en-US', text: 'English' }],
+  i18n: [{ locale: 'en-UZ', text: 'O\'zbek' }],
   gitTimestamp: ({ timestamp }) => (
     <>Last updated on {timestamp.toLocaleDateString()}</>
   ),
