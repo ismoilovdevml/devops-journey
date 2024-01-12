@@ -58,6 +58,10 @@ Biz ilovamizni Docker  containerlarda ishga tushiramiz shuning uchun serverimizg
 
 Applicationlarimiz kodlarini birorta **VCS**(**V**ersion **C**ontrol **S**ystem)da saqlanadi ushbu amaliyotda **Github** va **Gitlab** bilan ishlaydigan Jenkins CI pipeline yozamiz. Gitdan private repositoriyalarni klon qilib olish uchun ushbu repositoriyalarga ruxsati bor userlardan **Personal access token** tokenlar olinadi va Jenkins credendialsga qo'shib qo'yiladi. Bundan maqsad Jenkins pipeline ushbu Personal access token orqali Github yoki Gitlabdan private repositoriyalarni clon qila olishi va ishlata olishidir.
 
+<Callout type="info" emoji="">
+**ESLATMA->** Ko'p startuplar kichik jamolar **Github** ishlatishadi, boshqalar esa enterprise **Gitlab**ni o'z seerverlarda ishga tuhsirib ishlatishadi. Bu amaliyotda 2lasi bilan ham ishlash yozilgan. Sizning jamoyingiz qaysi birini ishlatsa shunga mosini qo'llaysiz.
+</Callout>
+
 **Personal access token olish**
 
 ### Github uchun
@@ -83,3 +87,30 @@ Sizga Github Personal access token generatsiya qilib beradinsiz uni nusxalab oli
 >![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/github6.png)
 
 ### Gitlab uchun
+
+Gitlab profilingizga kirib **Pereferences** bo'limga kirib **Accsess Tokens**ga o'tamiz.
+
+>![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/gitlab1.png)
+
+>![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/gitlab2.png)
+
+**Accsess Tokens**ga kirganimizdan keyin Token nomi ishlash muddatini belgilab kerakli ruxsatlarni berib **Create personal accsess token** bosib Gitlab token generatsiya qilib olamiz.
+
+>![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/gitlab3.png)
+
+O'zingiz ishlatdigan VCSdan access token generatsiya qilib olganingizdan keyin Serverimizda ishga tushirilgan Jenkinsga kirib credentialsga ushbu tokenlarni qo'shib qo'yamiz.
+
+**->** `Manage Jenkins` **->** `Credentials`
+
+>![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/jenkins1.png)
+
+**Username->** Gitlab yoki Github username
+
+**Password** Gitlab yoki Gitlabdan genreatsiya qilib olgan personal access tokenni joylashtiramiz.
+
+Jenkinsnga Gitlab yoki Githubdan private repositorilarni klon qilib ishlashi uchun accsess tokenni joylashtiurib sozlaganimizdan keyin birinchi Jenkins CI pipelineni yozsak bo'ladi.
+
+
+## Birinchi CI pipeline
+
+Hozirchi hammasi tayyor birinchi Jenkins CI pipelinemizni yozsak bo'ladi.
