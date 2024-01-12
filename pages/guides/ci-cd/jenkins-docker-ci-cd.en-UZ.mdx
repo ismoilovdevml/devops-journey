@@ -110,7 +110,61 @@ O'zingiz ishlatdigan VCSdan access token generatsiya qilib olganingizdan keyin S
 
 Jenkinsnga Gitlab yoki Githubdan private repositorilarni klon qilib ishlashi uchun accsess tokenni joylashtiurib sozlaganimizdan keyin birinchi Jenkins CI pipelineni yozsak bo'ladi.
 
+## Discord bilan integratsiya
+
+Discordni CI/CD pipelinelari bilan integratsiyalash dastuchilar guruhlari ichida hamkorlik va aloqani yaxshilaydi. Discord, mashhur xabar almashish platformasi, real vaqt rejimida notificationlar uchun markazlashtirilgan markaz(hub) bo'lib xizmat qiladi, tezkor javob vaqtlarini oshiradi va dasturiy ta'minotni ishlab chiqishning lifecyclini yaxshilaydi. Jenkins CI yoki har qanday CI/CD tooli Discord bilan bog'lash orqali dasturchilar to'g'ridan-to'g'ri o'zlari tanlagan Discord kanallarida build holati, test natijalari va deployment natijalari bo'yicha tezkor yangilanishlarni oladi. 
+
+Qisqa qilib aytganda biz discordni CI/CD pipelinemiz muvaffaqiyatli ishini tugatgani yoki muvaffaqiyatsiz bo'lgan xabarlarni dasturchilar guruhlariga discord orqali yetkizish uchun ishlatamiz.
+
+### Jenkins uchun
+Discordni Jenkins bilan integratsiya qilish uchun **Discord Notifier** plagini Jenkinsga o'rnatib olishimiz kerak.
+
+**->** `Manage Jenkins` **->** `Plugins` **->** `Available plugins`
+
+>![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/jenkins3.png)
+
+**Discord Notifier** plaghini o'rnatilib jenkins restart bo'lganidan keyin Discord server ochib serverda channel ochib webhook yaratib olamiz.
+
+Discord kirib **Add a Server** bosib Server yaratib olamiz
+
+>![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/discord1.png)
+
+>![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/discord2.png)
+
+>![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/discord3.png)
+
+Serverga nom berib **Create** bosamiz.
+
+>![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/discord4.png)
+
+Discord Server yaratib olganimzidan keyin Serverimizda channel yaratib olamiz. **Create Channel**
+
+>![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/discord6.png)
+
+Channel nomini yozamiz masalan **dev-jenkins** -> **Create Channel**
+>![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/discord7.png)
+
+Channel ochib olganimzidan keyin **Integrations** bo'limga kirib **Webhooks**dan **Create Webhook** bosamiz
+>![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/discord8.png)
+
+**Webhook** yaratib olganimizdan keyin uni nusxalab **Copy Webhook URL** olib qo'yamiz va Jenkins pipelineda ishlatish  uchun olib qo'yamiz.
+>![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/discord9.png)
+
+Discordan olgan webhookni Jenkins credendialsga qo'shamiz.
+
+**->** `Manage Jenkins` **->** `Credentials`
+
+>![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/jenkins4.png)
+
+### Gitlab Github uchun
+
+Github bilan jenkinsni integratsiya qilish uchun ushbu video qo'llanmalardan foydalanishingiz mumkin. **dev-jenkins** channel ochtganimizdek github yoki gitlab channel ochib webhook yaratib Gitlab yoki Github bilan integratsiya qilamiz.
+
+Bu holda har bir repositorilarga discord webhook ulab chiqiladi.
+* [**Githubga discord ulash**](https://youtu.be/-KDQqWNK3Tw?si=6S_8Jq3KZjzubOKh)
+
+* [**Gitlabga discord ulash**](https://docs.gitlab.com/ee/user/project/integrations/discord_notifications.html)
 
 ## Birinchi CI pipeline
 
-Hozirchi hammasi tayyor birinchi Jenkins CI pipelinemizni yozsak bo'ladi.
+Hozirchi hammasi tayyor birinchi Jenkins CI pipelinemizni yozishga tayyormiz.
