@@ -167,4 +167,106 @@ Bu holda har bir repositorilarga discord webhook ulab chiqiladi.
 
 ## Birinchi CI pipeline
 
-Hozirchi hammasi tayyor birinchi Jenkins CI pipelinemizni yozishga tayyormiz.
+Hozirchi hammasi tayyor birinchi Jenkins CI pipelinemizni yozishga tayyormiz. Jenkinsga kirib loyihamiz uchun job yaratib olamiz.
+
+**-> Creaet a job +**
+
+>![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/job1.png)
+
+**Enter an item name** ga loyihamiz nomini yozib **Pipeline**ni tanlab **OK** bosamiz
+
+>![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/job2.png)
+
+Keyingi qismda eng pastgi qatorga **Pipeline** qismiga quyidagi birinchi CI pipelinemizni joylashtiramiz **Save** qilamiz.
+
+>![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/job3.png)
+
+**Jenkins CI pipeline**
+
+```groovy {5-8,13,18,24-30}
+pipeline {
+    agent any
+
+    environment {
+        DISCORD_WEBHOOK = credentials('discord-webhook')
+        GIT_URL = 'https://github.com/ismoilovdevml/devops-journey.git'
+        GIT_TOKEN = credentials('git-token')
+        BRANCH_NAME = 'main'
+    }
+    stages {
+        stage('Clean Workspace') {
+            steps {
+                cleanWs()
+            }
+        }
+        stage('Clone Repository') {
+            steps {
+                git branch: BRANCH_NAME, url: GIT_URL, credentialsId: 'git-token'
+            }
+        }
+    }
+    post {
+        always {
+            discordSend(
+                description: "Jenkins Pipeline Build ${currentBuild.currentResult}",
+                link: env.GIT_URL,
+                result: currentBuild.currentResult,
+                title: JOB_NAME,
+                webhookURL: env.DISCORD_WEBHOOK
+            )
+        }
+    }
+}
+```
+Keling pipelineni bo'laklarga bo'lib ko'rib chiqamiz. Bu **Groovy**-da yozilgan Jenkins Pipeline, Java Virtual Machine uchun skript tili. Keling, ushbu pipelinening asosiy qismlarini ajratamiz:
+
+```groovy
+agent any
+```
+Ushbu pipeline Jenkins muhitida mavjud bo'lgan har qanday agentda ishlashi mumkin. Har qanday kalit so'z pipelineni istalgan mavjud executorda ishlashiga imkon beradi.
+
+```groovy
+environment {
+    DISCORD_WEBHOOK = credentials('discord-webhook')
+    GIT_URL = 'https://github.com/ismoilovdevml/devops-journey.git'
+    GIT_TOKEN = credentials('git-token')
+    BRANCH_NAME = 'main'
+}
+```
+
+* **DISCORD_WEBHOOK->** Discord webhook URL manzilini saqlaydigan credential.
+* **GIT_URL->** Klonlanadigan Git repositoriyaning URL manzili.
+* **GIT_TOKEN->** Autentifikatsiya uchun Git tokenini saqlaydigan credendial(private repositorilar bilan ishlash uchun).
+* **BRANCH_NAME->** Git repositoriyasining foydalaniladigan branchi (bu holda main).
+
+```groovy
+stages {
+    stage('Clean Workspace') {
+        steps {
+            cleanWs()
+        }
+    }
+    stage('Clone Repository') {
+        steps {
+            git branch: BRANCH_NAME, url: GIT_URL, credentialsId: 'git-token'
+        }
+    }
+}
+```
+* **Clean Workspace->** Ushbu bosqich ishni boshlashdan oldin workspaceni tozalaydi.
+* **Clone Repository->** Bu bosqich **GIT_URL** va **BRANCH_NAME** tomonidan belgilangan Git repositoriyani **git-token*** tomonidan aniqlangan credendial yordamida klonlaydi.
+
+```groovy
+post {
+    always {
+        discordSend(
+            description: "Jenkins Pipeline Build ${currentBuild.currentResult}",
+            link: env.GIT_URL,
+            result: currentBuild.currentResult,
+            title: JOB_NAME,
+            webhookURL: env.DISCORD_WEBHOOK
+        )
+    }
+}
+```
+Jarayon tugallangandan so'ng (muvaffaqiyatsiz bo'lsa ham), **discordSend** qadami bajariladi. U **DISCORD_WEBHOOK** da saqlangan webhook URL manzilidan foydalanib, Discord channelga notification(xabar) yuboradi. Xabarda natija, Git omboriga havola va job nomi kabi ma'lumotlar mavjud.
