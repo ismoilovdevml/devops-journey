@@ -427,7 +427,7 @@ Ushbu namunada konfiguratsiyalar ham alohida repositoriyada saqlanagnmi ko'rsati
 │           └── UI.Dockerfile
 ```
 
-## CD pipeline
+## CI pipeline
 
 Hammasi tayyor endi to'liq CI pipeline yozib ishga tuhsirsak bo'ladi. Bundan oldin monorepo va multi-repolar bilan ishlash ko'rsatildi loyihangizga qarab buni tanlaysiz. [**devops-journey**](https://github.com/ismoilovdevml/devops-journey) monorepo bo'lgani uchun monorepo CI/CD pipeline yozamiz lekin yuqorida multi-repo uchun ko'rsatilgan.
 
@@ -469,7 +469,7 @@ pipeline {
 }
 ```
 
-**CD** pipelinemizga Docker bilan ishlash bosqichini qo'shimiz kerak. Buning uchun Jenkinsga kerakli plaginlarni o'rnatib olishimiz kerak.
+**CI** pipelinemizga Docker bilan ishlash bosqichini qo'shimiz kerak. Buning uchun Jenkinsga kerakli plaginlarni o'rnatib olishimiz kerak.
 
 Pipelinemizda Docker bilan ishlash uchun quyidagi plaginlarni o'rnatib olishimiz kerak.
 
@@ -482,6 +482,125 @@ Plaginlarni o'rnatib bo'lganingizdan keyin sozlab chiqish kerak.
 **->** `Manage Jenkins` **->** `Tools` **->** `Docker installations`
 
 > ![netflix](/images/article/netflix/docker2.png)
+
  Docker bilan ishlashni sozlab chiqganimizdan keyin Jenkins pipelineda build bo'lgan docker imagelarni push qilish saqlash uchun Docker Registry ishlatamiz. Ushbu amaliyotda **Dockerhub** va **GCR**(**G**oogle **C**ontainer **R**egistry)dan foydalanish ko'rsatiladi. Dockerhub bepul versiyasida bitta private docker imagega ruxsat bor undan keyingi imagelar avtomatik public bo'ladi, private qilish uchun Dockerhub pullik obunga a'zo bo'lish kerak. **GCR** Google Cloudga tegishli.
 
+### Dockerhub
+
+Amaliyotni ushbu qismida **Docker Registry** uchun **Dockerhub** ishlatamiz shuning uchun Dockerhubdan ro'yxatdan o'tgan bo'lishingiz  va Access token olgan bo'lishingiz kerak.
+Agar Ro'yxatdan o'tmagan bo'lsangiz ro'yxatdan o'tishingiz kerak
+
+> ![netflix](/images/article/netflix/docker3.png)
+
+`Sign up` bosib ro'yxatdan o'tasiz 
+
+> ![netflix](/images/article/netflix/docker4-new.png)
+
+Ro'yxatdan o0'tib olganingizdan keyin **Email Verification** talab qilinadi. Email verifatsiya qilganingizdan keyin 
+
+**->** `Account Settings` **->** `Security` **->** bo'limga o'tib `Access Token` yaratib olamiz.
+
+> ![netflix](/images/article/netflix/docker5.png)
+
+> ![netflix](/images/article/netflix/docker6.png)
+
+Access Tokenga nom berib unga **Read,Write,Delete** permisonlarni beramiz **`Generate`** qilamiz.
+
+> ![netflix](/images/article/netflix/docker7.png)
+
+Sizga access token generatsiya qilib berialdi va siz undan nusxa olib qo'yishingiz kerak, aks holda uni qaytib ololmaysiz. Sizga docker login qilish uchun namuna CLI command ham beriladi 
+
+```bash
+docker login -u devsecopsuser4732
+```
+Jenkins pipelineda DockerHub Registrydan foydalanishimiz uchun Jenkins crdentialsga DockerHub user va tokenni qo'shib qo'yamiz.
+
+**->** `Manage Jenkins` **->** `Credentials`-ga kirib  `Add credentials`ga o'tamiz.
+
+
+> ![netflix](/images/article/netflix/secret6.png)
+
+**Username**ga DockerHub usernamengizni yozasiz **Password**ga esa yuqorida yaratib olgan access tokenimizni joylashtiramiz.
+
+Dockerhubdan ro'yxatdan o'tdik, access token oldik hammasini Jenkins credentialsga **dockerhub** ID bilan saqladik endi Jenkins pipelinega **CD**(continuous delivery)qismini qo'shsak bo'ladi.
+
+Jenkins pipelenimizga quyidagi bosqichni qo'shamiz. Bu bosqich ilovamizdan docker image yaratib, build qilib, Docker Registyga push qiladi ya'ni DockerHubga.
+
+Pipelinega yangi environmentlar qo'shib olamiz:
+
+```groovy {4-6}
+environment {
+    DISCORD_WEBHOOK = credentials('discord-webhook')
+    GIT_URL = 'https://github.com/ismoilovdevml/devops-journey.git'
+    DOCKERHUB_CREDENTIALS = credentials('dockerhub')
+    CONTAINER_NAME = 'devops-journey'
+    REGISTRY_URL = 'devsecopsuser732'
+    GIT_TOKEN = credentials('git-token')
+    BRANCH_NAME = 'main'
+}
+```
+* **DOCKERHUB_CREDENTIALS ->** credentialsdandan DockerHub username va access tokenni olib keladi.
+* **CONTAINER_NAME ->** Bu loyihamizni containerda ishga tushirishda unga beriladigan nom
+* **REGISTRY_URL ->** Dokcer Registry URL. Bizni holatimizda yani Dockerhubda bu yerda Dockerhub username yoziladi.
+
+Dockerhub bilan ishlaydigan Jenkins **CI** pipelienmiz quyidagicha yangilaymiz.
+
+```groovy {7-9,24-42}
+pipeline {
+    agent any
  
+    environment {
+        DISCORD_WEBHOOK = credentials('discord-webhook')
+        GIT_URL = 'https://github.com/ismoilovdevml/devops-journey.git'
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub')
+        CONTAINER_NAME = 'devops-journey'
+        REGISTRY_URL = 'devsecopsuser732'
+        GIT_TOKEN = credentials('git-token')
+        BRANCH_NAME = 'main'
+    }
+    stages {
+        stage('Clean Workspace') {
+            steps {
+                cleanWs()
+            }
+        }
+        stage('Clone Repository') {
+            steps {
+                git branch: BRANCH_NAME, url: GIT_URL, credentialsId: 'git-token'
+            }
+        }
+        stage('Build Application') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                    script {
+                        def dockerlogin = "docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}"
+                        sh dockerlogin
+                        sh """
+                            docker build . -t ${REGISTRY_URL}/${CONTAINER_NAME}:${BUILD_NUMBER} -f Dockerfile
+                            docker tag ${REGISTRY_URL}/${CONTAINER_NAME}:${BUILD_NUMBER} ${REGISTRY_URL}/${CONTAINER_NAME}:latest
+                            docker push ${REGISTRY_URL}/${CONTAINER_NAME}:latest
+                            docker push ${REGISTRY_URL}/${CONTAINER_NAME}:${BUILD_NUMBER}
+                            docker image rm -f ${REGISTRY_URL}/${CONTAINER_NAME}:latest
+                            docker image rm -f ${REGISTRY_URL}/${CONTAINER_NAME}:${BUILD_NUMBER}
+                        """
+                    }
+                }    
+            }
+        }
+    }
+    post {
+        always {
+            discordSend(
+                description: "Jenkins Pipeline Build ${currentBuild.currentResult}",
+                link: env.GIT_URL,
+                result: currentBuild.currentResult,
+                title: JOB_NAME,
+                webhookURL: env.DISCORD_WEBHOOK
+            )
+        }
+    }
+}
+```
+
+### GCR(Google Container Registry)
+

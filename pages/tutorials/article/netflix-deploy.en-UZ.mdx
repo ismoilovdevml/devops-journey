@@ -969,7 +969,7 @@ Jenkins pipelineda DockerHub Registrydan foydalanishimiz uchun Jenkins crdential
 
 **Username**ga DockerHub usernamengizni yozasiz **Password**ga esa yuqorida yaratib olgan access tokenimizni joylashtiramiz.
 
-Dockerhubdan ro'yxatdan o'tdik, access token oldik hammasini Jenkins credentialsga **dockerhub** ID bilan saqladik endi Jenkins pipelinega *CD*(continuous delivery)qismini qo'shsak bo'ladi.
+Dockerhubdan ro'yxatdan o'tdik, access token oldik hammasini Jenkins credentialsga **dockerhub** ID bilan saqladik endi Jenkins pipelinega **CD**(continuous delivery)qismini qo'shsak bo'ladi.
 
 Jenkins pipelenimizga quyidagi bosqichni qo'shamiz. Bu bosqich ilovamizdan docker image yaratib, build qilib, Docker Registyga push qiladi ya'ni DockerHubga.
 
@@ -990,7 +990,7 @@ environment {
 * **GIT_URL ->** Loyihamiz git urli(manzili).
 * **GITHUB_TOKEN ->** Bu credentialsdan `github-token`ni olib keladi yani private repositoriyalarni clon qilib olish uchun
 * **DOCKERHUB_CREDENTIALS ->** credentialsdandan DockerHub username va access tokenni olib keladi.
-* **CONTAINER_NAME -> ** Bu loyihamizni containerda ishga tushirishda unga beriladigan nom
+* **CONTAINER_NAME ->** Bu loyihamizni containerda ishga tushirishda unga beriladigan nom
 * **REGISTRY_URL ->** Dokcer Registry URL. Bizni holatimizda yani Dockerhubda bu yerda Dockerhub username yoziladi.
 * **API_KEY ->** TMDB API Key
 * **BRANCH_NAME->** Gitdagi loyihamiz branchi
