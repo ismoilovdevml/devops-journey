@@ -46,6 +46,10 @@ Ushbu amaliyotni amalga oshirish uchun bizga quyidagi minimum server talablarida
 
 Ushbu amaliyotda biz **Jenkins, Docker, Container Registry** (**Dockerhub** va **GCR**(**G**oogle **C**ontainer **R**egistry)), **Github** yoki **Gitlab, Discord** va **Ubuntu server** ishlatamiz
 
+<Callout type="info" emoji="">
+**ESLATMA->** Ushbu amaliyotda bi [**devops-journey**](https://github.com/ismoilovdevml/devops-journey) platformasi manba kodlaridan foydalanamiz. Stars(yulduzcha) bosib qo'yish esdan chiqmasin **:)**
+</Callout>
+
 ## Jenkins o'rnatish
 
 Amaliyotning birinchi qadami bu Serverga Jenkins o'rnatishdan boshlanadi. Bundan oldingi qo'llanmalarda Jenkins o'rnatish haqida yozilgan. [**Linux Serverlarga Jenkins o'rnatish**](https://devops-journey.uz/guides/ci-cd/jenkins-ornatish) qo'llanmasidan foydalanib seerveringizga jenkins o'rnatib olishingiz mumkin. Serveringizga Jenkins o'rnatib boshlang'ich sozlab olganiningzidan keyin keyingi bosqichga o'tsak bo'ladi.
@@ -363,13 +367,13 @@ pipeline {
                     dir('configurations'){
                         git branch: BRANCH_NAME, url: CONFIGURATIONS_GIT_URL, credentialsId: 'git-token'
                     }
-                    dir('devops-journey/ui'){
+                    dir('devops-journey/devops-journey-ui'){
                         git branch: BRANCH_NAME, url: UI_GIT_URL, credentialsId: 'git-token'
                     }
-                    dir('devops-journey/api'){
+                    dir('devops-journey/devops-journey-api'){
                         git branch: BRANCH_NAME, url: API_GIT_URL, credentialsId: 'git-token'
                     }
-                    dir('devops-journey/service'){
+                    dir('devops-journey/devops-journey-service'){
                         git branch: BRANCH_NAME, url: SERVICE_GIT_URL, credentialsId: 'git-token'
                     }
                     sh "cp configurations/devops-journey/${BUILD_BRANCH}/MAIN.Dockerfile ./MAIN.Dockerfile"
@@ -399,25 +403,85 @@ Ushbu namunada konfiguratsiyalar ham alohida repositoriyada saqlanagnmi ko'rsati
 
 
 ```bash
-├── main
-│   ├── API.Dockerfile
-│   ├── MAIN.Dockerfile
-│   ├── SERVICE.Dockerfile
-│   └── UI.Dockerfile
-├── dev
-│   ├── API.Dockerfile
-│   ├── MAIN.Dockerfile
-│   ├── SERVICE.Dockerfile
-│   └── UI.Dockerfile
-├── stage
-│   ├── API.Dockerfile
-│   ├── MAIN.Dockerfile
-│   ├── SERVICE.Dockerfile
-│   └── UI.Dockerfile
-├── prod
-│   ├── API.Dockerfile
-│   ├── MAIN.Dockerfile
-│   ├── SERVICE.Dockerfile
-│   └── UI.Dockerfile
+├── configurations
+│   └── devops-journey
+│       ├── main
+│       │   ├── API.Dockerfile
+│       │   ├── MAIN.Dockerfile
+│       │   ├── SERVICE.Dockerfile
+│       │   └── UI.Dockerfile
+│       ├── dev
+│       │   ├── API.Dockerfile
+│       │   ├── MAIN.Dockerfile
+│       │   ├── SERVICE.Dockerfile
+│       │   └── UI.Dockerfile
+│       ├── stage
+│       │   ├── API.Dockerfile
+│       │   ├── MAIN.Dockerfile
+│       │   ├── SERVICE.Dockerfile
+│       │   └── UI.Dockerfile
+│       └── prod
+│           ├── API.Dockerfile
+│           ├── MAIN.Dockerfile
+│           ├── SERVICE.Dockerfile
+│           └── UI.Dockerfile
 ```
 
+## CD pipeline
+
+Hammasi tayyor endi to'liq CI pipeline yozib ishga tuhsirsak bo'ladi. Bundan oldin monorepo va multi-repolar bilan ishlash ko'rsatildi loyihangizga qarab buni tanlaysiz. [**devops-journey**](https://github.com/ismoilovdevml/devops-journey) monorepo bo'lgani uchun monorepo CI/CD pipeline yozamiz lekin yuqorida multi-repo uchun ko'rsatilgan.
+
+Hozirgacha yozgan CI pipelinemiz quyidagicha
+
+```groovy
+pipeline {
+    agent any
+ 
+    environment {
+        DISCORD_WEBHOOK = credentials('discord-webhook')
+        GIT_URL = 'https://github.com/ismoilovdevml/devops-journey.git'
+        GIT_TOKEN = credentials('git-token')
+        BRANCH_NAME = 'main'
+    }
+    stages {
+        stage('Clean Workspace') {
+            steps {
+                cleanWs()
+            }
+        }
+        stage('Clone Repository') {
+            steps {
+                git branch: BRANCH_NAME, url: GIT_URL, credentialsId: 'git-token'
+            }
+        }
+    }
+    post {
+        always {
+            discordSend(
+                description: "Jenkins Pipeline Build ${currentBuild.currentResult}",
+                link: env.GIT_URL,
+                result: currentBuild.currentResult,
+                title: JOB_NAME,
+                webhookURL: env.DISCORD_WEBHOOK
+            )
+        }
+    }
+}
+```
+
+**CD** pipelinemizga Docker bilan ishlash bosqichini qo'shimiz kerak. Buning uchun Jenkinsga kerakli plaginlarni o'rnatib olishimiz kerak.
+
+Pipelinemizda Docker bilan ishlash uchun quyidagi plaginlarni o'rnatib olishimiz kerak.
+
+`Docker`, `Docker Common`, `Docker Pipeline`, `Docker API`, `docker-build-step`
+
+> ![netflix](/images/article/netflix/docker1.png)
+
+Plaginlarni o'rnatib bo'lganingizdan keyin sozlab chiqish kerak. 
+
+**->** `Manage Jenkins` **->** `Tools` **->** `Docker installations`
+
+> ![netflix](/images/article/netflix/docker2.png)
+ Docker bilan ishlashni sozlab chiqganimizdan keyin Jenkins pipelineda build bo'lgan docker imagelarni push qilish saqlash uchun Docker Registry ishlatamiz. Ushbu amaliyotda **Dockerhub** va **GCR**(**G**oogle **C**ontainer **R**egistry)dan foydalanish ko'rsatiladi. Dockerhub bepul versiyasida bitta private docker imagega ruxsat bor undan keyingi imagelar avtomatik public bo'ladi, private qilish uchun Dockerhub pullik obunga a'zo bo'lish kerak. **GCR** Google Cloudga tegishli.
+
+ 
