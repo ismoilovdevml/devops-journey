@@ -604,3 +604,100 @@ pipeline {
 
 ### GCR(Google Container Registry)
 
+Docker Registry sifatida **GCR** ishlatish uchun Google Cloud **IAM**dan **Service Account** ochihb olishimiz va unga **Storage Admin** ruxsatini berishimiz kerak, undan keyin service accountga kirib service accoun key generatsiya qilib olishimiz kerak. Credentiallar Jenkins pipeline Google cloudga GCR ga kira olishi va ishlashi uchun kerak.
+
+**1->** Google Cloudga kirib **Service Accounts**dan service account yaratib olamiz.
+
+**-> Google Cloud -> IAM & Admin -> Service Accounts**
+
+![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/gcp1.png)
+
+**+ CREATE SERVICE ACCOUNT** bosib service account yaratib olamiz.
+
+![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/gcp2.png)
+
+**Service account name**ga service accountimiz uchun nom yozamiz masalan **gcr. Service account description**ga esa description yozib **DONE** bosganimizdan keyin keyingi bosqichga o'tadi
+![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/gcp3.png)
+
+**Role**ga **Storage Admin** huquqini beramiz va **DONE** bosib yaratib olamiz.
+![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/gcp4.png)
+
+Service Account yaratib olganimizdan keyin Service Accountimizga(gcr) kirib **KEYS** qismidan **ADD KEY** bosib **JSON** formatda private key generatsiya qilib olamiz va uni yuklab olamiz.
+
+
+**-> KEYS -> ADD KEY -> JSON -> CREATE**
+![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/gcp5.png)
+
+Yuklab olgan Service accoun  private keyimizni Jenkins credentialsga qo'shib qo'yamiz.
+
+**->** `Manage Jenkins` **->** `Credentials`-ga kirib  `Add credentials`ga o'tamiz.
+
+![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/gcp6.png)
+
+Google Clouddan yuklab olgan service accoun private keyimizni ochib ko'rsak 2chi qatorida **project_id** ko'rsatilgan bo'ladi uni nusxalab olib uni ham Jenkins credentialsga qo'shib qo'yamiz.
+
+**->** `Manage Jenkins` **->** `Credentials`-ga kirib  `Add credentials`ga o'tamiz.
+
+![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/gcp7.png)
+
+Hamma kerakli keylarni Jenkins credentialsga qo'shagnimizdan keyin bizni Jenkins pipelinemizda quyidaicha o'zgarishlar bo'ladi.
+
+```groovy {7-10,28-45}
+pipeline {
+    agent any
+
+    environment {
+        DISCORD_WEBHOOK = credentials('discord-webhook')
+        GIT_URL = 'https://github.com/ismoilovdevml/devops-journey.git'
+        GCR_CREDENTIALS = credentials('gcr-key')
+        GCP_PROJECT_ID = credentials('gcp-project-id')
+        CONTAINER_NAME = 'devops-journey'
+        REGISTRY_URL = 'gcr.io'
+        GIT_TOKEN = credentials('git-token')
+        BRANCH_NAME = 'main'
+    }
+
+    stages {
+        stage('Clean Workspace') {
+            steps {
+                cleanWs()
+            }
+        }
+
+        stage('Clone Repository') {
+            steps {
+                git branch: BRANCH_NAME, url: GIT_URL, credentialsId: GIT_TOKEN
+            }
+        }
+
+        stage('Build and Push Docker Image') {
+            steps {
+                script {
+                    def dockerImage = "${REGISTRY_URL}/${GCP_PROJECT_ID}/${CONTAINER_NAME}:${BUILD_NUMBER}"
+
+                    sh """
+                        cat ${GCR_CREDENTIALS} | docker login -u _json_key --password-stdin https://gcr.io
+                        docker build . -t ${dockerImage} -f Dockerfile
+                        docker push ${dockerImage}
+                        docker tag ${dockerImage} ${REGISTRY_URL}/${GCP_PROJECT_ID}/${CONTAINER_NAME}:latest
+                        docker push ${REGISTRY_URL}/${GCP_PROJECT_ID}/${CONTAINER_NAME}:latest
+                        docker image rm -f ${dockerImage}
+                        docker image rm -f ${REGISTRY_URL}/${GCP_PROJECT_ID}/${CONTAINER_NAME}:latest
+                    """
+                }
+            }
+        }
+    }
+    post {
+        always {
+            discordSend(
+                description: "Jenkins Pipeline Build ${currentBuild.currentResult}",
+                link: GIT_URL,
+                result: currentBuild.currentResult,
+                title: JOB_NAME,
+                webhookURL: DISCORD_WEBHOOK
+            )
+        }
+    }
+}
+```
