@@ -483,6 +483,10 @@ Plaginlarni o'rnatib bo'lganingizdan keyin sozlab chiqish kerak.
 
 > ![netflix](/images/article/netflix/docker2.png)
 
+<Callout type="info" emoji="">
+**ESLATMA->** Docker bilan ishlash uchun Jenkins o'rnatilgan serverda docker ham o'rnatilgan bo'lishi kerak!
+</Callout>
+
  Docker bilan ishlashni sozlab chiqganimizdan keyin Jenkins pipelineda build bo'lgan docker imagelarni push qilish saqlash uchun Docker Registry ishlatamiz. Ushbu amaliyotda **Dockerhub** va **GCR**(**G**oogle **C**ontainer **R**egistry)dan foydalanish ko'rsatiladi. Dockerhub bepul versiyasida bitta private docker imagega ruxsat bor undan keyingi imagelar avtomatik public bo'ladi, private qilish uchun Dockerhub pullik obunga a'zo bo'lish kerak. **GCR** Google Cloudga tegishli.
 
 ### Dockerhub
@@ -612,35 +616,35 @@ Docker Registry sifatida **GCR** ishlatish uchun Google Cloud **IAM**dan **Servi
 
 ![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/gcp1.png)
 
-**+ CREATE SERVICE ACCOUNT** bosib service account yaratib olamiz.
+**2 -> + CREATE SERVICE ACCOUNT** bosib service account yaratib olamiz.
 
 ![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/gcp2.png)
 
-**Service account name**ga service accountimiz uchun nom yozamiz masalan **gcr. Service account description**ga esa description yozib **DONE** bosganimizdan keyin keyingi bosqichga o'tadi
+**3 -> Service account name**ga service accountimiz uchun nom yozamiz masalan **gcr. Service account description**ga esa description yozib **DONE** bosganimizdan keyin keyingi bosqichga o'tadi
 ![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/gcp3.png)
 
-**Role**ga **Storage Admin** huquqini beramiz va **DONE** bosib yaratib olamiz.
+**4 -> Role**ga **Storage Admin** huquqini beramiz va **DONE** bosib yaratib olamiz.
 ![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/gcp4.png)
 
-Service Account yaratib olganimizdan keyin Service Accountimizga(gcr) kirib **KEYS** qismidan **ADD KEY** bosib **JSON** formatda private key generatsiya qilib olamiz va uni yuklab olamiz.
+**5 ->** Service Account yaratib olganimizdan keyin Service Accountimizga(gcr) kirib **KEYS** qismidan **ADD KEY** bosib **JSON** formatda private key generatsiya qilib olamiz va uni yuklab olamiz.
 
 
 **-> KEYS -> ADD KEY -> JSON -> CREATE**
 ![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/gcp5.png)
 
-Yuklab olgan Service accoun  private keyimizni Jenkins credentialsga qo'shib qo'yamiz.
+**7->** Yuklab olgan Service accoun  private keyimizni Jenkins credentialsga qo'shib qo'yamiz.
 
 **->** `Manage Jenkins` **->** `Credentials`-ga kirib  `Add credentials`ga o'tamiz.
 
 ![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/gcp6.png)
 
-Google Clouddan yuklab olgan service accoun private keyimizni ochib ko'rsak 2chi qatorida **project_id** ko'rsatilgan bo'ladi uni nusxalab olib uni ham Jenkins credentialsga qo'shib qo'yamiz.
+**8->** Google Clouddan yuklab olgan service accoun private keyimizni ochib ko'rsak 2chi qatorida **project_id** ko'rsatilgan bo'ladi uni nusxalab olib uni ham Jenkins credentialsga qo'shib qo'yamiz.
 
 **->** `Manage Jenkins` **->** `Credentials`-ga kirib  `Add credentials`ga o'tamiz.
 
 ![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/gcp7.png)
 
-Hamma kerakli keylarni Jenkins credentialsga qo'shagnimizdan keyin bizni Jenkins pipelinemizda quyidaicha o'zgarishlar bo'ladi.
+**9->** Hamma kerakli keylarni Jenkins credentialsga qo'shagnimizdan keyin bizni GCR bilan ishlaydigan Jenkins pipelinemizda quyidagicha o'zgarishlar bo'ladi.
 
 ```groovy {7-10,28-45}
 pipeline {
@@ -701,3 +705,9 @@ pipeline {
     }
 }
 ```
+
+Dockerhub va GCR Container registrylar uchun Jenkins CI pipelien yozdik va muvaffaqiyatli ishladi va endi CD bosqichini yani serverga deploy qilish boqichini qo'shsak bo'ladi.
+
+## CD pipeline
+
+**CI** pipelineni muvaffaqiyatli yozib ishga tushirganimizdan keyin **CD** pipeline yozishni boshlasak bo'ladi.  CD pipeline quyidagi bosqichlardan iborat Jenkins pipeline **ssh-agent** orqali serverga bo'glanadi va serverdagi **bash** scriptni ishga tushiradi. Serverdagi bash script vazifasi qquyidagicha u birinchi navbatda Jenkins crdentialsda ko'rsatilgan Docker registry secretlari bilan docker login qiladi va undan keyin belgilanfgan docker image va belgilangan tag bilan docker registrydan pull qilib oladi agar Jenkins pipelineda belgilangan docker container nomi bilan ishlab turgan docker container ishlab turgan bo'lsa uni to'xtatib, o'chirib tozalab yangi containerni belgilangan nom va belgilangan port bilan ishga tushiradi.
