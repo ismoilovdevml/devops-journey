@@ -711,3 +711,247 @@ Dockerhub va GCR Container registrylar uchun Jenkins CI pipelien yozdik va muvaf
 ## CD pipeline
 
 **CI** pipelineni muvaffaqiyatli yozib ishga tushirganimizdan keyin **CD** pipeline yozishni boshlasak bo'ladi.  CD pipeline quyidagi bosqichlardan iborat Jenkins pipeline **ssh-agent** orqali serverga bo'glanadi va serverdagi **bash** scriptni ishga tushiradi. Serverdagi bash script vazifasi qquyidagicha u birinchi navbatda Jenkins crdentialsda ko'rsatilgan Docker registry secretlari bilan docker login qiladi va undan keyin belgilanfgan docker image va belgilangan tag bilan docker registrydan pull qilib oladi agar Jenkins pipelineda belgilangan docker container nomi bilan ishlab turgan docker container ishlab turgan bo'lsa uni to'xtatib, o'chirib tozalab yangi containerni belgilangan nom va belgilangan port bilan ishga tushiradi.
+
+Loyihamizni serverimizda ishga tushirishimiz uchun Jenkins pipeline serverga kira olishi kerak. Biz buning uchun **SSH(ssh-agent)** dan foydalanamiz. ssh-agent plagini Jenkinsga o'rnatib olishimiz kerak.
+
+**->** `Manage Jenkins` **->** `Plugins`
+
+> ![netflix](/images/article/netflix/ssh.png)
+
+**SSH Agent** plagini Jenkinsga o'rnatganimizdan keyin Serverimizda ssh key generatsiya qilib Jenkins credentialsga qo'shib qo'yishimiz kerak.
+
+Hozir esa serverimizga kirib ssh-key generatsiya qilib olamiz.
+
+<Callout type="info" emoji="">
+**ESLATMA->** Bu yurda netflix nomli ssh key generatsiy qilinib ishtilyapti. Bu nom ixtiyoriy xoxlagan nomizni berib ishlatavering!
+</Callout>
+
+```bash
+ssh-keygen -f ~/.ssh/netflix
+```
+> ![netflix](/images/article/netflix/ssh2.png)
+
+`ssh-keygen` buyrug'i tizimlar orasidagi xavfsiz aloqa uchun SSH (Secure Shell) kalit juftlarini yaratish uchun Unix-ga o'xshash operatsion tizimlarda qo'llaniladigan tooldir. `ssh-keygen`-ni ishga tushirganingizda, siz bir juft kalit yaratasiz: public key va private key. 
+
+* `ssh-keygen` Bu SSH kalitlarini yaratish uchun ishlatiladigan buyruq.
+* `-f ~/.ssh/netflix` Bu yerda `-f` yaratilgan kalit faylning fayl nomini bildiradi. `~/.ssh/netflix` kalitlar saqlanadigan jild va fayl nomini bildiradi. `~` foydalanuvchining home jildini ifodalaydi (masalan, Linuxda /home/username), `~/.ssh `esa SSH kalitlarini saqlash uchun umumiy jilddir.
+Bu buyruq `ssh-keygen`-ga yangi SSH kalit juftligini yaratish va uni foydalanuvchining home jildidagi `.ssh` jildida netflix sifatida saqlashni aytadi.
+
+Buyruq bajarilgandan so'ng siz odatda ikkita faylni olasiz:
+
+* `netflix` Bu boshqa tizimlarga ulanishda oʻzingizni autentifikatsiya qilish uchun foydalaniladigan shaxsiy(private) kalit fayli.
+* `netflix.pub` Bu public kalit fayli. Siz ushbu faylni ushbu kalitdan foydalanishga ruxsat bermoqchi bo'lgan boshqa tizimlar/xizmatlar bilan baham ko'rishingiz mumkin.
+
+> ![netflix](/images/article/netflix/ssh1.png)
+
+```bash
+cat netflix.pub >> authorized_keys
+```
+`cat netflix >> authorized_keys` Ushbu buyruq `netflix.pub` faylining mazmunini `authorized_keys` faylining oxiriga qo'shadi.
+
+* `cat` - fayl mazmunini ko'rsatish uchun ishlatiladigan buyruq.
+* `>>` - faylga chiqish qo'shish uchun ishlatiladigan qayta yo'naltirish operatori.
+
+`authorized_keys` public kalit autentifikatsiyasi uchun SSH da qoʻllaniladigan fayldir. SSH serveri ulanish so'rovini olganida, kirish public kaliti u yerda sanab o'tilgan kalitlardan biriga mos kelishini tekshirish uchun `authorized_keys` faylini ko'rib chiqadi. Agar shunday bo'lsa, kirish huquqi beriladi.
+Ushbu buyruqlar ketma-ketligining maqsadi `netflix.pub` faylida saqlangan public kalitni avtorizatsiya qilingan kalitlar ro'yxatiga (avtorized_keys) qo'shishi. Kimda tegishli private kalit (netflix) bo'lsa, endi ushbu private kalit yordamida ushbu tizim bilan autentifikatsiya qilish mumkin. U autentifikatsiya qilish uchun o'rnatilgan public-private kalit juftligidan foydalanib, parol talab qilmasdan kirish imkonini beradi. Bu pipeline orqali serverga kirishga imkon beradi.
+
+```bash
+cat ~/.ssh/netflix
+```
+Ushbu buyruq netflix nomli ssh keyimizni private keyni ko'rstadi biz undan nusxa olib qo'yamiz.
+> ![netflix](/images/article/netflix/ssh3.png)
+
+Serverda ssh-key generatsiya qilib oldik endi Jenkins credentialsga qo'shsak bo'ladi.
+
+**->** `Manage Jenkins` **->** `Credentials`
+
+> ![netflix](/images/article/netflix/ssh4.png)
+
+* `Kind ->` SSH Userame with private key 
+* `ID->` server-ssh(ssh keyni pipelineda xavfsiz quyidagi ID bilan ishlatamiz)
+* `Username->` server username kiritiladi(server usernameni bilish uchun buyruq)
+```bash
+whoami
+```
+`Private Key->` netflix private keyni joylashtiramiz.
+
+SSh key generatsiya qilib sozlab oldik endi Serverga kirib Docker registyrdan imageni pull qilib olib uni run qiladigan bosqich qo'shishimiz kerak.
+
+Jenkins pipeleni Serverga kira olishi uchun 2 ta Jenkins credentials yaratish kerak bular: Server username'si va Server IP manzilidir.
+
+**->** `Manage Jenkins` **->** `Credentials`
+
+> ![netflix](/images/article/netflix/secret7.png)
+
+Bu qismda `Secret`ga serverimiz username'si yoziladi(whoami buyrug'i bilan bilib olishingiz mumkin)
+
+> ![netflix](/images/article/netflix/secret9.png)
+
+Bu qismda esa `Secret`ga Serverimiz IP manzilini yozishimiz kerak.
+
+### Dockerhub 
+
+<Callout type="info" emoji="">
+**ESLATMA->** Ushbu **CD** qism asosan Dockerhub va boshqa container registilarda ishash uchun moslashtirilgan! [GCR uchun quyidagi qismga o'ting](#gcr)
+</Callout>
+
+Endi Serverimizga kerakli `environment`larni qo'shib chiqishimiz kerak.
+
+```groovy {8-9}
+environment {
+    DISCORD_WEBHOOK = credentials('discord-webhook')
+    GIT_URL = 'https://github.com/ismoilovdevml/devops-journey.git'
+    DOCKERHUB_CREDENTIALS = credentials('dockerhub')
+    CONTAINER_NAME = 'devops-journey'
+    REGISTRY_URL = 'devsecopsuser732'
+    GIT_TOKEN = credentials('git-token')
+    SERVER_USERNAME = credentials('server-username')
+    SERVER_IP = credentials('server-ip')
+    BRANCH_NAME = 'main'
+}
+```
+
+```groovy
+stage('Deploy Server') {
+    steps {
+        withCredentials([usernamePassword(
+            credentialsId: 'dockerhub',
+            usernameVariable: 'DOCKER_USERNAME',
+            passwordVariable: 'DOCKER_PASSWORD'
+        )]) {
+            script {
+                sshagent(credentials: ['server-ssh']) {
+                    sh """
+                        ssh -o StrictHostKeyChecking=no ${SERVER_USERNAME}@${SERVER_IP} \
+                        '/home/username/deployer.sh \
+                        --image=${REGISTRY_URL}/${CONTAINER_NAME}:${BUILD_NUMBER} \
+                        --container-port=8080 \
+                        --system-port=8080 \
+                        --registry-host=${REGISTRY_URL} \
+                        --container-name=${CONTAINER_NAME} \
+                        --registry-token=${DOCKER_PASSWORD} \
+                        --registry-user=${DOCKER_USERNAME}'
+                    """
+                }
+            }
+        }    
+    }
+}
+```
+
+Shu qismda bizda bitta muammo bor yani oldindan shu nomli container ishlab turgan bo'lsa conflict kelib chiqadi. Buni oldini olish uchun serverda `deployer.sh` nomli bash script yozamiz. U script vazifasi quyidagicha unga Jenkins pipelineda tashqi argumentlar beriladi shu nomli ishlab turgan container bo'lsa uni o'chirib tozalab yangi containerni berilgan portda ishga tushirib qo'yadi. Bash script quyidagicha:
+
+
+```bash
+nano deployer.sh
+```
+
+```bash filename="deployer.sh" {44}
+!/bin/bash
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --image=*)
+      IMAGE="${1#*=}"
+      ;;
+    --container-port=*)
+      CONTAINER_PORT="${1#*=}"
+      ;;
+    --system-port=*)
+      SYSTEM_PORT="${1#*=}"
+      ;;
+    --registry-token=*)
+      REGISTRY_TOKEN="${1#*=}"
+      ;;
+    --registry-host=*)
+      REGISTRY_HOST="${1#*=}"
+      ;;
+    --container-name=*)
+      CONTAINER_NAME="${1#*=}"
+      ;;
+    --registry-user=*)
+      REGISTRY_USER="${1#*=}"
+      ;;
+    *)
+      printf "***************************\n"
+      printf "* Error: Invalid argument.*\n"
+      printf "***************************\n"
+      exit 1
+  esac
+  shift
+done
+
+
+echo y | docker container prune
+echo $REGISTRY_TOKEN | docker login $REGISTRY_HOST  -u $REGISTRY_USER --password-stdin
+docker pull $IMAGE
+echo "Clean temp Container"
+
+if $(docker ps | awk -v CONTAINER_NAME="$CONTAINER_NAME" 'NR > 1 && $NF == CONTAINER_NAME{ret=1; exit} END{exit !ret}' ); then
+  docker stop "$CONTAINER_NAME" 
+  docker rm -f "$CONTAINER_NAME"
+fi
+docker run -d -p $SYSTEM_PORT:$CONTAINER_PORT --restart=always --name $CONTAINER_NAME $IMAGE
+```
+Bash scriptni executable qilib qo'yamiz.
+
+```bash
+sudo chmod +x deployer.sh
+```
+Pipelinedagi `/home/username/deployer.sh` qismini deployer.sh scriptingiz joylashgan yo'lni(path)ni ko'rsatib qo'yishingiz kerak. Ushbu bosqich ssh bilan serverga kirib `deployer.sh` bash scriptga tashqi argumentlar berib uni ishga tushiradi. Pipelineni yangilab uni ishga tushiramiz agar sizda hammasi to'gri qilingan bo'lsa u muvaffiqyatli ishlashi kerak.
+
+### GCR
+
+<Callout type="info" emoji="">
+**ESLATMA->** Ushbu **CD** qism asosan GCR(Google Container Registry)daa ishash uchun moslashtirilgan! [Dockerhub uchun quyidagi qismga o'ting](#dockerhub-1)
+</Callout>
+
+**1->** GCR uchun `deployer.sh` bash script.
+
+```bash
+!/bin/bash
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --image=*)
+      IMAGE="${1#*=}"
+      ;;
+    --container-port=*)
+      CONTAINER_PORT="${1#*=}"
+      ;;
+    --system-port=*)
+      SYSTEM_PORT="${1#*=}"
+      ;;
+    --registry-token=*)
+      REGISTRY_TOKEN="${1#*=}"
+      ;;
+    --registry-host=*)
+      REGISTRY_HOST="${1#*=}"
+      ;;
+    --container-name=*)
+      CONTAINER_NAME="${1#*=}"
+      ;;
+    --registry-user=*)
+      REGISTRY_USER="${1#*=}"
+      ;;
+    *)
+      printf "***************************\n"
+      printf "* Error: Invalid argument.*\n"
+      printf "***************************\n"
+      exit 1
+  esac
+  shift
+done
+ 
+ 
+echo y | docker container prune
+cat ${GCR_CREDENTIALS} | docker login -u _json_key --password-stdin https://gcr.io
+docker pull $IMAGE
+echo "Clean temp Container"
+ 
+if $(docker ps | awk -v CONTAINER_NAME="$CONTAINER_NAME" 'NR > 1 && $NF == CONTAINER_NAME{ret=1; exit} END{exit !ret}' ); then
+  docker stop "$CONTAINER_NAME" 
+  docker rm -f "$CONTAINER_NAME"
+fi
+docker run -d -p $SYSTEM_PORT:$CONTAINER_PORT --restart=always --name $CONTAINER_NAME $IMAGE
+```
+
+**2->** **GCR** uchun `Deploy Server` bosqichi.

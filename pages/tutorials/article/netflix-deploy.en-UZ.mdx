@@ -1172,7 +1172,7 @@ Loyihamizni serverimizda ishga tushirishimiz uchun Jenkins pipeline serverga kir
 
 **SSH Agent** plagini Jenkinsga o'rnatganimizdan keyin Serverimizda ssh key generatsiya qilib Jenkins credentialsga qo'shib qo'yishimiz kerak.
 
-Hozir esa serveerimizga kirib ssh-key generatsiya qilib olamiz.
+Hozir esa serverimizga kirib ssh-key generatsiya qilib olamiz.
 
 ```bash
 ssh-keygen -f ~/.ssh/netflix
@@ -1326,7 +1326,7 @@ Bash scriptni executable qilib qo'yamiz.
 ```bash
 sudo chmod +x deployer.sh
 ```
-Pipelinedagi `/home/username/deployer.sh` qismini deployer.sh scriptingiz joylashgan yo'lni(path)ni ko'rsatib qo'yishingiz kerak. Ushbu bosqich ssh bilan serverga kirib `deployer.sh` bash scriptga tashqi argumentlar berib uni ishga tuhsiradi. Pipelineni yangilab uni ishga tushiramiz agar sizda hammasi to'gri qilingan bo'lsa u muvaffiqyatli ishlashi kerak.
+Pipelinedagi `/home/username/deployer.sh` qismini deployer.sh scriptingiz joylashgan yo'lni(path)ni ko'rsatib qo'yishingiz kerak. Ushbu bosqich ssh bilan serverga kirib `deployer.sh` bash scriptga tashqi argumentlar berib uni ishga tushiradi. Pipelineni yangilab uni ishga tushiramiz agar sizda hammasi to'gri qilingan bo'lsa u muvaffiqyatli ishlashi kerak.
 
 ![netflix](/images/article/netflix/pipeline7.png)
 
