@@ -797,7 +797,7 @@ Bu qismda esa `Secret`ga Serverimiz IP manzilini yozishimiz kerak.
 
 Endi Serverimizga kerakli `environment`larni qo'shib chiqishimiz kerak.
 
-```groovy {8-9}
+```groovy {4-6,8-9}
 environment {
     DISCORD_WEBHOOK = credentials('discord-webhook')
     GIT_URL = 'https://github.com/ismoilovdevml/devops-journey.git'
@@ -846,7 +846,7 @@ Shu qismda bizda bitta muammo bor yani oldindan shu nomli container ishlab turga
 nano deployer.sh
 ```
 
-```bash filename="deployer.sh" {44}
+```bash filename="deployer.sh" {36,44}
 !/bin/bash
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -907,8 +907,9 @@ Pipelinedagi `/home/username/deployer.sh` qismini deployer.sh scriptingiz joylas
 
 **1->** GCR uchun `deployer.sh` bash script.
 
-```bash
-!/bin/bash
+```bash {33,41}
+#!/bin/bash
+
 while [ $# -gt 0 ]; do
   case "$1" in
     --image=*)
@@ -929,9 +930,6 @@ while [ $# -gt 0 ]; do
     --container-name=*)
       CONTAINER_NAME="${1#*=}"
       ;;
-    --registry-user=*)
-      REGISTRY_USER="${1#*=}"
-      ;;
     *)
       printf "***************************\n"
       printf "* Error: Invalid argument.*\n"
@@ -940,13 +938,12 @@ while [ $# -gt 0 ]; do
   esac
   shift
 done
- 
- 
-echo y | docker container prune
-cat ${GCR_CREDENTIALS} | docker login -u _json_key --password-stdin https://gcr.io
+
+echo 'y' | docker container prune
+cat $REGISTRY_TOKEN | docker login -u _json_key --password-stdin https://gcr.io
 docker pull $IMAGE
 echo "Clean temp Container"
- 
+
 if $(docker ps | awk -v CONTAINER_NAME="$CONTAINER_NAME" 'NR > 1 && $NF == CONTAINER_NAME{ret=1; exit} END{exit !ret}' ); then
   docker stop "$CONTAINER_NAME" 
   docker rm -f "$CONTAINER_NAME"
@@ -955,3 +952,115 @@ docker run -d -p $SYSTEM_PORT:$CONTAINER_PORT --restart=always --name $CONTAINER
 ```
 
 **2->** **GCR** uchun `Deploy Server` bosqichi.
+
+```groovy {4-7,9-10}
+environment {
+    DISCORD_WEBHOOK = credentials('discord-webhook')
+    GIT_URL = 'https://github.com/ismoilovdevml/devops-journey.git'
+    GCR_CREDENTIALS = credentials('gcr-key')
+    GCP_PROJECT_ID = credentials('gcp-project-id')
+    CONTAINER_NAME = 'devops-journey'
+    REGISTRY_URL = 'gcr.io'
+    GIT_TOKEN = credentials('git-token')
+    SERVER_USERNAME = credentials('server-username')
+    SERVER_IP = credentials('server-ip')
+    BRANCH_NAME = 'main'
+}
+```
+
+```groovy
+stage('Deploy Server') {
+    steps {
+        script {
+            sshagent(credentials: ['server-ssh']) {
+                sh """
+                    ssh -o StrictHostKeyChecking=no ${SERVER_USERNAME}@${SERVER_IP} \
+                    '/home/username/deployer.sh \
+                    --image=${REGISTRY_URL}/${CONTAINER_NAME}:${BUILD_NUMBER} \
+                    --container-port=8080 \
+                    --system-port=8080 \
+                    --registry-host=${REGISTRY_URL} \
+                    --container-name=${CONTAINER_NAME} \
+                    --registry-token=${GCR_CREDENTIALS}
+                """
+            }
+        }   
+    }
+}
+```
+
+## Xulosa
+
+Dockerhub bilan ishlaydigan to'liq CI/CD Jenkins pipeline
+
+```groovy
+pipeline {
+    agent any
+ 
+    environment {
+        DISCORD_WEBHOOK = credentials('discord-webhook')
+        GIT_URL = 'https://github.com/ismoilovdevml/devops-journey.git'
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub')
+        CONTAINER_NAME = 'devops-journey'
+        REGISTRY_URL = 'devsecopsuser732'
+        GIT_TOKEN = credentials('git-token')
+        SERVER_USERNAME = credentials('server-username')
+        SERVER_IP = credentials('server-ip')
+        BRANCH_NAME = 'main'
+    }
+    stages {
+        stage('Clean Workspace') {
+            steps {
+                cleanWs()
+            }
+        }
+        stage('Clone Repository') {
+            steps {
+                git branch: BRANCH_NAME, url: GIT_URL, credentialsId: 'git-token'
+            }
+        }
+        stage('Build Application') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                    script {
+                        def dockerlogin = "docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}"
+                        sh dockerlogin
+                        sh """
+                            docker build . -t ${REGISTRY_URL}/${CONTAINER_NAME}:${BUILD_NUMBER} -f Dockerfile
+                            docker tag ${REGISTRY_URL}/${CONTAINER_NAME}:${BUILD_NUMBER} ${REGISTRY_URL}/${CONTAINER_NAME}:latest
+                            docker push ${REGISTRY_URL}/${CONTAINER_NAME}:latest
+                            docker push ${REGISTRY_URL}/${CONTAINER_NAME}:${BUILD_NUMBER}
+                            docker image rm -f ${REGISTRY_URL}/${CONTAINER_NAME}:latest
+                            docker image rm -f ${REGISTRY_URL}/${CONTAINER_NAME}:${BUILD_NUMBER}
+                        """
+                    }
+                }    
+            }
+        }
+        stage('Deploy Server') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                    script {
+                        sshagent (credentials: ['server-ssh']) {
+                            sh "ssh -o StrictHostKeyChecking=no ${SERVER_USERNAME}@${SERVER_IP} '/home/username/deployer.sh --image=${REGISTRY_URL}/${CONTAINER_NAME}:${BUILD_NUMBER} --container-port=3000 --system-port=3000 --registry-host=${REGISTRY_URL} --container-name=${CONTAINER_NAME} --registry-token=${DOCKER_PASSWORD} --registry-user=${DOCKER_USERNAME}'"
+                        }
+                    }
+                }    
+            }
+        }
+    }
+    post {
+        always {
+            discordSend(
+                description: "Jenkins Pipeline Build ${currentBuild.currentResult}",
+                link: env.GIT_URL,
+                result: currentBuild.currentResult,
+                title: JOB_NAME,
+                webhookURL: env.DISCORD_WEBHOOK
+            )
+        }
+    }
+}
+```
+
+**GCR** uchun
