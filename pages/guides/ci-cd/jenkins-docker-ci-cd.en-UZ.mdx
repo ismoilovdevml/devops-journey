@@ -901,59 +901,9 @@ Pipelinedagi `/home/username/deployer.sh` qismini deployer.sh scriptingiz joylas
 
 ### GCR
 
-<Callout type="info" emoji="">
-**ESLATMA->** Ushbu **CD** qism asosan GCR(Google Container Registry)daa ishash uchun moslashtirilgan! [Dockerhub uchun quyidagi qismga o'ting](#dockerhub-1)
-</Callout>
+**1->** **GCR** uchun `environment` qismi.
 
-**1->** GCR uchun `deployer.sh` bash script.
-
-```bash {33,41}
-#!/bin/bash
-
-while [ $# -gt 0 ]; do
-  case "$1" in
-    --image=*)
-      IMAGE="${1#*=}"
-      ;;
-    --container-port=*)
-      CONTAINER_PORT="${1#*=}"
-      ;;
-    --system-port=*)
-      SYSTEM_PORT="${1#*=}"
-      ;;
-    --registry-token=*)
-      REGISTRY_TOKEN="${1#*=}"
-      ;;
-    --registry-host=*)
-      REGISTRY_HOST="${1#*=}"
-      ;;
-    --container-name=*)
-      CONTAINER_NAME="${1#*=}"
-      ;;
-    *)
-      printf "***************************\n"
-      printf "* Error: Invalid argument.*\n"
-      printf "***************************\n"
-      exit 1
-  esac
-  shift
-done
-
-echo 'y' | docker container prune
-cat $REGISTRY_TOKEN | docker login -u _json_key --password-stdin https://gcr.io
-docker pull $IMAGE
-echo "Clean temp Container"
-
-if $(docker ps | awk -v CONTAINER_NAME="$CONTAINER_NAME" 'NR > 1 && $NF == CONTAINER_NAME{ret=1; exit} END{exit !ret}' ); then
-  docker stop "$CONTAINER_NAME" 
-  docker rm -f "$CONTAINER_NAME"
-fi
-docker run -d -p $SYSTEM_PORT:$CONTAINER_PORT --restart=always --name $CONTAINER_NAME $IMAGE
-```
-
-**2->** **GCR** uchun `Deploy Server` bosqichi.
-
-```groovy {4-7,9-10}
+```groovy {4-10}
 environment {
     DISCORD_WEBHOOK = credentials('discord-webhook')
     GIT_URL = 'https://github.com/ismoilovdevml/devops-journey.git'
@@ -961,30 +911,37 @@ environment {
     GCP_PROJECT_ID = credentials('gcp-project-id')
     CONTAINER_NAME = 'devops-journey'
     REGISTRY_URL = 'gcr.io'
-    GIT_TOKEN = credentials('git-token')
     SERVER_USERNAME = credentials('server-username')
     SERVER_IP = credentials('server-ip')
+    SSH_CREDENTIALS = credentials('server-ssh')
+    GIT_TOKEN = credentials('git-token')
     BRANCH_NAME = 'main'
 }
 ```
 
+**2->** **GCR** uchun `Deploy Server` bosqichi.
 ```groovy
-stage('Deploy Server') {
+stage('Deploy to Server') {
     steps {
         script {
             sshagent(credentials: ['server-ssh']) {
+                // Copy the GCR credentials to the server
+                sh "scp -o StrictHostKeyChecking=no ${GCR_CREDENTIALS} ${SERVER_USERNAME}@${SERVER_IP}:/tmp/gcr-key.json"
+                // Log in to GCR on the server using the copied credentials
                 sh """
                     ssh -o StrictHostKeyChecking=no ${SERVER_USERNAME}@${SERVER_IP} \
-                    '/home/username/deployer.sh \
-                    --image=${REGISTRY_URL}/${CONTAINER_NAME}:${BUILD_NUMBER} \
-                    --container-port=8080 \
-                    --system-port=8080 \
-                    --registry-host=${REGISTRY_URL} \
-                    --container-name=${CONTAINER_NAME} \
-                    --registry-token=${GCR_CREDENTIALS}
+                    'cat /tmp/gcr-key.json | docker login -u _json_key --password-stdin https://gcr.io'
+                """
+                // Continue with the rest of the deployment steps
+                sh """
+                    ssh -o StrictHostKeyChecking=no ${SERVER_USERNAME}@${SERVER_IP} '\
+                    docker pull ${REGISTRY_URL}/${GCP_PROJECT_ID}/${CONTAINER_NAME}:latest && \
+                    docker stop ${CONTAINER_NAME} || true && \
+                    docker rm ${CONTAINER_NAME} || true && \
+                    docker run -d -p 3000:3000 --name ${CONTAINER_NAME} --restart always ${REGISTRY_URL}/${GCP_PROJECT_ID}/${CONTAINER_NAME}:latest '
                 """
             }
-        }   
+        }
     }
 }
 ```
@@ -1064,3 +1021,105 @@ pipeline {
 ```
 
 **GCR** uchun
+
+```groovy {11-13,48-71,77-81}
+pipeline {
+    agent any
+ 
+    environment {
+        DISCORD_WEBHOOK = credentials('discord-webhook')
+        GIT_URL = 'https://github.com/ismoilovdevml/devops-journey.git'
+        GCR_CREDENTIALS = credentials('gcr-key')
+        GCP_PROJECT_ID = credentials('gcp-project-id')
+        CONTAINER_NAME = 'devops-journey'
+        REGISTRY_URL = 'gcr.io'
+        SERVER_USERNAME = credentials('server-username')
+        SERVER_IP = credentials('server-ip')
+        SSH_CREDENTIALS = credentials('server-ssh')
+        GIT_TOKEN = credentials('git-token')
+        BRANCH_NAME = 'main'
+    }
+ 
+    stages {
+        stage('Clean Workspace') {
+            steps {
+                cleanWs()
+            }
+        }
+ 
+        stage('Clone Repository') {
+            steps {
+                git branch: BRANCH_NAME, url: GIT_URL, credentialsId: 'git-token'
+            }
+        }
+ 
+        stage('Build and Push Docker Image') {
+            steps {
+                script {
+                    def dockerImage = "${REGISTRY_URL}/${GCP_PROJECT_ID}/${CONTAINER_NAME}:${BUILD_NUMBER}"
+ 
+                    sh """
+                        cat ${GCR_CREDENTIALS} | docker login -u _json_key --password-stdin https://gcr.io
+                        docker build . -t ${dockerImage} -f Dockerfile
+                        docker push ${dockerImage}
+                        docker tag ${dockerImage} ${REGISTRY_URL}/${GCP_PROJECT_ID}/${CONTAINER_NAME}:latest
+                        docker push ${REGISTRY_URL}/${GCP_PROJECT_ID}/${CONTAINER_NAME}:latest
+                        docker image rm -f ${dockerImage}
+                        docker image rm -f ${REGISTRY_URL}/${GCP_PROJECT_ID}/${CONTAINER_NAME}:latest
+                    """
+                }
+            }
+        }
+        stage('Deploy to Server') {
+            steps {
+                script {
+                    sshagent(credentials: ['server-ssh']) {
+                        // Copy the GCR credentials to the server
+                        sh "scp -o StrictHostKeyChecking=no ${GCR_CREDENTIALS} ${SERVER_USERNAME}@${SERVER_IP}:/tmp/gcr-key.json"
+                        // Log in to GCR on the server using the copied credentials
+                        sh """
+                            ssh -o StrictHostKeyChecking=no ${SERVER_USERNAME}@${SERVER_IP} \
+                            'cat /tmp/gcr-key.json | docker login -u _json_key --password-stdin https://gcr.io'
+                        """
+                        // Continue with the rest of the deployment steps
+                        sh """
+                            ssh -o StrictHostKeyChecking=no ${SERVER_USERNAME}@${SERVER_IP} '\
+                            docker pull ${REGISTRY_URL}/${GCP_PROJECT_ID}/${CONTAINER_NAME}:latest && \
+                            docker stop ${CONTAINER_NAME} || true && \
+                            docker rm ${CONTAINER_NAME} || true && \
+                            docker run -d -p 3000:3000 --name ${CONTAINER_NAME} --restart always ${REGISTRY_URL}/${GCP_PROJECT_ID}/${CONTAINER_NAME}:latest '
+                        """
+                    }
+                }
+            }
+        }
+    }
+    post {
+        always {
+            script {
+                try {
+                    // Delete the copied GCR credentials from the server
+                    sshagent(credentials: ['server-ssh']) {
+                        sh """
+                            ssh -o StrictHostKeyChecking=no ${SERVER_USERNAME}@${SERVER_IP} \
+                            'rm /tmp/gcr-key.json'
+                        """
+                    }
+                } catch (Exception e) {
+                    echo "Error cleaning up GCR credentials: ${e.message}"
+                    currentBuild.result = 'FAILURE' // Set build result to FAILURE in case of errors
+                } finally {
+                    // Send Discord notification regardless of the build result
+                    discordSend(
+                        description: "Jenkins Pipeline Build ${currentBuild.currentResult}",
+                        link: GIT_URL,
+                        result: currentBuild.currentResult,
+                        title: JOB_NAME,
+                        webhookURL: DISCORD_WEBHOOK
+                    )
+                }
+            }
+        }
+    }
+}
+```
