@@ -8,7 +8,7 @@ import { Callout } from "nextra-theme-docs";
 ## Kirish
 **Jenkins** - bu doimiy **C**ontinuous **I**ntegration/**C**ontinuous **D**eployment (**CI/CD**) pipelinei uchun ajoyib tool, ayniqsa Docker konteynerlari bilan ishlashda.
 
-Jenkins **CI/CD** jarayonini osonlashtiradigan open-source avtomatlashtirish serveri boʻlib, ishlab chiquvchilarga applicationlarni build qilish, sinovdan oʻtkazish va deploymentni avtomatlashtirish imkonini beradi. Docker bilan birlashganda, u konteynerlashtirilgan workflowlari uchun kuchli yechim taklif qiladi, bu turli muhitlarda izchillik(consistency) va portativlikni ta'minlaydi.
+Jenkins **CI/CD** jarayonini osonlashtiradigan open-source avtomatlashtirish serveri boʻlib, ishlab chiquvchilarga applicationlarni build qilish, testdan oʻtkazish va deploymentni avtomatlashtirish imkonini beradi. Docker bilan birlashganda, u konteynerlashtirilgan workflowlari uchun kuchli yechim taklif qiladi, bu turli muhitlarda izchillik(consistency) va portativlikni ta'minlaydi.
 
 Jenkins Docker bilan birgalikda izchil va samarali development workflowni yaratish uchun konteynerlashtirishdan foydalangan holda **CI/CD** jarayonini soddalashtiradi. Jenkins pipelinelarida Docker imkoniyatlaridan foydalanish orqali jamoalar dasturiy ta'minotni tezroq va ishonchli yetkazib berishga erishishlari mumkin. 
 
@@ -16,9 +16,9 @@ Bugun ushbu qo'llanmamizda konteynerlashtirilgan ilovalarni Jenkins orqali CI/CD
 
 Ushbu jarayon quyidagicha bosqichlarsan iborat bo'ladi. (qisqa tushuntirish)
 
-* **CI** CI qismida biz loyiha source kodlari joylashgan github yoki gitlab bilan ishlaymiz. Github yoki Gitlabda yangi kod qo'shilsa Jenkins **CI** pipeline avtomatik ishga tushadigan qilamiz. Keyingi qismida o'zgarish bo'lganinidan keyin Github yoki Gitlabdan loyiha repositoriyasi va belgilangan branchdan loyiha source kodlarini runner yuklab oladi. Loyiah source kodlari yuklab olinganidan keyin test uchun Docker image build qilinadi, agara Docker image build bo'lsa keyingi bosqichda **CD** o'tadi aks holda shu joyida jarayon to'xtaydi. Docker image muvaffaqiyatli build bo'lganidan keyin birorta Docker Registryga push qilinadi. Shu jarayonlar hammasi bajarilganida **CI** bosqichimiz tugab **CD** bosqichiga o'tiladi.
+* **CI** CI qismida biz loyiha source kodlari joylashgan github yoki gitlab bilan ishlaymiz. Github yoki Gitlabda yangi kod qo'shilsa Jenkins **CI** pipeline avtomatik ishga tushadigan qilamiz. Keyingi qismida o'zgarish bo'lganinidan keyin Github yoki Gitlabdan loyiha repositoriyasi va belgilangan branchdan loyiha source kodlarini runner yuklab oladi. Loyiha source kodlari yuklab olinganidan keyin test uchun Docker image build qilinadi, agara Docker image build bo'lsa keyingi bosqichda **CD** o'tadi aks holda shu joyida jarayon to'xtaydi. Docker image muvaffaqiyatli build bo'lganidan keyin birorta Docker Registryga push qilinadi. Shu jarayonlar hammasi bajarilganida **CI** bosqichimiz tugab **CD** bosqichiga o'tiladi.
 
-* **CD** CI qismida applicationimiz testlardan o'tib Docker image build qilinib Docker Registyga push qilingan bo'ladi. CD qismida ssh orqali serverga kirib bundan oldingi docker containerni to'xtatib, o'chirib yangi docker imageni Docker Registydan pull qilib olib uni DOcker container qilib ishga tushirib qo'yishimiz kerak.
+* **CD** CI qismida applicationimiz testlardan o'tib Docker image build qilinib Docker Registyga push qilingan bo'ladi. CD qismida ssh orqali serverga kirib bundan oldingi docker containerni to'xtatib, o'chirib yangi docker imageni Docker Registydan pull qilib olib uni Docker container qilib ishga tushirib qo'yishimiz kerak.
 
 * **Notification** Agar CI/CD jarayoni muvaffaqiyatli yoki muvaffaqiyatsiz bo'lsa Discord serverga notification yuboradigan qilib Discord bilan integratsiya qilamiz.
 
@@ -39,7 +39,7 @@ Ushbu amaliyotni amalga oshirish uchun bizga quyidagi minimum server talablarida
 
 | OS            | RAM            | CPU           | Xotira       | Static IP  | Server nomi        |
 | ------------- | -------------- | ------------- |------------- | ---------- | ------------------ |
-| Ubuntu 20.04  | 4GB            | 4vCPU 2 core  | 50GB         | Ha kerak   | Jenkins Server     |
+| Ubuntu 20.04  | 12GB            | 8vCPU 4 core  | 50GB         | Ha kerak   | Jenkins Server     |
 | Ubuntu 20.04  | 8GB            | 4vCPU 2 core  | 50GB         | Ha kerak   | Application Server |
 
 </Callout>
@@ -52,18 +52,18 @@ Ushbu amaliyotda biz **Jenkins, Docker, Container Registry** (**Dockerhub** va *
 
 ## Jenkins o'rnatish
 
-Amaliyotning birinchi qadami bu Serverga Jenkins o'rnatishdan boshlanadi. Bundan oldingi qo'llanmalarda Jenkins o'rnatish haqida yozilgan. [**Linux Serverlarga Jenkins o'rnatish**](https://devops-journey.uz/guides/ci-cd/jenkins-ornatish) qo'llanmasidan foydalanib seerveringizga jenkins o'rnatib olishingiz mumkin. Serveringizga Jenkins o'rnatib boshlang'ich sozlab olganiningzidan keyin keyingi bosqichga o'tsak bo'ladi.
+Amaliyotning birinchi qadami bu Serverga Jenkins o'rnatishdan boshlanadi. Bundan oldingi qo'llanmalarda Jenkins o'rnatish haqida yozilgan. [**Linux Serverlarga Jenkins o'rnatish**](https://devops-journey.uz/guides/ci-cd/jenkins-ornatish) qo'llanmasidan foydalanib serveringizga jenkins o'rnatib olishingiz mumkin. Serveringizga Jenkins o'rnatib boshlang'ich sozlab olganingizdan keyin keyingi bosqichga o'tsak bo'ladi.
 
 ## Docker o'rnatish
 
-Biz ilovamizni Docker  containerlarda ishga tushiramiz shuning uchun serverimizga Docker o'rnatib olishmiz kerak bo'ladi. [**Linux serverlarga Docker o'rnatish**](https://devops-journey.uz/guides/konteyner/docker-ornatish) qo'llanasidan foydalanib sereveringizga Docker o'rnatib oling.
+Biz ilovamizni Docker  containerlarda ishga tushiramiz shuning uchun serverimizga Docker o'rnatib olishimiz kerak bo'ladi. [**Linux serverlarga Docker o'rnatish**](https://devops-journey.uz/guides/konteyner/docker-ornatish) qo'llanasidan foydalanib serveringizga Docker o'rnatib oling.
 
 ## Git bilan ishlash
 
 Applicationlarimiz kodlarini birorta **VCS**(**V**ersion **C**ontrol **S**ystem)da saqlanadi ushbu amaliyotda **Github** va **Gitlab** bilan ishlaydigan Jenkins CI pipeline yozamiz. Gitdan private repositoriyalarni klon qilib olish uchun ushbu repositoriyalarga ruxsati bor userlardan **Personal access token** tokenlar olinadi va Jenkins credendialsga qo'shib qo'yiladi. Bundan maqsad Jenkins pipeline ushbu Personal access token orqali Github yoki Gitlabdan private repositoriyalarni clon qila olishi va ishlata olishidir.
 
 <Callout type="info" emoji="">
-**ESLATMA->** Ko'p startuplar kichik jamolar **Github** ishlatishadi, boshqalar esa enterprise **Gitlab**ni o'z seerverlarda ishga tuhsirib ishlatishadi. Bu amaliyotda 2lasi bilan ham ishlash yozilgan. Sizning jamoyingiz qaysi birini ishlatsa shunga mosini qo'llaysiz.
+**ESLATMA->** Ko'p startuplar kichik jamolar **Github** ishlatishadi, boshqalar esa enterprise **Gitlab**ni o'z serverlarda ishga tushirib ishlatishadi. Bu amaliyotda ikkalasi bilan ham ishlash yozilgan. Sizning jamoyingiz qaysi birini ishlatsa shunga mosini qo'llaysiz.
 </Callout>
 
 **Personal access token olish**
@@ -87,7 +87,7 @@ Keyin **Developer settings** bo'limga kiring.
 **Personal access token**ga nom berib va ishlash mudatini belgilab admin accesslarni beramiz va **Generate token** bosib token generatsiya qilib olamiz.
 >![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/github5.png)
 
-Sizga Github Personal access token generatsiya qilib beradinsiz uni nusxalab olib qo'yishingiz kerak bo'ladi. Bu Personal access tokenni Jenkinsda credentialsga qo'shib qo'yib Jenkins pipelineda ishlatamiz.
+Sizga Github Personal access token generatsiya qilib berganida uni nusxalab olib qo'yishingiz kerak bo'ladi. Bu Personal access tokenni Jenkinsda credentialsga qo'shib qo'yib Jenkins pipelineda ishlatamiz.
 >![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/github6.png)
 
 ### Gitlab uchun
@@ -110,24 +110,24 @@ O'zingiz ishlatdigan VCSdan access token generatsiya qilib olganingizdan keyin S
 
 **Username->** Gitlab yoki Github username
 
-**Password** Gitlab yoki Gitlabdan genreatsiya qilib olgan personal access tokenni joylashtiramiz.
+**Password** Gitlab yoki Gitlabdan generatsiya qilib olgan personal access tokenni joylashtiramiz.
 
-Jenkinsnga Gitlab yoki Githubdan private repositorilarni klon qilib ishlashi uchun accsess tokenni joylashtiurib sozlaganimizdan keyin birinchi Jenkins CI pipelineni yozsak bo'ladi.
+Jenkinsga Gitlab yoki Githubdan private repositoriyalarni klon qilib ishlashi uchun accsess tokenni joylashtirib sozlaganimizdan keyin birinchi Jenkins CI pipelineni yozishni boshlasak bo'ladi.
 
 ## Discord bilan integratsiya
 
-Discordni CI/CD pipelinelari bilan integratsiyalash dastuchilar guruhlari ichida hamkorlik va aloqani yaxshilaydi. Discord, mashhur xabar almashish platformasi, real vaqt rejimida notificationlar uchun markazlashtirilgan markaz(hub) bo'lib xizmat qiladi, tezkor javob vaqtlarini oshiradi va dasturiy ta'minotni ishlab chiqishning lifecyclini yaxshilaydi. Jenkins CI yoki har qanday CI/CD tooli Discord bilan bog'lash orqali dasturchilar to'g'ridan-to'g'ri o'zlari tanlagan Discord kanallarida build holati, test natijalari va deployment natijalari bo'yicha tezkor yangilanishlarni oladi. 
+Discordni CI/CD pipelinelari bilan integratsiyalash dastuchilar guruhlari ichida hamkorlik va aloqani yaxshilaydi. Discord, mashhur xabar almashish platformasi, real vaqt rejimida notificationlar uchun markazlashtirilgan markaz(hub) bo'lib xizmat qiladi, tezkor javob vaqtlarini oshiradi va dasturiy ta'minotni ishlab chiqishning lifesiklini yaxshilaydi. Jenkins CI yoki har qanday CI/CD tooli Discord bilan bog'lash orqali dasturchilar to'g'ridan-to'g'ri o'zlari tanlagan Discord kanallarida build holati, test natijalari va deployment natijalari bo'yicha tezkor yangilanishlarni oladi. 
 
 Qisqa qilib aytganda biz discordni CI/CD pipelinemiz muvaffaqiyatli ishini tugatgani yoki muvaffaqiyatsiz bo'lgan xabarlarni dasturchilar guruhlariga discord orqali yetkizish uchun ishlatamiz.
 
 ### Jenkins uchun
-Discordni Jenkins bilan integratsiya qilish uchun **Discord Notifier** plagini Jenkinsga o'rnatib olishimiz kerak.
+Discordni Jenkins bilan integratsiya qilish uchun **Discord Notifier** plaginini Jenkinsga o'rnatib olishimiz kerak.
 
 **->** `Manage Jenkins` **->** `Plugins` **->** `Available plugins`
 
 >![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/jenkins3.png)
 
-**Discord Notifier** plaghini o'rnatilib jenkins restart bo'lganidan keyin Discord server ochib serverda channel ochib webhook yaratib olamiz.
+**Discord Notifier** plaginini o'rnatib jenkins restart bo'lganidan keyin Discord server ochib serverda channel ochib webhook yaratib olamiz.
 
 Discord kirib **Add a Server** bosib Server yaratib olamiz
 
@@ -162,9 +162,9 @@ Discordan olgan webhookni Jenkins credendialsga qo'shamiz.
 
 ### Gitlab Github uchun
 
-Github bilan jenkinsni integratsiya qilish uchun ushbu video qo'llanmalardan foydalanishingiz mumkin. **dev-jenkins** channel ochtganimizdek github yoki gitlab channel ochib webhook yaratib Gitlab yoki Github bilan integratsiya qilamiz.
+Github bilan jenkinsni integratsiya qilish uchun ushbu video qo'llanmalardan foydalanishingiz mumkin. **dev-jenkins** channel ochganimizdek github yoki gitlab channel ochib webhook yaratib Gitlab yoki Github bilan integratsiya qilamiz.
 
-Bu holda har bir repositorilarga discord webhook ulab chiqiladi.
+Bu holda har bir repositoriyalarga discord webhook ulab chiqiladi.
 * [**Githubga discord ulash**](https://youtu.be/-KDQqWNK3Tw?si=6S_8Jq3KZjzubOKh)
 
 * [**Gitlabga discord ulash**](https://docs.gitlab.com/ee/user/project/integrations/discord_notifications.html)
@@ -240,7 +240,7 @@ environment {
 
 * **DISCORD_WEBHOOK->** Discord webhook URL manzilini saqlaydigan credential.
 * **GIT_URL->** Klonlanadigan Git repositoriyaning URL manzili.
-* **GIT_TOKEN->** Autentifikatsiya uchun Git tokenini saqlaydigan credendial(private repositorilar bilan ishlash uchun).
+* **GIT_TOKEN->** Autentifikatsiya uchun Git tokenini saqlaydigan credendial(private repositoriyalar bilan ishlash uchun).
 * **BRANCH_NAME->** Git repositoriyasining foydalaniladigan branchi (bu holda main).
 
 ```groovy
@@ -258,7 +258,7 @@ stages {
 }
 ```
 * **Clean Workspace->** Ushbu bosqich ishni boshlashdan oldin workspaceni tozalaydi.
-* **Clone Repository->** Bu bosqich **GIT_URL** va **BRANCH_NAME** tomonidan belgilangan Git repositoriyani **git-token*** tomonidan aniqlangan credendial yordamida klonlaydi.
+* **Clone Repository->** Bu bosqich **GIT_URL** va **BRANCH_NAME** tomonidan belgilangan Git repositoriyani **git-token** tomonidan aniqlangan credendial yordamida klonlaydi.
 
 ```groovy
 post {
@@ -273,7 +273,7 @@ post {
     }
 }
 ```
-Jarayon tugallangandan so'ng (muvaffaqiyatsiz bo'lsa ham), **discordSend** qadami bajariladi. U **DISCORD_WEBHOOK** da saqlangan webhook URL manzilidan foydalanib, Discord channelga notification(xabar) yuboradi. Xabarda natija, Git omboriga havola va job nomi kabi ma'lumotlar mavjud.
+Jarayon tugallangandan so'ng (muvaffaqiyatsiz bo'lsa ham), **discordSend** qadami bajariladi. U **DISCORD_WEBHOOK** da saqlangan webhook URL manzilidan foydalanib, Discord channelga notification(xabar) yuboradi. Xabarda natija, Git repositoriyaga link va job nomi kabi ma'lumotlar mavjud.
 
 Qisqa qilib aytganda ushbu boshlang'ich sodda pipeline ishga tushganida biinchi **Clean Workspace** bosqichida **cleanWs()** bilan worskspaceni tozalaydi keyingi **Clone Repository** bosqichida berilgan **GIT_URL**, **GIT_TOKEN** va **BRANCH_NAME** bilan Git repositoriyani klon qilib oladi. Oxirgi bosqichda pipeline muvaffaqiyatli(**SUCCSES**) yoki muvaffaqiyatsiz(**FAILED**) bo'lgani haqida Discord channelga notification(xabar) yuboradi.
 
@@ -291,7 +291,7 @@ SIzda quyidagi natijha bilan muvaffaqiyatli ishga tushishi va discordga notifica
 
 Bizda har xil vaziyat bo'lishi mumkin loyihamiz mono repo yoki multi repo bo'lishi mumkin.
 
-**Monorepo (Monolithic Repository)->** `monolithic repository` so'zining qisqartmasi **monorepo** - bu bir nechta loyihalar, applicationlar yoki servicelar bitta repositoriyada saqlanadigan version control system (VCS) strategiyasidir. Monorepoda barcha kodlar, kutubxonalar(library) va turli loyihalar uchun dependensilar(bog'liqliklar) bitta markaziy repositoriyada birgalikda boshqariladi. Ushbu yondashuv har bir loyiha yoki servicening o'z repositoriyasiga ega bo'lgan ko'p repositoriyali(multi-repo) sturukturasidan farq qiladi. Qisqa qilib aytganda butun bir tashkilot loyilari bitta repositoriyada bo'ladi.
+**Monorepo (Monolithic Repository)->** `monolithic repository` so'zining qisqartmasi **monorepo** - bu bir nechta loyihalar, applicationlar yoki servicelar bitta repositoriyada saqlanadigan version control system (VCS) strategiyasidir. Monorepoda barcha kodlar, kutubxonalar(library) va turli loyihalar uchun dependensilar(bog'liqliklar) bitta markaziy repositoriyada birgalikda boshqariladi. Ushbu yondashuv har bir loyiha yoki servicening o'z repositoriyasiga ega bo'lgan ko'p repositoriyali(multi-repo) sturukturasidan farq qiladi. Qisqa qilib aytganda butun bir tashkilot loyihalari bitta repositoriyada bo'ladi.
 
 **Multirepo (Multi-Repository)->** multi-repo yondashuvida har bir loyiha, application yoki service o'zining alohida repositoriyasiga ega. Har bir repositoriya ma'lum bir kod bazasi yoki servicega bag'ishlangan va loyihalar o'rtasidagi dependensilar versiya va paketlarni boshqarish orqali boshqariladi. Qisqa qilib ayganda har bir loyiha, application, service va boshqalar alohida alohida repositoriyalarda bo'ladi va bir-biriga bo'g'liklari bo'ladi.
 
@@ -338,7 +338,7 @@ pipeline {
 }
 ```
 
-Tashkilot loyihlari multirepo bo'lsa va biz loyihalarga CI/CD yozayotgan bo'lsak, har bir loyihada bir nechta boshqa repositoriyalarga bo'glikligi(reference) bo'ladi, shuning uchun CI/CD yozayotgan loyihamiz ishlashiga kerak bo'lgan loyiha, application,service va boshqalar repositoriyalarni ham klon qilib olishimiz va yig'ishimiz kerak bo'ladi. 
+Tashkilot loyihalari multirepo bo'lsa va biz loyihalarga CI/CD yozayotgan bo'lsak, har bir loyihada bir nechta boshqa repositoriyalarga bo'glikligi(reference) bo'ladi, shuning uchun CI/CD yozayotgan loyihamiz ishlashiga kerak bo'lgan loyiha, application,service va boshqalar repositoriyalarni ham klon qilib olishimiz va yig'ishimiz kerak bo'ladi. 
 
 Multirepo uchun Jenkins pipeline.
 
@@ -397,9 +397,9 @@ pipeline {
 }
 ````
 
-Multirepo uchun yozgan pipelinemizda o'zgarishlar quyidagicha **devops-journey** loyihamizda bir nechta boshqa repositoriyalarga bo'gliklari mavjuda maslaan UI, API, Service va Configurations repositoriyalarga. Ushbu loyihani Jenkins CI/CD ishga tushirihsimiz uchun ushbu repositoriyalar clon qilinb yig'ishimiz va birga ishga tushirishimiz kerak. **Setup Environment** qadami ushbu vazifani bajaradi yani Environmentni sozlaydi kerak repositoriyalarni bir joyga yig'adi.
+Multirepo uchun yozgan pipelinemizda o'zgarishlar quyidagicha **devops-journey** loyihamizda bir nechta boshqa repositoriyalarga bo'gliklari mavjuda maslaan UI, API, Service va Configurations repositoriyalarga. Ushbu loyihani Jenkins CI/CD ishga tushirishimiz uchun ushbu repositoriyalar clon qilinb yig'ishimiz va birga ishga tushirishimiz kerak. **Setup Environment** qadami ushbu vazifani bajaradi yani Environmentni sozlaydi kerak repositoriyalarni bir joyga yig'adi.
 
-Ushbu namunada konfiguratsiyalar ham alohida repositoriyada saqlanagnmi ko'rsatilgan yani **configurations** repositoriyada barcha loyihalar servicelar applicationlar konfiglari(masalan Dockerfayllar) branchlar nomi bilan joylashtirgan bo'ladi. **configurations** repositoriyasi tuzulishga namuna.
+Ushbu namunada konfiguratsiyalar ham alohida repositoriyada saqlangani ko'rsatilgan yani **configurations** repositoriyada barcha loyihalar servicelar applicationlar konfiglari(masalan Dockerfayllar) branchlar nomi bilan joylashtirilgan bo'ladi. **configurations** repositoriyasi tuzulishiga namuna.
 
 
 ```bash
@@ -429,7 +429,7 @@ Ushbu namunada konfiguratsiyalar ham alohida repositoriyada saqlanagnmi ko'rsati
 
 ## CI pipeline
 
-Hammasi tayyor endi to'liq CI pipeline yozib ishga tuhsirsak bo'ladi. Bundan oldin monorepo va multi-repolar bilan ishlash ko'rsatildi loyihangizga qarab buni tanlaysiz. [**devops-journey**](https://github.com/ismoilovdevml/devops-journey) monorepo bo'lgani uchun monorepo CI/CD pipeline yozamiz lekin yuqorida multi-repo uchun ko'rsatilgan.
+Hammasi tayyor endi to'liq CI pipeline yozib ishga tushirsak bo'ladi. Bundan oldin monorepo va multi-repolar bilan ishlash ko'rsatildi loyihangizga qarab buni tanlaysiz. [**devops-journey**](https://github.com/ismoilovdevml/devops-journey) monorepo bo'lgani uchun monorepo CI/CD pipeline yozamiz lekin yuqorida multi-repo uchun ham namuna ko'rsatilgan.
 
 Hozirgacha yozgan CI pipelinemiz quyidagicha
 
@@ -487,7 +487,7 @@ Plaginlarni o'rnatib bo'lganingizdan keyin sozlab chiqish kerak.
 **ESLATMA->** Docker bilan ishlash uchun Jenkins o'rnatilgan serverda docker ham o'rnatilgan bo'lishi kerak!
 </Callout>
 
- Docker bilan ishlashni sozlab chiqganimizdan keyin Jenkins pipelineda build bo'lgan docker imagelarni push qilish saqlash uchun Docker Registry ishlatamiz. Ushbu amaliyotda **Dockerhub** va **GCR**(**G**oogle **C**ontainer **R**egistry)dan foydalanish ko'rsatiladi. Dockerhub bepul versiyasida bitta private docker imagega ruxsat bor undan keyingi imagelar avtomatik public bo'ladi, private qilish uchun Dockerhub pullik obunga a'zo bo'lish kerak. **GCR** Google Cloudga tegishli.
+ Docker bilan ishlashni sozlab chiqganimizdan keyin Jenkins pipelineda build bo'lgan docker imagelarni push qilish saqlash uchun Docker Registry ishlatamiz. Ushbu amaliyotda **Dockerhub** va **GCR**(**G**oogle **C**ontainer **R**egistry)dan foydalanish ko'rsatiladi. Dockerhub bepul versiyasida bitta private docker imagega ruxsat bor undan keyingi imagelar avtomatik public bo'ladi, private qilish uchun Dockerhub pullik obunaga a'zo bo'lish kerak. **GCR** Google Cloudga tegishli.
 
 ### Dockerhub
 
@@ -500,7 +500,7 @@ Agar Ro'yxatdan o'tmagan bo'lsangiz ro'yxatdan o'tishingiz kerak
 
 > ![netflix](/images/article/netflix/docker4-new.png)
 
-Ro'yxatdan o0'tib olganingizdan keyin **Email Verification** talab qilinadi. Email verifatsiya qilganingizdan keyin 
+Ro'yxatdan o'tib olganingizdan keyin **Email Verification** talab qilinadi. Email verifatsiya qilganingizdan keyin 
 
 **->** `Account Settings` **->** `Security` **->** bo'limga o'tib `Access Token` yaratib olamiz.
 
@@ -528,7 +528,7 @@ Jenkins pipelineda DockerHub Registrydan foydalanishimiz uchun Jenkins crdential
 
 Dockerhubdan ro'yxatdan o'tdik, access token oldik hammasini Jenkins credentialsga **dockerhub** ID bilan saqladik endi Jenkins pipelinega **CD**(continuous delivery)qismini qo'shsak bo'ladi.
 
-Jenkins pipelenimizga quyidagi bosqichni qo'shamiz. Bu bosqich ilovamizdan docker image yaratib, build qilib, Docker Registyga push qiladi ya'ni DockerHubga.
+Jenkins pipelenimizga quyidagi bosqichni qo'shamiz. Bu bosqich ilovamizdan docker image yaratib, build qilib, Docker Registryga push qiladi ya'ni DockerHubga.
 
 Pipelinega yangi environmentlar qo'shib olamiz:
 
@@ -547,7 +547,7 @@ environment {
 * **CONTAINER_NAME ->** Bu loyihamizni containerda ishga tushirishda unga beriladigan nom
 * **REGISTRY_URL ->** Dokcer Registry URL. Bizni holatimizda yani Dockerhubda bu yerda Dockerhub username yoziladi.
 
-Dockerhub bilan ishlaydigan Jenkins **CI** pipelienmiz quyidagicha yangilaymiz.
+Dockerhub bilan ishlaydigan Jenkins **CI** pipelinemizni quyidagicha yangilaymiz.
 
 ```groovy {7-9,24-42}
 pipeline {
@@ -608,7 +608,7 @@ pipeline {
 
 ### GCR(Google Container Registry)
 
-Docker Registry sifatida **GCR** ishlatish uchun Google Cloud **IAM**dan **Service Account** ochihb olishimiz va unga **Storage Admin** ruxsatini berishimiz kerak, undan keyin service accountga kirib service accoun key generatsiya qilib olishimiz kerak. Credentiallar Jenkins pipeline Google cloudga GCR ga kira olishi va ishlashi uchun kerak.
+Docker Registry sifatida **GCR** ishlatish uchun Google Cloud **IAM**dan **Service Account** ochib olishimiz va unga **Storage Admin** ruxsatini berishimiz kerak, undan keyin service accountga kirib service account key generatsiya qilib olishimiz kerak. Credentiallar Jenkins pipeline Google cloudga GCR ga kira olishi va ishlashi uchun kerak.
 
 **1->** Google Cloudga kirib **Service Accounts**dan service account yaratib olamiz.
 
@@ -632,13 +632,13 @@ Docker Registry sifatida **GCR** ishlatish uchun Google Cloud **IAM**dan **Servi
 **-> KEYS -> ADD KEY -> JSON -> CREATE**
 ![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/gcp5.png)
 
-**7->** Yuklab olgan Service accoun  private keyimizni Jenkins credentialsga qo'shib qo'yamiz.
+**7->** Yuklab olgan Service account  private keyimizni Jenkins credentialsga qo'shib qo'yamiz.
 
 **->** `Manage Jenkins` **->** `Credentials`-ga kirib  `Add credentials`ga o'tamiz.
 
 ![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/gcp6.png)
 
-**8->** Google Clouddan yuklab olgan service accoun private keyimizni ochib ko'rsak 2chi qatorida **project_id** ko'rsatilgan bo'ladi uni nusxalab olib uni ham Jenkins credentialsga qo'shib qo'yamiz.
+**8->** Google Clouddan yuklab olgan service account private keyimizni ochib ko'rsak 2chi qatorida **project_id** ko'rsatilgan bo'ladi uni nusxalab olib uni ham Jenkins credentialsga qo'shib qo'yamiz.
 
 **->** `Manage Jenkins` **->** `Credentials`-ga kirib  `Add credentials`ga o'tamiz.
 
@@ -710,7 +710,7 @@ Dockerhub va GCR Container registrylar uchun Jenkins CI pipelien yozdik va muvaf
 
 ## CD pipeline
 
-**CI** pipelineni muvaffaqiyatli yozib ishga tushirganimizdan keyin **CD** pipeline yozishni boshlasak bo'ladi.  CD pipeline quyidagi bosqichlardan iborat Jenkins pipeline **ssh-agent** orqali serverga bo'glanadi va serverdagi **bash** scriptni ishga tushiradi. Serverdagi bash script vazifasi qquyidagicha u birinchi navbatda Jenkins crdentialsda ko'rsatilgan Docker registry secretlari bilan docker login qiladi va undan keyin belgilanfgan docker image va belgilangan tag bilan docker registrydan pull qilib oladi agar Jenkins pipelineda belgilangan docker container nomi bilan ishlab turgan docker container ishlab turgan bo'lsa uni to'xtatib, o'chirib tozalab yangi containerni belgilangan nom va belgilangan port bilan ishga tushiradi.
+**CI** pipelineni muvaffaqiyatli yozib ishga tushirganimizdan keyin **CD** pipeline yozishni boshlasak bo'ladi.  CD pipeline quyidagi bosqichlardan iborat Jenkins pipeline **ssh-agent** orqali serverga bo'glanadi va u birinchi navbatda Jenkins crdentialsda ko'rsatilgan Docker registry secretlari bilan docker login qiladi va undan keyin belgilangan docker image va belgilangan tag bilan docker registrydan pull qilib oladi agar Jenkins pipelineda belgilangan docker container nomi bilan ishlab turgan docker container ishlab turgan bo'lsa uni to'xtatib, o'chirib tozalab yangi containerni belgilangan nom va belgilangan port bilan ishga tushiradi.
 
 Loyihamizni serverimizda ishga tushirishimiz uchun Jenkins pipeline serverga kira olishi kerak. Biz buning uchun **SSH(ssh-agent)** dan foydalanamiz. ssh-agent plagini Jenkinsga o'rnatib olishimiz kerak.
 
@@ -723,7 +723,7 @@ Loyihamizni serverimizda ishga tushirishimiz uchun Jenkins pipeline serverga kir
 Hozir esa serverimizga kirib ssh-key generatsiya qilib olamiz.
 
 <Callout type="info" emoji="">
-**ESLATMA->** Bu yurda netflix nomli ssh key generatsiy qilinib ishtilyapti. Bu nom ixtiyoriy xoxlagan nomizni berib ishlatavering!
+**ESLATMA->** Bu yurda netflix nomli ssh key generatsiya qilinib ishtilyapti. Bu nom ixtiyoriy xoxlagan nomizni berib ishlatavering!
 </Callout>
 
 ```bash
@@ -747,7 +747,7 @@ Buyruq bajarilgandan so'ng siz odatda ikkita faylni olasiz:
 ```bash
 cat netflix.pub >> authorized_keys
 ```
-`cat netflix >> authorized_keys` Ushbu buyruq `netflix.pub` faylining mazmunini `authorized_keys` faylining oxiriga qo'shadi.
+`cat netflix.pub >> authorized_keys` Ushbu buyruq `netflix.pub` faylining mazmunini `authorized_keys` faylining oxiriga qo'shadi.
 
 * `cat` - fayl mazmunini ko'rsatish uchun ishlatiladigan buyruq.
 * `>>` - faylga chiqish qo'shish uchun ishlatiladigan qayta yo'naltirish operatori.
@@ -758,7 +758,7 @@ Ushbu buyruqlar ketma-ketligining maqsadi `netflix.pub` faylida saqlangan public
 ```bash
 cat ~/.ssh/netflix
 ```
-Ushbu buyruq netflix nomli ssh keyimizni private keyni ko'rstadi biz undan nusxa olib qo'yamiz.
+Ushbu buyruq netflix nomli ssh keyimizni private keyni ko'rsatadi biz undan nusxa olib qo'yamiz.
 > ![netflix](/images/article/netflix/ssh3.png)
 
 Serverda ssh-key generatsiya qilib oldik endi Jenkins credentialsga qo'shsak bo'ladi.
@@ -775,7 +775,7 @@ whoami
 ```
 `Private Key->` netflix private keyni joylashtiramiz.
 
-SSh key generatsiya qilib sozlab oldik endi Serverga kirib Docker registyrdan imageni pull qilib olib uni run qiladigan bosqich qo'shishimiz kerak.
+SSh key generatsiya qilib sozlab oldik endi Serverga kirib Docker registrydan imageni pull qilib olib uni run qiladigan bosqich qo'shishimiz kerak.
 
 Jenkins pipeleni Serverga kira olishi uchun 2 ta Jenkins credentials yaratish kerak bular: Server username'si va Server IP manzilidir.
 
@@ -792,7 +792,7 @@ Bu qismda esa `Secret`ga Serverimiz IP manzilini yozishimiz kerak.
 ### Dockerhub 
 
 <Callout type="info" emoji="">
-**ESLATMA->** Ushbu **CD** qism asosan Dockerhub va boshqa container registrylarda ishash uchun moslashtirilgan! [GCR uchun quyidagi qismga o'ting](#gcr)
+**ESLATMA->** Ushbu **CD** qism asosan Dockerhub va boshqa container registrylarda ishlash uchun moslashtirilgan! [GCR uchun quyidagi qismga o'ting](#gcr)
 </Callout>
 
 **1->** Endi Serverimizga kerakli `environment`larni qo'shib chiqishimiz kerak.
@@ -824,7 +824,7 @@ stage('Deploy Server') {
                         docker pull ${REGISTRY_URL}/${CONTAINER_NAME}:latest && \
                         docker stop ${CONTAINER_NAME} || true && \
                         docker rm ${CONTAINER_NAME} || true && \
-                        docker run -d -p 4001:4001 --name ${CONTAINER_NAME} --restart always ${REGISTRY_URL}/${CONTAINER_NAME}:latest '
+                        docker run -d -p 3000:3000 --name ${CONTAINER_NAME} --restart always ${REGISTRY_URL}/${CONTAINER_NAME}:latest '
                     """
                 }
             }
@@ -832,6 +832,24 @@ stage('Deploy Server') {
     }
 }
 ```
+
+ushbu **Deploy Server** bosqichi quyidagicha ishlaydi. 
+
+```groovy
+withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) { }
+```
+`withCredentials` orqali Jenkinsdagi `dockerhub` crdentialidan docker username va docker password ajratib olinib  `DOCKER_USERNAME` va `DOCKER_PASSWORD` biriktiriladi bu docker login qilib Dockerhubga kira olish uchun. `sshagent (credentials: ['server-ssh']) { }` qismida Jenkinsga o'rnatgan ssh-agent plagini orqali serverga ulanib kiramiz va berilgan buyruqlarni ketma-ket ishga tushurishni boshlaydi.
+
+* `ssh -o StrictHostKeyChecking=no ${SERVER_USERNAME}@${SERVER_IP}` ushbu buyruq bilan serverga kiramiz.
+* `docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}` Berilgan crdentials orqali Docker registry yani Dockerhubga login qiladi.
+* `docker pull ${REGISTRY_URL}/${CONTAINER_NAME}:latest` yangi docker imageni pull qilib serverga tortib oladi.
+* `docker stop ${CONTAINER_NAME} || true` berilgan container nomi bilan ishlab turgan container bo'lsa uni to'xtadi.
+* `docker rm ${CONTAINER_NAME} || true` berilgan container nomi bilan ishlab turgan container bo'lsa uni o'chiradi.(yangi docker imageni ishga tushirish uchun)
+* `docker run -d -p 4001:4001 --name ${CONTAINER_NAME} --restart always ${REGISTRY_URL}/${CONTAINER_NAME}:latest` berilgan containerni belgilangan port va nom bilan docker registrydan oxirgi marta pull qilib olingan docker imageni run qilib ishga tushirib qo'yadi. 
+
+
+Qisqa qilib aytganda asosiy ish quyidagicha ssh-agent orqali serverga kiradi va docker login qilib berilgan imageni pull qilib tortib oladi shu nom bilan ishlab turgan eski containerni to'xtatib o'chiradi va yangi containerni berilgan port berilgan nom bilan ishga tushirib qo'yadi.
+
 
 ### GCR
 
@@ -879,6 +897,7 @@ stage('Deploy to Server') {
     }
 }
 ```
+**GCR**ga moslab yozilgan **CD** pipeline quyidagicha ishlaydi. Esingizda bo'lsa bizda Google Cloud **IAM**dan Service Account ochib undan private **.json** key generatsiya qilib olgandik va uni Jenkins crdentialsga fayl sifatida qo'shgandik. **GCR** registryga faqat shu berilgann .json private key fayl bilan docker login qila olamiz shuning shu secret faylni **scp** orqali serverga olib o'tamiz va shu private **.json** fayl bilan login qilamiz undan keyin docker imageni pull qilib olib eski containerni to'xtatib,o'chirib yangi containerni run qilib ishga tushirib qo'yamiz. Hammasi bajarilganidan keyin serverga ko'chirib o'tkazgan private **.json** faylimizni xavfsizlik uchun o'chirib tashlaymiz va natija haqida discord serverga notification yuboramiz.
 
 ## Xulosa
 
@@ -940,7 +959,7 @@ pipeline {
                                 docker pull ${REGISTRY_URL}/${CONTAINER_NAME}:latest && \
                                 docker stop ${CONTAINER_NAME} || true && \
                                 docker rm ${CONTAINER_NAME} || true && \
-                                docker run -d -p 4001:4001 --name ${CONTAINER_NAME} --restart always ${REGISTRY_URL}/${CONTAINER_NAME}:latest '
+                                docker run -d -p 3000:3000 --name ${CONTAINER_NAME} --restart always ${REGISTRY_URL}/${CONTAINER_NAME}:latest '
                             """
                         }
                     }
@@ -1066,11 +1085,33 @@ pipeline {
 }
 ```
 
+### DEV, STAGE, PROD
+
+Loyihani uch bosqichda **DEV, STAGE, PROD** bosqichli qilish uchun quyidagi usuldan foydalanishimiz mumkin, yani jenkinsda loyiha nomli jild(folder) ochib olamiz va **dev, stage, prod** nomli joblar ochamiz dev pipelineda dev serverlar va gitdagi dev branch stage ham shunday gitdagi stage branch va stage serverlar va prod main branch va yoki prod branchdan kodlarni olib prod serverlarga deploy qilib qo'yadi.
+
+**1->** Jenkinsda loyiha nomli folder ochib olamiz masalan devops-journey
+**-> Create a job -> Folder**
+>![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/job1.png)
+
+loyiha nomini yozamiz va **Folder**ni tanlab **OK** bosamiz.
+>![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/job2.png)
+
+Undan keyingi ochilgan oynada Folderga Description yozib yaratib olamiz
+
+Keyin bizda quyidagi oyna ochiladi
+![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/item1.png)
+
+![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/item2.png)
+
+
+Endi **dev,sateg,prod** nomli joblar yaratib olamiz va shunga moslab configuratsiya qilib olamiz. Masalan **dev** jobda **dev** nomli branchdagi kodlarni olib uni build qilib dev serverda ishga tushiradi, qolgan stage va prod ham xuddi shunday ishlaydi.
 <Callout type="info" emoji="">
 
 Ushbu loyiha GitHub repositoriyasi: [github.com/ismoilovdevml/devops-journey](https://github.com/ismoilovdevml/devops-journey.git)
 
 **Sana:** 2024.01.18 (2024-yil 18-yanvar)
+
+**Oxirgi yangilanish:** 2024.01.19(2024-yil 19-yanvar)
 
 **Muallif: Otabek Ismoilov**
 
