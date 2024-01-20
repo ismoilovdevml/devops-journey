@@ -34,5 +34,11 @@
     "icon": "▶️",
     "description": "k8s native obyektlari",
     "href": "/guides/k8s/k8s-objects"
+  },
+  "k8s-cluster-setup": {
+    "title": "Kubernetes Cluster sozlash",
+    "icon": "▶️",
+    "description": "kubeadm bilan kubernetes cluster sozlash",
+    "href": "/guides/k8s/k8s-cluster-setup"
   }
 }
