@@ -10,4 +10,77 @@ Zamonaviy IT infratuzilmasining dinamik landshaftida konteynerlashtirilgan appli
 
 Ushbu qo'llanma **on-premise**da **kubeadm** yordamida Kubernetes klasterini yaratish va sozlash bo'yicha bosqichma-bosqich qo'llanmani taqdim etishga qaratilgan. **Kubeadm** - bu Kubernetes klasterini yuklash jarayonini soddalashtirish uchun maxsus ishlab chiqilgan tool bo'lib, uni yangi boshlanuvchilar va tajribali mutaxassislar uchun qulay.
 
-System administrator?DevOps Engineer yoki oddiygina konteyner orkestratsiyasi olamini o'rganishni istagan odam bo'lasizmi, ushbu qo'llanma sizni on-premise infratuzilmangizda Kubernetes klasterini o'rnatish jarayoni bo'ylab ko'rsatib beradi. Ushbu qo'llanmaning oxirida siz konteynerlashtirilgan ilovalarni osongina joylashtirish va boshqarishga tayyor ishlaydigan Kubernetes klasteriga ega bo'lasiz.
+System administrator/DevOps Engineer yoki oddiygina konteyner orkestratsiyasi olamini o'rganishni istagan odam bo'lasizmi, ushbu qo'llanma sizni on-premise infratuzilmangizda Kubernetes klasterini o'rnatish jarayoni bo'ylab ko'rsatib beradi. Ushbu qo'llanmaning oxirida siz konteynerlashtirilgan ilovalarni osongina joylashtirish va boshqarishga tayyor ishlaydigan Kubernetes klasteriga ega bo'lasiz.
+
+## Ishni boshlash
+
+Ushbu amaliyotda biz on-primese serverlarda **kubeadm** bilan kubernetes cluster yaratimiz va ishlashga tayyor qilib sozlaymiz. Bu amaliyotda biz HAProxy, MetalLB, NGINX Ingress, flannel, HELM va boshqa texnologiyalarni ishlatamiz.
+
+<Callout type="info" emoji="">
+
+Ushbu amaliyot uchun kerak bo'ladigan serverlar.
+**Minimum Server talabi**
+
+| OS            | RAM            | CPU           | Xotira       | Static IP  | Server nomi  |
+| ------------- | -------------- | ------------- |------------- | ---------- | -----------  |
+| Ubuntu 20.04  | 8GB            | 8vCPU 4 core  | 50GB         | Ha kerak   | k8s-master   |
+| Ubuntu 20.04  | 4GB            | 4vCPU 2 core  | 50GB         | shart emas | k8s-node1    |
+| Ubuntu 20.04  | 4GB            | 4vCPU 2 core  | 50GB         | shart emas | k8s-node2    |
+| Ubuntu 20.04  | 4GB            | 4vCPU 2 core  | 50GB         | shart emas | k8s-node3    |
+
+Umumiy hisobda bizga 4ta server, bitta k8s-master server va minimum uchta server node(k8s-node1,k8s-node2,k8s-node3) kerak bo'ladi.
+
+</Callout>
+
+**k8s-master** serverimizga **static IP** bo'lishi kerak qolgan k8s nodelar esa bitta networkda bitta subnetda bo'lsa shart emas agar har xil network subnetda bo'lishsa static IP kerak bo'ladi.
+
+Quyida meni kubernetes cluster uchun tayyorlab olgan serverlarim ro'yxati. E'tibor berib qarasangiz ularning **Internel IP** manzili **10.28.0.0/24** network subnetda bu degani ushbu serverlar bir biri bilan **Internal IP**si orqali bo'glana oladi. Shuning uchun menga bitta k8s-master sererimda static IP manzil bor. k8s-master serverimga static IP berishimni sababi boshqa serverlar bilan aloqa qilish(masalan Load Balancer) va applicationlar domen ulab **NGINX ingress** bilan expose qilish uchun kerak.
+
+![k8s-cluster](/images/tutorials/k8s/cluster-setup/vm1.png)
+
+## kubeadm bilan k8s cluster yaratish
+
+Amaliyotimiz uchun muhitni serverlarni sozlab olganimizdan keyin amaliyotni boshlasak bo'ladi. Biz kubernetes cluster yataishda **kubeadm** dan foydalanamiz. Ishni ancha osonlashtirish uchun men oldinroq **kubeadm** bilan ishlab kubernetes cluster yaratadigan bash script yozib qo'ygandim. Ushbu amaliyotda biz bash scriptdan foydalanaib k8s cluster yaratamiz. Barcha serverlarimizga ssh orqali kirib olamiz va quyidagicha scriptni ishga tushiramiz.
+
+**K8s installer** script ikki qismga bo'lingan yani k8s-master uchun alohida va k8s-nodelar uchun alhoida. [**K8s installer**](https://github.com/ismoilovdevml/devops-tools/tree/master/k8s/Install) bash scriptni kodlari open-source githubga joylashtirilgan.
+
+**1->** **k8s-master** serverimizfga kirib quyidagi buyruq orqali scriptni ishga tushiramiz.
+
+```bash
+curl -sSL https://raw.githubusercontent.com/ismoilovdevml/devops-tools/master/k8s/Install/k8s-master.sh | bash
+```
+
+Script quyidagicha ishga tushishi kerak.
+
+![k8s-cluster](/images/tutorials/k8s/cluster-setup/k8s1.png)
+
+Bash script o'z ishini muvaffaqiyatli yakunlagida quyidagicha ko'rinishi kerak.
+
+![k8s-cluster](/images/tutorials/k8s/cluster-setup/k8s3.png)
+
+**2->** k8s-masterda bash script muvvaqiyatli ishini yakunlagida  k8s-node serverlarni ulash uchun **kubeadm join** buryruq generatsiya qilib beradi. E'tiborli bo'lib ushbu buyruqni nusxalab olamiz bu orqali kubernetes node sereverlarni k8s-masterga ulay olamiz.
+
+Buyruq rasmda ko'rsatilgan.
+
+![k8s-cluster](/images/tutorials/k8s/cluster-setup/k8s5.png)
+
+<Callout type="info" emoji="">
+```bash
+kubeadm join 10.128.0.45:6443 --token snydd0.hdwia5qbrc455aro \
+         --discovery-token-ca-cert-hash sha256:ac02bc09d36903d97ceff3e5437b5386dcc5bf25ed90c8ce03dee9ae80061672
+```
+</Callout>
+
+**3->** k8s nodelar uchun alohida k8s nodelar uchun yozilgan bash scriptni ishga tushiramiz.
+
+```bash
+curl -sSL https://raw.githubusercontent.com/ismoilovdevml/devops-tools/master/k8s/Install/k8s-worker.sh | bash
+```
+
+Bash script quyidagicha ishga tushishi kerak.
+
+![k8s-cluster](/images/tutorials/k8s/cluster-setup/k8s2.png)
+
+Bash script o'z ishini muvaffaqiyatli yakunlagida quyidagicha ko'rinishi kerak.
+
+![k8s-cluster](/images/tutorials/k8s/cluster-setup/k8s4.png)
