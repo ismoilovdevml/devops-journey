@@ -118,7 +118,7 @@ Biz bu folatda **Flannel** ishlatamiz.
 ```bash
 kubectl apply -f https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml
 ```
-
+df
 Flannelni muvaffaqiyatli ishga tushirib `kubectl get nodes` buyru'gi bilan tekshirganimizda barcha nodelarimiz **STATUS**si **Ready** bo'lib turganini ko'rishimiz mumkin.
 ![k8s-cluster](/images/tutorials/k8s/cluster-setup/k8s8.png)
 
@@ -127,4 +127,78 @@ Flannelni muvaffaqiyatli ishga tushirib `kubectl get nodes` buyru'gi bilan teksh
 ```bash
 kubectl get pods -A
 ```
-![k8s-cluster](/images/tutorials/k8s/cluster-setup/k8s9.png)
+![k8s-cluster](/images/tutorials/k8s/cluster-setup/k8s9.png )
+
+**MetalLB** - bare metal Kubernetes klasterlari uchun load balancer. On-primese muhitlarda, ayniqsa bare metal infratuzilmasi bo'lganlarda, servicelar ko'pincha tashqi ko'rinishga ega bo'lish usuliga muhtoj. Boshqariladigan xizmatlar sifatida yuk balanslagichlari mavjud cloud muhitlardan farqli o'laroq, on-premise sozlashlarda bunday infratuzilma bo'lmasligi mumkin.
+
+Kubernetes klasterini bare-metallga o'rnatish uchun **kubeadm** dan foydalanilganda, **LoadBalancer** turidagi servicelar ishlamaydi, chunki tashqi load balanceri mavjud emas. Bu yerda **MetalLB** keladi. **MetalLB** on-primese muhitda yaxshi ishlaydigan dasturiy ta'minotga asoslangan load-balancerni ta'minlaydi. U tashqi trafikni klasterdagi nodelar bo'ylab tarqatadi.
+
+**3->** MetalLB'ni o'rnatishdan oldin kube-proxy Configmapni sozlab olishimiz kerak.
+
+
+```bash
+kubectl get configmap kube-proxy -n kube-system -o yaml | \
+sed -e "s/strictARP: false/strictARP: true/" | \
+kubectl diff -f - -n kube-system
+```
+
+kube-proxy ConfigMap-ni o'zgartirish: **kubectl get configmap kube-proxy** buyruqlari joriy kube-proxy ConfigMapni olish uchun ishlatiladi, so'ngra **sed** **strictARP** qiymatini **false**dan **true**ga o'zgartirish uchun ishlatiladi. Ushbu modifikatsiya MetalLB to'g'ri ishlashi uchun talab qilinadi. Keyin **kubectl apply -f** - buyrug'i o'zgartirilgan ConfigMapni qo'llash uchun ishlatiladi.
+
+```bash
+kubectl get configmap kube-proxy -n kube-system -o yaml | \
+sed -e "s/strictARP: false/strictARP: true/" | \
+kubectl apply -f - -n kube-system
+```
+
+**4->** MetalLBdan oldin sozlash yakunlangandan keyin MetalLBni helm orqali o'rnatib olamiz. Bash script ihsga tushirib kuberntes cluter yaratganimizda helm ham o'rnatiladi ya'ni helm o'rntaishga hojat yo'q.
+
+```bash
+helm repo add metallb https://metallb.github.io/metallb
+helm repo update
+helm install metallb metallb/metallb --namespace metallb-system --create-namespace
+```
+
+helm metallb repositoriyani qo'shadi va repositoriyalarni yangilab oladi, keyin metallb nomli namespaceda metallbni o'rnatadi va ishga tushiradi. Har bir dastur yoki tool uhcun alohida **namespace** ochib  ishlash Kubernetesda yaxshi amaliyot.
+
+MetalLB ishlab turgani bilish uchun statusini ko'ramiz.
+
+```bash
+# barcha namescpaselar ro'yxatini ko'rish uchun
+kubectl get ns
+# metallb-system namespace podlarini ko'rish
+
+kubectl get pods -n metallb-system
+```
+![k8s-cluster](/images/tutorials/k8s/cluster-setup/k8s10.png )
+
+**5->** MetalLB o'rnatganimizdan keyin **MetalLB Address Pool** sozlashimiz kerak.
+
+`metallb` nomli jild ochib `address-pool.yaml` fayl ochib yaml configuratsiya yozamiz.
+
+```bash
+mkdir metallb
+cd metallb
+nano address-pool.yaml
+```
+
+**MetalLB Address Pool** configuratsiyamiz quyidagicha.
+
+```yaml
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: first-pool
+  namespace: metallb-system
+spec:
+  addresses:
+  - 10.128.0.200-10.128.0.220
+---
+apiVersion: metallb.io/v1beta1
+kind: L2Advertisement
+metadata:
+  name: first-pool
+  namespace: metallb-system
+spec:
+  ipAddressPools:
+  - first-pool
+```
