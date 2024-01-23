@@ -84,3 +84,47 @@ Bash script quyidagicha ishga tushishi kerak.
 Bash script o'z ishini muvaffaqiyatli yakunlagida quyidagicha ko'rinishi kerak.
 
 ![k8s-cluster](/images/tutorials/k8s/cluster-setup/k8s4.png)
+
+**4->** Bash scrip k8s-master va barcha nodelarda muvvaqiyatli ishga tushganidan keyin k8s-master da berilgan **kubeadm join** dan foydalani k8s-masterimizga k8s nodelarimizni qo'shib chiqishimiz kerak, ya'ni quyidagi bizga berilgan buyruqni node serverlarimizga **sudo** bilan ishga tushirishiniz kerak.
+
+
+```bash
+sudo kubeadm join 10.128.0.45:6443 --token snydd0.hdwia5qbrc455aro --discovery-token-ca-cert-hash sha256:ac02bc09d36903d97ceff3e5437b5386dcc5bf25ed90c8ce03dee9ae80061672
+```
+![k8s-cluster](/images/tutorials/k8s/cluster-setup/k8s6.png)
+
+Barcha nodelarimizda shu buyruq mauvaqqiyatli bajarilganidan keyin uni tekshirib ko'ramiz.
+
+**5->** K8s node serverlarimiz k8s-masterga bo'glanganini ko'rish uchun k8s-master serverimizga kirib quyidagi buyruq orqali k8s nodelarni ko'ramiz.
+
+```bash
+kubectl get nodes
+```
+![k8s-cluster](/images/tutorials/k8s/cluster-setup/k8s7.png)
+
+Bu holatda ulangan nodelkar ko'rsatiladi lekin **STATUS** NotReady bo'lib turibti.
+
+## Network sozlash
+Kubernetes klasterini kubeadm yordamida yaratganingizda, klaster dastlab asosiy komponentlar bilan o'rnatiladi, lekin u default bo'yicha sozlangan networking solutioniga ega bo'lmaydi. Networking solutiondagi turli nodelar o'rtasidagi aloqa va ushbu nodelarda ishlaydigan podlar bir-biri bilan aloqa qilish uchun juda muhimdir. Bu holatda, `kubectl get nodes` buyrug'ini ishga tushirganingizda, network solution joyida bo'lmagani uchun nodelar tayyor emas. **NotReady** holati nodelar hali to'liq ishlamaganligini bildiradi.
+
+Biz bu folatda **Flannel** ishlatamiz. 
+
+**1->** Kubernetes clutserimizga flannelni quyidagicha o'rnatamiz.
+
+<Callout type="info" emoji="">
+**ESLATMA:** Bundan keyin faqat **k8s-master** serverimizda ishlaymiz.
+</Callout>
+
+```bash
+kubectl apply -f https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml
+```
+
+Flannelni muvaffaqiyatli ishga tushirib `kubectl get nodes` buyru'gi bilan tekshirganimizda barcha nodelarimiz **STATUS**si **Ready** bo'lib turganini ko'rishimiz mumkin.
+![k8s-cluster](/images/tutorials/k8s/cluster-setup/k8s8.png)
+
+**2->** Kubernetes kalusterimzda nqancha podlarimiz ishlab turganini ko'rish uchun quyidagi buyruqdan foydalanamiz.
+
+```bash
+kubectl get pods -A
+```
+![k8s-cluster](/images/tutorials/k8s/cluster-setup/k8s9.png)
