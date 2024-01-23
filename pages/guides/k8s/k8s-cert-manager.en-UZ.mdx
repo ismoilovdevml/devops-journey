@@ -9,3 +9,90 @@ import { Callout } from "nextra-theme-docs";
 Tashkilotlar o'z applicationlarini Kubernetesga ko'chirishni boshlaganlarida, xavfsiz aloqaga bo'lgan ehtiyoj birinchi o'ringa chiqadi. **SSL/TLS** sertifikatlari xizmatlar o'rtasida shifrlangan va autentifikatsiya qilingan aloqani ta'minlashda hal qiluvchi rol o'ynaydi. Biroq, bir nechta xizmatlar va muhitlarda sertifikatlarni boshqarish qiyin bo'lishi mumkin. Bu erda Kubernetes-ning mashhur add-oni bo'lgan **Cert-Manager** yordamga keladi. Ushbu blogda biz **Cert-Manager** nima ekanligini, uning afzalliklarini o'rganamiz va boshlash uchun bosqichma-bosqich o'rnatish ko'rsatmalarini beramiz.
 
 **Cert-Manager** nima? Cert-Manager - bu Kubernetes uchun maxsus ishlab chiqilgan open-source sertifikatlarni boshqarish tooli. U **SSL/TLS** sertifikatlarini chiqarish, yangilash va bekor qilishni avtomatlashtiradi, bu jarayonni muammosiz va oson qiladi. Cert-Manager yordamida siz barcha servicelaringiz qo'l aralashuvisiz haqiqiy sertifikatlar bilan himoyalanganligiga ishonch hosil qilishingiz mumkin.
+
+## Cert-Manager afzalliklari
+
+* **Avtomatlashtirilgan sertifikat boshqaruvi->** **Cert-Manager** sertifikatlarni so'rash, tasdiqlash(validating) va yangilash(renewing) jarayonini avtomatlashtiradi, DevOps jamoalari uchun vaqt va kuchni sezilarli darajada tejaydi.
+* **Let's Encrypt bilan integratsiya->** Cert-Manager bepul va keng tarqalgan ishonchli sertifikat organi **Let's Encrypt** bilan muammosiz integratsiyalashgan bo'lib, sizga sertifikatlarni qo'shimcha xarajatlarsiz olish imkonini beradi.
+* **Kubernetes Native->** Cert-Manager sertifikatlarni boshqarish uchun **Custom Resource Definationidan(CRDs)** foydalanib, Kubernetesning nativ yondashuviga amal qiladi va bu sizning Kubernetes ekotizimingizga tabiiy ravishda mos keladi.
+* **Bir nechta sertifikat issuerlari->** U **Let's Encrypt**, self-signedgan sertifikatlar va boshqalar kabi turli sertifikat issuerlarini qo'llab-quvvatlaydi, bu sizning talablaringiz uchun eng mos variantni tanlash uchun moslashuvchanlikni beradi.
+* **Ingress Controller integratsiyasi->** Cert-Manager **Nginx**, **Traefik** va boshqalar kabi mashhur Ingress kontrollerlari bilan muammosiz ishlaydi, bu sizning Kubernetes servicelari uchun sertifikatlarni oson ta'minlash imkonini beradi.
+
+
+## Cert-Manager o'rnatish
+
+Cert-Managerni kubernestes clusterga o'rnatish uchu talablar.
+
+* 1.16 versiyadan yuqori ishlab turgan kubernetes cluster
+* kubectl va helm o'rnatilganligi
+* NGINX Ingress Controller sozlangani
+
+**Qo'shimcha:** [Cert-Manager o'rnatish bo'yicha rasmiy Cert-Manager qo'llnmasi.](https://cert-manager.io/docs/installation/)
+
+**1->** Cert-Manager **CRD**'larini o'rnating: Birinchi qadam Cert-Manager tomonidan talab qilinadigan Custom Resource Definitions (CRD) o'rnatishdir. Ushbu CRDlar sertifikatlarni boshqarish uchun zarur resurslarni belgilaydi.
+
+```bash
+kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.13.3/cert-manager.crds.yaml
+```
+
+**2->** Cert-Managerni helm orqali o'rnatamiz.
+
+```bash
+helm repo add jetstack https://charts.jetstack.io
+helm repo update jetstack
+```
+```bash
+helm install \
+  cert-manager jetstack/cert-manager \
+  --namespace cert-manager \
+  --create-namespace \
+  --version v1.13.3 \
+```
+![cert-manager](/images/tutorials/k8s/cert-manager/cert1.png)
+**3->** Statusni tekshiramiz.
+```bash
+kubectl get all -n cert-manager
+```
+![cert-manager](/images/tutorials/k8s/cert-manager/cert2.png)
+
+**3->** Cert-Managerni o'rnatib olganimizdan keyin **cluster issuer** yaratib sozlab olishimiz kerak. Buning uchun certmanager papaka ochib `clusterissuer.yaml` fayl ochib konfiguratsiya yozamiz.
+
+
+```bash
+mkdir certmanager
+cd certmanager
+nano clusterissuer.yaml
+```
+
+`clusterissuer.yaml` configuratsiyamiz quyidagicha.
+
+```yaml {2,4,7-8,111-13}
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-prod
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: teshmat@gmail.com  # ishlaydigan email yozing !!!
+    privateKeySecretRef:
+      name: letsencrypt-prod
+    solvers:
+    - http01:
+        ingress:
+          class: nginx
+```
+Ushbu konfiguratsiya **Let's Encrypt**  cert-meneger yordamida TLS sertifikatining avtomatlashtirilgan chiqarilishi va yangilanishini sozlash uchun zarurdir. **ClusterIssuer** cluster miqyosidagi resource bo‘lib, u bir nechta namescpasega taalluqlidir va sertifikat boshqaruvchini clusterdagi Ingress resourcelari bilan bog'langan domenlar uchun **TLS** sertifikatlarini olish va yangilash uchun **Let's Encrypt**'ning **ACME** serveri bilan ozaro ishlashni sozlaydi.
+
+**email** qismiga ishlaydigan o'zimizni emailimizni yozib ishga tushiramiz.
+
+
+```bash
+kubectl apply -f clusterissuer.yaml
+kubectl get secret -n cert-manager
+```
+
+![cert-manager](/images/tutorials/k8s/cert-manager/cert3.png)
+
+## Amaliyot
+
