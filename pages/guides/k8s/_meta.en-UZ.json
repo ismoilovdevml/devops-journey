@@ -40,5 +40,11 @@
     "icon": "▶️",
     "description": "kubeadm bilan kubernetes cluster sozlash",
     "href": "/guides/k8s/k8s-cluster-setup"
+  },
+  "k8s-cert-manager": {
+    "title": "Kubernesga Cert-Manager o'rnatish va sozlash",
+    "icon": "▶️",
+    "description": "Let's Encrypt SSL Sertifikat olish",
+    "href": "/guides/k8s/k8s-cert-manager"
   }
 }

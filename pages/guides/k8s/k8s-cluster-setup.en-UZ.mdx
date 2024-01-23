@@ -323,7 +323,7 @@ defaults
 	errorfile 504 /etc/haproxy/errors/504.http
 ```
 
-HAProxyni quyidagicha konfiguratsiya qilib NGINX Ingress Controllerimizni ulaymiz.
+**3->* *HAProxyni quyidagicha konfiguratsiya qilib NGINX Ingress Controllerimizni ulaymiz.
 
 
 ```bash filename="/etc/haproxy/haproxy.cfg" {22-23,37-40,42-44,46-49,51-53}
@@ -383,3 +383,14 @@ backend ingress_servers_tls
 ```
 
 Qisqa qilib aytganda tashqaridan kirishlar HAProxyda TCP mode orqali kubernetes clusterimizdagi NGINX Ingress Controllerga kiradi. HAProxyga yuqorida ko'rsatilgan NGINX Ingress Controller **EXTERNAL IP**si berilgan yani **10.128.0.200**
+
+**4->** haproxy.cfg configuratsiyamizni tekshirib olamiz va haproxyga restart berib ishga tushiramiz.
+
+```bash
+haproxy -c -f /etc/haproxy/haproxy.cfg
+sudo systemctl restart haproxy
+sudo systemctl status haproxy
+```
+
+## Kubernetesga Cert-Manager o'rnatish va sozlash
+
