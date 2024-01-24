@@ -22,7 +22,9 @@ Tashkilotlar o'z applicationlarini Kubernetesga ko'chirishni boshlaganlarida, xa
 ## Cert-Manager o'rnatish
 
 Cert-Managerni kubernestes clusterga o'rnatish uchu talablar.
-
+<Callout type="info" emoji="">
+Kuberntes cluster yaratish, sozlash va network configuratsiya qilish bo'yicha qo'llanmani ko'rib chiqing. [**Kubernetes cluster yaratish va sozlash(kubeadm)**](https://devops-journey.uz/guides/k8s/k8s-cluster-setup)
+</Callout>
 * 1.16 versiyadan yuqori ishlab turgan kubernetes cluster
 * kubectl va helm o'rnatilganligi
 * NGINX Ingress Controller sozlangani
@@ -55,7 +57,7 @@ kubectl get all -n cert-manager
 ```
 ![cert-manager](/images/tutorials/k8s/cert-manager/cert2.png)
 
-**3->** Cert-Managerni o'rnatib olganimizdan keyin **cluster issuer** yaratib sozlab olishimiz kerak. Buning uchun certmanager papaka ochib `clusterissuer.yaml` fayl ochib konfiguratsiya yozamiz.
+**4->** Cert-Managerni o'rnatib olganimizdan keyin **cluster issuer** yaratib sozlab olishimiz kerak. Buning uchun certmanager papaka ochib `clusterissuer.yaml` fayl ochib konfiguratsiya yozamiz.
 
 
 ```bash
@@ -169,3 +171,12 @@ Konfiguratsiyamizni ishga tushirib biroz vaqt o'tganidan keyin kubeview.xilo.uz 
 Sertifikatni tekshirib ko'rishimiz mumkin.
 
 ![cert-manager](/images/tutorials/k8s/cert-manager/cert6.png)
+
+## Qo'shimcha
+<Callout type="info" emoji="">
+
+**Sana:** 2024.01.24 (2024-yil 24-yanvar)
+
+**Muallif: Otabek Ismoilov**
+
+</Callout>

@@ -323,7 +323,7 @@ defaults
 	errorfile 504 /etc/haproxy/errors/504.http
 ```
 
-**3->* *HAProxyni quyidagicha konfiguratsiya qilib NGINX Ingress Controllerimizni ulaymiz.
+**3->** HAProxyni quyidagicha konfiguratsiya qilib NGINX Ingress Controllerimizni ulaymiz.
 
 
 ```bash filename="/etc/haproxy/haproxy.cfg" {22-23,37-40,42-44,46-49,51-53}
@@ -394,3 +394,150 @@ sudo systemctl status haproxy
 
 ## Kubernetesga Cert-Manager o'rnatish va sozlash
 
+Kubernetes clusterimizga Cert-Manager o'rnatish bo'yicha devops-journey platformasi qo'llanma mavjud bo'lib ushu [**Kubernesga Cert-Manager o'rnatish va sozlash**](https://devops-journey.uz/guides/k8s/k8s-cert-manager) qo'llamadan foydalanib o'rnatib sozlab olishingiz mumkin.
+
+## Kubernetes Dashboard
+
+Hozirda kubernetes clusterimiz ishlashga tayyor holga keldi va ishni boshlasak bo'ladi. Keling amaliyot uchun kubernestes clusterimizga kubernetes dashboard o'rnatib uni NGINX Ingress Controller orqali expose qilib Cert-Managerdan SSL/TLS sertifikat olib ishga tushiramiz.
+
+![k8s-cluster](/images/tutorials/k8s/cluster-setup/dashboard.png )
+
+**1->** Kubernetes dashboard o'rnatish
+
+```bash
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.7.0/aio/deploy/recommended.yaml --namespace=kubernetes-dashboard
+```
+
+Ushbu buyruq berilgan URLdan .yaml configuratsiyani yuklab oladi va **kuberntes-dashboard** nomli namespace ochib konfiguratsiya fayllarini kuberntes-dashboard namescpasega apply qilib ishga tushiradi.
+
+**2->** Service account ochib olamiz.
+
+```bash
+mkdir dashboard
+cd dashboard
+nano service-account.yaml
+```
+
+`service-account.yaml` configuratsiyamiz quyidagicha
+
+```yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: admin-user
+  namespace: kubernetes-dashboard
+```
+
+```bash
+kubectl apply -f service-account.yaml
+```
+Ushbu YAML fayli kubernetes-dashboard namespacida **admin-user** nomli service-account yaratadi.
+
+**3->** `admin-user` uchun **ClusterRoleBinding** yaratamiz.
+
+
+```bash 
+cd dashboard
+nano clusterrolebinding.yaml
+```
+
+`clusterrolebinding.yaml` configuratsiyamiz.
+
+```yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: admin-user
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: admin-user
+  namespace: kubernetes-dashboard
+```
+
+Ushbu configuratsiya **admin-user** service accountini **cluster-admin** roliga bog'laydigan **ClusterRoleBinding**-ni yaratadi.
+
+```bash
+kubectl apply -f clusterrolebinding.yaml
+```
+
+**4->** NGINX Ingress bilan Kubernes dashboardni odmen ulab expose qilamiz.
+
+```
+nano dashboard-ingress.yaml
+```
+
+`dashboard-ingress.yaml` configuratsiyamiz.
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: k8s-dashboard-ingress
+  namespace: kubernetes-dashboard
+  annotations:
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    nginx.org/ssl-services: "kubernetes-dashboard"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  ingressClassName: "nginx"
+  rules:
+  - host: dashboard.xilol.uz
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: kubernetes-dashboard
+            port:
+              number: 443
+  tls:
+  - hosts:
+    - dashboard.xilol.uz
+    secretName: k8s-dashboard-tls
+```
+
+Bu configuratsiya **HTTPS** yordamida Kubernetes dashboarnini xavfsiz ochish uchun NGINX annotationlari bilan ingress resourceni yaratadi. U hostni, **TLS** sozlamalarini va **SSL** redirectionni belgilaydi.
+
+DNS hostingdan domengizga k8s-master static Ip manzilini qo'shib qo'yasiz. Ushbu misolda menda **xilol.uz** domeni bor va men **dashboard** deb subdomen qo'shyapman. Rasmda ahost numnasi ko'rsatilgan **0.0.0.0** o'rniga k8s-matser serveringiz static IP manzilini qo'shasiz.
+
+![k8s-cluster](/images/tutorials/k8s/cluster-setup/dns.png)
+
+
+```bash
+kubectl apply -f dashboard-ingress.yaml
+```
+
+Configuratsiyamizni apply qilib ishga tushirganimizdan keyin brauzerdan **dashboard.xilol.uz**ga kirganimzida **https** kirihsi kerak va bizga Kubernetes Dashboard ochilib kirish oynasi ochilishi kerak.
+
+![k8s-cluster](/images/tutorials/k8s/cluster-setup/k8s11.png)
+
+![k8s-cluster](/images/tutorials/k8s/cluster-setup/k8s12.png)
+![k8s-cluster](/images/tutorials/k8s/cluster-setup/k8s13.png)
+
+
+**6->** Kubernetes dashboardga kirish uchun token olamiz
+
+```bash
+kubectl -n kubernetes-dashboard create token admin-user
+```
+
+Token olib dashboardga kira olamiz.
+
+![k8s-cluster](/images/tutorials/k8s/cluster-setup/dashboard1.png)
+
+
+## Qo'shimcha
+
+<Callout type="info" emoji="">
+
+**Oxirgi yangilanish:** 2024.01.19(2024-yil 19-yanvar)
+
+**Muallif: Otabek Ismoilov**
+
+</Callout>
