@@ -96,3 +96,76 @@ kubectl get secret -n cert-manager
 
 ## Amaliyot
 
+Kubernetes clusterimizga Cert-Manager o'rnatib clusterissuer solzab olganimizdan keyin uni siba ko'rish uchun amaliyot qilamiz. Amaliyot uchun **kubeview** nomli loyihani tanladik. **kubeview** kubernetes clusterni vizaulatsiya qilish dasturidir ushbu amaliyotda kubertes clusterimizga kubeview o'rnatamiz Cert-Manager orqali sertifikat olib NGINX Ingress Controller orqali expose qilamiz.
+
+![cert-manager](/images/tutorials/k8s/cert-manager/kubeview.png)
+
+**1->** Kubernetes clusterimizga kubeview o'rnatamiz.
+
+```bash
+helm repo add kubeview https://benc-uk.github.io/kubeview/charts
+helm repo update kubeview
+helm install kubeview kubeview/kubeview --namespace kubeview --create-namespace
+```
+
+**2->** Statusini tekshiramiz.
+
+```bash
+kubectl get all -n kubeview
+```
+![cert-manager](/images/tutorials/k8s/cert-manager/cert4.png)
+
+**3->** DNSdan domenimizga kubernestes clusterimiz IP sini berib domen qo'shib olamiz ushbu misolda **kubeview.xilol.uz**
+Rasmda ahost misoli ko'rsatilgan **xilol.uz** mavjud va **DNS Xosting** bo'limidan **kubeview** dubdomen qo'shyapmiz.
+![cert-manager](/images/tutorials/k8s/cert-manager/dns.png)
+
+**4->** ClusterIssuerdan va NGINX Ingress Controlleran foydalanib expose qilamiz. `kubeview` nomli papka ochib `kubeview-ingress.yaml` fayl ochib configuratsiya qilamiz.
+
+```bash
+mkdir kubeview
+cd kubeview
+nano kubeview-ingress.yaml
+```
+
+Konfiguratsiyamiz quyidagicha
+
+```bash {2,4-5,7,9,11,18,20,23-24}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kubeview-ingress
+  namespace: kubeview
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  ingressClassName: "nginx"
+  rules:
+  - host: kubeview.xilol.uz
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: kubeview
+            port:
+              number: 8000
+  tls:
+  - hosts:
+    - kubeview.xilol.uz
+    secretName: kubeview-tls
+```
+
+**5->** configuratsiya apply qilish ishga tushirib kubeview.xilol.uz domenida kubeviewga htpps kerishni tekshiramiz.
+
+```bash
+kubectl apply -f kubeview-ingress.yaml
+```
+
+Konfiguratsiyamizni ishga tushirib biroz vaqt o'tganidan keyin kubeview.xilo.uz domeniga brauzer orqali kirganimizdan  u **https** bilan ochilishi va **SSL** sertifikati bo'lishi kerak.
+
+![cert-manager](/images/tutorials/k8s/cert-manager/cert5.png)
+
+Sertifikatni tekshirib ko'rishimiz mumkin.
+
+![cert-manager](/images/tutorials/k8s/cert-manager/cert6.png)
