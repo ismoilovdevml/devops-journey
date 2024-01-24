@@ -1,12 +1,12 @@
 import { Callout } from "nextra-theme-docs";
 
-## Kubernesga Cert-Manager o'rnatish va sozlash
+## Kubernetsga Cert-Manager o'rnatish va sozlash
 
 ![cert-manager](/images/tutorials/k8s/cert-manager/banner.png)
 
 ## Kirish
 
-Tashkilotlar o'z applicationlarini Kubernetesga ko'chirishni boshlaganlarida, xavfsiz aloqaga bo'lgan ehtiyoj birinchi o'ringa chiqadi. **SSL/TLS** sertifikatlari xizmatlar o'rtasida shifrlangan va autentifikatsiya qilingan aloqani ta'minlashda hal qiluvchi rol o'ynaydi. Biroq, bir nechta xizmatlar va muhitlarda sertifikatlarni boshqarish qiyin bo'lishi mumkin. Bu erda Kubernetes-ning mashhur add-oni bo'lgan **Cert-Manager** yordamga keladi. Ushbu blogda biz **Cert-Manager** nima ekanligini, uning afzalliklarini o'rganamiz va boshlash uchun bosqichma-bosqich o'rnatish ko'rsatmalarini beramiz.
+Tashkilotlar o'z applicationlarini Kubernetesga ko'chirishni boshlaganlarida, xavfsiz aloqaga bo'lgan ehtiyoj birinchi o'ringa chiqadi. **SSL/TLS** sertifikatlari servicelar o'rtasida shifrlangan va autentifikatsiya qilingan aloqani ta'minlashda hal qiluvchi rol o'ynaydi. Biroq, bir nechta servicelar va muhitlarda(environment) sertifikatlarni boshqarish qiyin bo'lishi mumkin. Bu yerda Kubernetes-ning mashhur add-oni bo'lgan **Cert-Manager** yordamga keladi. Ushbu qo'llanmada biz **Cert-Manager** nima ekanligini, uning afzalliklarini o'rganamiz va boshlash uchun bosqichma-bosqich o'rnatish ko'rsatmalarini beramiz.
 
 **Cert-Manager** nima? Cert-Manager - bu Kubernetes uchun maxsus ishlab chiqilgan open-source sertifikatlarni boshqarish tooli. U **SSL/TLS** sertifikatlarini chiqarish, yangilash va bekor qilishni avtomatlashtiradi, bu jarayonni muammosiz va oson qiladi. Cert-Manager yordamida siz barcha servicelaringiz qo'l aralashuvisiz haqiqiy sertifikatlar bilan himoyalanganligiga ishonch hosil qilishingiz mumkin.
 
@@ -14,22 +14,22 @@ Tashkilotlar o'z applicationlarini Kubernetesga ko'chirishni boshlaganlarida, xa
 
 * **Avtomatlashtirilgan sertifikat boshqaruvi->** **Cert-Manager** sertifikatlarni so'rash, tasdiqlash(validating) va yangilash(renewing) jarayonini avtomatlashtiradi, DevOps jamoalari uchun vaqt va kuchni sezilarli darajada tejaydi.
 * **Let's Encrypt bilan integratsiya->** Cert-Manager bepul va keng tarqalgan ishonchli sertifikat organi **Let's Encrypt** bilan muammosiz integratsiyalashgan bo'lib, sizga sertifikatlarni qo'shimcha xarajatlarsiz olish imkonini beradi.
-* **Kubernetes Native->** Cert-Manager sertifikatlarni boshqarish uchun **Custom Resource Definationidan(CRDs)** foydalanib, Kubernetesning nativ yondashuviga amal qiladi va bu sizning Kubernetes ekotizimingizga tabiiy ravishda mos keladi.
-* **Bir nechta sertifikat issuerlari->** U **Let's Encrypt**, self-signedgan sertifikatlar va boshqalar kabi turli sertifikat issuerlarini qo'llab-quvvatlaydi, bu sizning talablaringiz uchun eng mos variantni tanlash uchun moslashuvchanlikni beradi.
+* **Kubernetes Native->** Cert-Manager sertifikatlarni boshqarish uchun **Custom Resource Definationidan(CRD)** foydalanib, Kubernetesning nativ yondashuviga amal qiladi va bu sizning Kubernetes ekotizimingizga tabiiy ravishda mos keladi.
+* **Bir nechta sertifikat issuerlari->** U **Let's Encrypt**, self-signed sertifikatlar va boshqalar kabi turli sertifikat issuerlarini qo'llab-quvvatlaydi, bu sizning talablaringiz uchun eng mos variantni tanlash uchun moslashuvchanlikni beradi.
 * **Ingress Controller integratsiyasi->** Cert-Manager **Nginx**, **Traefik** va boshqalar kabi mashhur Ingress kontrollerlari bilan muammosiz ishlaydi, bu sizning Kubernetes servicelari uchun sertifikatlarni oson ta'minlash imkonini beradi.
 
 
 ## Cert-Manager o'rnatish
 
-Cert-Managerni kubernestes clusterga o'rnatish uchu talablar.
+Cert-Managerni kubernetes clusterga o'rnatish uchu talablar.
 <Callout type="info" emoji="">
-Kuberntes cluster yaratish, sozlash va network configuratsiya qilish bo'yicha qo'llanmani ko'rib chiqing. [**Kubernetes cluster yaratish va sozlash(kubeadm)**](https://devops-journey.uz/guides/k8s/k8s-cluster-setup)
+Kuberntes cluster yaratish, sozlash va network configuratsiya qilish bo'yicha qo'llanmani ko'rib chiqinshingiz mumkin [**Kubernetes cluster yaratish va sozlash(kubeadm)**](https://devops-journey.uz/guides/k8s/k8s-cluster-setup)
 </Callout>
-* 1.16 versiyadan yuqori ishlab turgan kubernetes cluster
-* kubectl va helm o'rnatilganligi
-* NGINX Ingress Controller sozlangani
+* **1.16** versiyadan yuqori ishlab turgan kubernetes cluster
+* **kubectl** va **helm** o'rnatilganligi
+* **NGINX Ingress Controller** sozlangani
 
-**Qo'shimcha:** [Cert-Manager o'rnatish bo'yicha rasmiy Cert-Manager qo'llnmasi.](https://cert-manager.io/docs/installation/)
+**Qo'shimcha:** [Cert-Manager o'rnatish bo'yicha rasmiy Cert-Manager qo'llanmasi.](https://cert-manager.io/docs/installation/)
 
 **1->** Cert-Manager **CRD**'larini o'rnating: Birinchi qadam Cert-Manager tomonidan talab qilinadigan Custom Resource Definitions (CRD) o'rnatishdir. Ushbu CRDlar sertifikatlarni boshqarish uchun zarur resurslarni belgilaydi.
 
@@ -57,7 +57,7 @@ kubectl get all -n cert-manager
 ```
 ![cert-manager](/images/tutorials/k8s/cert-manager/cert2.png)
 
-**4->** Cert-Managerni o'rnatib olganimizdan keyin **cluster issuer** yaratib sozlab olishimiz kerak. Buning uchun certmanager papaka ochib `clusterissuer.yaml` fayl ochib konfiguratsiya yozamiz.
+**4->** Cert-Managerni o'rnatib olganimizdan keyin **cluster issuer** yaratib sozlab olishimiz kerak. Buning uchun certmanager papka ochib `clusterissuer.yaml` fayl ochib konfiguratsiya yozamiz.
 
 
 ```bash
@@ -84,7 +84,7 @@ spec:
         ingress:
           class: nginx
 ```
-Ushbu konfiguratsiya **Let's Encrypt**  cert-meneger yordamida TLS sertifikatining avtomatlashtirilgan chiqarilishi va yangilanishini sozlash uchun zarurdir. **ClusterIssuer** cluster miqyosidagi resource bo‘lib, u bir nechta namescpasega taalluqlidir va sertifikat boshqaruvchini clusterdagi Ingress resourcelari bilan bog'langan domenlar uchun **TLS** sertifikatlarini olish va yangilash uchun **Let's Encrypt**'ning **ACME** serveri bilan ozaro ishlashni sozlaydi.
+Ushbu konfiguratsiya **Let's Encrypt**  cert-meneger yordamida TLS sertifikatining avtomatlashtirilgan chiqarilishi va yangilanishini sozlash uchun zarurdir. **ClusterIssuer** cluster miqyosidagi resource bo‘lib, u bir nechta namescpasega taalluqlidir va sertifikat boshqaruvchini clusterdagi Ingress resourcelari bilan bog'langan domenlar uchun **TLS** sertifikatlarini olish va yangilash uchun **Let's Encrypt**'ning **ACME** serveri bilan o'zaro ishlashni sozlaydi.
 
 **email** qismiga ishlaydigan o'zimizni emailimizni yozib ishga tushiramiz.
 
@@ -98,11 +98,11 @@ kubectl get secret -n cert-manager
 
 ## Amaliyot
 
-Kubernetes clusterimizga Cert-Manager o'rnatib clusterissuer solzab olganimizdan keyin uni siba ko'rish uchun amaliyot qilamiz. Amaliyot uchun **kubeview** nomli loyihani tanladik. **kubeview** kubernetes clusterni vizaulatsiya qilish dasturidir ushbu amaliyotda kubertes clusterimizga kubeview o'rnatamiz Cert-Manager orqali sertifikat olib NGINX Ingress Controller orqali expose qilamiz.
+Kubernetes clusterimizga Cert-Manager o'rnatib clusterissuer solzab olganimizdan keyin uni sinab ko'rish uchun amaliyot qilamiz. Amaliyot uchun **kubeview** nomli loyihani tanladik. **kubeview** kubernetes clusterni vizaulatsiya qilish dasturidir ushbu amaliyotda kubertes clusterimizga kubeview o'rnatamiz Cert-Manager orqali sertifikat olib NGINX Ingress Controller orqali expose qilamiz.
 
 ![cert-manager](/images/tutorials/k8s/cert-manager/kubeview.png)
 
-**1->** Kubernetes clusterimizga kubeview o'rnatamiz.
+**1->** Kubernetes clusterimizga helm orqali kubeview o'rnatamiz.
 
 ```bash
 helm repo add kubeview https://benc-uk.github.io/kubeview/charts
@@ -117,11 +117,11 @@ kubectl get all -n kubeview
 ```
 ![cert-manager](/images/tutorials/k8s/cert-manager/cert4.png)
 
-**3->** DNSdan domenimizga kubernestes clusterimiz IP sini berib domen qo'shib olamiz ushbu misolda **kubeview.xilol.uz**
-Rasmda ahost misoli ko'rsatilgan **xilol.uz** mavjud va **DNS Xosting** bo'limidan **kubeview** dubdomen qo'shyapmiz.
+**3->** DNS hostimizdan domenimizga kubernetes clusterimiz static IP'sini berib domen qo'shib olamiz ushbu misolda **kubeview.xilol.uz**
+Rasmda ahost misoli ko'rsatilgan **xilol.uz** mavjud va **DNS Xosting** bo'limidan **kubeview** subdomen qo'shyapmiz. **0.0.0.0** o'rniga k8s-matser serveringiz static IP manzilini qo'shamiz.
 ![cert-manager](/images/tutorials/k8s/cert-manager/dns.png)
 
-**4->** ClusterIssuerdan va NGINX Ingress Controlleran foydalanib expose qilamiz. `kubeview` nomli papka ochib `kubeview-ingress.yaml` fayl ochib configuratsiya qilamiz.
+**4->** ClusterIssuerdan va NGINX Ingress Controllerdan foydalanib expose qilamiz. `kubeview` nomli papka ochib `kubeview-ingress.yaml` fayl ochib configuratsiya qilamiz.
 
 ```bash
 mkdir kubeview
@@ -158,13 +158,13 @@ spec:
     secretName: kubeview-tls
 ```
 
-**5->** configuratsiya apply qilish ishga tushirib kubeview.xilol.uz domenida kubeviewga htpps kerishni tekshiramiz.
+**5->** Configuratsiyani apply qilib ishga tushirib **kubeview.xilol.uz** domenida brauzer orqali kirib tekshirib ko'ramiz.
 
 ```bash
 kubectl apply -f kubeview-ingress.yaml
 ```
 
-Konfiguratsiyamizni ishga tushirib biroz vaqt o'tganidan keyin kubeview.xilo.uz domeniga brauzer orqali kirganimizdan  u **https** bilan ochilishi va **SSL** sertifikati bo'lishi kerak.
+Konfiguratsiyamizni ishga tushirib biroz vaqt o'tganidan keyin **kubeview.xilo.uz** domeniga brauzer orqali kirganimizdan  u **https** bilan ochilishi va **SSL** sertifikati bo'lishi kerak.
 
 ![cert-manager](/images/tutorials/k8s/cert-manager/cert5.png)
 
@@ -172,8 +172,18 @@ Sertifikatni tekshirib ko'rishimiz mumkin.
 
 ![cert-manager](/images/tutorials/k8s/cert-manager/cert6.png)
 
+Nihoyat biz Kubernetes clusterimizga muvaffaqiyatli Cert-Manager o'rnatdik va ishlashga tayyor qilib sozladik va amaliyot ham qildik.
+
 ## Qo'shimcha
 <Callout type="info" emoji="">
+Qo'shimcha Resurslar
+ 
+ * [**Kubernetesga Kirish**](https://devops-journey.uz/guides/k8s/k8s-kirish)
+ * [**Kubernetes Arxitekturasi**](https://devops-journey.uz/guides/k8s/k8s-architecture)
+ * [**Kubernetes Obyektlari**](https://devops-journey.uz/guides/k8s/k8s-objects)
+ * [**Kubernetes cluster yaratish va sozlash(kubeadm)**](https://devops-journey.uz/guides/k8s/k8s-cluster-setup)
+
+Foydalanilgan manbalar: [**cert-manager.io**](https://cert-manager.io/docs/installation/), [**medium.com**](https://medium.com/@dikshantdevops/how-to-setup-cert-manager-in-your-cluster-358d519da2c5)
 
 **Sana:** 2024.01.24 (2024-yil 24-yanvar)
 
