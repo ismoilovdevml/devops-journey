@@ -42,9 +42,9 @@
     "href": "/guides/k8s/k8s-cluster-setup"
   },
   "k8s-cert-manager": {
-    "title": "Kubernesga Cert-Manager o'rnatish va sozlash",
+    "title": "Kubernesga Cert-Manager o'rnatish",
     "icon": "▶️",
-    "description": "Let's Encrypt SSL Sertifikat olish",
+    "description": "Cert-Manager o'rnatish va sozlash",
     "href": "/guides/k8s/k8s-cert-manager"
   }
 }

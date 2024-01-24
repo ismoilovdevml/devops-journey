@@ -48,7 +48,7 @@
     "href": "/guides/konteyner/start-dockerswarm"
   },
   "dockerfile-yozish": {
-    "title": "Dockerfilelar",
+    "title": "Dockerfile yozish",
     "icon": "▶️",
     "description": "Dockerfile yozish bo'yicha qo'llanma",
     "href": "/guides/konteyner/dockerfile-yozish"

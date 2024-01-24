@@ -399,7 +399,7 @@ Kubernetes clusterimizga **Cert-Manager** o'rnatish bo'yicha [**devops-journey**
 
 ## Kubernetes Dashboard
 
-Hozirda kubernetes clusterimiz ishlashga tayyor holga keldi va ishni boshlasak bo'ladi. Keling amaliyot uchun kubernestes clusterimizga kubernetes dashboard o'rnatib uni NGINX Ingress Controller orqali expose qilib Cert-Managerdan SSL/TLS sertifikat olib ishga tushiramiz.
+Hozirda kubernetes clusterimiz ishlashga tayyor holga keldi va ishni boshlasak bo'ladi. Keling amaliyot uchun kubernetes clusterimizga kubernetes dashboard o'rnatib uni NGINX Ingress Controller orqali expose qilib Cert-Managerdan SSL/TLS sertifikat olib ishga tushiramiz.
 
 ![k8s-cluster](/images/tutorials/k8s/cluster-setup/dashboard.png )
 
@@ -473,7 +473,7 @@ nano dashboard-ingress.yaml
 
 `dashboard-ingress.yaml` configuratsiyamiz.
 
-```yaml
+```yaml {4-5,9-10,12,14,21,23,26-27}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -502,6 +502,12 @@ spec:
     - dashboard.xilol.uz
     secretName: k8s-dashboard-tls
 ```
+
+Kodda ajratib ko'rsatilgan qatorlarga qarab qisqa tushuntirish. metadaga k8s-dashboard-ingress bu shunaqa nomli ingress qiladi pastki qatordagi namespaceda ko'rsatilgan kubernetes-dashboard namescpasida. Undan keyin Cert-Manager o'rnatib clusterissuer sozlaganimizda letsencrypt-prod qilganmiz shuni ishlatadi issuer uchun. ingressClassName bu nginx va hostda domenimizni yozamiz va unga kelgan barcha requestlarni kubernetes-dashboard namescpasegadagi kubernetes-dashboard servicega 443 portga yo'naltiramiz undan pastgi qismda esa tls sertifikat yaratib sozlanadi.
+
+
+Rasmda kubernetes-dashboard namescpasedagi servicelar va portlari ko'rsatilgan. kubernetes-dashboard servisi 443 portda ishlab turibti.
+![k8s-cluster](/images/tutorials/k8s/cluster-setup/dashboard2.png)
 
 Bu configuratsiya **HTTPS** yordamida Kubernetes dashboarnini xavfsiz ochish uchun NGINX annotationlari bilan ingress resourceni yaratadi. U hostni, **TLS** sozlamalarini va **SSL** redirectionni belgilaydi.
 
