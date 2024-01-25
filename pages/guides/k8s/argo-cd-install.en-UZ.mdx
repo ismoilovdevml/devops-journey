@@ -4,6 +4,33 @@ import { Callout } from "nextra-theme-docs";
 
 ![argo-cd](/images/tutorials/k8s/argo-cd/banner.png)
 
+## Kirish
+
+Applicationlaringizni deploy qilish uchun Kubernetes-dan foydalanish moslashuvchan masshtablash, distributed komponentlarni boshqarish va applicationlaringizning turli versiyalarini boshqarish kabi muhim infratuzilmaviy afzalliklarni taqdim etishi mumkin. Biroq, nazoratning kuchayishi bilan murakkablik kuchayadi. Continuous Integration va **C**ontinuous **D**eployment(**CD**) tizimlari odatda versiyani boshqarish, oʻzgartirish jurnali(change log) va orqaga qaytarish(rollback) funksiyalarini taʼminlash uchun yuqori darajadagi abstraksiyada ishlaydi. Ushbu abstraksiya layeriga mashhur yondashuv **GitOps** deb ataladi.
+
+**GitOps**, o'z mohiyatiga ko'ra, deklarativ infratuzilma va dastur kodi uchun yagona manba sifatida Git repositoriyalaridan foydalanadigan eng yaxshi amaliyotlar to'plamidir. Ushbu metodologiya versiyalarni boshqarish, hamkorlik va avtomatlashtirish tamoyillarini infratuzilma va applicationlarni yetkazib berish sohasiga olib kirishga qaratilgan. **GitOps**-ni qabul qilish orqali jamoalar Kubernetes konfiguratsiyasini boshqarishda shaffof, tekshiriladigan va avtomatlashtirilgan yondashuvni qo'llashlari mumkin.
+
+**Argo CD**, kuchli va open source **GitOps** continuous delivery(CD) tooli, Kubernetes ekotizimida **GitOps** afzalliklarini amalga oshirishda muhim rol o'ynaydi. Argo CD GitOps tamoyillarini Kubernetes klasterlarida applicationlar va ularning konfiguratsiyasini joylashtirish va sinxronlashtirishni avtomatlashtirish uchun kengaytiradi. U Git-ga asoslangan markazlashtirilgan control planeni ta'minlaydi, bu applicationlar va infratuzilmaning istalgan holatini doimiy ravishda saqlab turishni ta'minlaydi va deployment workflowlarini tartibga solishda paradigma o'zgarishiga olib keladi.
+
+
+Ushbu qo'llanmada biz Argo CD-ni Kubernetes klasterida o'rnatish va sozlashni ko'rib chiqamiz. Ushbu qo'llanmaga rioya qilish orqali siz GitOps amaliyotlarini amalga oshirish, aspplicationlarni deploy qilish avtomatlashtirish va Kubernetes environmentingizda mustahkam va samarali continuous delivery(CD) pipeline ta'minlash uchun Argo CD-dan qanday foydalanish haqida  tushunchaga ega bo'lasiz.
+
+## Ishni Boshlash
+
+Ishni boshlash uchun bizga kerak bo'ladi.
+
+* Ishlab turgan kubernetes cluster
+* helm va Nginx Ingress Controller
+* Cert-Manager
+
+<Callout type="info" emoji="">
+Ishlashga tayyor Kubernestes yaratish uchun [**Kubernetes klaster yaratish va sozlash(kubeadm)**](https://devops-journey.uz/guides/k8s/k8s-cluster-setup)
+Cert-Manager uchun [**Kubernetesga Cert-Manager o'rnatish va sozlash**](https://devops-journey.uz/guides/k8s/k8s-cert-manager)
+</Callout>
+
+## Argo CD O'rnatish
+
+![argo-cd](/images/tutorials/k8s/argo-cd/argocd-ui.webp)
 
 ## Qo'shimcha
 <Callout type="info" emoji="">
