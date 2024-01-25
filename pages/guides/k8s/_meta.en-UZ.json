@@ -46,5 +46,11 @@
     "icon": "▶️",
     "description": "Cert-Manager o'rnatish va sozlash",
     "href": "/guides/k8s/k8s-cert-manager"
+  },
+  "argo-cd-install": {
+    "title": "Kubernetesga Argo CD o'rnatish va sozlash",
+    "icon": "▶️",
+    "description": "GitOpsga Kirish",
+    "href": "/guides/k8s/argo-cd-install"
   }
 }
