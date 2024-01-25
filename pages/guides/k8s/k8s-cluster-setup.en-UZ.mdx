@@ -409,7 +409,7 @@ Hozirda kubernetes clusterimiz ishlashga tayyor holga keldi va ishni boshlasak b
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.7.0/aio/deploy/recommended.yaml --namespace=kubernetes-dashboard
 ```
 
-Ushbu buyruq berilgan URLdan **.yaml** configuratsiyani yuklab oladi va **kuberntes-dashboard** nomli namespace ochib konfiguratsiya fayllarini kuberntes-dashboard namescpasega apply qilib ishga tushiradi.
+Ushbu buyruq berilgan URLdan **.yaml** configuratsiyani yuklab oladi va **kubernetes-dashboard** nomli namespace ochib konfiguratsiya fayllarini kubernetes-dashboard namescpasega apply qilib ishga tushiradi.
 
 **2->** Service account ochib olamiz.
 
@@ -465,7 +465,7 @@ Ushbu configuratsiya **admin-user** service accountini **cluster-admin** roliga 
 kubectl apply -f clusterrolebinding.yaml
 ```
 
-**4->** NGINX Ingress bilan Kubernes dashboardni domen ulab expose qilamiz.
+**4->** NGINX Ingress bilan Kubernetes dashboardni domen ulab expose qilamiz.
 
 ```
 nano dashboard-ingress.yaml

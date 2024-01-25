@@ -42,7 +42,7 @@
     "href": "/guides/k8s/k8s-cluster-setup"
   },
   "k8s-cert-manager": {
-    "title": "Kubernesga Cert-Manager o'rnatish",
+    "title": "Kubernetesga Cert-Manager o'rnatish",
     "icon": "▶️",
     "description": "Cert-Manager o'rnatish va sozlash",
     "href": "/guides/k8s/k8s-cert-manager"

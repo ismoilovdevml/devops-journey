@@ -1,6 +1,6 @@
 import { Callout } from "nextra-theme-docs";
 
-## Kubernetsga Cert-Manager o'rnatish va sozlash
+## Kubernetesga Cert-Manager o'rnatish va sozlash
 
 ![cert-manager](/images/tutorials/k8s/cert-manager/banner.png)
 
@@ -23,7 +23,7 @@ Tashkilotlar o'z applicationlarini Kubernetesga ko'chirishni boshlaganlarida, xa
 
 Cert-Managerni kubernetes clusterga o'rnatish uchu talablar.
 <Callout type="info" emoji="">
-Kuberntes cluster yaratish, sozlash va network configuratsiya qilish bo'yicha qo'llanmani ko'rib chiqinshingiz mumkin [**Kubernetes cluster yaratish va sozlash(kubeadm)**](https://devops-journey.uz/guides/k8s/k8s-cluster-setup)
+Kubernetes cluster yaratish, sozlash va network configuratsiya qilish bo'yicha qo'llanmani ko'rib chiqinshingiz mumkin [**Kubernetes cluster yaratish va sozlash(kubeadm)**](https://devops-journey.uz/guides/k8s/k8s-cluster-setup)
 </Callout>
 * **1.16** versiyadan yuqori ishlab turgan kubernetes cluster
 * **kubectl** va **helm** o'rnatilganligi
@@ -98,7 +98,7 @@ kubectl get secret -n cert-manager
 
 ## Amaliyot
 
-Kubernetes clusterimizga Cert-Manager o'rnatib clusterissuer solzab olganimizdan keyin uni sinab ko'rish uchun amaliyot qilamiz. Amaliyot uchun **kubeview** nomli loyihani tanladik. **kubeview** kubernetes clusterni vizaulatsiya qilish dasturidir ushbu amaliyotda kubertes clusterimizga kubeview o'rnatamiz Cert-Manager orqali sertifikat olib NGINX Ingress Controller orqali expose qilamiz.
+Kubernetes clusterimizga Cert-Manager o'rnatib clusterissuer solzab olganimizdan keyin uni sinab ko'rish uchun amaliyot qilamiz. Amaliyot uchun **kubeview** nomli loyihani tanladik. **kubeview** kubernetes clusterni vizaulatsiya qilish dasturidir ushbu amaliyotda kubernetes clusterimizga kubeview o'rnatamiz Cert-Manager orqali sertifikat olib NGINX Ingress Controller orqali expose qilamiz.
 
 ![cert-manager](/images/tutorials/k8s/cert-manager/kubeview.png)
 
