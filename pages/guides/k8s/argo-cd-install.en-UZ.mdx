@@ -32,6 +32,88 @@ Cert-Manager uchun [**Kubernetesga Cert-Manager o'rnatish va sozlash**](https://
 
 ![argo-cd](/images/tutorials/k8s/argo-cd/argocd-ui.webp)
 
+Kubernets klasterimizga Argo CD'ni helm orqali o'rnatamiz.
+
+**1->** Argo CD helm repositoriyani qo'shib olamiz va yangilab olamiz.
+
+```bash
+helm repo add argo https://argoproj.github.io/argo-helm
+helm repo update argo
+```
+
+**2->** Argo CD'ni ynagi argo-cd nomli namespace ochib shunga o'rnatamiz.
+
+```bash
+helm install argocd argo/argo-cd --namespace argo-cd --create-namespace
+```
+
+Belgilangan versiyani o'rnatish
+
+```bash
+helm install argo-cd argo/argo-cd --version 5.53.8 --namespace argo-cd --create-namespace
+```
+
+[**Rasmiy Argo CD helm charti**](https://artifacthub.io/packages/helm/argo/argo-cd)
+
+**3->** Argo CD o'rnatib bo'lganimzidan keyin statusini tekshiramiz.
+
+```bash
+kubectl get pods -n argo-cd
+```
+![argo-cd](/images/tutorials/k8s/argo-cd/argo-cd.png)
+
+## Argo CDni epose qilish
+
+Argo CDni kubernetes klasterimizda ishga tugirganimzidan keyin Argo CDni tashqariga ochamiz, domen ulaymiz va SSL Sertifikat olamiz. Buning uchun sizda Kubernes klaster networki sozlangan bo'lishi va Nginx Ingress Controller, Cert-manager o'rnatilgan va sozlangan bo'lishi kerak.
+
+**1->** Argo CDni tashqariga ochish uchun k8s-master serverimizda keling `argo-cd` nomli papka ochib `argo-cd-ingress.yaml` nomli .yaml configuratsiya fayl ochib olamiz.
+
+```bash
+mkdir argo-cd
+cd argo-cd
+nano argo-cd-ingress.yaml
+```
+
+**2->** `argo-cd-ingress.yaml` konfiguratsiyamizni yozamiz.
+
+konfiguratsiyamizni yozishdan oldin argo-cd servicelari statusini ko'rib chiqishimiz kerak.
+
+```bash
+kubectl get service -n argo-cd
+```
+![argo-cd](/images/tutorials/k8s/argo-cd/argo-cd1.png)
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: argocd-ingress
+  namespace: argo-cd
+  annotations:
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    nginx.org/ssl-services: "argocd-server"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+  
+spec:
+  ingressClassName: "nginx"
+  rules:
+  - host: argocd.xilol.uz
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: argocd-server
+            port:
+              number: 443
+  tls:
+  - hosts:
+    - argocd.xilol.uz
+    secretName: argocdserver-tls
+```
+
 ## Qo'shimcha
 <Callout type="info" emoji="">
 Qo'shimcha Resurslar
