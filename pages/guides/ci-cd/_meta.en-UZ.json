@@ -34,5 +34,11 @@
     "icon": "▶️",
     "description": "Docker image build qilib deploy qilish",
     "href": "/guides/ci-cd/jenkins-docker-ci-cd"
+  },
+  "github-actions-argocd-cicd": {
+    "title": "Kuberntes CI/CD",
+    "icon": "▶️",
+    "description": "Github Actions + Argo CD",
+    "href": "/guides/ci-cd/github-actions-argocd-cicd"
   }
 }
