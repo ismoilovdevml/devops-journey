@@ -1,3 +1,29 @@
 import { Callout } from "nextra-theme-docs";
 
 ## Kuberntes CI/CD | Github Actions + Argo CD
+
+![k8s](/images/tutorials/ci-cd/k8s/banner.png)
+
+## Kirish
+
+Ushbu qo'llanmadi biz Kubernetes uchun CI/CD yozamiz. Amaliyotda **Github, Github Actions,** **GHCR**(**G**it**H**ub **C**ontainer **R**egistry), **GCR**(**G**oogle **C**ontainer **R**egistry), **Docker, Dockerhub** va **Argo CD** ishlatamiz. Ushbu amaliyot uchun [**devops-journey**](https://devops-journey.uz/) loyihasi tanlandi shu loyiha [manba kodlaridan](https://github.com/ismoilovdevml/devops-journey) foydalanib Kubernetes CI/CD yozishni amaliyot qilamiz. Amaliyotimizda **CI** qismini **Github Actions** orqali CD qismini esa **Argo CD** orqali amalga oshiramiz. Qani unda kettik sayotimizni boshladik!
+
+## Ishni boshlash
+
+Ushbu amaliyot uchun bizga kerak bo'ladi.
+
+* Ishlab turgan kubernetes cluster
+* helm va Nginx Ingress Controller
+* Cert-Manager
+* Argo CD
+* Dockerhub yoki GCR
+
+<Callout type="info" emoji="">
+Ushbu qo'llanmani yaxshi tushinish uchun quyidagi qo'llanmalarni ko'rib chiqish tavsiya qilinadi!
+
+* Ishlashga tayyor Kubernetes yaratish uchun [**Kubernetes klaster yaratish va sozlash(kubeadm)**](https://devops-journey.uz/guides/k8s/k8s-cluster-setup)
+
+* Cert-Manager uchun [**Kubernetesga Cert-Manager o'rnatish va sozlash**](https://devops-journey.uz/guides/k8s/k8s-cert-manager)
+
+* Argo CD o'rnatish uchun [**Kubernetesga Argo CD o'rnatish va sozlash**](https://devops-journey.uz/guides/k8s/argo-cd-install)
+</Callout>
