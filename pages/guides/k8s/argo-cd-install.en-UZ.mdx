@@ -24,6 +24,7 @@ Ishni boshlash uchun bizga kerak bo'ladi.
 * Cert-Manager
 
 <Callout type="info" emoji="">
+Ushbu qo'llanmani yaxshi tushinish uchun quyidagi qo'llanmalarni ko'rib chiqish tavsiya qilinadi!
 Ishlashga tayyor Kubernestes yaratish uchun [**Kubernetes klaster yaratish va sozlash(kubeadm)**](https://devops-journey.uz/guides/k8s/k8s-cluster-setup)
 Cert-Manager uchun [**Kubernetesga Cert-Manager o'rnatish va sozlash**](https://devops-journey.uz/guides/k8s/k8s-cert-manager)
 </Callout>
@@ -62,7 +63,7 @@ kubectl get pods -n argo-cd
 ```
 ![argo-cd](/images/tutorials/k8s/argo-cd/argo-cd.png)
 
-## Argo CDni epose qilish
+## Argo CD epose qilish
 
 Argo CDni kubernetes klasterimizda ishga tugirganimzidan keyin Argo CDni tashqariga ochamiz, domen ulaymiz va SSL Sertifikat olamiz. Buning uchun sizda Kubernes klaster networki sozlangan bo'lishi va Nginx Ingress Controller, Cert-manager o'rnatilgan va sozlangan bo'lishi kerak.
 
@@ -71,10 +72,10 @@ Argo CDni kubernetes klasterimizda ishga tugirganimzidan keyin Argo CDni tashqar
 ```bash
 mkdir argo-cd
 cd argo-cd
-nano argo-cd-ingress.yaml
+nano argocd-ingress.yaml
 ```
 
-**2->** `argo-cd-ingress.yaml` konfiguratsiyamizni yozamiz.
+**2->** `argocd-ingress.yaml` konfiguratsiyamizni yozamiz.
 
 konfiguratsiyamizni yozishdan oldin argo-cd servicelari statusini ko'rib chiqishimiz kerak.
 
@@ -82,6 +83,8 @@ konfiguratsiyamizni yozishdan oldin argo-cd servicelari statusini ko'rib chiqish
 kubectl get service -n argo-cd
 ```
 ![argo-cd](/images/tutorials/k8s/argo-cd/argo-cd1.png)
+
+Statusdan ko'radigan bo'lsak  biz `argocd-server` nomli serviceni expose qilishimiz kerak `80/443`. `argocd-server` esa `argo-cd` namesapceda.
 
 ```yaml
 apiVersion: networking.k8s.io/v1
@@ -113,6 +116,34 @@ spec:
     - argocd.xilol.uz
     secretName: argocdserver-tls
 ```
+
+Ushbu configuratsiyani qisqa qilib tushuntiradigan bo'lsak bu `argo-cd` nomli namesapcedagi `argocd-server` nomli serviceni expose qiladi uning porti `443` va biz Sertifikat olish uchun `letsencrypt-prod` ClusterIssuerdan foydalanamiz. argocd.xilol.uz bu bizning domenimiz va ingress Nginx. DNS hostinga esa k8s-master serverimiz static IP sini bog'laymiz.
+
+**5->** configuratsiyani apply qilib ishga tushiramiz.
+
+```bash
+kubectl apply -f argocd-ingress.yaml
+```
+Konfiguratsiyani apply qilib argocd.xilol.uz domeniga brauzer orqali kirib ko'rganimizda quyidagi Argo CD kirish oynasi ochilishi kerak.
+
+![argo-cd](/images/tutorials/k8s/argo-cd/argo-cd2.png)
+
+**6->** Argo CDga kirish uchun birinchi parolni olish
+
+```bash
+kubectl -n argo-cd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
+```
+
+Argo CD o'rnatib brauzerdan kirganimzidan bizdan kirish uchun login parol so'raladi. Kirish uchun user bu `admin` parolini esa tepadagi buyruq orqali bilib olishingiz mumkin.
+
+**Username -> admin**
+
+**Passowrd -> yuroqidagi buyruq orqali olingan parol**
+![argo-cd](/images/tutorials/k8s/argo-cd/argo-cd3.png)
+
+Argo CD ga kirganimzida quyidagi oyna ochiladi.
+![argo-cd](/images/tutorials/k8s/argo-cd/argo-cd4.png)
+
 
 ## Qo'shimcha
 <Callout type="info" emoji="">
