@@ -18,6 +18,18 @@ Ushbu amaliyot uchun bizga kerak bo'ladi.
 * Argo CD
 * Dockerhub yoki GCR
 
+<Callout type="info" emoji="">
+Ushbu qo'llanmani yaxshi tushinish uchun quyidagi qo'llanmalarni ko'rib chiqish tavsiya qilinadi!
+
+* Ishlashga tayyor Kubernetes yaratish uchun [**Kubernetes klaster yaratish va sozlash(kubeadm)**](https://devops-journey.uz/guides/k8s/k8s-cluster-setup)
+
+* Cert-Manager uchun [**Kubernetesga Cert-Manager o'rnatish va sozlash**](https://devops-journey.uz/guides/k8s/k8s-cert-manager)
+
+* Argo CD o'rnatish uchun [**Kubernetesga Argo CD o'rnatish va sozlash**](https://devops-journey.uz/guides/k8s/argo-cd-install)
+
+**ESLATMA->** Ushbu amaliyotda biz [**devops-journey**](https://github.com/ismoilovdevml/devops-journey) platformasi manba kodlaridan foydalanamiz. Stars(yulduzcha) bosib qo'yish esdan chiqmasin **:)**
+</Callout>
+
 Amaliyot sturkturasi quyidagicha. Amaliyotda Github ishlatamiz va bizda birorta application repositoriyamiz va manifest repositoriyamiz bo'ladi. Manifest repositoriya bu kuberntes uchun deployment va service .yaml konfiguratsiyalarni o'zida saqlab turadigan repositoriya bo'ladi. Application repositoriyamizda applicationimiz kodlari Dockerfile va Github Actions bo'ladi. Application repositoriyamizga Github actions yozamiz, uning ishi **main** branchga o'zgarish bo'lganda vatomatik ishga tushadi docker image build qilib Container Registryga github.sha unique key bilan tag qo'shib push qiladi va Manifest repositoriyadagi deployment.yaml configuratsiyadagi docker imageni yangilab qo'yadi. Manifest repositoriya esa Argo CDga webhook orqali ulangan bo'ladi, manifest repositoriyada o'zgarish bo'lganida Argo CD avtomatik ishga tushadi. 
 
 
@@ -128,12 +140,24 @@ Workflow Ubuntu-ning latest versiyasida ishlaydigan `build_and_push` nomli bitta
 
 Ushbu qadam Repositoriyani klon qilib oladi(git clone) [actions/checkout@v2](https://github.com/actions/checkout).
 
-<Callout type="info" emoji="">
-Ushbu qo'llanmani yaxshi tushinish uchun quyidagi qo'llanmalarni ko'rib chiqish tavsiya qilinadi!
+```yaml
+      - name: Login to GitHub Container Registry
+        run: echo "${GITHUB_TOKEN}" | docker login -u "${{ github.actor }}" --password-stdin "${{ env.REGISTRY }}"
+```
+Ushbu bosqichda Github Actions Github Container Registryga berilgan PERSONAL_TOKEN orqali kiradi.
 
-* Ishlashga tayyor Kubernetes yaratish uchun [**Kubernetes klaster yaratish va sozlash(kubeadm)**](https://devops-journey.uz/guides/k8s/k8s-cluster-setup)
+```yaml
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          tags: "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
+```
 
-* Cert-Manager uchun [**Kubernetesga Cert-Manager o'rnatish va sozlash**](https://devops-journey.uz/guides/k8s/k8s-cert-manager)
+Ushbu bosqich repositoriyadagi Dockerfile orqali Docker image build qilib uni Github Container Registryga github.sha bilan tag qo'shib push qiladi. Docker image build qilish va push qilishda [docker/build-push-action@v2](https://github.com/docker/build-push-action)dan foydalanadi.
 
-* Argo CD o'rnatish uchun [**Kubernetesga Argo CD o'rnatish va sozlash**](https://devops-journey.uz/guides/k8s/argo-cd-install)
-</Callout>
+
+Keling Github actionsni ishga tushiramiz. Buning cuhun personal access tokenni github secretsga qo'shib yam konfiguratsiyamizni gtihubga push qilamiz va u avtomatik ishga tushishi kerak.
+
+![txt](https://drive.google.com/file/d/14cFdbrwzCQpyawlXAj_QMP7k9qvtJ9eB/view?usp=drive_link)
