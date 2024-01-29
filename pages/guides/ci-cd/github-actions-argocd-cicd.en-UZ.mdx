@@ -1,6 +1,6 @@
 import { Callout } from "nextra-theme-docs";
 
-## Kuberntes CI/CD | Github Actions + Argo CD
+## Kubernetes CI/CD | Github Actions + Argo CD | GitOps
 
 ![k8s](/images/tutorials/ci-cd/k8s/banner.png)
 
@@ -17,6 +17,116 @@ Ushbu amaliyot uchun bizga kerak bo'ladi.
 * Cert-Manager
 * Argo CD
 * Dockerhub yoki GCR
+
+Amaliyot sturkturasi quyidagicha. Amaliyotda Github ishlatamiz va bizda birorta application repositoriyamiz va manifest repositoriyamiz bo'ladi. Manifest repositoriya bu kuberntes uchun deployment va service .yaml konfiguratsiyalarni o'zida saqlab turadigan repositoriya bo'ladi. Application repositoriyamizda applicationimiz kodlari Dockerfile va Github Actions bo'ladi. Application repositoriyamizga Github actions yozamiz, uning ishi **main** branchga o'zgarish bo'lganda vatomatik ishga tushadi docker image build qilib Container Registryga github.sha unique key bilan tag qo'shib push qiladi va Manifest repositoriyadagi deployment.yaml configuratsiyadagi docker imageni yangilab qo'yadi. Manifest repositoriya esa Argo CDga webhook orqali ulangan bo'ladi, manifest repositoriyada o'zgarish bo'lganida Argo CD avtomatik ishga tushadi. 
+
+
+Qisqa qilib aytganda application repositoriyaga o'zgarish bo'lganida github actions avtomatik ishga tushib docker image build qilib github.sha unique key bilan tag qo'shib Container Registryga push qiladi va keyin Manifest repositoriyadagi docker imageni yangilab qo'yadi, Manifest repositoriyada o'zgarish bo'lganida Argo CD avtomatik ishga tushadi va applicationimizni Kubernetes klasterimzga deploy qiladi.
+
+## Github Actionsda CI yozish
+
+Amaliyotni birinchi qismni bu Application repositoriyamizga Github Actions yozishdir. Birinchi CI actionimiz vazifasi main branchga commit bo'lganida avtomatik ishga tushib docker image build qilib github.sha unique tag bilan Docker registyga push qilish vazifalarini bajaradi. Ushbu amaliyotda biz Container Registry sifatida **GHCR**(**G**it**H**ub **C**ontainer **R**egistry), **GCR**(**G**oogle **C**ontainer **R**egistry) va **Dockerhub** ishlatamiz va numunalar yozamiz siz o'zingizga qulayini tanlab foydalanasiz.
+
+
+### GHCR Github Conatiner Registry
+Keling birinchisiga GHCR Github Conatiner Registry bilan ishlaydigan Github Actions yozamiz.
+
+Github Actions uchun loyihamiz root directoriyasida **.github** ichida **workflows** va **gitops.yml** fayl ochamiz
+
+![k8s](/images/tutorials/ci-cd/k8s/gitops.png)
+
+Github Actions uchun environment qilib olganimizdan keyin `gitops.yml` ga yamlda Github actions yozamiz.
+
+
+```yaml filename=".github/workflows/gitops.yml" 
+name: GitOps CI/CD
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  CONTAINER_NAME: devops-journey
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+  GITHUB_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
+
+jobs:
+  build_and_push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Login to GitHub Container Registry
+        run: echo "${GITHUB_TOKEN}" | docker login -u "${{ github.actor }}" --password-stdin "${{ env.REGISTRY }}"
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          tags: "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
+```
+
+Keling ushbu github actionsni o'rganib chiqamiz.
+
+```yaml {3-7}
+name: GitOps CI/CD
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+```
+
+**name** Bu Github ACtiosnga berilgan nom. Koddagi belgilangan qism esa **Tirgger** deb nomlanadi vazifasi man branchga commit psuh qilinsa yoki pull request merge qilinsa Github Actionsni avtomatik ishga tushirib beradi.
+
+
+```yaml
+env:
+  CONTAINER_NAME: devops-journey
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+  GITHUB_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
+```
+Ushbu qism **Environment** qismi hisoblanadi yani ushbu qismda Github Actiosnda ishlatadigan environmentlarimizni yozamiz va GHithub Actionda buni ishlatamiz.
+
+* **CONTAINER_NAME->** Bu qsimda Docker containerimiz nomi beriladi.
+* **REGISTRY->** Bu qismda Conatiner Registry url manizli beriladi GHCR uchun **ghcr.io**
+* **IMAGE_NAME->** Docker image nomi bu holda github repositoriyaga bog'langan
+* **GITHUB_TOKEN->** Bu qismda Github secretsdan PERSONAL_TOKEN nomli secretni ishlatadi. GHCR ga login qilib kirish uchun personal acxses token kerak bo'ladi.
+Github personal accses token olish uchun quyidagi qo'llanmadan foydalanishingiz mumkin [**Github Personal Access Token**](https://devops-journey.uz/guides/ci-cd/jenkins-docker-ci-cd#github-uchun). Personal Access Token olganingizdan keyin uni repositoriya secretlariga qo'shib qo'yishingiz kerak.
+
+**1->** Repositoriyaga kirib Settings bo'limiga o'tib **-> Secrets and variables -> Actions -> New repository secret** `PERSONAL_TOKEN` nomli secret yaratib olamiz.
+
+**-> Repository -> Settings -> Secrets and variables -> Actions -> New repository secret**
+
+![k8s](/images/tutorials/ci-cd/k8s/gitops1.png)
+
+**2->** Githubdagi Personal Access Tokenimizni joylashtiramiz
+
+![k8s](/images/tutorials/ci-cd/k8s/gitops2.png)
+
+```yaml
+jobs:
+  build_and_push:
+    runs-on: ubuntu-latest
+```
+
+Workflow Ubuntu-ning latest versiyasida ishlaydigan `build_and_push` nomli bitta jobga ega. Ya'ni **build_and_push** nomli job ubuntu:latesda ishlaydi.
+
+```yaml
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+```
+
+Ushbu qadam Repositoriyani klon qilib oladi(git clone) [actions/checkout@v2](https://github.com/actions/checkout).
 
 <Callout type="info" emoji="">
 Ushbu qo'llanmani yaxshi tushinish uchun quyidagi qo'llanmalarni ko'rib chiqish tavsiya qilinadi!
