@@ -267,6 +267,8 @@ jobs:
 
 Ushbu Github actinomimiz uchun bir nechta secretlar va envrironmentlar qo'shdik keling ko'rib chiqamiz.
 
+**-> Repository -> Settings -> Secrets and variables -> Actions -> New repository secret**
+
 * **MANIFEST_REPO_URL->** Bu manifest repositoriyamiz url manzili hisoblanadi. Quyidagicha Github actiosn secret qo'shamiz. Bizda [https://github.com/devops-journey-uz/manifests-k8s](https://github.com/devops-journey-uz/manifests-k8s) repositoriyamiz bor secretga esa `devops-journeyuz/manifests-k8s` deb qo'shamiz yani `{owner}/{repo}` ko'rinishida.
 
 ![k8s](/images/tutorials/ci-cd/k8s/gitops6.png)
@@ -274,3 +276,187 @@ Ushbu Github actinomimiz uchun bir nechta secretlar va envrironmentlar qo'shdik 
 * **MANIFEST_PATH->** Bu esa manifest repositoriyamizda applicationimiz konfiguratsiyalari qaysi papkada turgani bildiradi. manifests-k8s repositoriyamizda devops-journey papkasida configlarimiz joylashgan
 
 ![k8s](/images/tutorials/ci-cd/k8s/gitops7.png)
+
+* **GIT_EMAIL->** Biz bunga Github emailimizni yozamiz. Buning sababi manifestni yangilash uchun github foydalanadi commit tashlash uchun.
+![k8s](/images/tutorials/ci-cd/k8s/gitops8.png)
+* **GIT_USERNAME->** Bunga esa Github useneyimizni yozamiz.
+![k8s](/images/tutorials/ci-cd/k8s/gitops9.png)
+
+Keling endi Github Actionimzidagi manifestni yangilash qismini ko'rib chiqamiz.
+
+```yaml
+  update-manifest:
+    runs-on: ubuntu-latest
+    needs: ['build_and_push']
+    steps:
+      - name: Update manifest repository
+        uses: actions/checkout@v2
+        with:
+          repository: ${{ env.MANIFEST_REPO_URL }}
+          path: manifests
+          token: ${{ secrets.PERSONAL_TOKEN }}
+          ref: main  
+ 
+      - name: Update deployment.yaml in manifest repository
+        run: |
+          cd manifests
+          echo "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
+          new_image="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
+        
+          sed -i "s|image: .*|image: $new_image|g" ${{ env.MANIFEST_PATH }}/deployment.yaml      
+          git config --global user.email "${{ secrets.GIT_EMAIL }}"
+          git config --global user.name "${{ secrets.GIT_USERNAME }}"
+          git add ${{ env.MANIFEST_PATH }}/deployment.yaml
+          git diff --cached --exit-code || git commit -m "Update image tag to $new_image" && git push origin main
+```
+
+Ushbu configuratsiya `build_and_push` bosqichi o'z ishini yakunlagaidan keyin boshlanadi ya'ni docker image build qilinib Conatiner Registryga push qilinganidan keyin. Berilgan `MANIFEST_REPO_URL` dan manifest repositoriyani checkout qilib clon qilib oladi clone qilish jarayonida autentifikatsiya uchun `PERSONAL_TOKEN`dan foydalanadi. Keyingi bosqichda esa `sed` orqali deployment.yaml dagi image urlni yangilaydi va `GIT_USERNAME`, `GIT_EMAIL` bilan git configuratsiya qilib o'zgarishlarni berilgan manifest repositoriyaga push qiladi va o'z ishini yakunlaydi.
+
+
+Keling Gihub Actionimizni ishga tushiramiz.
+
+![k8s](/images/tutorials/ci-cd/k8s/gitops10.png)
+
+Ikki bosqich ham muvaffaqiyatli bo'lishi kerak va manifests repositoriyamizni tekshirganimizda yangi docker image urlni qo'yib commit qilgan bo'lishi kerak.
+
+![k8s](/images/tutorials/ci-cd/k8s/gitops11.png)
+
+
+Okeeeyy bizda hammasi yaxshi hammasini uddaladik. Biz GHCR Github Conatiner Registrydan foydalaish uchun Github Action yozib muvaffaqiyatli ishga tushirdik endi boshqa Container registylar uchun ham naumunalar yozamiz.
+
+### Dockerhub
+
+Dockerhub yuqorida Github Actions quyidagicha o'zgarishlar bo'ladi.
+
+```yaml
+name: GitOps CI/CD
+
+on:
+  push:
+    branches:
+      - master
+
+env:
+  IMAGE_NAME: devopsjourneyuz
+  CONTAINER_NAME: devops-journey
+  DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+  DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+  MANIFEST_REPO_URL: ${{ secrets.MANIFEST_REPO_URL }}
+  MANIFEST_PATH: ${{ secrets.MANIFEST_PATH }}
+
+jobs:
+  build_and_push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Log in to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ env.DOCKER_USERNAME }}
+          password: ${{ env.DOCKER_PASSWORD }}
+
+      - name: Build and push Docker image
+        id: docker_build
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:latest
+            ${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+
+  update-manifest:
+    runs-on: ubuntu-latest
+    needs: ['build_and_push']
+    steps:
+      - name: Update manifest repository
+        uses: actions/checkout@v2
+        with:
+          repository: ${{ env.MANIFEST_REPO_URL }}
+          path: manifests
+          token: ${{ secrets.PERSONAL_TOKEN }}
+          ref: main  
+  
+      - name: Update deployment.yaml in manifest repository
+        run: |
+          cd manifests
+          echo "${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
+          new_image="${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
+      
+          sed -i "s|image: .*|image: $new_image|g" ${{ env.MANIFEST_PATH }}/deployment.yaml      
+          git config --global user.email "${{ secrets.GIT_EMAIL }}"
+          git config --global user.name "${{ secrets.GIT_USERNAME }}"
+          git add ${{ env.MANIFEST_PATH }}/deployment.yaml
+          git diff --cached --exit-code || git commit -m "Update image tag to $new_image" && git push origin main
+```
+
+### GCR Google Conatiner Registry
+
+GCR uchun kondiguratsiyamiz quyidagicha
+
+```yaml
+name: Docker CI/CD
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  IMAGE_NAME: devops-journey-image
+  CONTAINER_NAME: devops-journey
+  GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  GCP_SERVICE_ACCOUNT_KEY: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+
+jobs:
+  build_and_push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v0.2.1
+        with:
+          service_account_key: ${{ env.GCP_SERVICE_ACCOUNT_KEY }}
+          project_id: ${{ env.GCP_PROJECT_ID }}
+
+      - name: Configure Docker to use the gcloud command-line tool as a credential helper
+        run: |
+          gcloud --quiet auth configure-docker
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          tags: gcr.io/${{ env.GCP_PROJECT_ID }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+
+  update-manifest:
+    runs-on: ubuntu-latest
+    needs: ['build_and_push']
+    steps:
+      - name: Update manifest repository
+        uses: actions/checkout@v2
+        with:
+          repository: ${{ env.MANIFEST_REPO_URL }}
+          path: manifests
+          token: ${{ secrets.PERSONAL_TOKEN }}
+          ref: main  
+
+      - name: Update deployment.yaml in manifest repository
+        run: |
+          cd manifests
+          echo gcr.io/${{ env.GCP_PROJECT_ID }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          new_image=gcr.io/${{ env.GCP_PROJECT_ID }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+        
+          sed -i "s|image: .*|image: $new_image|g" ${{ env.MANIFEST_PATH }}/deployment.yaml      
+          git config --global user.email "${{ secrets.GIT_EMAIL }}"
+          git config --global user.name "${{ secrets.GIT_USERNAME }}"
+          git add ${{ env.MANIFEST_PATH }}/deployment.yaml
+          git diff --cached --exit-code || git commit -m "Update image tag to $new_image" && git push origin main
+```
