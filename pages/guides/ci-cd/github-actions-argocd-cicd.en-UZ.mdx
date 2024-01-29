@@ -328,13 +328,21 @@ Okeeeyy bizda hammasi yaxshi hammasini uddaladik. Biz GHCR Github Conatiner Regi
 
 Dockerhub yuqorida Github Actions quyidagicha o'zgarishlar bo'ladi.
 
-```yaml
-name: GitOps CI/CD
+Dockerhub Actionsga qo'shiladigan secretlar
 
+* **DOCKER_USERNAME->** Dockerhub Username yozamiz.
+* **DOCKER_PASSWORD->** Dockerhubga login qilib kirish uchun Accsess Token.
+
+Dockerhubdan ro'yxatdan o'tib Access Token olish [bo'yicha qo'llanma](https://devops-journey.uz/guides/ci-cd/jenkins-docker-ci-cd#dockerhub). 
+
+```yaml {12-13,28-29,39,56-57,59}
+name: GitOps CI/CD
+ 
 on:
   push:
-    branches:
-      - master
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 env:
   IMAGE_NAME: devopsjourneyuz
@@ -395,15 +403,23 @@ jobs:
 
 ### GCR Google Conatiner Registry
 
-GCR uchun kondiguratsiyamiz quyidagicha
+GCR uchun kondiguratsiyamiz quyidagicha.
 
-```yaml
-name: Docker CI/CD
+GCR uchun Actionsga qo'shiladigan secretlar
 
+* **GCP_PROJECT_ID->** Bu Google Cloud project IDsi
+* **GCP_SERVICE_ACCOUNT_KEY->** Bu GCR uchun Service Account secret keyi hisoblanadi.
+
+`GCP_SERVICE_ACCOUNT_KEY` olish `GCP_PROJECT_ID` ni bilish  [bo'yicha qo'llanma](https://devops-journey.uz/guides/ci-cd/jenkins-docker-ci-cd#gcrgoogle-container-registry). 
+
+```yaml {12-13,26-27,38,55-56,58}
+name: GitOps CI/CD
+ 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 env:
   IMAGE_NAME: devops-journey-image
@@ -460,3 +476,180 @@ jobs:
           git add ${{ env.MANIFEST_PATH }}/deployment.yaml
           git diff --cached --exit-code || git commit -m "Update image tag to $new_image" && git push origin main
 ```
+
+## Argo CD
+
+Okeeey shu paytagacha biz yuqorida Github Actions orqali CI qismini tayyorlab muvaffaqiyatli ishga tushirib oldik endi esa Argo CD bilan CD qismi qoldi. 
+
+ushbu qimsni arxitekturasini tushuntikradigan bo'lsak biz manifests repositoriyamizni ArgoCDga webhook orqali ulab olamiz. Kubernetes klasterimiz private Container Registrydan docker imagelarni pull qilib tortib olishi uchun bitta namespace ochib private registry uchun secret ochamiz. ArgoCDga manifest repositoriyamizni qo'shib devops-journey loyiahmizni kubnernetesga deploy qilamiz.
+
+### Kubernetes klaster sozlash
+
+Biz private Container Registry ishlatayotganimiz uchun kubernetesda Container Registryga login qilib docker imagelarni pull qilib tortib olishi uchun secret qo'shib olamiz.
+
+**1->** Applicationimizni deploy qilish uchun bitta namespace yaratib olamiz va Conatiner Registry secretni ushbu namespacega joylashtiramiz.
+
+```bash
+kubectl create namespace prod
+```
+
+**2->** GHCRga login qilish uchun secret qo'shamiz.
+
+```bash
+kubectl create secret docker-registry ghcr \
+  --docker-server=ghcr.io \
+  --docker-username=ismoilovdevml \
+  --docker-password=bizni_tokenimiz \
+  --docker-email=emeilimiz@gmail.com \
+  -n prod
+```
+
+Ushbu buyruq orqali biz **prod** nomli nampespaceda **ghcr** nomli docker-registry secret yaratdik. Ushbu **ghcr** nomli secretni deployment.yaml configuratsiyamizda `imagePullSecrets`da belgilab ketamiz
+
+```yaml {20-21}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: devops-journey-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: devops-journey
+  template:
+    metadata:
+      labels:
+        app: devops-journey
+    spec:
+      containers:
+      - name: devops-journey-container
+        image: ghcr.io/devops-journey-uz/devops-journey-k8s:fd87b00b525ff7dcbdeef570656b533f23b80912
+        ports:
+        - containerPort: 3000 
+      imagePullSecrets:
+      - name: ghcr
+```
+
+
+### ArgoCD sozlash
+
+Okeeey Kubernetes solzab olganimizdan keyin ArgoCD bilan ishlashni boshlasak bo'ladi. Birinchi navbatda ArgoCD ga kirib Settings bo'limiga o'tib Manifests repositoriyamizni qo'shib ulab olishimiz kerak.
+
+**-> ArgoCD -> Settings -> Repositories -> CONNECT REPO**
+![k8s](/images/tutorials/ci-cd/k8s/argo.png)
+
+**CONNECT REPO**ni bosib manidfests-k8s repositoriyamizni ulab olamiz. Connection metodni HTTPS qilib Usernamega github usernamemiz va Passwordga personal access  tokenimizni yozamiz va repositoriyamizni ulab olamiz.
+
+![k8s](/images/tutorials/ci-cd/k8s/argo1.png)
+
+**CONNECT** bosganimizdan keyin hammasi to'gri bo'lsa muvaffaqiyatli ulanishi kerak.
+
+![k8s](/images/tutorials/ci-cd/k8s/argo2.png)
+
+Repositoiyamizni ArgoCDga qo'shib ulab olganimzidan keyin ArgoCD da application yaratib olamiz
+
+**-> Applications -> CREATE APPLICATION** bsoib application yaratish bo'limaga o'tamiz.
+![k8s](/images/tutorials/ci-cd/k8s/argo3.png)
+
+Applicationga nom beramiz bizni holatda **devops-journey** Repositoiya urlga repositoriyamiz ulr manizlini ko'rsatamiz **Path**ga esa devops-journey uchun yozgan configlarimiz papkasini yo'lini ko'rsatamiz bu holda **./devops-journey** va namespacega ochib olgan namespaceimizni yani **prod** namespacsimzini ko'rsatamiz va **CREATE** qilib yaratib olamiz.
+![k8s](/images/tutorials/ci-cd/k8s/argo4.png)
+![k8s](/images/tutorials/ci-cd/k8s/argo5.png)
+
+Application yaratib olganimizdan keyin unga kiramiz bu holda Sync holatda bo'ladi va biz bergan kuberntes service.yaml va deployment.yaml orqali kuberenetsga deploy qiladi.
+![k8s](/images/tutorials/ci-cd/k8s/argo6.png)
+
+Bu holda to'liq ishga tushgani
+![k8s](/images/tutorials/ci-cd/k8s/argo7.png)
+
+
+Okeey hammasi yaxshi keling kubernetesda prod namespaceni tekshirib ko'ramiz.
+
+```bash
+kubectl get pods -n prod
+kubectl get services -n prod
+```
+
+![k8s](/images/tutorials/ci-cd/k8s/k8s.png)
+
+bizda 3ta pod va devops-journey-service servisi 3000 portda ishlab turibti keling applicationimizni NGINX Ingress Controller orqali expose qilib domen ulab Cert-Manager bilan SSL sertifikat olib domen ulab chiqarvoramiz.
+
+```bash
+mkdir devops-journey
+cd devops-journey
+nano ingress.yaml
+```
+
+Quyidagicha configuratsiya qilamiz.
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: devops-journey-ingress
+  namespace: prod
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  ingressClassName: "nginx"
+  rules:
+  - host: k8s.devops-journey.uz
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: devops-journey-service
+            port:
+              number: 3000
+  tls:
+  - hosts:
+    - k8s.devops-journey.uz
+    secretName: devops-journey-tls
+```
+
+[**devops-journey.uz**]() domenimizga **k8s** subdomen qo'shib [**k8s.devops-journey.uz**] domenini ulaymiz. bundan oldin DNS hostindan k8s subdomen qo'shib k8s-master klasterimiz static IP manzilini qo'shib qo'yamiz va ingress.yaml konfiguratsiyamizni apply qilamiz.
+
+
+```bash
+kubectl apply -f ingress.yaml
+```
+
+Keling endi hammasi ishlayotganini bilish uchun k8s.devops-journey.uz domeniga brauzer orqali kiramiz.
+
+![k8s](/images/tutorials/ci-cd/k8s/k8s1.png)
+
+Ohhooo Mazzami silaga mazzami...
+
+Okey hammasi yaxshi hammasi muvaffaqiyatli ishga tushirdik lekin bitta narsa qoldi yani [**manifests-k8s**](https://github.com/devops-journey-uz/manifests-k8s) repositoriyamizni ArgoCD bilan webhook orqali ulamadik. Hop bu bizga nimaga kerak bu har gal ArgoCDni qo'lda ishga tushirmasdan shunchaki githubgagi application repositoriyamizda o'zgarish bo'lganida avtomatik ishga tushirib kuberenetesga deploy qilib qo'yishi uchun kerak.
+
+Buning uchun [**manifests-k8s**](https://github.com/devops-journey-uz/manifests-k8s) repositoriyamiz **Settings -> Webhooks** bo'limga o'tib webhook qo'shamiz.
+
+**-> Settings -> Webhooks -> Add webhook**
+![k8s](/images/tutorials/ci-cd/k8s/argo8.png)
+
+ArgoCD url manzili oxiriga **/api/webhook** qo'shib Connection typega **application/json** tanlab qo'yamiz va **Just the push event** tanlab **Add Webhook** bosib webhook ulab olamiz.
+
+![k8s](/images/tutorials/ci-cd/k8s/argo9.png)
+
+
+Deyarli hamma ishni tugatdik keling butun CI/CD Tekshirib ko'ramiz.
+
+[**devops-journey-k8s**](https://github.com/devops-journey-uz/devops-journey-k8s) repositoriyamizga o'zgartirish kiritamiz va buyo'giga o'zi avtomatikga ishga tushib kubernetesga deploy bo'lishi kerak. Platformamiz boshida chiqib turgan **GitOpsni birga o'rganamiz** matnini **GitOpsni birga o'rganamiz | K8s** ga o'zgartiramiz va commit qilamiz va avtomatik kubernesga deploy bo'lishi kerak. Qani keettik sinaymiz.
+
+Men oz'gartirish qilib push qildim endi kuzatamiz.
+![k8s](/images/tutorials/ci-cd/k8s/gitops12.png)
+
+Github Actionimiz yaxshi muvaffaqiyatli ishladi
+![k8s](/images/tutorials/ci-cd/k8s/gitops13.png)
+manifests-k8s repositoriyamizga o'zgarishlar kelib tushgan.
+![k8s](/images/tutorials/ci-cd/k8s/gitops14.png)
+
+ArgoCD webhook orqali avtomatik ishga tushdi hammasi muvaffaqiyatli bo'ldi.
+![k8s](/images/tutorials/ci-cd/k8s/gitops15.png)
+
+
+[**k8s.devops-journey.uz**](https://k8s.devops-journey.uz/)ga kirib ko'rganimzida biz **GitOpsni birga o'rganamiz | K8s**ni ko'ramiz.
+![k8s](/images/tutorials/ci-cd/k8s/k8s2.png)
+
+Huuuhh va nihoyat bizda hammasim muvaffaqiyatli ishga tushdi.
