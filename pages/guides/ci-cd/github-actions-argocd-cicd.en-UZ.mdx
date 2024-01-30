@@ -6,17 +6,17 @@ import { Callout } from "nextra-theme-docs";
 
 ## Kirish
 
-Ushbu qo'llanmadi biz Kubernetes uchun CI/CD yozamiz. Amaliyotda **Github, Github Actions,** **GHCR**(**G**it**H**ub **C**ontainer **R**egistry), **GCR**(**G**oogle **C**ontainer **R**egistry), **Docker, Dockerhub** va **Argo CD** ishlatamiz. Ushbu amaliyot uchun [**devops-journey**](https://devops-journey.uz/) loyihasi tanlandi shu loyiha [manba kodlaridan](https://github.com/ismoilovdevml/devops-journey) foydalanib Kubernetes CI/CD yozishni amaliyot qilamiz. Amaliyotimizda **CI** qismini **Github Actions** orqali CD qismini esa **Argo CD** orqali amalga oshiramiz. Qani unda kettik sayotimizni boshladik!
+Ushbu qo'llanmada biz Kubernetes uchun **CI/CD** yozamiz. Amaliyotda **Github, Github Actions,** **GHCR**(**G**it**H**ub **C**ontainer **R**egistry), **GCR**(**G**oogle **C**ontainer **R**egistry), **Docker, Dockerhub** va **Argo CD** ishlatamiz. Ushbu amaliyot uchun [**devops-journey**](https://devops-journey.uz/) loyihasi tanlandi shu loyiha [manba kodlaridan](https://github.com/ismoilovdevml/devops-journey) foydalanib Kubernetes CI/CD yozishni amaliyot qilamiz. Amaliyotimizda **CI** qismini **Github Actions** orqali CD qismini esa **Argo CD** orqali amalga oshiramiz. Qani unda kettik sayotimizni boshladik!
 
 ## Ishni boshlash
 
 Ushbu amaliyot uchun bizga kerak bo'ladi.
 
 * Ishlab turgan kubernetes cluster
-* helm va Nginx Ingress Controller
-* Cert-Manager
-* Argo CD
-* Dockerhub yoki GCR
+* **helm** va **Nginx Ingress Controller**
+* **Cert-Manager**
+* **Argo CD**
+* **Dockerhub, GCR**
 
 <Callout type="info" emoji="">
 Ushbu qo'llanmani yaxshi tushinish uchun quyidagi qo'llanmalarni ko'rib chiqish tavsiya qilinadi!
@@ -28,16 +28,18 @@ Ushbu qo'llanmani yaxshi tushinish uchun quyidagi qo'llanmalarni ko'rib chiqish 
 * Argo CD o'rnatish uchun [**Kubernetesga Argo CD o'rnatish va sozlash**](https://devops-journey.uz/guides/k8s/argo-cd-install)
 
 **ESLATMA->** Ushbu amaliyotda biz [**devops-journey**](https://github.com/ismoilovdevml/devops-journey) platformasi manba kodlaridan foydalanamiz. Stars(yulduzcha) bosib qo'yish esdan chiqmasin **:)**
+
+Amaliyotda ishlatilgan [**devops-journey-k8s**](https://github.com/devops-journey-uz/devops-journey-k8s) va [**manifests-k8s**](https://github.com/devops-journey-uz/manifests-k8s) repositoriyalar.
 </Callout>
 
-Amaliyot sturkturasi quyidagicha. Amaliyotda Github ishlatamiz va bizda birorta application repositoriyamiz va manifest repositoriyamiz bo'ladi. Manifest repositoriya bu kuberntes uchun deployment va service .yaml konfiguratsiyalarni o'zida saqlab turadigan repositoriya bo'ladi. Application repositoriyamizda applicationimiz kodlari Dockerfile va Github Actions bo'ladi. Application repositoriyamizga Github actions yozamiz, uning ishi **main** branchga o'zgarish bo'lganda vatomatik ishga tushadi docker image build qilib Container Registryga github.sha unique key bilan tag qo'shib push qiladi va Manifest repositoriyadagi deployment.yaml configuratsiyadagi docker imageni yangilab qo'yadi. Manifest repositoriya esa Argo CDga webhook orqali ulangan bo'ladi, manifest repositoriyada o'zgarish bo'lganida Argo CD avtomatik ishga tushadi. 
+Amaliyot sturkturasi quyidagicha. Amaliyotda Github ishlatamiz va bizda birorta application repositoriyamiz va manifest repositoriyamiz bo'ladi. Manifest repositoriya bu kubernetes uchun deployment va service **.yaml** konfiguratsiyalarni o'zida saqlab turadigan repositoriya bo'ladi. Application repositoriyamizda applicationimiz kodlari Dockerfile va Github Actions bo'ladi. Application repositoriyamizga Github actions yozamiz, uning ishi **main** branchga o'zgarish bo'lganda avtomatik ishga tushadi docker image build qilib Container Registryga github.sha unique key bilan tag qo'shib push qiladi va manifests repositoriyadagi `deployment.yaml` configuratsiyadagi docker imageni yangilab qo'yadi. Manifest repositoriya esa Argo CDga webhook orqali ulangan bo'ladi, manifests repositoriyada o'zgarish bo'lganida Argo CD avtomatik ishga tushadi. 
 
 
-Qisqa qilib aytganda application repositoriyaga o'zgarish bo'lganida github actions avtomatik ishga tushib docker image build qilib github.sha unique key bilan tag qo'shib Container Registryga push qiladi va keyin Manifest repositoriyadagi docker imageni yangilab qo'yadi, Manifest repositoriyada o'zgarish bo'lganida Argo CD avtomatik ishga tushadi va applicationimizni Kubernetes klasterimzga deploy qiladi.
+Qisqa qilib aytganda application repositoriyaga o'zgarish bo'lganida github actions avtomatik ishga tushib docker image build qilib github.sha unique key bilan tag qo'shib Container Registryga push qiladi va keyin Manifest repositoriyadagi docker imageni yangilab qo'yadi, Manifest repositoriyada o'zgarish bo'lganida Argo CD avtomatik ishga tushadi va applicationimizni Kubernetes klasterimizga deploy qiladi.
 
 ## Github Actionsda CI yozish
 
-Amaliyotni birinchi qismni bu Application repositoriyamizga Github Actions yozishdir. Birinchi CI actionimiz vazifasi main branchga commit bo'lganida avtomatik ishga tushib docker image build qilib github.sha unique tag bilan Docker registyga push qilish vazifalarini bajaradi. Ushbu amaliyotda biz Container Registry sifatida **GHCR**(**G**it**H**ub **C**ontainer **R**egistry), **GCR**(**G**oogle **C**ontainer **R**egistry) va **Dockerhub** ishlatamiz va numunalar yozamiz siz o'zingizga qulayini tanlab foydalanasiz.
+Amaliyotni birinchi qismni bu Application repositoriyamizga Github Actions yozishdir. Birinchi CI actionimiz vazifasi main branchga commit bo'lganida avtomatik ishga tushib docker image build qilib github.sha unique tag bilan Docker registryga push qilish vazifalarini bajaradi. Ushbu amaliyotda biz Container Registry sifatida **GHCR**(**G**it**H**ub **C**ontainer **R**egistry), **GCR**(**G**oogle **C**ontainer **R**egistry) va **Dockerhub** ishlatamiz va namunalar yozamiz siz o'zingizga qulayini tanlab foydalanasiz. Amaliyotda GHCR Github Container Registry ishlatdik lekin boshqa registrylar uchu ham namunalar berib configuratsiyalar yozilgan.
 
 
 ### GHCR Github Conatiner Registry
@@ -96,7 +98,7 @@ on:
     branches: [ main ]
 ```
 
-**name** Bu Github ACtiosnga berilgan nom. Koddagi belgilangan qism esa **Tirgger** deb nomlanadi vazifasi man branchga commit psuh qilinsa yoki pull request merge qilinsa Github Actionsni avtomatik ishga tushirib beradi.
+**name** Bu Github Actiosnga berilgan nom. Koddagi belgilangan qism esa **Trigger** deb nomlanadi vazifasi main branchga commit push qilinsa yoki pull request merge qilinsa Github Actionsni avtomatik ishga tushirib beradi.
 
 
 ```yaml
@@ -106,13 +108,13 @@ env:
   IMAGE_NAME: ${{ github.repository }}
   GITHUB_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
 ```
-Ushbu qism **Environment** qismi hisoblanadi yani ushbu qismda Github Actiosnda ishlatadigan environmentlarimizni yozamiz va GHithub Actionda buni ishlatamiz.
+Ushbu qism **Environment** qismi hisoblanadi yani ushbu qismda Github Actionsda ishlatadigan environmentlarimizni yozamiz va Github Actionsda buni ishlatamiz.
 
 * **CONTAINER_NAME->** Bu qsimda Docker containerimiz nomi beriladi.
-* **REGISTRY->** Bu qismda Conatiner Registry url manizli beriladi GHCR uchun **ghcr.io**
+* **REGISTRY->** Bu qismda Container Registry url manzili beriladi GHCR uchun **ghcr.io**
 * **IMAGE_NAME->** Docker image nomi bu holda github repositoriyaga bog'langan
-* **GITHUB_TOKEN->** Bu qismda Github secretsdan PERSONAL_TOKEN nomli secretni ishlatadi. GHCR ga login qilib kirish uchun personal acxses token kerak bo'ladi.
-Github personal accses token olish uchun quyidagi qo'llanmadan foydalanishingiz mumkin [**Github Personal Access Token**](https://devops-journey.uz/guides/ci-cd/jenkins-docker-ci-cd#github-uchun). Personal Access Token olganingizdan keyin uni repositoriya secretlariga qo'shib qo'yishingiz kerak.
+* **GITHUB_TOKEN->** Bu qismda Github secretsdan `PERSONAL_TOKEN` nomli secretni ishlatadi. GHCR'ga login qilib kirish uchun personal access token kerak bo'ladi.
+Github personal accsess token olish uchun quyidagi qo'llanmadan foydalanishingiz mumkin [**Github Personal Access Token**](https://devops-journey.uz/guides/ci-cd/jenkins-docker-ci-cd#github-uchun). Personal Access Token olganingizdan keyin uni repositoriya secretlariga qo'shib qo'yishingiz kerak.
 
 **1->** Repositoriyaga kirib Settings bo'limiga o'tib **-> Secrets and variables -> Actions -> New repository secret** `PERSONAL_TOKEN` nomli secret yaratib olamiz.
 
@@ -144,7 +146,7 @@ Ushbu qadam Repositoriyani klon qilib oladi(git clone) [actions/checkout@v2](htt
       - name: Login to GitHub Container Registry
         run: echo "${GITHUB_TOKEN}" | docker login -u "${{ github.actor }}" --password-stdin "${{ env.REGISTRY }}"
 ```
-Ushbu bosqichda Github Actions Github Container Registryga berilgan PERSONAL_TOKEN orqali kiradi.
+Ushbu bosqichda Github Actions Github Container Registryga berilgan `PERSONAL_TOKEN` orqali kiradi.
 
 ```yaml
       - name: Build and push Docker image
@@ -158,16 +160,16 @@ Ushbu bosqichda Github Actions Github Container Registryga berilgan PERSONAL_TOK
 Ushbu bosqich repositoriyadagi Dockerfile orqali Docker image build qilib uni Github Container Registryga github.sha bilan tag qo'shib push qiladi. Docker image build qilish va push qilishda [docker/build-push-action@v2](https://github.com/docker/build-push-action)dan foydalanadi.
 
 
-Keling Github actionsni ishga tushiramiz. Buning cuhun personal access tokenni github secretsga qo'shib yam konfiguratsiyamizni gtihubga push qilamiz va u avtomatik ishga tushishi kerak.
+Keling Github actionsni ishga tushiramiz. Buning uchun personal access tokenni github secretsga qo'shib yaml konfiguratsiyamizni githubga push qilamiz va u avtomatik ishga tushishi kerak.
 
-Repositoriyamizda **Actions** bo'limga o'tsak bizni Github Actionimiz ishlab turganni chiqishi kerak.
+Repositoriyamizda **Actions** bo'limiga o'tsak bizni Github Actionimiz ishlab turganini chiqishi kerak.
 ![k8s](/images/tutorials/ci-cd/k8s/gitops3.png)
 ![k8s](/images/tutorials/ci-cd/k8s/gitops4.png)
 ![k8s](/images/tutorials/ci-cd/k8s/gitops5.png)
 
 Okey hammasi yaxshi ishladi endi esa keyingi bosqichga o'tsak bo'ladi ya'ni manifest repositoriyadagi image urlni yangilab qo'yish. Githubda yana bitta [**manifests-k8s**](https://github.com/devops-journey-uz/manifests-k8s) nomli repositoriya ochib olamiz unga kubernetes yaml konfiguratsiyalarimizni yozamiz.
 
-Repositoriya tuzilishi quyidagicha. Har bir loyiha uchun alohida papka yaratiladi va loyiha papakalari ichida konfig fayllari bo'ladi deployment.yaml, service.yaml va boshqalar. Bizda hozir bitta loyiha bo'lgani uchun bitta devops-journey nomli papkamiz bor.
+Repositoriya tuzilishi quyidagicha. Har bir loyiha uchun alohida papka yaratiladi va loyiha papkalari ichida konfig fayllari bo'ladi deployment.yaml, service.yaml va boshqalar. Bizda hozir bitta loyiha bo'lgani uchun bitta devops-journey nomli papkamiz bor.
 
 ```txt
 ├── devops-journey
@@ -176,7 +178,7 @@ Repositoriya tuzilishi quyidagicha. Har bir loyiha uchun alohida papka yaratilad
 └── README.md
 ```
 
-`deployment.yaml` faylioda docker image url berilgan qatori bor, bizni vazifasi har safar Loyihalarimizda Github Actuions ishga tushib yangi docker image build qilganida uni shu manifest-k8s repositoriyadagi deploymenty.yaml faylidagi image urlni yangilab qo'yishi.
+`deployment.yaml` faylida docker image url berilgan qatori bor, bizning vazifamiz har safar loyihalarimizda Github Actuions ishga tushib yangi docker image build qilganida uni shu manifest-k8s repositoriyadagi deploymenty.yaml faylidagi image urlni yangilab qo'yishdir.
 
 ```yaml {17}
 apiVersion: apps/v1
@@ -195,7 +197,7 @@ spec:
     spec:
       containers:
       - name: devops-journey-container
-        image: devopsjourneyuz/devopsjourneyuz:latest
+        image: ghcr.io/devops-journey-uz/devops-journey-k8s:7204fba4278c9d8567ad5a0968cca4e1aac15c84
         ports:
         - containerPort: 3000 
       imagePullSecrets:
@@ -265,11 +267,11 @@ jobs:
           git diff --cached --exit-code || git commit -m "Update image tag to $new_image" && git push origin main
 ```
 
-Ushbu Github actinomimiz uchun bir nechta secretlar va envrironmentlar qo'shdik keling ko'rib chiqamiz.
+Ushbu Github Actionimiz uchun bir nechta secretlar va envrironmentlar qo'shdik keling ko'rib chiqamiz.
 
 **-> Repository -> Settings -> Secrets and variables -> Actions -> New repository secret**
 
-* **MANIFEST_REPO_URL->** Bu manifest repositoriyamiz url manzili hisoblanadi. Quyidagicha Github actiosn secret qo'shamiz. Bizda [https://github.com/devops-journey-uz/manifests-k8s](https://github.com/devops-journey-uz/manifests-k8s) repositoriyamiz bor secretga esa `devops-journeyuz/manifests-k8s` deb qo'shamiz yani `{owner}/{repo}` ko'rinishida.
+* **MANIFEST_REPO_URL->** Bu manifest repositoriyamiz url manzili hisoblanadi. Quyidagicha Github Actions secret qo'shamiz. Bizda [github.com/devops-journey-uz/manifests-k8s](https://github.com/devops-journey-uz/manifests-k8s) repositoriyamiz bor secretga esa `devops-journeyuz/manifests-k8s` deb qo'shamiz yani `{owner}/{repo}` ko'rinishida.
 
 ![k8s](/images/tutorials/ci-cd/k8s/gitops6.png)
 
@@ -279,10 +281,10 @@ Ushbu Github actinomimiz uchun bir nechta secretlar va envrironmentlar qo'shdik 
 
 * **GIT_EMAIL->** Biz bunga Github emailimizni yozamiz. Buning sababi manifestni yangilash uchun github foydalanadi commit tashlash uchun.
 ![k8s](/images/tutorials/ci-cd/k8s/gitops8.png)
-* **GIT_USERNAME->** Bunga esa Github useneyimizni yozamiz.
+* **GIT_USERNAME->** Bunga esa Github usernameyimizni yozamiz.
 ![k8s](/images/tutorials/ci-cd/k8s/gitops9.png)
 
-Keling endi Github Actionimzidagi manifestni yangilash qismini ko'rib chiqamiz.
+Keling endi Github Actionimizdagi manifestni yangilash qismini ko'rib chiqamiz.
 
 ```yaml
   update-manifest:
@@ -310,7 +312,7 @@ Keling endi Github Actionimzidagi manifestni yangilash qismini ko'rib chiqamiz.
           git diff --cached --exit-code || git commit -m "Update image tag to $new_image" && git push origin main
 ```
 
-Ushbu configuratsiya `build_and_push` bosqichi o'z ishini yakunlagaidan keyin boshlanadi ya'ni docker image build qilinib Conatiner Registryga push qilinganidan keyin. Berilgan `MANIFEST_REPO_URL` dan manifest repositoriyani checkout qilib clon qilib oladi clone qilish jarayonida autentifikatsiya uchun `PERSONAL_TOKEN`dan foydalanadi. Keyingi bosqichda esa `sed` orqali deployment.yaml dagi image urlni yangilaydi va `GIT_USERNAME`, `GIT_EMAIL` bilan git configuratsiya qilib o'zgarishlarni berilgan manifest repositoriyaga push qiladi va o'z ishini yakunlaydi.
+Ushbu configuratsiya `build_and_push` bosqichi o'z ishini yakunlaganidan keyin boshlanadi ya'ni docker image build qilinib Conatiner Registryga push qilinganidan keyin. Berilgan `MANIFEST_REPO_URL` dan manifest repositoriyani checkout qilib clon qilib oladi clone qilish jarayonida autentifikatsiya uchun `PERSONAL_TOKEN`dan foydalanadi. Keyingi bosqichda esa `sed` orqali deployment.yaml dagi image urlni yangilaydi va `GIT_USERNAME`, `GIT_EMAIL` bilan git configuratsiya qilib o'zgarishlarni berilgan manifest repositoriyaga push qiladi va o'z ishini yakunlaydi.
 
 
 Keling Gihub Actionimizni ishga tushiramiz.
@@ -322,11 +324,11 @@ Ikki bosqich ham muvaffaqiyatli bo'lishi kerak va manifests repositoriyamizni te
 ![k8s](/images/tutorials/ci-cd/k8s/gitops11.png)
 
 
-Okeeeyy bizda hammasi yaxshi hammasini uddaladik. Biz GHCR Github Conatiner Registrydan foydalaish uchun Github Action yozib muvaffaqiyatli ishga tushirdik endi boshqa Container registylar uchun ham naumunalar yozamiz.
+Okeeeyy bizda hammasi yaxshi hammasini uddaladik. Biz GHCR Github Container Registrydan foydalanish uchun Github Action yozib muvaffaqiyatli ishga tushirdik endi boshqa Container registrylar uchun ham naumunalar yozamiz.
 
 ### Dockerhub
 
-Dockerhub yuqorida Github Actions quyidagicha o'zgarishlar bo'ladi.
+Dockerhub uchun yuqorida Github Actions quyidagicha o'zgarishlar bo'ladi.
 
 Dockerhub Actionsga qo'shiladigan secretlar
 
@@ -481,7 +483,7 @@ jobs:
 
 Okeeey shu paytagacha biz yuqorida Github Actions orqali CI qismini tayyorlab muvaffaqiyatli ishga tushirib oldik endi esa Argo CD bilan CD qismi qoldi. 
 
-ushbu qimsni arxitekturasini tushuntikradigan bo'lsak biz manifests repositoriyamizni ArgoCDga webhook orqali ulab olamiz. Kubernetes klasterimiz private Container Registrydan docker imagelarni pull qilib tortib olishi uchun bitta namespace ochib private registry uchun secret ochamiz. ArgoCDga manifest repositoriyamizni qo'shib devops-journey loyiahmizni kubnernetesga deploy qilamiz.
+Ushbu qimsni arxitekturasini tushuntiradigan bo'lsak biz manifests repositoriyamizni ArgoCDga webhook orqali ulab olamiz. Kubernetes klasterimiz private Container Registrydan docker imagelarni pull qilib tortib olishi uchun bitta namespace ochib private registry uchun secret ochamiz. ArgoCDga manifest repositoriyamizni qo'shib devops-journey loyihamizni kubnernetesga deploy qilamiz.
 
 ### Kubernetes klaster sozlash
 
@@ -504,7 +506,7 @@ kubectl create secret docker-registry ghcr \
   -n prod
 ```
 
-Ushbu buyruq orqali biz **prod** nomli nampespaceda **ghcr** nomli docker-registry secret yaratdik. Ushbu **ghcr** nomli secretni deployment.yaml configuratsiyamizda `imagePullSecrets`da belgilab ketamiz
+Ushbu buyruq orqali biz **prod** nomli nampespaceda **ghcr** nomli docker-registry secret yaratdik. Ushbu **ghcr** nomli secretni `deployment.yaml` konfiguratsiyamizda `imagePullSecrets`da belgilab ketamiz
 
 ```yaml {20-21}
 apiVersion: apps/v1
@@ -533,12 +535,12 @@ spec:
 
 ### ArgoCD sozlash
 
-Okeeey Kubernetes solzab olganimizdan keyin ArgoCD bilan ishlashni boshlasak bo'ladi. Birinchi navbatda ArgoCD ga kirib Settings bo'limiga o'tib Manifests repositoriyamizni qo'shib ulab olishimiz kerak.
+Okeeey Kubernetes sozlab olganimizdan keyin ArgoCD bilan ishlashni boshlasak bo'ladi. Birinchi navbatda ArgoCDga kirib Settings bo'limiga o'tib manifests-k8s repositoriyamizni qo'shib ulab olishimiz kerak.
 
 **-> ArgoCD -> Settings -> Repositories -> CONNECT REPO**
 ![k8s](/images/tutorials/ci-cd/k8s/argo.png)
 
-**CONNECT REPO**ni bosib manidfests-k8s repositoriyamizni ulab olamiz. Connection metodni HTTPS qilib Usernamega github usernamemiz va Passwordga personal access  tokenimizni yozamiz va repositoriyamizni ulab olamiz.
+**CONNECT REPO**ni bosib manifests-k8s repositoriyamizni ulab olamiz. Connection metodni **HTTPS** qilib `Username`ga github username va Passwordga personal access tokenimizni yozamiz va repositoriyamizni ulab olamiz.
 
 ![k8s](/images/tutorials/ci-cd/k8s/argo1.png)
 
@@ -546,16 +548,16 @@ Okeeey Kubernetes solzab olganimizdan keyin ArgoCD bilan ishlashni boshlasak bo'
 
 ![k8s](/images/tutorials/ci-cd/k8s/argo2.png)
 
-Repositoiyamizni ArgoCDga qo'shib ulab olganimzidan keyin ArgoCD da application yaratib olamiz
+Repositoiyamizni ArgoCDga qo'shib ulab olganimizdan keyin ArgoCD da application yaratib olamiz
 
-**-> Applications -> CREATE APPLICATION** bsoib application yaratish bo'limaga o'tamiz.
+**-> Applications -> CREATE APPLICATION** bosib application yaratish bo'limiga o'tamiz.
 ![k8s](/images/tutorials/ci-cd/k8s/argo3.png)
 
-Applicationga nom beramiz bizni holatda **devops-journey** Repositoiya urlga repositoriyamiz ulr manizlini ko'rsatamiz **Path**ga esa devops-journey uchun yozgan configlarimiz papkasini yo'lini ko'rsatamiz bu holda **./devops-journey** va namespacega ochib olgan namespaceimizni yani **prod** namespacsimzini ko'rsatamiz va **CREATE** qilib yaratib olamiz.
+Applicationga nom beramiz bizni holatda **devops-journey** Repository urlga repositoriyamiz ulr manizlini ko'rsatamiz **Path**ga esa devops-journey uchun yozgan configlarimiz papkasini yo'lini ko'rsatamiz bu holda **./devops-journey** va namespacega ochib olgan namespaceni yani **prod** namespaceni ko'rsatamiz va **CREATE** qilib yaratib olamiz.
 ![k8s](/images/tutorials/ci-cd/k8s/argo4.png)
 ![k8s](/images/tutorials/ci-cd/k8s/argo5.png)
 
-Application yaratib olganimizdan keyin unga kiramiz bu holda Sync holatda bo'ladi va biz bergan kuberntes service.yaml va deployment.yaml orqali kuberenetsga deploy qiladi.
+Application yaratib olganimizdan keyin unga kiramiz bu holda Sync holatda bo'ladi va biz bergan kubernetes service.yaml va deployment.yaml orqali kuberenetesga deploy qiladi.
 ![k8s](/images/tutorials/ci-cd/k8s/argo6.png)
 
 Bu holda to'liq ishga tushgani
@@ -571,7 +573,7 @@ kubectl get services -n prod
 
 ![k8s](/images/tutorials/ci-cd/k8s/k8s.png)
 
-bizda 3ta pod va devops-journey-service servisi 3000 portda ishlab turibti keling applicationimizni NGINX Ingress Controller orqali expose qilib domen ulab Cert-Manager bilan SSL sertifikat olib domen ulab chiqarvoramiz.
+Bizda uchta pod va devops-journey-service servisi 3000 portda ishlab turibti keling applicationimizni NGINX Ingress Controller orqali expose qilib domen ulab Cert-Manager bilan SSL sertifikat olib domen ulab chiqarvoramiz.
 
 ```bash
 mkdir devops-journey
@@ -608,18 +610,18 @@ spec:
     secretName: devops-journey-tls
 ```
 
-[**devops-journey.uz**]() domenimizga **k8s** subdomen qo'shib [**k8s.devops-journey.uz**] domenini ulaymiz. bundan oldin DNS hostindan k8s subdomen qo'shib k8s-master klasterimiz static IP manzilini qo'shib qo'yamiz va ingress.yaml konfiguratsiyamizni apply qilamiz.
+[**devops-journey.uz**](https://devops-journey.uz/) domenimizga **k8s** subdomen qo'shib [**k8s.devops-journey.uz**](https://k8s.devops-journey.uz/) domenini ulaymiz. Bundan oldin DNS hostingdan k8s subdomen qo'shib k8s-master klasterimiz static IP manzilini qo'shib qo'yamiz va ingress.yaml konfiguratsiyamizni apply qilamiz.
 
 
 ```bash
 kubectl apply -f ingress.yaml
 ```
 
-Keling endi hammasi ishlayotganini bilish uchun k8s.devops-journey.uz domeniga brauzer orqali kiramiz.
+Keling endi hammasi ishlayotganini bilish uchun [**k8s.devops-journey.uz**](https://k8s.devops-journey.uz/) domeniga brauzer orqali kiramiz.
 
 ![k8s](/images/tutorials/ci-cd/k8s/k8s1.png)
 
-Ohhooo Mazzami silaga mazzami...
+**Ohhooo Mazzami silaga mazzami...**
 
 Okey hammasi yaxshi hammasi muvaffaqiyatli ishga tushirdik lekin bitta narsa qoldi yani [**manifests-k8s**](https://github.com/devops-journey-uz/manifests-k8s) repositoriyamizni ArgoCD bilan webhook orqali ulamadik. Hop bu bizga nimaga kerak bu har gal ArgoCDni qo'lda ishga tushirmasdan shunchaki githubgagi application repositoriyamizda o'zgarish bo'lganida avtomatik ishga tushirib kuberenetesga deploy qilib qo'yishi uchun kerak.
 
@@ -633,11 +635,11 @@ ArgoCD url manzili oxiriga **/api/webhook** qo'shib Connection typega **applicat
 ![k8s](/images/tutorials/ci-cd/k8s/argo9.png)
 
 
-Deyarli hamma ishni tugatdik keling butun CI/CD Tekshirib ko'ramiz.
+Deyarli hamma ishni tugatdik keling butun **CI/CD**ni tekshirib ko'ramiz.
 
-[**devops-journey-k8s**](https://github.com/devops-journey-uz/devops-journey-k8s) repositoriyamizga o'zgartirish kiritamiz va buyo'giga o'zi avtomatikga ishga tushib kubernetesga deploy bo'lishi kerak. Platformamiz boshida chiqib turgan **GitOpsni birga o'rganamiz** matnini **GitOpsni birga o'rganamiz | K8s** ga o'zgartiramiz va commit qilamiz va avtomatik kubernesga deploy bo'lishi kerak. Qani keettik sinaymiz.
+[**devops-journey-k8s**](https://github.com/devops-journey-uz/devops-journey-k8s) repositoriyamizga o'zgartirish kiritamiz va buyo'giga o'zi avtomatik ishga tushib kubernetesga deploy bo'lishi kerak. Platformamiz boshida chiqib turgan **GitOpsni birga o'rganamiz** matnini **GitOpsni birga o'rganamiz | K8s** ga o'zgartiramiz va commit qilamiz va avtomatik kubernetesga deploy bo'lishi kerak. Qani keettik sinaymiz.
 
-Men oz'gartirish qilib push qildim endi kuzatamiz.
+Men o'zgartirish qilib push qildim endi kuzatamiz.
 ![k8s](/images/tutorials/ci-cd/k8s/gitops12.png)
 
 Github Actionimiz yaxshi muvaffaqiyatli ishladi
@@ -652,4 +654,23 @@ ArgoCD webhook orqali avtomatik ishga tushdi hammasi muvaffaqiyatli bo'ldi.
 [**k8s.devops-journey.uz**](https://k8s.devops-journey.uz/)ga kirib ko'rganimzida biz **GitOpsni birga o'rganamiz | K8s**ni ko'ramiz.
 ![k8s](/images/tutorials/ci-cd/k8s/k8s2.png)
 
-Huuuhh va nihoyat bizda hammasim muvaffaqiyatli ishga tushdi.
+**Huuuhh va nihoyat bizda hammasi muvaffaqiyatli ishga tushdi.**
+
+## Qo'shimcha
+
+<Callout type="info" emoji="">
+
+ * [**Kubernetesga Kirish**](https://devops-journey.uz/guides/k8s/k8s-kirish)
+ * [**Kubernetes Arxitekturasi**](https://devops-journey.uz/guides/k8s/k8s-architecture)
+ * [**Kubernetes Obyektlari**](https://devops-journey.uz/guides/k8s/k8s-objects)
+ * [**Kubernesga Cert-Manager o'rnatish va sozlash**](https://devops-journey.uz/guides/k8s/k8s-cert-manager)
+ * [**Kubernetesga Argo CD o'rnatish va sozlash**](https://devops-journey.uz/guides/k8s/argo-cd-install)
+
+**Oxirgi yangilanish:** 2024.01.30(2024-yil 30-yanvar)
+
+**Muallif: Otabek Ismoilov**
+
+| [Telegram](https://t.me/Otabek_Ismoilov) | [Github](https://github.com/ismoilovdevml) | [LinkedIn](https://www.linkedin.com/in/otabek-ismoilov-8625b0222/) |
+| - | - | - |
+
+</Callout>
