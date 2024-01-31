@@ -1,0 +1,630 @@
+import { Callout } from "nextra-theme-docs";
+
+## HAProxy bilan HTTP/TCP load balancing va monitoring
+
+![haproxy](/images/tutorials/web-server/haproxy/banner.png)
+
+**HAProxy** yoki **H**igh **A**vailability **P**roxy - bu yuqori samarali(high-performance) **TCP/HTTP** load balancer va proksi-server sifatida ishlaydigan open-source dasturiy ta'minot. U kiruvchi trafikni(incoming traffic) bir nechta serverlar yoki backend tizimlari bo'ylab taqsimlashda muhim rol o'ynaydi, optimal resurslardan foydalanishni, high availabilityni va web-applicationlar uchun kengaytirilishini(scalability) ta'minlaydi.
+
+**HAProxy** client va server o'rtasida joylashgan reverse proxy sifatida ishlaydi. U kiruvchi client so'rovlarini(request) ushlab turadi va ularni oldindan belgilangan qoidalar(rules) va algoritmlar to'plami asosida tegishli backend serveriga yo'naltiradi. Ushbu jarayon **HAProxy**-ga bir nechta serverlar bo'ylab yukni(load) samarali muvozanatlash imkonini beradi, bu esa har qanday bitta serverning ishlamay qolishining oldini oladi, shu bilan birga barqaror(consistent) va responsive service deliveryni ta'minlaydi.
+
+HAProxy ning muhim kuchli tomonlaridan biri uning moslashuvchanligi(flexibility) va sozlanishidadir(configurability). U keng ko'lamli konfiguratsiya opsiyalarini taklif qiladi va turli xil load balancing algoritmlarini qo'llab-quvvatlaydi, shu jumladan **Round Robin**, **Least Connections**, **Source IP Hash**, **Weighted Round Robin**, **Weighted Least Connections**. Ushbu ko'p qirralilik devops/adminlarga maxsus dastur talablariga mos(application specific) keladigan load-balancing behaviorini sozlash imkonini beradi.
+
+Bundan tashqari, HAProxy HTTP headerlari, cookielar va URL yo'llari(path) kabi complex mezonlar(criteria) asosida SSL termination, content switching, health check va so'rovlarni yo'naltirish(request routing) kabi advanced xususiyatlarni taqdim etadi. Bu xususiyatlar devops/adminlarga murakkab trafik boshqaruvini amalga oshirish va web servicelarni yetkazib berishni optimallashtirish imkonini beradi.
+
+Bundan tashqari, HAProxy-ning low latency(past kechikish) bilan yuqori trafik(high traffic) hajmlarini boshqarish qobiliyati uni web applicationlar uchun high availability va performanceni ta'minlashni istagan ko'plab tashkilotlar uchun afzalroq tanlov qiladi. U ko'pincha turli xil deployment senariylarida, jumladan **C**ontent **D**elivery **N**etworklarida (**CDN**), web hosting environmentda,cloud infrastructurelarda va yirik korporativ(enterprise) sozlashlarda qo'llaniladi.
+
+O'zining mustahkamligi(robustness), moslashuvchanligi(adaptability) va katta hajmdagi trafikni boshqarish qobiliyati bilan HAProxy ko'plab applicationlar va servicelar uchun muhim web infrastructureni qo'llab-quvvatlovchi ishonchli va samarali load balanceri va proxy server yechimi sifatida industryda keng qo'llanildi.
+
+<Callout type="info" emoji="">
+**ESLATMA->** Ushbu qo'llanma mazmuni yaxshi tushunish uchun bundan oldingi **[Load Balancing](https://devops-journey.uz/guides/web-server/load-balancing)** va **[NGINX Load Balancing](https://devops-journey.uz/guides/web-server/nginx-load-balancing)** qo'llanmalarini o'qib chiqishingiz kerak!
+</Callout>
+
+
+## Ishni boshlash va HAProxy o'rnatish
+
+HAProxy bilan load balancing qilishimiz uchun minimum 3ta server kerak bo'ladi bitta HAProxy load balancer server va 2ta backend application server.
+
+<Callout type="info" emoji="">
+**Minimum Server talabi**
+
+| OS            | RAM            | CPU           | Xotira       | Static IP  |  Server vazifasi       |
+| ------------- | -------------- | ------------- |------------- | ---------- | ---------------------- |
+| Ubuntu 20.04  | 4GB            | 2vCPU 2 core  | 50GB         | Ha kerak   | HAProxy(Load Balancer) |
+| Ubuntu 20.04  | 4GB            | 2vCPU 2 core  | 50GB         | Shart emas | Application Server 1   |
+| Ubuntu 20.04  | 4GB            | 2vCPU 2 core  | 50GB         | Shart emas | Application Server 2   |
+
+**Qo'llanmada ishlatilgan Serverlar IP mazilllari**
+
+| Server                 | IP manzili   | 
+| ---------------------- | ------------ |
+| HAProxy(Load Balancer) | 185.168.1.20 |
+| Application Server 1   | 185.168.1.21 |
+| Application Server 2   | 185.168.1.22 |
+
+</Callout>
+
+**HAProxy** serverimizni sozlashni boshlaymiz.
+
+**1->** Tizimingizni yangilang.
+
+```bash
+sudo apt-get update && sudo apt-get upgrade -y
+```
+
+**2->** HAProxy o'rnating. HAProxy ko'pgina Linux distributivlarining package management systemlariga kiritilgan:
+
+Debian based uchun. Debian va Ubuntu uchun maxsus HAProxy versiylarini o'rnatish uchun quyidagi websaytdan foydalanishingiz mumkin. [haproxy.debian.net](https://haproxy.debian.net/)
+
+```bash
+sudo apt install haproxy -y
+```
+Fedora uchun
+
+```bash
+sudo yum install haproxy
+```
+
+**3->** HAProxy o'rnatilganidan keyin statusini tekshiring.
+
+```bash
+sudo systemctl status haproxy
+sudo systemctl enable haproxy
+```
+## HAProxy boshlang'ich konfiguratsiya.
+
+HAProxy'ni serverimizga muvafaqqiyatli o'rnatib ishga tushirganimizdan keyin load balancer sifatida konfiguratsiya qilishni boshlasak bo'ladi. O'rnatish vaqtida avtomatik ravishda yaratiladigan `/etc/haproxy/haproxy.cfg` manzilidagi default konfiguratsiya faylini ko'rib chiqing. Ushbu fayl hech qanday load balancersiz standart sozlashni belgilaydi:
+
+```bash filename="/etc/haproxy/haproxy.cfg" {1-1,20-20}
+global
+	log /dev/log	local0
+	log /dev/log	local1 notice
+	chroot /var/lib/haproxy
+	stats socket /run/haproxy/admin.sock mode 660 level admin expose-fd listeners
+	stats timeout 30s
+	user haproxy
+	group haproxy
+	daemon
+
+	# Default SSL material locations
+	ca-base /etc/ssl/certs
+	crt-base /etc/ssl/private
+
+	# See: https://ssl-config.mozilla.org/#server=haproxy&server-version=2.0.3&config=intermediate
+    ssl-default-bind-ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384
+    ssl-default-bind-ciphersuites TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256
+    ssl-default-bind-options ssl-min-ver TLSv1.2 no-tls-tickets
+
+defaults
+	log	global
+	mode	http
+	option	httplog
+	option	dontlognull
+    timeout connect 5000
+    timeout client  50000
+    timeout server  50000
+	errorfile 400 /etc/haproxy/errors/400.http
+	errorfile 403 /etc/haproxy/errors/403.http
+	errorfile 408 /etc/haproxy/errors/408.http
+	errorfile 500 /etc/haproxy/errors/500.http
+	errorfile 502 /etc/haproxy/errors/502.http
+	errorfile 503 /etc/haproxy/errors/503.http
+	errorfile 504 /etc/haproxy/errors/504.http
+```
+
+**HAProxy** konfiguratsiya fayli (ko'pincha `haproxy.cfg` deb nomlanadi) ikkita asosiy bo'limdan iborat: **global** va **default**. global section butun **HAProxy** jarayoniga taalluqli sozlamalarni belgilaydi, default bo'lim esa ma'lum frontend yoki backend bo'limlarida bekor qilinmasa, frontend va backendlar uchun default parametrlarni o'rnatadi.
+
+### global section
+
+* **log /dev/log local0** va **log /dev/log	local1 notice ->** Logga kirish manzillari va darajalarini belgilaydi. Log messagelari turli log darajalariga(log level) ega **local0** va **local1** obyektlariga yuboriladi (**local1** uchun eslatma).
+
+* **chroot /var/lib/haproxy->** HAProxy fayl tizimi koʻrinishini(filesystem view) cheklash orqali xavfsizlikni oshirish uchun **chroot** directoryni oʻrnatadi.
+
+* **stats socket /run/haproxy/admin.sock mode 660 level admin expose-fd listeners->** Statistika uchun UNIX socketini sozlaydi. Bu tashqi dasturlarga (monitoring toollar kabi) HAProxy bilan o'zaro ta'sir qilish imkonini beradi.
+
+* **stats timeout 30s->** Statistik so'rovlar(requestlar) uchun kutish vaqtini(timeout) 30 soniyagacha belgilaydi.
+
+* **user haproxy va group haproxy->** HAProxy ishlaydigan foydalanuvchi(user) va guruhni(group) belgilaydi.
+
+* **daemon->** HAProxy-ga fonda demon sifatida ishlashni buyuradi.
+
+* **ca-base va crt-base->** SSL sertifikatlari va kalitlari(key) uchun default manzillar.
+
+**SSL bilan bog'liq konfiguratsiyalar**
+
+* **ssl-default-bind-ciphers va ssl-default-bind-ciphersuites->** Kiruvchi ulanishlar(incoming connection) uchun ruxsat etilgan SSL shifrlari va shifrlar to'plamini o'rnatadi.
+
+* **ssl-default-bind-options->** Standart ulanish uchun **SSL/TLS** opsiyalarini sozlaydi. U minimal **TLS** versiyasini **TLSv1.2** sifatida belgilaydi va **TLS** session ticketlarini o'chiradi.
+
+### default section
+
+* **log	global** Loglar global logging manzillariga yuborilishi kerakligini bildiradi.
+* **mode	http** Rejimni HTTP sifatida belgilaydi, bu HAProxy HTTP proksi-server sifatida ishlashini ko'rsatadi(HTTP Load Balancing).
+* **option	httplog** HTTP so'rovlari(request) va javoblarini(response) logga yozishni yoqadi.
+* **option	dontlognull** dontlognull directive opsiyasi tizimga hech qanday ma'lumot o'tkazmaydigan ulanishlarni logga yozmaslikni buyuradi. Boshqacha qilib aytadigan bo'lsak, u health check tekshiruvlari yoki haqiqiy HTTP so'rovlarini o'z ichiga olmaydigan ulanishlarni loglarga yozmaslikni istisno qiladi.
+* **timeout connect, timeout client, timeout server** Ulanishning(connection) turli bosqichlari (connect(ulanish), client, server) uchun kutish vaqtini(timeout) o'rnatadi.
+* **errorfile** Maxsus HTTP xato(error) kodlari uchun maxsus(custom) xato fayllarini belgilaydi va foydalanuvchi tajribasini(user experience) yaxshilash uchun maxsus xato sahifalarini taqdim etadi.
+
+<Callout type="info" emoji="">
+Serverlarda web-ilovani ishga tushirib load-balancerni tekshirib ko'irish uchun [**devops-journey.uz**](https://devops-journey.uz) platformasi Docker imagedan foydalanamiz.
+
+```bash
+docker run -d -p 3000:3000 --name devops-journey --restart always devopsjourneyuz/devopsjourneyuz:latest
+```
+</Callout>
+
+## HAProxy load balancer konfiguratsiya qilish.
+
+HAProxy-dan foydalangan holda load-balancer sozlashda ikkita turdagi nodelar(server) aniqlanishi kerak: **frontend** va **backend**. **Frontend** - bu HAProxy ulanishlarni tinglaydigan(listen) node. Backend nodelari HAProxy so'rovlarini yo'naltirishi mumkin bo'lgan nodelardir. Uchinchi node turi, statistik node load-balancerni va boshqa ikkita nodeni kuzatish(monitoring) uchun ishlatilishi mumkin.
+
+**1->** `nano` matn muharririda `/etc/haproxy/haproxy.cfg` faylini oching va **frontend** qism uchun konfiguratsiyani qo'shing:
+
+```bash
+sudo nano /etc/haproxy/haproxy.cfg
+```
+
+```bash filename="/etc/haproxy/haproxy.cfg" /frontend/
+frontend haproxynode
+    bind *:80
+    mode http
+    default_backend backendnodes
+```
+
+Ushbu konfiguratsiya kiruvchi **HTTP** trafigini **80**-portda tinglaydigan(listen) frontendni yaratadi va default ushbu trafikni **backendnodes** deb nomlangan backendga yuboradi. Ushbu sozlash sizga turli serverlar yoki servicelar o'rtasida trafik qanday yo'naltirilishi va load balancingni nazorat qilish uchun qoidalar, ACL (**A**ccess **C**ontrol **L**ists), yoki boshqa shartlarni qo'shimcha aniqlash imkonini beradi. Bu konfiguratsiya bloki **80**-portdagi barcha tarmoq interfeyslari bilan bog'langan **haproxynode** nomli frontend nodeni belgilaydi. U HTTP ulanishlarini tinglaydi (boshqa maqsadlarda TCP rejimidan foydalanish mumkin) va u backendning backend nodelaridan foydalanadi.
+
+<Callout type="info" emoji="">
+**frontend** qismini yana qo'shimcha sozlash mumkin.
+
+| bind                  | Vazifasi                                                                          |
+| --------------------- | --------------------------------------------------------------------------------- |
+| **bind 0.0.0.0:80**   | **80**-portda ushbu serverga tayinlangan barcha IP manzillarni tinglaydi(listen). |
+| **bind :80**          | Address uchun **0.0.0.0** ni belgilash bilan bir xil.                             |
+| **bind :80,:8080**    | **80** va **8080** portlarida tinglaydi. (Portlar orasiga bo'sh joy qo'shilmaydi) |
+| **bind :6379-6390**   | **6379** dan **6390** gacha bo'lgan barcha portlarni tinglang(listen).            |
+</Callout>
+
+
+**2->** **backend** konfiguratsiyasini qo'shing:
+
+```bash filename="/etc/haproxy/haproxy.cfg" /balance/ /server/ {2-2,7-8}
+backend backendnodes
+    balance roundrobin
+    option forwardfor
+    http-request set-header X-Forwarded-Port %[dst_port]
+    http-request add-header X-Forwarded-Proto https if { ssl_fc }
+    option httpchk HEAD / HTTP/1.1\r\nHost:localhost
+    server node1 185.168.1.21:3000 check
+    server node2 185.168.1.22:3000 check
+```
+
+Bu backend nodelarni belgilaydi va bir nechta konfiguratsiya variantlarini belgilaydi. Keling backend configuratsiyani ko'rib chiqamiz.
+
+* **`backend backendnodes`** HAProxy konfiguratsiyasida odatda kiruvchi so'rovlarni bajaradigan serverlar yoki nodelar guruhini ifodalovchi backend qismini belgilaydi.
+* **`balance roundrobin`** Kiruvchi so'rovlarni backenddagi mavjud serverlar o'rtasida teng taqsimlab, load balancing algoritmini round-robinga o'rnatadi. Har bir keyingi so'rov navbatdagi keyingi serverga yuboriladi.
+
+* **`option forwardfor`** **HAProxy**-ga serverlarga yuborilgan **HTTP** so'rovlariga **X-Forwarded-For** headerini qo'shish imkonini beradi. Ushbu headerda acl clientning **IP**-manzili mavjud bo'lib, backend serverlariga kelib chiqqan clientni aniqlash imkonini beradi.
+
+* **`http-request set-header X-Forwarded-Port %[dst_port]`** Backend serverlariga yuborilgan HTTP so'rovlarida **X-Forwarded-Port** headerini o'rnatadi. U so'rov yuborilgan HAProxy serverining destination portini o'z ichiga oladi.
+
+* **`http-request add-header X-Forwarded-Proto https if { ssl_fc }`** HAProxy'ga kiruvchi so‘rov **HTTPS**(ssl_fc) orqali qabul qilingan bo‘lsa, **X-Forwarded-Proto** headerini HTTP so‘rovlariga qo‘shadi. Ushbu header client tomonidan so'rovni amalga oshirishda foydalaniladigan protokolni ko'rsatadi.
+* **`option httpchk HEAD / HTTP/1.1\r\nHost:localhost`** Backend serverlari uchun HTTP health checkni sozlaydi. U serverlarning sog'lig'ini tekshirish(health check) uchun HTTP versiyasi va **Host** headeri **localhost** ga o'rnatilgan holda root(ildiz) yo'liga ("`/`") **HTTP HEAD** so'rovini yuboradi. HAProxy ushbu tekshiruvdan kiruvchi so'rovlarni ko'rib chiqish uchun server mavjudligini aniqlash uchun foydalanadi.
+
+* **`server node1 185.168.1.21:3000 check` va `server node2 185.168.1.22:3000 check`** Backend **backendnodes** ichida ikkita serverni (node1 va node2) belgilaydi. Har bir server IP manzili va port raqami (mos ravishda 185.168.1.21:3000 va 185.168.1.22:3000) bilan aniqlanadi. Tekshirish(check) kalit so'zi HAProxy sozlangan health check metodi (**option httpchk**) yordamida ushbu serverlarning sog'lig'ini muntazam ravishda tekshirishi kerakligini bildiradi. Ushbu serverlar kiruvchi so'rovlarni bajarishga tayyor.
+
+Umumiy qilib aytganda HAProxy-dagi ushbu backend konfiguratsiyasi headerlar (**X-Forwarded-For**, **X-Forwarded-Port**, **X-Forwarded-Proto**), health check va ikkita backend serverlari uchun maxsus sozlamalar bilan load balancer muhitini (roundrobin) o'rnatadi. node1 va node2 kiruvchi trafikni boshqarish uchun tayyor serverlar(backend serverlar).
+
+**3->** Konfiguratsiyaga ixtiyoriy stats nodeni qo'shing:
+
+```bash filename="/etc/haproxy/haproxy.cfg" {2-2,6-6}
+listen stats
+    bind :32700
+    stats enable
+    stats uri /
+    stats hide-version
+    stats auth admin:password_405
+```
+Ushbu konfiguratsiya HAProxy-da stats nomli stats endpointni o'rnatadi:
+
+* **listen stats** Odatda HAProxy instance uchun statistik maʼlumotlar va monitoring maʼlumotlariga kirishni taʼminlaydigan stats listen endpointni belgilaydi.
+* **bind :32700** Ushbu stats endpoint  barcha mavjud tarmoq interfeyslarida **32700** portiga ulanishini bildiradi (`:` barcha interfeyslarni bildiradi). Bu statistika sahifasiga kirish mumkin bo'lgan port.
+* **stats enable** Foydalanuvchilarga HAProxy statistikasi va monitoringiga kirish imkonini beruvchi ushbu endpoint uchun statistik sahifani yoqadi.
+* **stats uri /** Statistik ma'lumotlar sahifasiga kirish uchun **URI** (**U**niform **R**esource **I**dentifier)ni o'rnatadi. Bunday holda, root URI ("`/`") ga kirish statistika va monitoring ma'lumotlarini ko'rsatadi.
+* **stats hide-version** HAProxy versiyasi ma'lumotlarini statistika sahifasidan yashiradi, bu esa potentsial tajovuzkorlarga ma'lum versiya tafsilotlarini oshkor qilmaslik orqali xavfsizlikni oshiradi.
+* **stats auth admin:password_405**  Statistika sahifasiga kirish uchun HTTP asosiy autentifikatsiyasini sozlaydi. Foydalanuvchi nomi **admin**, parol esa **password_405**. Statistik ma'lumotlar va monitoring ma'lumotlariga kirish uchun foydalanuvchilardan ushbu hisob ma'lumotlarini kiritish so'raladi.
+
+Ushbu konfiguratsiya **32700**-portda asosiy autentifikatsiyaga ega monitoring endpointini (stats) o'rnatadi, bu esa xavfsizlikni yaxshilash uchun versiya tafsilotlarini yashirish bilan birga HAProxy statistikasi va monitoring ma'lumotlariga kirish imkonini beradi.
+
+**4->** O'zgartirishlardan keyin to'liq konfiguratsiya fayli:
+
+```bash filename="/etc/haproxy/haproxy.cfg" {36-39,41-48,50-55}
+global
+	log /dev/log	local0
+	log /dev/log	local1 notice
+	chroot /var/lib/haproxy
+	stats socket /run/haproxy/admin.sock mode 660 level admin expose-fd listeners
+	stats timeout 30s
+	user haproxy
+	group haproxy
+	daemon
+ 
+	# Default SSL material locations
+	ca-base /etc/ssl/certs
+	crt-base /etc/ssl/private
+ 
+	# See: https://ssl-config.mozilla.org/#server=haproxy&server-version=2.0.3&config=intermediate
+    ssl-default-bind-ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384
+    ssl-default-bind-ciphersuites TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256
+    ssl-default-bind-options ssl-min-ver TLSv1.2 no-tls-tickets
+ 
+defaults
+	log	global
+	mode	http
+	option	httplog
+	option	dontlognull
+    timeout connect 5000
+    timeout client  50000
+    timeout server  50000
+	errorfile 400 /etc/haproxy/errors/400.http
+	errorfile 403 /etc/haproxy/errors/403.http
+	errorfile 408 /etc/haproxy/errors/408.http
+	errorfile 500 /etc/haproxy/errors/500.http
+	errorfile 502 /etc/haproxy/errors/502.http
+	errorfile 503 /etc/haproxy/errors/503.http
+	errorfile 504 /etc/haproxy/errors/504.http
+
+frontend haproxynode
+    bind *:80
+    mode http
+    default_backend backendnodes
+
+backend backendnodes
+    balance roundrobin
+    option forwardfor
+    http-request set-header X-Forwarded-Port %[dst_port]
+    http-request add-header X-Forwarded-Proto https if { ssl_fc }
+    option httpchk HEAD / HTTP/1.1\r\nHost:localhost
+    server node1 185.168.1.21:3000 check
+    server node2 185.168.1.22:3000 check
+
+listen stats
+    bind :32700
+    stats enable
+    stats uri /
+    stats hide-version
+    stats auth admin:password_405
+```
+
+**5->** HAProxy konfiguratsiyani yozib bo'lganimizdan keyin uni sintaksis xatolarini tekshirib olamiz.
+
+```bash
+haproxy -c -f /etc/haproxy/haproxy.cfg
+```
+**6->** HAProxy load balancerni restart berib qayta ishga tushiramiz.
+
+```bash
+sudo service haproxy restart
+sudo service haproxy status
+```
+
+Endi **185.168.1.20** IP manzilidagi HAProxy nodega(server) kiruvchi har qanday so'rovlar IP manzili **185.168.1.21** yoki **185.168.1.22** bo'lgan backend nodelarga yo'naltiriladi. Ushbu backend nodelari HTTP so'rovlariga xizmat qiladi. Agar istalgan vaqtda ushbu nodelardan biri health checkdan o'ta olmasa, ular testdan o'tmaguncha hech qanday so'rovlarni bajarish uchun foydalanilmaydi.
+
+Statistikani ko'rish va nodelarning holatini kuzatish uchun belgilangan portdagi veb-brauzerda frontend nodening IP manziliga yoki domen nomiga o'ting, masalan, http://185.168.1.20:32700. Bu so'rovning ma'lum bir nodega necha marta yuborilganligi, shuningdek, oldingi node tomonidan bajarilgan joriy va oldingi sessionlar soni kabi statistik ma'lumotlarni ko'rsatadi.
+
+![haproxy](/images/tutorials/web-server/haproxy/stats.png)
+
+## Haproxy Load balancing metodlar
+
+HAProxy turli xil laod-balancing algoritmlari va konfiguratsiyalarini qo'llab-quvvatlaydi, bu devopos/adminlarga kiruvchi trafikni muayyan ehtiyojlar asosida taqsimlash imkonini beradi. HAProxy tomonidan qo'llab-quvvatlanadigan load balancing metodlari va konfiguratsiyalari:
+
+<Callout type="info" emoji="">
+**ESLATMA->** Ushbu Load Balaning metodlar haqida **[Load Balancing](https://devops-journey.uz/guides/web-server/load-balancing)** va **[NGINX Load Balancing](https://devops-journey.uz/guides/web-server/nginx-load-balancing)** qo'llanmalarinida yaxshi yoritilgan!. Bu qismda shu load balancing metodlarini HAProxy configuratsiya qilish ko'rsatilgan.
+</Callout>
+
+
+![haproxy](/images/tutorials/web-server/load-balancing/load.jpg)
+
+### Round Robin
+
+```bash filename="/etc/haproxy/haproxy.cfg" {2}
+backend backendnodes
+    balance roundrobin
+    server server1 192.168.1.10:80 check
+    server server2 192.168.1.11:80 check
+    server server3 192.168.1.12:80 check
+```
+
+### Least Connections
+
+```bash filename="/etc/haproxy/haproxy.cfg" {2}
+backend backendnodes
+    balance leastconn
+    server server1 192.168.1.10:80 check
+    server server2 192.168.1.11:80 check
+    server server3 192.168.1.12:80 check
+```
+### Source IP Hash
+
+```bash filename="/etc/haproxy/haproxy.cfg" {2}
+backend backendnodes
+    balance source
+    server server1 192.168.1.10:80 check
+    server server2 192.168.1.11:80 check
+    server server3 192.168.1.12:80 check
+```
+
+### URI Hash
+
+```bash filename="/etc/haproxy/haproxy.cfg" {2}
+backend backendnodes
+    balance uri
+    server server1 192.168.1.10:80 check
+    server server2 192.168.1.11:80 check
+    server server3 192.168.1.12:80 check
+```
+
+### URL Parameters
+
+```bash filename="/etc/haproxy/haproxy.cfg" {2}
+backend backendnodes
+    balance url_param sid
+    server server1 192.168.1.10:80 check
+    server server2 192.168.1.11:80 check
+    server server3 192.168.1.12:80 check
+```
+### Random
+
+```bash filename="/etc/haproxy/haproxy.cfg" {2}
+backend backendnodes
+    balance random
+    server server1 192.168.1.10:80 check
+    server server2 192.168.1.11:80 check
+    server server3 192.168.1.12:80 check
+```
+### Dynamic Weight
+
+```bash filename="/etc/haproxy/haproxy.cfg" {2}
+backend backendnodes
+    balance rdp-cookie
+    cookie SRV_ID insert indirect nocache
+    server server1 192.168.1.10:80 check cookie srv1 weight 10
+    server server2 192.168.1.11:80 check cookie srv2 weight 5
+    server server3 192.168.1.12:80 check cookie srv3 weight 3
+```
+
+## ACL bilan ishlash(domen ulash)
+
+HAProxy-da **ACL**(**A**ccess **C**ontrol **L**ists) turli mezonlar asosida shartli moslashtirishni amalga oshirish uchun ishlatiladi, bu sizga trafikni tanlab yo'naltirish yoki boshqarish imkonini beradi. Ular maxsus so'rovlarni belgilangan **backend**larga yo'naltirishda yoki belgilangan shartlar asosida qoidalarni(rule) qo'llashda hal qiluvchi rol o'ynaydi.
+
+HAProxy'dagi **ACL**'lar kiruvchi so'rovlarning headerlari, URL manzillari yoki boshqa atributlar kabi muayyan elementlarini tahlil qilish va oldindan belgilangan qoidalar(rule) asosida shartli marshrutlash(onditional routing) yoki trafikni manipulyatsiya qilish uchun kuchli usulni taklif qiladi. Bu qobiliyat load-balancer ichidagi turli xil trafik turlari yoki manbalarini granulyar boshqarish(granular control) va moslashtirilgan boshqarish(tailored handling) imkonini beradi.
+
+HAProxyda domen bilan ishlash uchun **Access Control List Mapping**dan foydalanmiz. Masalan bizda [**devops-journey.uz**](https://devops-journey.uz/) domenimiz bor bu uchun HAProxy konfiguratsiya quyidagicha bo'ladi.
+
+```bash filename="/etc/haproxy/haproxy.cfg" {4-5,8-15}
+frontend haproxynode
+    bind *:80
+    mode http
+	acl devops_journey_acl hdr(host) -i devops-journey.uz
+	use_backend devops_journey_backend if devops_journey_acl
+    default_backend backendnodes
+
+backend devops_journey_backend
+    balance roundrobin
+    option forwardfor
+    http-request set-header X-Forwarded-Port %[dst_port]
+    http-request add-header X-Forwarded-Proto https if { ssl_fc }
+    option httpchk HEAD / HTTP/1.1\r\nHost:localhost
+    server node1 185.168.1.21:3000 check
+    server node2 185.168.1.22:3000 check
+
+backend backendnodes
+    balance roundrobin
+    option forwardfor
+    http-request set-header X-Forwarded-Port %[dst_port]
+    http-request add-header X-Forwarded-Proto https if { ssl_fc }
+    option httpchk HEAD / HTTP/1.1\r\nHost:localhost
+    server node1 185.168.1.21:3000 check
+    server node2 185.168.1.22:3000 check
+ 
+listen stats
+    bind :32700
+    stats enable
+    stats uri /
+    stats hide-version
+    stats auth admin:password_405
+```
+
+`acl devops_journey_acl hdr(host) -i devops-journey.uz` **Host** headerida [**devops-journey.uz**](https://devops-journey.uz/) so'rovlarini tekshiradigan `devops_journey_acl` nomli **ACL** yaratadi. `hdr(host)` ACL kiruvchi HTTP so'rovlarining **Host** headeriini tekshirishini bildiradi. `i` Katta-kichik harflarsiz moslikni bajaradi.
+
+`use_backend devops_journey_backend if devops_journey_acl` Kiruvchi so'rovning **Host** headerida `devops-journey.uz` bo'lsa, va **devops_journey_acl** ga mos keladigan so'rovlarni **devops_journey_backend** nomli maxsus backend serverlarga yo'naltiradi. `devops_journey_acl` shartiga mos kelmaydigan so‘rovlar `backendnodes` backendga yo‘naltiriladi.
+
+
+Qisqa qilib aytganda, **Host** headeriga asoslangan so'rovlarni moslashtirish uchun **ACL** (`devops_journey_acl`) dan foydalanadi, xususan, domen [**devops-journey.uz**](https://devops-journey.uz/) bo'lgan so'rovlarni yo'naltiradi. Ushbu shartga mos keladigan so'rovlar **devops_journey_backend**dagi serverlarga yo'naltiriladi, qolgan barcha so'rovlar esa default backend **backendnodes**ga yo'naltiriladi.
+
+
+## SSL Sertifikat bilan ishlash
+
+Yuqorida **ACL** bilan domen uladik lekin loyihamiz **http**da ishlab turibti uni **https** o'zgartirishimiz kerak. Buning uchun bizga **SSL** sertifikat kerak bo'ladi, sertifikatni **certbot** yordami olamiz. Boshlash uchun **Certbot** yordamida SSL sertifikatini olish va uni HAProxy bilan sozlash bir necha bosqichlarni o'z ichiga oladi.
+
+**1->** Certbot o'rnatib oling.
+
+```bash
+sudo apt update
+sudo apt-get install certbot -y
+```
+Bu buyruq bepul sertifikat organi **Let's Encrypt**dan SSL sertifikatlarini olish uchun foydalaniladigan **Certbot**-ni o'rnatadi.
+
+**2->** SSL Sertifikatini olamiz.
+Birinchi navbatda **80** portda ishlab turgan haproxyni stop qilamiz.
+
+```bash
+sudo systemctl stop haproxy
+```
+SSL sertifikat olamiz.
+```bash
+sudo certbot certonly --standalone -d devops-journey.uz
+```
+**3->** Birlashtirilgan SSL faylini yaratish
+
+```bash
+cd /etc/letsencrypt/live/devops-journey.uz
+cat fullchain.pem > ssl.pem
+cat privkey.pem >> ssl.pem
+```
+
+Ushbu birlashtirilgan fayl (`ssl.pem`) HAProxy yoki sertifikat va private keyni o'z ichiga olgan bitta faylni talab qiluvchi boshqa servicelarda ishlatilishi mumkin.
+
+**3->** **HAProxy**'ni **SSL** sertifikati bilan sozlash
+
+`haproxy.cfg` faylimizdagi `frontend` qismiga quyigadi qo'shimchani qo'shamiz.
+
+```bash filename="/etc/haproxy/haproxy.cfg" {2-2,4-5}
+frontend haproxynode
+    bind *:443 ssl crt /etc/letsencrypt/live/haproxy.xilol.uz/ssl.pem
+    mode http
+    acl devops_journey_acl hdr(host) -i haproxy.xilol.uz
+    use_backend devops_journey_backend if devops_journey_acl
+    default_backend backendnodes
+```
+
+Ushbu konfiguratsiya **HTTPS** porti bo'lgan `*:443` portni tinglashni(listen) bildiradi va SSL uchun sertifikat faylini ko'rsatadi.
+
+**4->** HAProxy'ni qayta ishga tushiramiz.
+
+HAProxy konfiguratsiyasini xatoliklari boirligi yoki yo'qligini tekshirib olamiz.
+
+```bash
+haproxy -c -f /etc/haproxy/haproxy.cfg
+```
+Natija muvafaqqiyatli bo'lganidan keyin HAProxyni qayta ishga tushiramiz.
+
+```bash
+sudo systemctl restart haproxy
+sudo systemctl status haproxy
+```
+
+Haproxy ishga tuhsganidan keyin domen orqali applicationimizga kirganimizda u https bilan ishlashi kerak.
+
+## Bir nechta backend serverlar va domenlar bilan ishlash.
+
+Agar sizda bir nechta loyihalar va domenlar bo'lsa HAProxyda quyidagicha load balancer configuratsiya qilishingiz mumkin. Ushbu konfiguratsiyada numuna sifatida [**google.com**](https://www.google.com/), [**github.com**](https://github.com/), [**youtube.com**](https://www.youtube.com/) ko'rsatilgan.
+
+
+```bash filename="/etc/haproxy/haproxy.cfg" {2-2,5-7,9-11,14-21,23-30,32-39}
+frontend haproxynode
+    bind *:443 ssl crt /etc/letsencrypt/live/google.com/ssl.pem crt /etc/letsencrypt/live/github.com/ssl.pem crt /etc/letsencrypt/live/youtube.com/ssl.pem
+    mode http
+
+	acl google_acl hdr(host) -i google.com
+	acl github_acl hdr(host) -i github.com
+	acl youtube_acl hdr(host) -i youtube.com
+
+	use_backend google_backend if google_acl
+	use_backend github_backend if github_acl
+	use_backend youtube_backend if youtube_acl
+    default_backend backendnodes
+
+backend google_backend
+    balance roundrobin
+    option forwardfor
+    http-request set-header X-Forwarded-Port %[dst_port]
+    http-request add-header X-Forwarded-Proto https if { ssl_fc }
+    option httpchk HEAD / HTTP/1.1\r\nHost:localhost
+    server node1 185.168.1.21:3000 check
+    server node2 185.168.1.22:3000 check
+
+backend github_backend
+    balance roundrobin
+    option forwardfor
+    http-request set-header X-Forwarded-Port %[dst_port]
+    http-request add-header X-Forwarded-Proto https if { ssl_fc }
+    option httpchk HEAD / HTTP/1.1\r\nHost:localhost
+    server node1 185.168.1.23:5000 check
+    server node2 185.168.1.24:5000 check
+
+backend google_github
+    balance roundrobin
+    option forwardfor
+    http-request set-header X-Forwarded-Port %[dst_port]
+    http-request add-header X-Forwarded-Proto https if { ssl_fc }
+    option httpchk HEAD / HTTP/1.1\r\nHost:localhost
+    server node1 185.168.1.25:9000 check
+    server node2 185.168.1.26:9000 check
+
+backend backendnodes
+    balance roundrobin
+    option forwardfor
+    http-request set-header X-Forwarded-Port %[dst_port]
+    http-request add-header X-Forwarded-Proto https if { ssl_fc }
+    option httpchk HEAD / HTTP/1.1\r\nHost:localhost
+    server node1 185.168.1.21:3000 check
+    server node2 185.168.1.22:3000 check
+ 
+listen stats
+    bind :32700
+    stats enable
+    stats uri /
+    stats hide-version
+    stats auth admin:password_405
+```
+
+## Grafana va Prometheus bilan HAProxy monitoring
+
+![haproxy](/images/tutorials/web-server/haproxy/grfana.png)
+
+HAProxy'ni monitoring qilib kuzatib borish uchun **haproxy_exporter, prometheus** va vizualizatsiya uchun **Gfana** ishlatamiz.
+
+[**Serverlarni monitoring qilish**](https://devops-journey.uz/tutorials/article/gnp-monitoring) qo'llanmasida Prometheus va Grafana o'rnatib sozlash ko'rsatilgan. Prometheus va Grafana o'rnatish uchun quyidag qo'llanmalardan foydalaning.
+
+[Prometheus o'ratish va sozlash](https://devops-journey.uz/tutorials/article/gnp-monitoring#prometheus-oratish-va-sozlash), [Prometheusni service sifatida sozlash](https://devops-journey.uz/tutorials/article/gnp-monitoring#prometheusni-service-sifatida-sozlash), [Grafana serverini qanday o'rnatish va sozlash](https://devops-journey.uz/tutorials/article/gnp-monitoring#grafana-serverini-qanday-ornatish-va-sozlash), [Grafana va Prometheusni integratsiya qilish](https://devops-journey.uz/tutorials/article/gnp-monitoring#grafana-va-prometheusni-integratsiya-qilish), [Grafana Dashboardni import qilish
+](https://devops-journey.uz/tutorials/article/gnp-monitoring#grafana-dashboardni-import-qilish)
+
+Prometheus va Grafanai o'rnatib sozlaganizdan keyin haproxy serverimizga haproxy_exporter o'rnatamiz.
+
+```bash
+docker run -d -p 9101:9101 --name haproxy-exporter quay.io/prometheus/haproxy-exporter:latest --haproxy.scrape-uri="http://admin:password_405@185.168.1.20:32700/haproxy?stats;csv"
+```
+Bu buyruqda haproxy serveri IP mazili va stats node porti, kirish uchun login parol yozib docker orqali ishga tushiriladi.
+
+Haproxy exporterni ishga tushirganingizdan keyin promethus konfiguratsiyaga quyidagi bo'lakni qo'shib qo'yasiz.
+
+```bash filename="/etc/prometheus/prometheus.yml" /haproxy_exporter/
+
+  - job_name: "haproxy_exporter"
+    static_configs:
+      - targets: ["185.168.1.20:9101"]
+```
+
+Prometheus configuratsiyaga haproxy_expoterni qo'shib qo'yganingizdan keyin prometheusga restart beramiz.
+
+```bash
+sudo systemctl restart prometheus
+sudo systemctl status prometheus
+```
+
+Grafanada haproxy metrikalarini vizualizatsiya qilib ko'rish uchun HAProxy uchun ishlab chiqilgan dashboardni import qilib olamiz. [Grafana Dashboardni import qilish
+](https://devops-journey.uz/tutorials/article/gnp-monitoring#grafana-dashboardni-import-qilish)
+
+
+
+Grafana [**HAProxy**](https://grafana.com/grafana/dashboards/2428-haproxy/) dashboard `ID:` **2428**
+
+## Qo'shimcha
+
+<Callout type="info" emoji="">
+
+**Foydalanilgan manbalar:** [www.haproxy.com](https://www.haproxy.com/blog/haproxy-configuration-basics-load-balance-your-servers), [www.linode.com](https://www.linode.com/docs/guides/how-to-use-haproxy-for-load-balancing/)
+
+Qo'shimcha Resurslar
+* [**Load Balancing**](https://devops-journey.uz/guides/web-server/load-balancing)
+* [**NGINX Load Balancing**](https://devops-journey.uz/guides/web-server/nginx-load-balancing)
+
+**Sana:** 2024.01.08(2024-yil 8-yanvar)
+
+**Oxirgi yangilanish:** 2024.01.09(2024-yil 9-yanvar)
+
+**Muallif: Otabek Ismoilov**
+
+| [Telegram](https://t.me/Otabek_Ismoilov) | [Github](https://github.com/ismoilovdevml) | [LinkedIn](https://www.linkedin.com/in/otabek-ismoilov-8625b0222/) |
+| - | - | - |
+
+</Callout>

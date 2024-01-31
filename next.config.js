@@ -12,8 +12,8 @@ const withNextra = require('nextra')({
 /** @type {import('next').NextConfig} */
 const config = {
   i18n: {
-    locales: ['en-US'],
-    defaultLocale: 'en-US',
+    locales: ['en-UZ'],
+    defaultLocale: 'en-UZ',
   },
   reactStrictMode: true,
   typescript: {

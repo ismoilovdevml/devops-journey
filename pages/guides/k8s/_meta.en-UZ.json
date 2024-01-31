@@ -1,0 +1,56 @@
+{
+  "k8s-kirish": {
+    "title": "Kubernetesga Kirish",
+    "icon": "▶️",
+    "description": "Kubernetesga ilk qadamlar",
+    "href": "/guides/k8s/k8s-kirish"
+  },
+  "minikube-wordpress": {
+    "title": "Kubernetesda Wordpress deploy qilish",
+    "icon": "▶️",
+    "description": "Minkubedan foydalanib wordpress ko'tarish",
+    "href": "/guides/k8s/minikube-wordpress"
+  },
+  "minikube": {
+    "title": "Minkube",
+    "icon": "▶️",
+    "description": "Minkube o'rnatish va sozlash",
+    "href": "/guides/k8s/minikube"
+  },
+  "minikube-multi-node": {
+    "title": "Multi-Node Clusterdan foydalanish",
+    "icon": "▶️",
+    "description": "Minkubeda Multi-Node Clusterdan foydalanish",
+    "href": "/guides/k8s/minikube-multi-node"
+  },
+  "k8s-architecture": {
+    "title": "Kubernetes Arxitekturasi",
+    "icon": "▶️",
+    "description": "Kubernetes tarkibiy qismi",
+    "href": "/guides/k8s/k8s-architecture"
+  },
+  "k8s-objects": {
+    "title": "Kubernetes Obyektlari",
+    "icon": "▶️",
+    "description": "k8s native obyektlari",
+    "href": "/guides/k8s/k8s-objects"
+  },
+  "k8s-cluster-setup": {
+    "title": "Kubernetes Cluster sozlash",
+    "icon": "▶️",
+    "description": "kubeadm bilan kubernetes cluster sozlash",
+    "href": "/guides/k8s/k8s-cluster-setup"
+  },
+  "k8s-cert-manager": {
+    "title": "Kubernetesga Cert-Manager o'rnatish",
+    "icon": "▶️",
+    "description": "Cert-Manager o'rnatish va sozlash",
+    "href": "/guides/k8s/k8s-cert-manager"
+  },
+  "argo-cd-install": {
+    "title": "Kubernetesga Argo CD o'rnatish va sozlash",
+    "icon": "▶️",
+    "description": "GitOpsga Kirish",
+    "href": "/guides/k8s/argo-cd-install"
+  }
+}

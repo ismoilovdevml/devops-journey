@@ -1,0 +1,54 @@
+import { Callout } from "nextra-theme-docs";
+
+## NGINX va NGINX Plus-ni web-server sifatida sozlash
+
+![nginx](/images/tutorials/web-server/banner.jpg)
+
+Ushbu maqola **NGINX Open Source** va **NGINX Plus**-ni veb-server sifatida qanday sozlashni tushuntiradi va quyidagi bo'limlarni o'z ichiga oladi:
+
+<Callout type="info" emoji="">
+**Virtual serverlarni sozlash**
+
+**Locationlarni sozlash**
+
+* Location Priority
+
+**O'zgaruvchilardan(variable) foydalanish**
+
+**Maxsus Status kodlarni qaytarish**
+
+**So'rovlarda(request) URI'larni qayta yozish**
+
+**HTTP javoblarini(response) qayta yozish**
+
+**Xatolarni boshqarish(Handling Errors)**
+</Callout>
+
+Yuqori darajada(high level), NGINX Plus-ni veb-server sifatida sozlash uning qaysi URL-manzillarni boshqarishini va ushbu URL-manzillardagi resurslar uchun HTTP requestlarini qanday qayta ishlashini aniqlash masalasidir. Pastroq darajada(lower level), konfiguratsiya ma'lum domenlar yoki IP manzillar uchun requestlarni qayta ishlashni boshqaradigan *virtual serverlar* to'plamini belgilaydi. 
+
+HTTP trafigi uchun har bir virtual server ma'lum bir URI to'plamlarini qayta ishlashni boshqaradigan `location`lar deb ataladigan maxsus konfiguratsiya misollarini belgilaydi. Har bir location ushbu manzilga ko'rsatilgan requestlar bilan nima sodir bo'lishining o'z senariysini belgilaydi. NGINX Plus bu jarayon ustidan toʻliq nazoratni taʼminlaydi. Har bir location requestni proksi-server orqali yuborishi yoki faylni qaytarishi mumkin. Bundan tashqari, request boshqa locationga yoki virtual serverga yo'naltirilishi uchun URI o'zgartirilishi mumkin. Bundan tashqari, ma'lum bir error code qaytarilishi mumkin va siz har bir error codiga mos keladigan ma'lum bir sahifani sozlashingiz mumkin.
+
+### Virtual serverlarni sozlash
+
+NGINX Plus konfiguratsiya fayli virtual serverni aniqlash uchun kamida bitta server direktivasini o'z ichiga olishi kerak. NGINX Plus so‘rovni qayta ishlaganda avval so‘rovga xizmat ko‘rsatadigan virtual serverni tanlaydi.
+
+Virtual server `http` kontekstida `server` direktivasi bilan aniqlanadi, masalan:
+
+```nginx /http/ /server/
+http {
+    server {
+        # Server configuration
+    }
+}
+```
+
+Bir nechta virtual serverlarni aniqlash uchun `http` kontekstiga bir nechta `server` direktivalarini qo'shish mumkin. `server` konfiguratsiya bloki odatda server requestlarni tinglaydigan IP-manzil va portni (yoki Unix domain socketi va yo'lini(path)) belgilash uchun **listen** direktivasini o'z ichiga oladi. IPv4 va IPv6 manzillari ham qabul qilinadi; IPv6 manzillarini kvadrat qavs ichiga kiriting. Quyidagi misol `127.0.0.1` IP manzili va `8080` portini tinglaydigan(listen) server konfiguratsiyasini ko'rsatadi:
+
+```nginx /listen/
+server {
+    listen 127.0.0.1:8080;
+    # Qo'shimcha server konfiguratsiyasi
+}
+```
+
+Agar port o'tkazib yuborilsa, standart port ishlatiladi. Xuddi shunday, agar manzil o'tkazib yuborilsa, server barcha manzillarni tinglaydi(listen). Agar `listen` direktivasi umuman kiritilmagan bo'lsa, superfoydalanuvchi huquqlariga(superuser privileges) qarab `standart` port 80/tcp va `default` port 8000/tcp bo'ladi.

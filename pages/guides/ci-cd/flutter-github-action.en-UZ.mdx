@@ -1,0 +1,128 @@
+import { Callout } from "nextra-theme-docs";
+
+# Github Actionda Flutterga CI/CD yozamiz va Discord bilan integratsiya qilamiz
+
+![android](/images/ci-cd/flutter.png)
+
+CI/CD ni ko'p hollarda Docker yoki web ilovalar uchun yozilganini ko'p ko'rganmiz lekin mobil dasturlar uchun yozilganini kam ko'rganmiz. Bugun biz Flutterda yozilgan dasturlarga **Flutter CI/CD yozamiz**. Bu juda qiziq bo'ladi va biz Discord bilan integratsiya qilamiz yani gitga push qilganimizda pull requestlarni merge qilganimizda yoki pull requestlar kelsa va CI/CD action fail yoki succses bo'lganida discordga notification yuborib turadigan qilib sozlaymiz. Keling ishni Discord bila integratsiya qilishdan boshlaymiz.
+
+## Discord bilan integratsiya
+
+Biz loyihamizni discord bilan integratsiya qilish uchun `Discord webhook` dan foydalanamiz. Discord bilan integratsiya qilishda Discord server ochib olishimiz va serverda channel ochishimiz kerak. 
+
+<Callout type="info" emoji="">
+Discord channel ochish va Discord webhook olib Githubdagi loyiha bilan integratsiya qilish bo'yicha quyidagi [video qo'llanmani](https://youtu.be/-KDQqWNK3Tw?si=L8YYPAX4RKVi1ACa) ko'rib chiqishingiz mumkin.
+</Callout>
+
+
+```yaml filename=".github/worklows/android.yml"
+name: Flutter CI/CD
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.13.3' 
+
+      - name: Install Dependencies
+        run: flutter pub get
+
+      - name: Build APK
+        run: flutter build apk --release
+
+      - name: Get current date
+        run: echo "CURRENT_DATE=$(date +%Y-%m-%d-%H-%M-%S)" >> $GITHUB_ENV
+
+      - name: Rename APK with build date
+        run: mv build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/app-release-$CURRENT_DATE.apk
+
+      - name: Clone target repository
+        run: git clone https://x-access-token:${{ secrets.REPO_ACCESS_TOKEN }}@github.com/ismoilovdevml/release target-repo
+
+      - name: Create new directory for current build in the target repository
+        run: mkdir -p target-repo/releases/$CURRENT_DATE/android
+
+      - name: Move APK to new directory in the target repository
+        run: mv build/app/outputs/flutter-apk/app-release-$CURRENT_DATE.apk target-repo/releases/$CURRENT_DATE/android/
+
+      - name: Commit and push to the target repository
+        run: |
+          cd target-repo
+          git config user.name "GitHub Action"
+          git config user.email "githubaction@github.com"
+          git add releases/$CURRENT_DATE/android/app-release-$CURRENT_DATE.apk
+          git commit -m "Add release $CURRENT_DATE"
+          git push
+```
+
+```yaml filename=".github/worklows/github-release.yml"
+name: Flutter CI/CD
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.13.3' 
+
+      - name: Install Dependencies
+        run: flutter pub get
+
+      - name: Build APK
+        run: flutter build apk --release
+
+      - name: Get current date
+        run: echo "CURRENT_DATE=$(date +%Y-%m-%d)" >> $GITHUB_ENV
+
+      - name: Rename APK with build date
+        run: mv build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/app-release-$CURRENT_DATE.apk
+
+      - name: List files
+        run: ls -l build/app/outputs/flutter-apk/
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
+        with:
+          tag_name: ${{ env.CURRENT_DATE }}
+          release_name: Release ${{ env.CURRENT_DATE }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: build/app/outputs/flutter-apk/app-release-${{ env.CURRENT_DATE }}.apk
+          asset_name: app-release-${{ env.CURRENT_DATE }}.apk
+          asset_content_type: application/vnd.android.package-archive
+```

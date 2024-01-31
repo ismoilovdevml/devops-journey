@@ -1,0 +1,44 @@
+{
+  "flutter-github-action": {
+    "title": "Flutter CI/CD",
+    "icon": "▶️",
+    "description": "Github Action + Discord (Android, iOS)",
+    "href": "/guides/ci-cd/flutter-github-action"
+  },
+  "jenkins-ornatish": {
+    "title": "Jenkins o'rnatish",
+    "icon": "▶️",
+    "description": "Linux Serverlarga Jenkins(CI/CD) o'rnatish",
+    "href": "/guides/ci-cd/jenkins-ornatish"
+  },
+  "start-githubactions": {
+    "title": "Github Action",
+    "icon": "▶️",
+    "description": "Github Action bilan CI/CD yozamiz",
+    "href": "/guides/ci-cd/start-githubactions"
+  },
+  "start-gitlabci": {
+    "title": "Gitlab CI",
+    "icon": "▶️",
+    "description": "Gitlab CI bilan ishlaymiz",
+    "href": "/guides/ci-cd/start-gitlabci"
+  },
+  "android-github-actions": {
+    "title": "Android CI/CD",
+    "icon": "▶️",
+    "description": "Github Actionda Android CI/CD",
+    "href": "/guides/ci-cd/android-github-actions"
+  },
+  "jenkins-docker-ci-cd": {
+    "title": "Jenkins bilan Docker CI/CD",
+    "icon": "▶️",
+    "description": "Docker image build qilib deploy qilish",
+    "href": "/guides/ci-cd/jenkins-docker-ci-cd"
+  },
+  "github-actions-argocd-cicd": {
+    "title": "Kuberntes CI/CD",
+    "icon": "▶️",
+    "description": "Github Actions + Argo CD",
+    "href": "/guides/ci-cd/github-actions-argocd-cicd"
+  }
+}
