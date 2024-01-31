@@ -7,4 +7,64 @@ import { Callout } from "nextra-theme-docs";
 
 ## Ishni boshlash
 
-Ushbu amaliyotda biz Github Actions va Github Container Registrydan foydalangan holda loyilarimizga CI/CD yozib deploymentni avtomlashtiramiz. Container Registry sifatida faqat Github Container Registry emas, balki Dockerhub va GCR(Google Container Registry)dan foydalanish uchun ham namuna Github Actionslar yozamiz. Amaliyotimiz soddaroq hech qanday teztlarsiz va kood analizlarsiz ishga tushiramiz siz ularni o'zingiz kengaytirib qo'shib olamiz. 
+Ushbu amaliyotda biz Github Actions va Github Container Registrydan foydalangan holda loyilarimizga CI/CD yozib deploymentni avtomlashtiramiz. Container Registry sifatida faqat Github Container Registry emas, balki Dockerhub va GCR(Google Container Registry)dan foydalanish uchun ham namuna Github Actionslar yozamiz. Amaliyotimiz soddaroq hech qanday testlarsiz va kood analizlarsiz ishga tushiramiz siz ularni o'zingiz kengaytirib qo'shib olamiz. Bugungi amaliyotimiz arixtekturasi tuzulishi quyidagicha **main** branchga o'zgarish bo'lganida avtomatik ishga tushadi va repositoriyani checkout qilib oladi loyidagi Dockerfile orqali loyiha docker imageni build qilib keshlab Container Registryga push qiladi keyingi CD bosqichida esa ssh orqali servverga kirib ynagi docker imageni pull qilib tortib olib eski shu nomli containerni to'xtatib o'chirib yangi containerni ishga tushirib qo'yadi va bu haqida discordga notification keladi.
+
+
+## Github Actions CI
+
+Amaliyotni boshlasak ham bo'ladi. Loyiahmiz root directoriyasida  Github Actions uchun **.github/workflows** papka ochib **ci-cd.yml** nomli yaml konfiguratsiya faylini ochib olamiz.
+
+![github](/images/tutorials/ci-cd/github-actions/github.png)
+
+Loyihalar har xil bo'ladi yani bitta repositoiyada bitta loyiha bo'ladi va unda bitta Dockerfile bo'ladi lekin ba'zi loyihlar bor ular bitta repositoiyada bir nechta loyihalar joylashgan bo'ladi masaln .NET(dotnet) loyihalar. Ushbu amaliyotda biz ikkala holat uchun Github Actionsda CI/CD yozamiz.
+
+### Monorepo
+
+Monorepo uchun [**devops-journey**](https://github.com/ismoilovdevml/devops-journey) loyihasini tanladik, bu holda bizda bitta repositoriyda butun loyihani o'zi va bitta Dockerfile bo'lib bitta Docker container orqali ishlaydi. keling ushbu amaliyotni boshlaymiz
+
+Monorepo, bitta containerli loyihalar uchun **ci-cd.yml** configuratsiyamizning **CI** qismi quyidagicha bo'ladi.
+
+```yaml
+name: Github Actions CI/CD
+ 
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+ 
+env:
+  IMAGE_NAME: ${{ github.repository }}
+  CONTAINER_NAME: devops-journey
+  REGISTRY: ghcr.io
+  GITHUB_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
+ 
+jobs:
+  build_and_push:
+    runs-on: ubuntu-latest
+    permissions:
+        contents: read
+        packages: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.REPO_NAME}}-api:buildcache
+          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.REPO_NAME}}-api:buildcache,mode=max
+```
