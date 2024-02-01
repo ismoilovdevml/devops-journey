@@ -64,8 +64,8 @@ jobs:
           context: .
           push: true
           tags: "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
-          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.REPO_NAME}}-api:buildcache
-          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.REPO_NAME}}-api:buildcache,mode=max
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache
+          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache,mode=max
 ```
 
 Keling ushbu Github actionni analiz qilib chiqamiz.
@@ -141,3 +141,90 @@ Ushbu bosqichda **REGISTRY**ga **github.actor**ning **GITHUB_TOKEN**'ni bilan lo
 ```
 
 Ushbu bosqichda applicationimizdagi Dockerfile orqali applicationimiz docker image build qiladi va **github.sha** bilan tag qo'yib belgilangan Container Registryga push qiladi bu holda GHCRga. Ushbu bosqichda keshlash ham yoqilgan [docker/build-push-action@v5](https://github.com/docker/build-push-action)
+
+Keling actoinimizni ishga tushirib sinab ko'raylik shuncahki ushbu o'zgarishlarni ushbu configuratsiyamizni main branchga psuh qilamiz va Github repositoriyamizdan **Actions** bo'limiga o'tib ko'rishimiz mumkin.
+
+**Actions** bo'limidan Github Actionimiz ishlayotganini ko'rishimiz mumkin.
+![github](/images/tutorials/ci-cd/github-actions/github2.png)
+![github](/images/tutorials/ci-cd/github-actions/github3.png)
+Okeyyy bizda Github Actionimiz muvaffaqiyat o'z ishini yakunladi.
+![github](/images/tutorials/ci-cd/github-actions/github4.png)
+
+Github Repositoriyamizdan **Packages** bo'limiga o'tsak build qilgan docker imageyimizni ko'rishimiz mumkin.
+![github](/images/tutorials/ci-cd/github-actions/github5.png)
+
+### Multi-container
+
+Shunday applicationlar borki ular bitta repositoriydan ikkidan ortiq application bo'ladi masalan API va UI. Ushbu loyihlar uchun biz ikkita Dockerfile yozamiz ya'ni API.Dockerfile va UI.Dockerfile. Ushbu amaliyot uchun namuna sifatida **.NET 7** da yozilgan [devops-journey-uz/github-actions-dotnet](https://github.com/devops-journey-uz/github-actions-dotnet) applicartionni tanlab oldik. Bunda API uchun **API.Dockerfile** va UI uchun **UI.Dockerfile** yozilgan
+
+Ushbu loyiha uchun Girthub Actionimiz quyidagicha o'zgaradi.
+
+```yaml {10-13,38,42,48,52}
+name: Github Actions CI/CD
+
+on:
+    push:
+      branches: [ main ]
+    pull_request:
+      branches: [ main ]
+
+env:
+  API_IMAGE_NAME: github-api
+  API_CONTAINER_NAME: github-api
+  UI_IMAGE_NAME: github-ui
+  UI_CONTAINER_NAME: github-ui
+  
+  REPO_NAME: ${{ github.repository }}
+  REGISTRY: ghcr.io
+
+jobs:
+  build_and_push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push API Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./API.Dockerfile
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.REPO_NAME}}/${{ env.API_IMAGE_NAME }}:${{ github.sha }}
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.REPO_NAME}}/${{ env.API_IMAGE_NAME }}:buildcache
+          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.REPO_NAME}}/${{ env.API_IMAGE_NAME }}:buildcache,mode=max
+
+      - name: Build and push UI Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./UI.Dockerfile
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.REPO_NAME}}/${{ env.UI_IMAGE_NAME }}:${{ github.sha }}
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.REPO_NAME}}/${{ env.UI_IMAGE_NAME }}:buildcache
+          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.REPO_NAME}}/${{ env.UI_IMAGE_NAME }}:buildcache,mode=max
+```
+
+Ushbu konfiguratsiyamizda **file** ga Dockerfaylarimizni ko'rsatamiz. Shunga o'xshash loyihalar ko'pincha **.NET** bo'lgani uchun **.NET** loyiha tanlandi.
+
+Keling Actionimizni ishga tushirib sinab ko'ramiz.
+
+![github](/images/tutorials/ci-cd/github-actions/github6.png)
+
+Hammasi zo'r Github Actionimiz muvaffaqiyat o'z ishini yakunladi endi CD serverga deploy qismini boshlasak bo'ladi
+
+## Github Actions CD
+
