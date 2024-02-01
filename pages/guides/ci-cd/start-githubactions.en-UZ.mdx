@@ -34,7 +34,7 @@ on:
     branches: [ main ]
  
 env:
-  IMAGE_NAME: ${{ github.repository }}
+  REPO_NAME: ${{ github.repository }}
   CONTAINER_NAME: devops-journey
   REGISTRY: ghcr.io
  
@@ -63,9 +63,9 @@ jobs:
         with:
           context: .
           push: true
-          tags: "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
-          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache
-          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache,mode=max
+          tags: "${{ env.REGISTRY }}/${{ env.REPO_NAME }}:${{ github.sha }}"
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.REPO_NAME }}:buildcache
+          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.REPO_NAME }}:buildcache,mode=max
 ```
 
 Keling ushbu Github actionni analiz qilib chiqamiz.
@@ -90,7 +90,7 @@ env:
 ```
 Ushbu qism **Environment** qismi hisoblanadi bu qismga environmentlarimizni yozamiz.
 
-* **IMAGE_NAME->** Docker image nomi bu holda repositoiya nomi olinadi.
+* **REPO_NAME->** Docker image nomi bu holda repositoiya nomi olinadi.
 * **CONTAINER_NAME->** Loyihamiz containeri nomi.
 * **REGISTRY->** Bu qismda Container Registry url manzili beriladi GHCR uchun **ghcr.io**
 
@@ -224,7 +224,83 @@ Keling Actionimizni ishga tushirib sinab ko'ramiz.
 
 ![github](/images/tutorials/ci-cd/github-actions/github6.png)
 
+Repositoriyamizdan **Pacakages** bo'limiga o'tsak ikkita containerni ko'rishimiz mumkin
+![github](/images/tutorials/ci-cd/github-actions/github7.png)
+
 Hammasi zo'r Github Actionimiz muvaffaqiyat o'z ishini yakunladi endi CD serverga deploy qismini boshlasak bo'ladi
 
 ## Github Actions CD
 
+Nihoyat biz so'ngi bosqich CD qismiga yetib keldik. Yuqorida biz bitta containerli va multi containerli applicationlarga CI qisqmini yozib tugadik. CI bosqichida Github Action berilgan Dockerfayllar orqali applicationlarimiz Docker imageni build qilib Github Container Registryga push qilib qo'ydi endi keyingi bosqichga o'tamiz. CD bosqichida berilgan `SERVER_IP`, `SERVER_USERNAME` va `SSH_PRIVATE_KEY` orqali serverga ssh orqali CI tomonidan push qilib joylab qo'yilgan Docker imagelarni pull qilib tortib oladi va eski shu nom bilan ishlab turgan containerlarni to'xtatib, o'chirib pull qilib olingan yangi docker containerni berilgan nom bilan, berilgan portda ishga tushirib qo'yadi va o'z ishini yakunlaydi. Keyingi bosqichda Notificationlar uchun Discord bilan integratsiya qilamiz.
+
+[**devops-journey**](https://github.com/ismoilovdevml/devops-journey) loyihasi uchun yani bitta containerli loyihalar uchun CD qism quyidagicha bo'ladi.
+
+
+```yaml {13-16,48-66}
+name: Github Actions CI/CD
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  REPO_NAME: ${{ github.repository }}
+  CONTAINER_NAME: devops-journey
+  REGISTRY: ghcr.io
+  SSH_HOST: ${{ secrets.SERVER_IP }}
+  SSH_USER: ${{ secrets.SERVER_USERNAME }}
+  SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+  PORT: 3000:3000
+
+jobs:
+  build_and_push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: "${{ env.REGISTRY }}/${{ env.REPO_NAME }}:${{ github.sha }}"
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.REPO_NAME }}:buildcache
+          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.REPO_NAME }}:buildcache,mode=max
+
+  
+  deploy:
+    needs: build_and_push
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Executing remote SSH commands to deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: "${{ env.SSH_HOST }}"
+          username: "${{ env.SSH_USER }}"
+          key: "${{ env.SSH_KEY }}"
+          script: |
+            echo ${{ secrets.GITHUB_TOKEN }} | docker login -u ${{ github.actor }} --password-stdin ${{ env.REGISTRY }}
+            docker pull "${{ env.REGISTRY }}/${{ env.REPO_NAME }}:${{ github.sha }}"
+            docker stop "${{ env.CONTAINER_NAME }}" || true
+            docker rm "${{ env.CONTAINER_NAME }}" || true
+            docker run -d --name "${{ env.CONTAINER_NAME }}" -p "${{ env.PORT }}" "${{ env.REGISTRY }}/${{ env.REPO_NAME }}:${{ github.sha }}"
+```
