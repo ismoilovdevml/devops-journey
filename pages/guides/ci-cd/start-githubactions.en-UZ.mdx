@@ -16,11 +16,11 @@ Amaliyotni boshlasak ham bo'ladi. Loyiahmiz root directoriyasida  Github Actions
 
 ![github](/images/tutorials/ci-cd/github-actions/github.png)
 
-Loyihalar har xil bo'ladi yani bitta repositoiyada bitta loyiha bo'ladi va unda bitta Dockerfile bo'ladi lekin ba'zi loyihlar bor ular bitta repositoiyada bir nechta loyihalar joylashgan bo'ladi masaln .NET(dotnet) loyihalar. Ushbu amaliyotda biz ikkala holat uchun Github Actionsda CI/CD yozamiz.
+Loyihalar har xil bo'ladi yani bitta repositoiyada bitta loyiha bo'ladi va unda bitta Dockerfile bo'ladi lekin ba'zi loyihalar bor ular bitta repositoriyada bir nechta loyihalar joylashgan bo'ladi masaln .NET(dotnet) loyihalar. Ushbu amaliyotda biz ikkala holat uchun Github Actionsda CI/CD yozamiz.
 
-### Monorepo
+### Bitta Container
 
-Monorepo uchun [**devops-journey**](https://github.com/ismoilovdevml/devops-journey) loyihasini tanladik, bu holda bizda bitta repositoriyda butun loyihani o'zi va bitta Dockerfile bo'lib bitta Docker container orqali ishlaydi. keling ushbu amaliyotni boshlaymiz
+Bitta containerli uchun [**devops-journey**](https://github.com/ismoilovdevml/devops-journey) loyihasini tanladik, bu holda bizda bitta repositoriyada butun loyihani o'zi va bitta Dockerfile bo'lib bitta Docker container orqali ishlaydi. keling ushbu amaliyotni boshlaymiz
 
 Monorepo, bitta containerli loyihalar uchun **ci-cd.yml** configuratsiyamizning **CI** qismi quyidagicha bo'ladi.
 
@@ -155,7 +155,7 @@ Github Repositoriyamizdan **Packages** bo'limiga o'tsak build qilgan docker imag
 
 ### Multi-container
 
-Shunday applicationlar borki ular bitta repositoriydan ikkidan ortiq application bo'ladi masalan API va UI. Ushbu loyihlar uchun biz ikkita Dockerfile yozamiz ya'ni API.Dockerfile va UI.Dockerfile. Ushbu amaliyot uchun namuna sifatida **.NET 7** da yozilgan [devops-journey-uz/github-actions-dotnet](https://github.com/devops-journey-uz/github-actions-dotnet) applicartionni tanlab oldik. Bunda API uchun **API.Dockerfile** va UI uchun **UI.Dockerfile** yozilgan
+Shunday applicationlar borki ular bitta repositoriydan ikkidan ortiq application bo'ladi masalan API va UI. Ushbu loyihlar uchun biz ikkita Dockerfile yozamiz ya'ni API.Dockerfile va UI.Dockerfile. Ushbu amaliyot uchun namuna sifatida **.NET 7** da yozilgan [devops-journey-uz/github-actions-dotnet](https://github.com/devops-journey-uz/github-actions-dotnet) applicationni tanlab oldik. Bunda API uchun **API.Dockerfile** va UI uchun **UI.Dockerfile** yozilgan
 
 Ushbu loyiha uchun Girthub Actionimiz quyidagicha o'zgaradi.
 
@@ -233,6 +233,7 @@ Hammasi zo'r Github Actionimiz muvaffaqiyat o'z ishini yakunladi endi CD serverg
 
 Nihoyat biz so'ngi bosqich CD qismiga yetib keldik. Yuqorida biz bitta containerli va multi containerli applicationlarga CI qisqmini yozib tugadik. CI bosqichida Github Action berilgan Dockerfayllar orqali applicationlarimiz Docker imageni build qilib Github Container Registryga push qilib qo'ydi endi keyingi bosqichga o'tamiz. CD bosqichida berilgan `SERVER_IP`, `SERVER_USERNAME` va `SSH_PRIVATE_KEY` orqali serverga ssh orqali CI tomonidan push qilib joylab qo'yilgan Docker imagelarni pull qilib tortib oladi va eski shu nom bilan ishlab turgan containerlarni to'xtatib, o'chirib pull qilib olingan yangi docker containerni berilgan nom bilan, berilgan portda ishga tushirib qo'yadi va o'z ishini yakunlaydi. Keyingi bosqichda Notificationlar uchun Discord bilan integratsiya qilamiz.
 
+### Bitta Container
 [**devops-journey**](https://github.com/ismoilovdevml/devops-journey) loyihasi uchun yani bitta containerli loyihalar uchun CD qism quyidagicha bo'ladi.
 
 
@@ -305,6 +306,8 @@ jobs:
             docker run -d --name "${{ env.CONTAINER_NAME }}" -p "${{ env.PORT }}" "${{ env.REGISTRY }}/${{ env.REPO_NAME }}:${{ github.sha }}"
 ```
 
+
+### Server sozlash
 Keling ushbu o'zgarishlarnin o'rganib chiqamiz.
 
 Environment qismiga quyidagi o'zgarishlarni qo'shdik.
@@ -357,3 +360,202 @@ cat github_actions
 
 Private keyni joylashtiramiz.
 ![github](/images/tutorials/ci-cd/github-actions/github10.png)
+
+
+Serverga ssh-key generatsiya qilib Github Actions kira oladigan qilib sozlab olinganidan keyin Serverimizga Docker o'rnatib olishimiz kerak bo'ladi chunki applicationlarimiz Docker containerlarda ishlaydi. [**Linux serverlarga Docker o'rnatish**](https://devops-journey.uz/guides/konteyner/docker-ornatish) qo'llanasidan foydalanib serveringizga Docker o'rnatib oling.
+
+Github Actionimiz CD qismini ko'rib chiqadigan bo'lsak.
+
+```yaml
+deploy:
+    needs: build_and_push
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+```
+
+Ushbu `deploy` bosqichi `build_and_push` bosqichidan keyin ishga tusshadi va ubuntu-latest versiyali runnerda ishlaydi. Github Packagelarga yozish va o'qish ruxsatlari bor.
+
+```yaml
+steps:
+  - name: Executing remote SSH commands to deploy
+    uses: appleboy/ssh-action@master
+    with:
+      host: "${{ env.SSH_HOST }}"
+      username: "${{ env.SSH_USER }}"
+      key: "${{ env.SSH_KEY }}"
+```
+
+Ushbu qadamda [appleboy/ssh-action@master](https://github.com/appleboy/ssh-action) bilan berilgan SSH_HOST, SSH_USER va SSH_KEY bilan ssh orqali severga kiradi.
+
+```yaml
+script: |
+    echo ${{ secrets.GITHUB_TOKEN }} | docker login -u ${{ github.actor }} --password-stdin ${{ env.REGISTRY }}
+    docker pull "${{ env.REGISTRY }}/${{ env.REPO_NAME }}:${{ github.sha }}"
+    docker stop "${{ env.CONTAINER_NAME }}" || true
+    docker rm "${{ env.CONTAINER_NAME }}" || true
+    docker run -d --name "${{ env.CONTAINER_NAME }}" -p "${{ env.PORT }}" "${{ env.REGISTRY }}/${{ env.REPO_NAME }}:${{ github.sha }}"
+```
+
+Ushbu bosqich endi serverda bajariladi yuqorida [appleboy/ssh-action@master](https://github.com/appleboy/ssh-action) orqali Github Actionimiz serverimizga kirgandi endi serverimizda quyidagi buyruqlarni ishga tushiradi.
+
+
+Ushbu buyruq GITHUB_TOKEN bilan GHCR'ga docker login qilib Container Registryga kiradi.
+```bash
+echo ${{ secrets.GITHUB_TOKEN }} | docker login -u ${{ github.actor }} --password-stdin ${{ env.REGISTRY }}
+```
+
+```bash
+docker pull "${{ env.REGISTRY }}/${{ env.REPO_NAME }}:${{ github.sha }}"
+```
+Bui buyruq GHCRdagi CI tomonidan build bo'lib Container Registryga push qilib qo'yilgan Docker imageni pull qilib tortib oladi.
+
+```bash
+docker stop "${{ env.CONTAINER_NAME }}" || true
+docker rm "${{ env.CONTAINER_NAME }}" || true
+```
+Bu ikki buyruq berilgan container nomi bilan ishlab turgan containerni yani eski containerni to'xtatib o'chirib tozalaydi.
+
+```bash
+docker run -d --name "${{ env.CONTAINER_NAME }}" -p "${{ env.PORT }}" "${{ env.REGISTRY }}/${{ env.REPO_NAME }}:${{ github.sha }}"
+```
+Ushbu buyruq esa berilgan CONTAINER_NAME va PORT bilan yuqorida pull qilib tortib olingan Docker imageni ishga tushiradi.
+
+Menimcha hammaga tushunarli bo'ldi keling CD qismini ham qo'shgan holda Github Actionimizga ishga tushiramiz.
+
+Okeey bizda Github Actionimiz muvaffaqiyat ishga tushdi keling endi serverimizni tekshirib ko'ramiz.
+![github](/images/tutorials/ci-cd/github-actions/github11.png)
+
+Serverimizga kirib **dodcker container ls** va **docker images** buyruqlarini ishga tushirib ko'rsak bizning applicationimiz berilgan nom, berilgan port va docker image bilan ishla turitbi.
+![github](/images/tutorials/ci-cd/github-actions/server.png)
+
+Biz applicartion **3000** portda ishlashini Github Actionda yozib ketgandik keling serverimiz static IP manzili bilan **3000** portga kirib ko'ramiz.
+
+![github](/images/tutorials/ci-cd/github-actions/server1.png)
+
+
+**Huuuhh Ferfectionn** mazzami silaga. Biz yozgan Github Actiomiz to'liq ishga tushdi Github repositoriyaga yangi commit tashlab sinab ko'rishingiz mumkin. 
+
+Tabriklation 
+
+### Multi-container
+
+Yuqorida biz bitta containerli loyihalar uchun to'liq CI/CD yozib muvaffaqiyatli ishga tushirdik. Bu bo'limda bir nechta containerli loyiahalr uchun Cd qismini yozib to'liq ishga tushiramiz. Ushbu amaliyot uchun namuna sifatida **.NET 7** da yozilgan [devops-journey-uz/github-actions-dotnet](https://github.com/devops-journey-uz/github-actions-dotnet) applicationni tanlab olgandik. ushbu loyiha uchun CD qismi quyidagicha bo'ladi.
+
+
+```yaml {14-15,19-21,63-85}
+name: Github Actions CI/CD
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  API_IMAGE_NAME: github-api
+  API_CONTAINER_NAME: github-api
+  UI_IMAGE_NAME: github-ui
+  UI_CONTAINER_NAME: github-ui
+  UI_PORT: 4000:4000
+  API_PORT: 4001:4001
+  
+  REPO_NAME: ${{ github.repository }}
+  REGISTRY: ghcr.io
+  SSH_HOST: ${{ secrets.SERVER_IP }}
+  SSH_USER: ${{ secrets.SERVER_USERNAME }}
+  SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+
+jobs:
+  build_and_push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push API Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./API.Dockerfile
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.REPO_NAME}}/${{ env.API_IMAGE_NAME }}-${{ github.sha }}
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.REPO_NAME}}/${{ env.API_IMAGE_NAME }}:buildcache
+          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.REPO_NAME}}/${{ env.API_IMAGE_NAME }}:buildcache,mode=max
+
+      - name: Build and push UI Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./UI.Dockerfile
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.REPO_NAME}}/${{ env.UI_IMAGE_NAME }}-${{ github.sha }}
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.REPO_NAME}}/${{ env.UI_IMAGE_NAME }}:buildcache
+          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.REPO_NAME}}/${{ env.UI_IMAGE_NAME }}:buildcache,mode=max
+  
+  deploy:
+    needs: build_and_push
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Executing remote SSH commands to deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: "${{ env.SSH_HOST }}"
+          username: "${{ env.SSH_USER }}"
+          key: "${{ env.SSH_KEY }}"
+          script: |
+            echo ${{ secrets.GITHUB_TOKEN }} | docker login -u ${{ github.actor }} --password-stdin ${{ env.REGISTRY }}
+            docker pull "${{ env.REGISTRY }}/${{ env.REPO_NAME}}/${{ env.API_IMAGE_NAME }}-${{ github.sha }}"
+            docker pull "${{ env.REGISTRY }}/${{ env.REPO_NAME}}/${{ env.UI_IMAGE_NAME }}-${{ github.sha }}"
+            docker stop "${{ env.UI_CONTAINER_NAME }}" || true
+            docker stop "${{ env.API_CONTAINER_NAME }}" || true
+            docker rm "${{ env.UI_CONTAINER_NAME }}" || true
+            docker rm "${{ env.API_CONTAINER_NAME }}" || true
+            docker run -d --name "${{ env.API_CONTAINER_NAME }}" -p "${{ env.API_PORT }}" "${{ env.REGISTRY }}/${{ env.REPO_NAME}}/${{ env.API_IMAGE_NAME }}-${{ github.sha }}"
+            docker run -d --name "${{ env.UI_CONTAINER_NAME }}" -p "${{ env.UI_PORT }}" "${{ env.REGISTRY }}/${{ env.REPO_NAME}}/${{ env.UI_IMAGE_NAME }}-${{ github.sha }}" 
+```
+
+Ushbu multi container ham yuqoridagi bitta containerlidek bir xil ishlaydi faqat bir nechta container bilan birga. Ushbu Github Actions ikkita docker image build qilib push qiladi va serverda eski ikkita containerni to'xttaib o'chirib yangi Container Registrydagi ikkita containerni berilgan portda berilgan nom bilan ishga tushirib qo'yadi.
+
+
+Keling buni ishga tushirib sinab ko'ramiz.
+
+Github Actiomiz muvaffaqiyat ishga tushgan.
+![github](/images/tutorials/ci-cd/github-actions/github11.png)
+
+Serverimizda ikkita containerimiz ishga tushganini tekshirib ko'ramiz.
+
+![github](/images/tutorials/ci-cd/github-actions/server2.png)
+
+Okey yaxshi bizda ikkita container belgilangan portda belgilan nom bilan ishlab turibti. Ushbu **.NET 7** qilingan oddiy namuna loyiha edi, ya'ni bu loyihada oddiy namuna UI va API yozilgan bo'lib UI `4000` portda API esa `4001` portda ishga tushadi. Keling ushbu portlarga browser orqali kirib applicationlarimiz ishlab turganini tekshirib olamiz.
+
+Serverimiz IP manzili va 4000 portni yozib kirganimzida bizda namuna Blazor UI ochiladi. Bizni Ui applicationimiz ishlab turibti
+![github](/images/tutorials/ci-cd/github-actions/server3.png)
+
+
+API'ni ko'rish uchun 4001/swagger gadas bizni API'miz ochiladi.
+![github](/images/tutorials/ci-cd/github-actions/server4.png)
+
+
+Huuuh multi containerli applicationllarni ham muvaffaqiyat ishga tushirdik va shu yerda biz amaliyotni muvaffaqiyat tugatdik.
+
+## Container Registry
+
+Yuqoridagi amaliyotda biz GHCR Github Container Registry ishlatdik. Kirish qismida aytilganidek keling boshqa Container Registrylar uchu ham yozamiz, ya'ni Dockerhub va GCR Google Container Registry uchun.
