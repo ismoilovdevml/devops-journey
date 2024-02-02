@@ -304,3 +304,56 @@ jobs:
             docker rm "${{ env.CONTAINER_NAME }}" || true
             docker run -d --name "${{ env.CONTAINER_NAME }}" -p "${{ env.PORT }}" "${{ env.REGISTRY }}/${{ env.REPO_NAME }}:${{ github.sha }}"
 ```
+
+Keling ushbu o'zgarishlarnin o'rganib chiqamiz.
+
+Environment qismiga quyidagi o'zgarishlarni qo'shdik.
+
+```yaml {5-8}
+env:
+  REPO_NAME: ${{ github.repository }}
+  CONTAINER_NAME: devops-journey
+  REGISTRY: ghcr.io
+  SSH_HOST: ${{ secrets.SERVER_IP }}
+  SSH_USER: ${{ secrets.SERVER_USERNAME }}
+  SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+  PORT: 3000:3000
+```
+
+Github Actions serverimizga ssh bilan kira olish uchun server static IP manzili, server useri va ssh-private key kerak bo'ladi. Buning uchun biz Github repositoriyamizga secretlarni qo'shib qo'yishimiz kerak. 
+
+**1->** Repositoriyaga kirib Settings bo'limiga o'tib **-> Secrets and variables -> Actions -> New repository secret**ga o'tib secretlar yaratib olamiz.
+
+**-> Repository -> Settings -> Secrets and variables -> Actions -> New repository secret**
+
+![k8s](/images/tutorials/ci-cd/k8s/gitops1.png)
+
+* **SERVER_IP->** Bunga serverimiz static IP manzilini yozamiz. `0.0.0.0` o'rniga static IP manzil yozing
+
+![github](/images/tutorials/ci-cd/github-actions/github8.png)
+* **SERVER_USERNAME->** Ushbu secretga serverimiz usernameni yozishimiz kerak bo'ladi, server usernamesin bilish uchun `whoami` buyrug'idan foydalanishingiz mumkin.
+![github](/images/tutorials/ci-cd/github-actions/github9.png)
+
+* **SSH_PRIVATE_KEY->** Bu secetga esa serverimizda ssh-key generatsiya qilib ssh private keyni qo'yamiz github actions ssh orqali serverimizga kira olishi uchun.
+
+**1->** Serverimizda ssh-key generatsiya qilib olamiz.
+
+```bash
+ssh-keygen -f ~/.ssh/github_actions
+```
+![github](/images/tutorials/ci-cd/github-actions/ssh.png)
+ushbu buyruq **~/.ssh** papkada `github_actions` nomli ssh-key generatsiya qiladi bunda ikita key bo'ladi `github_actions` bu private key va `gihub_actions.pub` bu public key hisoblanadi. Github Actionsda ishlatish uchun public keyimizni `authorized_keys`ga qo'shib qo'yishimiz kerak. Buning uchun quyidagi buyruqdan foydalanamiz.
+
+```bash
+cat github_actions.pub >> authorized_keys
+```
+**2->** `github_actions` private keyimizni cat bilan ochib uni nusxalab Github Secretsga `SSH_PRIVATE_KEY`ga qo'shib qo'yamiz.
+
+Private keyni olish uchun.
+```bash
+cat github_actions
+```
+![github](/images/tutorials/ci-cd/github-actions/ssh1.png)
+
+Private keyni joylashtiramiz.
+![github](/images/tutorials/ci-cd/github-actions/github10.png)
