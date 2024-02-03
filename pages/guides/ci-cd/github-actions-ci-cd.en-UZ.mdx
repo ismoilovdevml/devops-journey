@@ -2,12 +2,16 @@ import { Callout } from "nextra-theme-docs";
 
 ## Github Actions CI/CD
 
-[**Github Actions**](https://github.com/features/actions) bu Github bilan integratsiya qilinga Githubning CI/CD va avtomatlashtirish dasturi hisoblanadi. Github Actions orqali Githubdagi loyihalaringizni oson avtomatlashtirishingiz, CI/CDlar yozish juda qulay, sodda, tez yoziladigan tez ishga tushadigan hisoblanadi.  Github Actions YAML sintaksisida yzoiladi va repositoriya root directoriyasida **./github/workflows** jildida yoziladi. Githubning yana bir qulaylikalridan biri uchuni loyihalaringiz uchun mo'ljallangan GHCR(Github Container Registry)si hisoblanadi. Loyihalaringizni konteynerda ishga tushirsangiz bu sizga yaxshi qulaykik beradi, yani siz bepul Container Registry ishlatasiz bu juda qulay.
+[**Github Actions**](https://github.com/features/actions) bu Github bilan integratsiya qilinga Githubning **CI/CD** va avtomatlashtirish dasturi hisoblanadi. Github Actions orqali Githubdagi loyihalaringizni oson avtomatlashtirishingiz, CI/CD'lar yozish juda qulay, sodda, tez yoziladigan tez ishga tushadigan hisoblanadi.  Github Actions YAML sintaksisida yoziladi va repositoriya root directoriyasida **./github/workflows** jildida yoziladi. Githubning yana bir qulaylikalridan biri loyihalaringiz uchun mo'ljallangan **GHCR**(Github Container Registry)si hisoblanadi. Loyihalaringizni konteynerda ishga tushirsangiz bu sizga yaxshi qulaykik beradi, yani siz bepul Container Registry ishlatasiz bu juda qulay.
 
 
 ## Ishni boshlash
 
-Ushbu amaliyotda biz Github Actions va Github Container Registrydan foydalangan holda loyilarimizga CI/CD yozib deploymentni avtomlashtiramiz. Container Registry sifatida faqat Github Container Registry emas, balki Dockerhub va GCR(Google Container Registry)dan foydalanish uchun ham namuna Github Actionslar yozamiz. Amaliyotimiz soddaroq hech qanday testlarsiz va kood analizlarsiz ishga tushiramiz siz ularni o'zingiz kengaytirib qo'shib olamiz. Bugungi amaliyotimiz arixtekturasi tuzulishi quyidagicha **main** branchga o'zgarish bo'lganida avtomatik ishga tushadi va repositoriyani checkout qilib oladi loyidagi Dockerfile orqali loyiha docker imageni build qilib keshlab Container Registryga push qiladi keyingi CD bosqichida esa ssh orqali servverga kirib ynagi docker imageni pull qilib tortib olib eski shu nomli containerni to'xtatib o'chirib yangi containerni ishga tushirib qo'yadi va bu haqida discordga notification keladi.
+Ushbu amaliyotda biz Github Actions va Github Container Registrydan foydalangan holda loyilarimizga CI/CD yozib deploymentni avtomlashtiramiz. Container Registry sifatida faqat Github Container Registry emas, balki Dockerhub va GCR(Google Container Registry)dan foydalanish uchun ham namuna Github Actionslar yozamiz. Amaliyotimiz soddaroq hech qanday testlarsiz va kod analizlarsiz ishga tushiramiz siz ularni o'zingiz kengaytirib qo'shib olasiz. Bugungi amaliyotimiz arixtekturasi tuzulishi quyidagicha **main** branchga o'zgarish bo'lganida avtomatik ishga tushadi va repositoriyani checkout qilib oladi loyidagi Dockerfile orqali loyiha docker imageni build qilib keshlab Container Registryga push qiladi keyingi CD bosqichida esa ssh orqali serverga kirib ynagi docker imageni pull qilib tortib olib eski shu nomli containerni to'xtatib o'chirib yangi containerni ishga tushirib qo'yadi va bu haqida discordga notification keladi.
+
+<Callout type="info" emoji="">
+Amaliyotda ishlatilgan [**devops-journey-github-actions**](https://github.com/devops-journey-uz/devops-journey-github-actions) va [**github-actions-dotnet**](https://github.com/devops-journey-uz/github-actions-dotnet) repositoriyalar. Github Actions namuana fayllarni [**ismoilovdevml/devops-tools**](https://github.com/ismoilovdevml/devops-tools/tree/master/Github-Actions)dan topishingiz mumkin.
+</Callout>
 
 
 ## Github Actions CI
@@ -16,7 +20,7 @@ Amaliyotni boshlasak ham bo'ladi. Loyiahmiz root directoriyasida  Github Actions
 
 ![github](/images/tutorials/ci-cd/github-actions/github.png)
 
-Loyihalar har xil bo'ladi yani bitta repositoiyada bitta loyiha bo'ladi va unda bitta Dockerfile bo'ladi lekin ba'zi loyihalar bor ular bitta repositoriyada bir nechta loyihalar joylashgan bo'ladi masaln .NET(dotnet) loyihalar. Ushbu amaliyotda biz ikkala holat uchun Github Actionsda CI/CD yozamiz.
+Loyihalar har xil bo'ladi yani bitta repositoriyada bitta loyiha bo'ladi va unda bitta Dockerfile bo'ladi lekin ba'zi loyihalar bor ular bitta repositoriyada bir nechta loyihalar joylashgan bo'ladi masalan .NET(dotnet) loyihalar. Ushbu amaliyotda biz ikkala holat uchun Github Actionsda CI/CD yozamiz.
 
 ### Bitta Container
 
@@ -80,7 +84,7 @@ on:
     branches: [ main ]
 ```
 
-**name** Bu Github Actiosnga berilgan nom. Koddagi belgilangan qism esa **Trigger** deb nomlanadi vazifasi **main** branchga commit push qilinsa yoki pull request merge qilinsa Github Actionsni avtomatik ishga tushirib beradi.
+**name** Bu Github Actionsga berilgan nom. Koddagi belgilangan qism esa **Trigger** deb nomlanadi vazifasi **main** branchga commit push qilinsa yoki pull request tushsa Github Actionsni avtomatik ishga tushirib beradi.
 
 ```yaml
 env:
@@ -90,7 +94,7 @@ env:
 ```
 Ushbu qism **Environment** qismi hisoblanadi bu qismga environmentlarimizni yozamiz.
 
-* **REPO_NAME->** Docker image nomi bu holda repositoiya nomi olinadi.
+* **REPO_NAME->** Docker image nomi bu holda repositoriya nomi olinadi.
 * **CONTAINER_NAME->** Loyihamiz containeri nomi.
 * **REGISTRY->** Bu qismda Container Registry url manzili beriladi GHCR uchun **ghcr.io**
 
@@ -127,7 +131,7 @@ Ushbu qadam **Docker Buildx**-ni o'rnatadi, bu Moby BuildKit builder toolkit tom
     password: ${{ secrets.GITHUB_TOKEN }}
 ```
 
-Ushbu bosqichda **REGISTRY**ga **github.actor**ning **GITHUB_TOKEN**'ni bilan login qilib kiradi.
+Ushbu bosqichda **REGISTRY**ga **github.actor**ning **GITHUB_TOKEN**'ni bilan [docker/login-action@v3](https://github.com/docker/login-action)dan foydalanaib login qilib kiradi.
 
 ```yaml
 - name: Build and push Docker image
@@ -142,7 +146,7 @@ Ushbu bosqichda **REGISTRY**ga **github.actor**ning **GITHUB_TOKEN**'ni bilan lo
 
 Ushbu bosqichda applicationimizdagi Dockerfile orqali applicationimiz docker image build qiladi va **github.sha** bilan tag qo'yib belgilangan Container Registryga push qiladi bu holda GHCRga. Ushbu bosqichda keshlash ham yoqilgan [docker/build-push-action@v5](https://github.com/docker/build-push-action)
 
-Keling actoinimizni ishga tushirib sinab ko'raylik shuncahki ushbu o'zgarishlarni ushbu configuratsiyamizni main branchga psuh qilamiz va Github repositoriyamizdan **Actions** bo'limiga o'tib ko'rishimiz mumkin.
+Keling actoinimizni ishga tushirib sinab ko'raylik shunchaki ushbu o'zgarishlarni ushbu configuratsiyamizni main branchga push qilamiz va Github repositoriyamizdan **Actions** bo'limiga o'tib ko'rishimiz mumkin.
 
 **Actions** bo'limidan Github Actionimiz ishlayotganini ko'rishimiz mumkin.
 ![github](/images/tutorials/ci-cd/github-actions/github2.png)
@@ -362,7 +366,7 @@ Private keyni joylashtiramiz.
 ![github](/images/tutorials/ci-cd/github-actions/github10.png)
 
 
-Serverga ssh-key generatsiya qilib Github Actions kira oladigan qilib sozlab olinganidan keyin Serverimizga Docker o'rnatib olishimiz kerak bo'ladi chunki applicationlarimiz Docker containerlarda ishlaydi. [**Linux serverlarga Docker o'rnatish**](https://devops-journey.uz/guides/konteyner/docker-ornatish) qo'llanasidan foydalanib serveringizga Docker o'rnatib oling.
+Serverga ssh-key generatsiya qilib Github Actions kira oladigan qilib sozlab olinganidan keyin Serverimizga Docker o'rnatib olishimiz kerak bo'ladi chunki applicationlarimiz Docker containerlarda ishlaydi. [**Linux serverlarga Docker o'rnatish**](https://devops-journey.uz/guides/konteyner/docker-ornatish) qo'llanmasidan foydalanib serveringizga Docker o'rnatib oling.
 
 Github Actionimiz CD qismini ko'rib chiqadigan bo'lsak.
 
@@ -427,10 +431,10 @@ Menimcha hammaga tushunarli bo'ldi keling CD qismini ham qo'shgan holda Github A
 Okeey bizda Github Actionimiz muvaffaqiyat ishga tushdi keling endi serverimizni tekshirib ko'ramiz.
 ![github](/images/tutorials/ci-cd/github-actions/github11.png)
 
-Serverimizga kirib **dodcker container ls** va **docker images** buyruqlarini ishga tushirib ko'rsak bizning applicationimiz berilgan nom, berilgan port va docker image bilan ishla turitbi.
+Serverimizga kirib **docker container ls** va **docker images** buyruqlarini ishga tushirib ko'rsak bizning applicationimiz berilgan nom, berilgan port va docker image bilan ishlab turibti.
 ![github](/images/tutorials/ci-cd/github-actions/server.png)
 
-Biz applicartion **3000** portda ishlashini Github Actionda yozib ketgandik keling serverimiz static IP manzili bilan **3000** portga kirib ko'ramiz.
+Biz application **3000** portda ishlashini Github Actionda yozib ketgandik keling serverimiz static IP manzili bilan **3000** portga kirib ko'ramiz.
 
 ![github](/images/tutorials/ci-cd/github-actions/server1.png)
 
@@ -441,7 +445,7 @@ Tabriklation
 
 ### Multi-container
 
-Yuqorida biz bitta containerli loyihalar uchun to'liq CI/CD yozib muvaffaqiyatli ishga tushirdik. Bu bo'limda bir nechta containerli loyiahalr uchun Cd qismini yozib to'liq ishga tushiramiz. Ushbu amaliyot uchun namuna sifatida **.NET 7** da yozilgan [devops-journey-uz/github-actions-dotnet](https://github.com/devops-journey-uz/github-actions-dotnet) applicationni tanlab olgandik. ushbu loyiha uchun CD qismi quyidagicha bo'ladi.
+Yuqorida biz bitta containerli loyihalar uchun to'liq CI/CD yozib muvaffaqiyatli ishga tushirdik. Bu bo'limda bir nechta containerli loyihalar uchun CD qismini yozib to'liq ishga tushiramiz. Ushbu amaliyot uchun namuna sifatida **.NET 7** da yozilgan [devops-journey-uz/github-actions-dotnet](https://github.com/devops-journey-uz/github-actions-dotnet) applicationni tanlab olgandik. Ushbu loyiha uchun CD qismi quyidagicha bo'ladi.
 
 
 ```yaml {14-15,19-21,63-85}
@@ -532,7 +536,7 @@ jobs:
             docker run -d --name "${{ env.UI_CONTAINER_NAME }}" -p "${{ env.UI_PORT }}" "${{ env.REGISTRY }}/${{ env.REPO_NAME}}/${{ env.UI_IMAGE_NAME }}-${{ github.sha }}" 
 ```
 
-Ushbu multi container ham yuqoridagi bitta containerlidek bir xil ishlaydi faqat bir nechta container bilan birga. Ushbu Github Actions ikkita docker image build qilib push qiladi va serverda eski ikkita containerni to'xttaib o'chirib yangi Container Registrydagi ikkita containerni berilgan portda berilgan nom bilan ishga tushirib qo'yadi.
+Ushbu multi container ham yuqoridagi bitta containerlidek bir xil ishlaydi faqat bir nechta container bilan birga. Ushbu Github Actions ikkita docker image build qilib push qiladi va serverda eski ikkita containerni to'xtatib o'chirib yangi Container Registrydagi ikkita containerni berilgan portda berilgan nom bilan ishga tushirib qo'yadi.
 
 
 Keling buni ishga tushirib sinab ko'ramiz.
@@ -544,17 +548,21 @@ Serverimizda ikkita containerimiz ishga tushganini tekshirib ko'ramiz.
 
 ![github](/images/tutorials/ci-cd/github-actions/server2.png)
 
-Okey yaxshi bizda ikkita container belgilangan portda belgilan nom bilan ishlab turibti. Ushbu **.NET 7** qilingan oddiy namuna loyiha edi, ya'ni bu loyihada oddiy namuna UI va API yozilgan bo'lib UI `4000` portda API esa `4001` portda ishga tushadi. Keling ushbu portlarga browser orqali kirib applicationlarimiz ishlab turganini tekshirib olamiz.
+Okey yaxshi bizda ikkita container belgilangan portda belgilan nom bilan ishlab turibti. Ushbu **.NET 7** qilingan oddiy namuna loyiha edi, ya'ni bu loyihada oddiy namuna UI va API yozilgan bo'lib UI `4000` portda API esa `4001` portda ishga tushadi. Keling ushbu portlarga brauzer orqali kirib applicationlarimiz ishlab turganini tekshirib olamiz.
 
-Serverimiz IP manzili va 4000 portni yozib kirganimzida bizda namuna Blazor UI ochiladi. Bizni Ui applicationimiz ishlab turibti
+Serverimiz IP manzili va 4000 portni yozib kirganimzida bizda namuna Blazor UI ochiladi. Bizni UI applicationimiz ishlab turibti
 ![github](/images/tutorials/ci-cd/github-actions/server3.png)
 
 
-API'ni ko'rish uchun 4001/swagger gadas bizni API'miz ochiladi.
+API'ni ko'rish uchun 4001/swagger da bizni API'miz ochiladi.
 ![github](/images/tutorials/ci-cd/github-actions/server4.png)
 
 
-Huuuh multi containerli applicationllarni ham muvaffaqiyat ishga tushirdik va shu yerda biz amaliyotni muvaffaqiyat tugatdik.
+Huuuh multi containerli applicationllarni ham muvaffaqiyat ishga tushirdik va shu yerda biz Github Actions + GHCR amaliyotimiz muvaffaqiyatli tugatdik.
+
+## Discord bilan integratsiya.
+
+Github Repositoiyamizni Discord bilan integratsiya qilish uchun [ushbu video qo'llanmadan](https://youtu.be/-KDQqWNK3Tw?si=RWraLtFe7UxovDti) foydalanashingiz mumkin. 
 
 ## Container Registry
 
@@ -579,7 +587,7 @@ on:
     branches: [ main ]
 
 env:
-  CONTAINER_NAME: devops-journey # docker bu repositoriya nomi yoki registry repozitoriya nomi
+  CONTAINER_NAME: devops-journey
   DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
   DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
   SSH_HOST: ${{ secrets.SERVER_IP }}
@@ -642,8 +650,8 @@ on:
     branches: [ main ]
  
 env:
-  API_CONTAINER_NAME: dotnet-api
-  UI_CONTAINER_NAME: dotnet-ui
+  API_CONTAINER_NAME: github-api
+  UI_CONTAINER_NAME: github-ui
   DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
   DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
   SSH_HOST: ${{ secrets.SERVER_IP }}
@@ -730,7 +738,7 @@ on:
       branches: [ main ]
 
 env:
-  CONTAINER_NAME: dotnet
+  CONTAINER_NAME: devops-journey
   GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
   GCP_SERVICE_ACCOUNT_KEY: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
   SSH_HOST: ${{ secrets.SERVER_IP }}
@@ -870,3 +878,27 @@ jobs:
             docker run -d --name ${{ env.UI_CONTAINER_NAME }} -p ${{ env.UI_PORT }} gcr.io/${{ env.GCP_PROJECT_ID }}/${{ env.UI_CONTAINER_NAME }}:${{ github.sha }}
             rm keyfile.json
 ```
+
+
+## Qo'shimcha
+
+<Callout type="info" emoji="">
+
+<Callout type="info" emoji="">
+Amaliyotda ishlatilgan [**devops-journey-github-actions**](https://github.com/devops-journey-uz/devops-journey-github-actions) va [**github-actions-dotnet**](https://github.com/devops-journey-uz/github-actions-dotnet) repositoriyalar. Github Actions namuana fayllarni [**ismoilovdevml/devops-tools**](https://github.com/ismoilovdevml/devops-tools/tree/master/Github-Actions)dan topishingiz mumkin.
+</Callout>
+Qo'shimcha Resurslar
+ * [**Linux Serverlarga Jenkins o'rnatish**](https://devops-journey.uz/guides/ci-cd/jenkins-ornatish)
+ * [**Koddan Servergacha: Jenkins bilan Docker CI/CD va Discord bilan integratsiya**](https://devops-journey.uz/guides/ci-cd/jenkins-docker-ci-cd)
+ * [**Kubernetes CI/CD | GitHub Actions + Argo CD | GitOps**](https://devops-journey.uz/guides/ci-cd/github-actions-argocd-cicd)
+
+ **Sana:** 2024.01.30(2024-yil 30-yanvar)
+
+**Oxirgi yangilanish:** 2024.01.31(2024-yil 31-yanvar)
+
+**Muallif: Otabek Ismoilov**
+
+| [Telegram](https://t.me/Otabek_Ismoilov) | [GitHub](https://github.com/ismoilovdevml) | [LinkedIn](https://www.linkedin.com/in/otabek-ismoilov-8625b0222/) |
+| - | - | - |
+
+</Callout>

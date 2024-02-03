@@ -2,7 +2,7 @@
   "flutter-github-action": {
     "title": "Flutter CI/CD",
     "icon": "▶️",
-    "description": "Github Action + Discord (Android, iOS)",
+    "description": "Github Actions + Discord (Android, iOS)",
     "href": "/guides/ci-cd/flutter-github-action"
   },
   "jenkins-ornatish": {
@@ -12,10 +12,10 @@
     "href": "/guides/ci-cd/jenkins-ornatish"
   },
   "start-githubactions": {
-    "title": "Github Action",
+    "title": "Github Actions CI/CD",
     "icon": "▶️",
-    "description": "Github Action bilan CI/CD yozamiz",
-    "href": "/guides/ci-cd/start-githubactions"
+    "description": "Github Actions bilan CI/CD yozamiz",
+    "href": "/guides/ci-cd/github-actions-ci-cd"
   },
   "start-gitlabci": {
     "title": "Gitlab CI",
@@ -26,7 +26,7 @@
   "android-github-actions": {
     "title": "Android CI/CD",
     "icon": "▶️",
-    "description": "Github Actionda Android CI/CD",
+    "description": "Github Actionsda Android CI/CD",
     "href": "/guides/ci-cd/android-github-actions"
   },
   "jenkins-docker-ci-cd": {
@@ -36,7 +36,7 @@
     "href": "/guides/ci-cd/jenkins-docker-ci-cd"
   },
   "github-actions-argocd-cicd": {
-    "title": "Kuberntes CI/CD",
+    "title": "Kubernetes CI/CD",
     "icon": "▶️",
     "description": "Github Actions + Argo CD",
     "href": "/guides/ci-cd/github-actions-argocd-cicd"
