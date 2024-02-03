@@ -559,3 +559,314 @@ Huuuh multi containerli applicationllarni ham muvaffaqiyat ishga tushirdik va sh
 ## Container Registry
 
 Yuqoridagi amaliyotda biz GHCR Github Container Registry ishlatdik. Kirish qismida aytilganidek keling boshqa Container Registrylar uchu ham yozamiz, ya'ni Dockerhub va GCR Google Container Registry uchun.
+ 
+### Dockerhub
+
+#### Bitta Container
+
+Github Secretsga qo'shiladigan secretlar
+
+* **DOCKERHUB_USERNAME->** Dockerhub username yozasiz
+* **DOCKERHUB_TOKEN->** Dockerhubga login qilib kirish uchun Accsess Token. Dockerhubdan ro'yxatdan o'tib Access Token olish [bo'yicha qo'llanma](https://devops-journey.uz/guides/ci-cd/jenkins-docker-ci-cd#dockerhub).
+
+```yaml {11-12,29-33,40,54-55,58}
+name: Github Actions CI/CD
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  CONTAINER_NAME: devops-journey # docker bu repositoriya nomi yoki registry repozitoriya nomi
+  DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+  DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+  SSH_HOST: ${{ secrets.SERVER_IP }}
+  SSH_USER: ${{ secrets.SERVER_USERNAME }}
+  SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+  PORT: 3000:3000
+
+jobs:
+  build_and_push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ env.DOCKERHUB_USERNAME }}
+          password: ${{ env.DOCKERHUB_TOKEN }}
+      
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ env.DOCKERHUB_USERNAME }}/${{ env.CONTAINER_NAME }}:${{ github.sha }}
+
+  deploy:
+    needs: build_and_push
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Executing remote SSH commands to deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ env.SSH_HOST }}
+          username: ${{ env.SSH_USER }}
+          key: ${{ env.SSH_KEY }}
+          script: |
+            docker login -u ${{ env.DOCKERHUB_USERNAME }} -p ${{ env.DOCKERHUB_TOKEN }}
+            docker pull ${{ env.DOCKERHUB_USERNAME }}/${{ env.CONTAINER_NAME }}:${{ github.sha }}
+            docker stop ${{ env.CONTAINER_NAME }} || true
+            docker rm ${{ env.CONTAINER_NAME }} || true
+            docker run -d --name ${{ env.CONTAINER_NAME }} -p ${{ env.PORT }} ${{ env.DOCKERHUB_USERNAME }}/${{ env.CONTAINER_NAME }}:${{ github.sha }}
+```
+
+#### Multi-container
+
+```yaml
+name: Github Actions CI/CD
+ 
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+ 
+env:
+  API_CONTAINER_NAME: dotnet-api
+  UI_CONTAINER_NAME: dotnet-ui
+  DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+  DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+  SSH_HOST: ${{ secrets.SERVER_IP }}
+  SSH_USER: ${{ secrets.SERVER_USERNAME }}
+  SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+  UI_PORT: 4000:4000
+  API_PORT: 4001:4001
+ 
+jobs:
+  build_and_push:
+    runs-on: ubuntu-latest
+ 
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+ 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+ 
+      - name: Log in to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ env.DOCKERHUB_USERNAME }}
+          password: ${{ env.DOCKERHUB_TOKEN }}
+      
+      - name: Build and push API Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./API.Dockerfile
+          push: true
+          tags: ${{ env.DOCKERHUB_USERNAME }}/${{ env.API_CONTAINER_NAME }}:${{ github.sha }}
+      - name: Build and push UI Docker image
+        uses: docker/build-push-action@v5
+        with:
+            context: .
+            file: ./UI.Dockerfile
+            push: true
+            tags: ${{ env.DOCKERHUB_USERNAME }}/${{ env.UI_CONTAINER_NAME }}:${{ github.sha }}
+ 
+  deploy:
+    needs: build_and_push
+    runs-on: ubuntu-latest
+ 
+    steps:
+      - name: Executing remote SSH commands to deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ env.SSH_HOST }}
+          username: ${{ env.SSH_USER }}
+          key: ${{ env.SSH_KEY }}
+          script: |
+            docker login -u ${{ env.DOCKERHUB_USERNAME }} -p ${{ env.DOCKERHUB_TOKEN }}
+            docker pull ${{ env.DOCKERHUB_USERNAME }}/${{ env.API_CONTAINER_NAME }}:${{ github.sha }}
+            docker pull ${{ env.DOCKERHUB_USERNAME }}/${{ env.UI_CONTAINER_NAME }}:${{ github.sha }}
+            docker stop ${{ env.API_CONTAINER_NAME }} || true
+            docker stop ${{ env.UI_CONTAINER_NAME }} || true
+            docker rm ${{ env.API_CONTAINER_NAME }} || true
+            docker rm ${{ env.UI_CONTAINER_NAME }} || true
+            docker run -d --name ${{ env.API_CONTAINER_NAME }} -p ${{ env.API_PORT }} ${{ env.DOCKERHUB_USERNAME }}/${{ env.API_CONTAINER_NAME }}:${{ github.sha }}
+            docker run -d --name ${{ env.UI_CONTAINER_NAME }} -p ${{ env.UI_PORT }} ${{ env.DOCKERHUB_USERNAME }}/${{ env.UI_CONTAINER_NAME }}:${{ github.sha }}
+```
+
+### GCR Google Container Registry
+
+#### Bitta Container
+
+GCR uchun konfiguratsiyamiz quyidagicha.
+
+GCR uchun Actionsga qo'shiladigan secretlar:
+
+* **GCP_PROJECT_ID->** Bu Google Cloud project IDsi
+* **GCP_SERVICE_ACCOUNT_KEY->** Bu GCR uchun Service Account secret keyi hisoblanadi.
+
+`GCP_SERVICE_ACCOUNT_KEY` olish `GCP_PROJECT_ID` ni bilish  [bo'yicha qo'llanma](https://devops-journey.uz/guides/ci-cd/jenkins-docker-ci-cd#gcrgoogle-container-registry). 
+
+```yaml
+name: Github Actions CI/CD
+
+on:
+    push:
+      branches: [ main ]
+    pull_request:
+      branches: [ main ]
+
+env:
+  CONTAINER_NAME: dotnet
+  GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  GCP_SERVICE_ACCOUNT_KEY: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+  SSH_HOST: ${{ secrets.SERVER_IP }}
+  SSH_USER: ${{ secrets.SERVER_USERNAME }}
+  SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+  PORT: 3000:3000
+
+jobs:
+  build_and_push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Setup Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v0.2.1
+        with:
+          service_account_key: ${{ env.GCP_SERVICE_ACCOUNT_KEY }}
+          project_id: ${{ env.GCP_PROJECT_ID }}
+
+      - name: Configure Docker to use the gcloud command-line tool as a credential helper
+        run: |
+          gcloud --quiet auth configure-docker
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: gcr.io/${{ env.GCP_PROJECT_ID }}/${{ env.CONTAINER_NAME }}:latest
+
+  deploy:
+    needs: build_and_push
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Executing remote SSH commands to deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ env.SSH_HOST }}
+          username: ${{ env.SSH_USER }}
+          key: ${{ env.SSH_KEY }}
+          script: |
+            echo '${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}' > keyfile.json
+            cat keyfile.json | docker login -u _json_key --password-stdin https://gcr.io
+            docker pull gcr.io/${{ env.GCP_PROJECT_ID }}/${{ env.CONTAINER_NAME }}:latest
+            docker stop ${{ env.CONTAINER_NAME }} || true
+            docker rm ${{ env.CONTAINER_NAME }} || true
+            docker run -d --name ${{ env.CONTAINER_NAME }} -p ${{ env.PORT }} gcr.io/${{ env.GCP_PROJECT_ID }}/${{ env.CONTAINER_NAME }}:latest
+            rm keyfile.json
+```
+
+#### Multi-Conntainer
+
+```yaml
+name: Github Actions CI/CD
+
+on:
+    push:
+      branches: [ main ]
+    pull_request:
+      branches: [ main ]
+
+env:
+  API_CONTAINER_NAME: github-api
+  UI_CONTAINER_NAME: github-ui
+  GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  GCP_SERVICE_ACCOUNT_KEY: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+  SSH_HOST: ${{ secrets.SERVER_IP }}
+  SSH_USER: ${{ secrets.SERVER_USERNAME }}
+  SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+  UI_PORT: 4000:4000
+  API_PORT: 4001:4001
+
+jobs:
+  build_and_push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Setup Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v0.2.1
+        with:
+          service_account_key: ${{ env.GCP_SERVICE_ACCOUNT_KEY }}
+          project_id: ${{ env.GCP_PROJECT_ID }}
+
+      - name: Configure Docker to use the gcloud command-line tool as a credential helper
+        run: |
+          gcloud --quiet auth configure-docker
+
+      - name: Build and push API Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./API.Dockerfile
+          push: true
+          tags: gcr.io/${{ env.GCP_PROJECT_ID }}/${{ env.API_CONTAINER_NAME }}:${{ github.sha }}
+          
+      - name: Build and push UI Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./UI.Dockerfile
+          push: true
+          tags: gcr.io/${{ env.GCP_PROJECT_ID }}/${{ env.UI_CONTAINER_NAME }}:${{ github.sha }}
+
+  deploy:
+    needs: build_and_push
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Executing remote SSH commands to deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ env.SSH_HOST }}
+          username: ${{ env.SSH_USER }}
+          key: ${{ env.SSH_KEY }}
+          script: |
+            echo '${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}' > keyfile.json
+            cat keyfile.json | docker login -u _json_key --password-stdin https://gcr.io
+            docker pull gcr.io/${{ env.GCP_PROJECT_ID }}/${{ env.API_CONTAINER_NAME }}:${{ github.sha }}
+            docker pull gcr.io/${{ env.GCP_PROJECT_ID }}/${{ env.UI_CONTAINER_NAME }}:${{ github.sha }}
+            docker stop ${{ env.API_CONTAINER_NAME }} || true
+            docker stop ${{ env.UI_CONTAINER_NAME }} || true
+            docker rm ${{ env.API_CONTAINER_NAME }} || true
+            docker rm ${{ env.UI_CONTAINER_NAME }} || true
+            docker run -d --name ${{ env.API_CONTAINER_NAME }} -p ${{ env.API_PORT }} gcr.io/${{ env.GCP_PROJECT_ID }}/${{ env.API_CONTAINER_NAME }}:${{ github.sha }}
+            docker run -d --name ${{ env.UI_CONTAINER_NAME }} -p ${{ env.UI_PORT }} gcr.io/${{ env.GCP_PROJECT_ID }}/${{ env.UI_CONTAINER_NAME }}:${{ github.sha }}
+            rm keyfile.json
+```
