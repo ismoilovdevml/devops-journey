@@ -393,6 +393,9 @@ sudo systemctl restart haproxy
 sudo systemctl status haproxy
 ```
 
+Ushbu arxitektura quyidagicha rasmda ko'rsatilganidek ishlaydi. NGINX Ingress k8s-master server ichida internal IPni olgan va shu bilan ishlaydi, tashqi kirib chiqish uchun esa HAProxy o'rnatib TCP modeda konfiguratsiya qildik, Ya'ni tashqi kirish chiqishlar HAProxy orqali o'tadi.
+![k8s-cluster](/images/tutorials/k8s/cluster-setup/k8s-draw.png)
+
 ## Kubernetesga Cert-Manager o'rnatish va sozlash
 
 Kubernetes clusterimizga **Cert-Manager** o'rnatish bo'yicha [**devops-journey**](ttps://devops-journey.uz) platformasida qo'llanma mavjud bo'lib ushu [**Kubernesga Cert-Manager o'rnatish va sozlash**](https://devops-journey.uz/guides/k8s/k8s-cert-manager) qo'llamadan foydalanib o'rnatib sozlab olishingiz mumkin.
