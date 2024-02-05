@@ -246,58 +246,10 @@ Bu buyruq Certbot ilovasini ishga tushiradi. U bepul Sertifikat organi **Let's E
 
 **Docker**-ni o'rnatish infratuzilmangizda bir nechta maqsadlarga xizmat qiladi, ayniqsa SonarQube-ni o'rnatish va uni domen orqali ulashda, applicationlarimizda deploy qilshimizda va ishga tushirishimizda.
 
-Keling docker o'rnatish uchun bash scriptdan foydalanamiz. `nano` matn muharrir bilan `docker.sh` nomli fayl ochib olamiz.
 
-```bash
-sudo nano docker.sh
-```
+Docker o'rnatish uchun [**Linux serverlarga Docker o'rnatish**](https://devops-journey.uz/guides/konteyner/docker-ornatish) qo'llanmasidan foydalanishingiz mumkin
 
-Va `docker.sh` bash scriptimizga quyidagi scriptni joylashtiramiz:
-
-```bash filename="docker.sh"
-#!/bin/bash
-
-# Get the current username
-CURRENT_USERNAME=$(whoami)
-
-# Update and upgrade system packages
-sudo apt update && sudo apt upgrade -y
-# Install additional utilities
-sudo apt install -y curl gnupg2 software-properties-common apt-transport-https 
-
-# Add Docker's official GPG key:
-sudo apt-get update
-sudo apt-get -y install ca-certificates curl gnupg
-sudo install -m 0755 -d /etc/apt/keyrings
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-sudo chmod a+r /etc/apt/keyrings/docker.gpg
-
-# Add the repository to Apt sources:
-echo \
-  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
-  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
-  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-sudo apt-get update
-
-sudo apt-get -y install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin docker-compose
-
-# Adjust Docker socket permissions
-sudo chmod 666 /var/run/docker.sock
-sudo chown $CURRENT_USERNAME:docker /var/run/docker.sock
-
-# Restart and enable Docker service
-sudo systemctl daemon-reload
-sudo systemctl restart docker
-sudo systemctl enable docker
-```
-`docker.sh` faylimizga quyidagi scriptni joylashtirganimizdan keyin uni execute qilib ishga tushiramiz. Script avtomatik Dockerni o'rnatib kerakli permissionlarni(ruxsatlarni) beradi.
-
-```bash
-sudo chmod +x docker.sh
-./docker.sh
-```
-
-Script ish tugatganidan keyin docker o'rnatilgani tekshirib ko'rishingiz mumkin. Docker muvaffaqiyatli o'rnatilganidan keyin **SonarQube Community** ni docker orqali o'rnatamiz.
+Docker o'rnatganingzidan keyin docker o'rnatilgani tekshirib ko'rishingiz mumkin. Docker muvaffaqiyatli o'rnatilganidan keyin **SonarQube Community** ni docker orqali o'rnatamiz.
 
 SonarQube-ni o'rnatish avtomatlashtirilgan tahlilni ishlab chiqish jarayoniga integratsiyalash orqali kod sifati va xavfsizligiga proaktiv yondashuvni taqdim etadi. Bu dasturchilar guruhlariga kod bilan bog'liq muammolarni erta aniqlash, tushunish va tuzatish imkoniyatini beradi, ishonchli, xavfsiz va yuqori sifatli dasturiy mahsulotlarni yetkazib berishni ta'minlaydi. Bundan tashqari, u dasturchilar guruhida doimiy takomillashtirish, hamkorlik qilish va kodlash standartlariga rioya qilish madaniyatini rivojlantiradi.
 
@@ -1201,7 +1153,7 @@ cat netflix.pub >> authorized_keys
 * `>>` - faylga chiqish qo'shish uchun ishlatiladigan qayta yo'naltirish operatori.
 
 `authorized_keys` public kalit autentifikatsiyasi uchun SSH da qoʻllaniladigan fayldir. SSH serveri ulanish so'rovini olganida, kirish public kaliti u yerda sanab o'tilgan kalitlardan biriga mos kelishini tekshirish uchun `authorized_keys` faylini ko'rib chiqadi. Agar shunday bo'lsa, kirish huquqi beriladi.
-Ushbu buyruqlar ketma-ketligining maqsadi `netflix.pub` faylida saqlangan public kalitni avtorizatsiya qilingan kalitlar ro'yxatiga (avtorized_keys) qo'shishi. Kimda tegishli private kalit (netflix) bo'lsa, endi ushbu private kalit yordamida ushbu tizim bilan autentifikatsiya qilish mumkin. U autentifikatsiya qilish uchun o'rnatilgan public-private kalit juftligidan foydalanib, parol talab qilmasdan kirish imkonini beradi. Bu pipeline orqali serverga kirishga imkon beradi.
+Ushbu buyruqlar ketma-ketligining maqsadi `netflix.pub` faylida saqlangan public kalitni avtorizatsiya qilingan kalitlar ro'yxatiga (authorized_keys) qo'shishi. Kimda tegishli private kalit (netflix) bo'lsa, endi ushbu private kalit yordamida ushbu tizim bilan autentifikatsiya qilish mumkin. U autentifikatsiya qilish uchun o'rnatilgan public-private kalit juftligidan foydalanib, parol talab qilmasdan kirish imkonini beradi. Bu pipeline orqali serverga kirishga imkon beradi.
 
 ```bash
 cat ~/.ssh/netflix
@@ -1239,7 +1191,7 @@ Bu qismda esa `Secret`ga Serverimiz IP manzilini yozishimiz kerak.
 
 Endi Serverimizga kerakli `environment`larni qo'shib chiqishimiz kerak.
 
-```groovy /SERVER_USERNAME/ /SERVER_IP/ {8-9}
+```groovy {8-10}
 environment {
     GIT_URL = 'https://github.com/ismoilovdevml/netflix.git'
     GITHUB_TOKEN = credentials('github-token')
@@ -1249,6 +1201,7 @@ environment {
     API_KEY = credentials('tmdb-api-key')
     SERVER_USERNAME = credentials('server-username')
     SERVER_IP = credentials('server-ip')
+    PORT = 80:8081
     BRANCH_NAME = 'main'
     SCANNER_HOME = tool 'sonar-scanner'
 }
@@ -1260,73 +1213,24 @@ stage('Deploy Server') {
         withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
             script {
                 sshagent (credentials: ['server-ssh']) {
-                    sh "ssh -o StrictHostKeyChecking=no ${SERVER_USERNAME}@${SERVER_IP} '/home/username/deployer.sh --image=${REGISTRY_URL}/${CONTAINER_NAME}:${BUILD_NUMBER} --container-port=80 --system-port=8081 --registry-host=${REGISTRY_URL} --container-name=${CONTAINER_NAME} --registry-token=${DOCKER_PASSWORD} --registry-user=${DOCKER_USERNAME}'"
+                    sh """
+                        ssh -o StrictHostKeyChecking=no ${SERVER_USERNAME}@${SERVER_IP} '\
+                        docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD} && \
+                        docker pull ${REGISTRY_URL}/${CONTAINER_NAME}:latest && \
+                        docker stop ${CONTAINER_NAME} || true && \
+                        docker rm ${CONTAINER_NAME} || true && \
+                        docker run -d -p ${PORT}--name ${CONTAINER_NAME} --restart always ${REGISTRY_URL}/${CONTAINER_NAME}:latest '
+                    """
                 }
             }
-        }    
+        }  
     }
 }
 ```
 
-Shu qismda bizda bitta muammo bor yani oldindan shu nomli container ishlab turgan bo'lsa conflict kelib chiqadi. Buni oldini olish uchun serverda `deployer.sh` nomli bash script yozamiz. U script vazifasi quyidagicha unga Jenkins pipelineda tashqi argumentlar beriladi shu nomli ishlab turgan container bo'lsa uni o'chirib tozalab yangi containerni berilgan portda ishga tushirib qo'yadi. Bash script quyidagicha:
+Ushbu bosqichda `dockerhub` credentialsdan Dockerhub username va password ajratib olinib alohida variable qilinadi. `server-sh` credential bilan server ssh orqali kiriladi va Dockerhubga lofin qiladi va Dockerhub Container Registryga push qilingan oxirgi imageni push qilib tortib olib eski shu nom bilan ishlab turgan containerni to'xtatib o'chirib yangi containerni ishga tushiradi.
 
-
-```bash
-nano deployer.sh
-```
-
-```bash filename="deployer.sh" {44}
-!/bin/bash
-while [ $# -gt 0 ]; do
-  case "$1" in
-    --image=*)
-      IMAGE="${1#*=}"
-      ;;
-    --container-port=*)
-      CONTAINER_PORT="${1#*=}"
-      ;;
-    --system-port=*)
-      SYSTEM_PORT="${1#*=}"
-      ;;
-    --registry-token=*)
-      REGISTRY_TOKEN="${1#*=}"
-      ;;
-    --registry-host=*)
-      REGISTRY_HOST="${1#*=}"
-      ;;
-    --container-name=*)
-      CONTAINER_NAME="${1#*=}"
-      ;;
-    --registry-user=*)
-      REGISTRY_USER="${1#*=}"
-      ;;
-    *)
-      printf "***************************\n"
-      printf "* Error: Invalid argument.*\n"
-      printf "***************************\n"
-      exit 1
-  esac
-  shift
-done
-
-
-echo y | docker container prune
-echo $REGISTRY_TOKEN | docker login $REGISTRY_HOST  -u $REGISTRY_USER --password-stdin
-docker pull $IMAGE
-echo "Clean temp Container"
-
-if $(docker ps | awk -v CONTAINER_NAME="$CONTAINER_NAME" 'NR > 1 && $NF == CONTAINER_NAME{ret=1; exit} END{exit !ret}' ); then
-  docker stop "$CONTAINER_NAME" 
-  docker rm -f "$CONTAINER_NAME"
-fi
-docker run -d -p $SYSTEM_PORT:$CONTAINER_PORT --restart=always --name $CONTAINER_NAME $IMAGE
-```
-Bash scriptni executable qilib qo'yamiz.
-
-```bash
-sudo chmod +x deployer.sh
-```
-Pipelinedagi `/home/username/deployer.sh` qismini deployer.sh scriptingiz joylashgan yo'lni(path)ni ko'rsatib qo'yishingiz kerak. Ushbu bosqich ssh bilan serverga kirib `deployer.sh` bash scriptga tashqi argumentlar berib uni ishga tushiradi. Pipelineni yangilab uni ishga tushiramiz agar sizda hammasi to'gri qilingan bo'lsa u muvaffiqyatli ishlashi kerak.
+Pipelineni yangilab uni ishga tushiramiz agar sizda hammasi to'gri qilingan bo'lsa u muvaffaqiyatli ishlashi kerak.
 
 ![netflix](/images/article/netflix/pipeline7.png)
 
@@ -1404,6 +1308,7 @@ pipeline {
         API_KEY = credentials('tmdb-api-key')
         SERVER_USERNAME = credentials('server-username')
         SERVER_IP = credentials('server-ip')
+        PORT = 80:8081
         BRANCH_NAME = 'main'
         SCANNER_HOME = tool 'sonar-scanner'
     }
@@ -1472,10 +1377,17 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                     script {
                         sshagent (credentials: ['server-ssh']) {
-                            sh "ssh -o StrictHostKeyChecking=no ${SERVER_USERNAME}@${SERVER_IP} '/home/ismoilovdev/deployer.sh --image=${REGISTRY_URL}/${CONTAINER_NAME}:${BUILD_NUMBER} --container-port=80 --system-port=8081 --registry-host=${REGISTRY_URL} --container-name=${CONTAINER_NAME} --registry-token=${DOCKER_PASSWORD} --registry-user=${DOCKER_USERNAME}'"
+                            sh """
+                                ssh -o StrictHostKeyChecking=no ${SERVER_USERNAME}@${SERVER_IP} '\
+                                docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD} && \
+                                docker pull ${REGISTRY_URL}/${CONTAINER_NAME}:latest && \
+                                docker stop ${CONTAINER_NAME} || true && \
+                                docker rm ${CONTAINER_NAME} || true && \
+                                docker run -d -p ${PORT}--name ${CONTAINER_NAME} --restart always ${REGISTRY_URL}/${CONTAINER_NAME}:latest '
+                            """
                         }
                     }
-                }    
+                }  
             }
         }
     }
@@ -1506,6 +1418,12 @@ Ushbu loyiha GitHub repositoriyasi: [github.com/devops-journey-uz/netflix](https
 
 **Sana:** 2023.12.15 (2023-yil 15-dekabr)
 
+**Oxirgi yangilanish:** 2024.02.05(2024-yil 5-fevral)
+
 **Muallif: Otabek Ismoilov**
+
+| [Telegram](https://t.me/Otabek_Ismoilov) | [GitHub](https://github.com/ismoilovdevml) | [LinkedIn](https://www.linkedin.com/in/otabek-ismoilov-8625b0222/) |
+| - | - | - |
+
 
 </Callout>

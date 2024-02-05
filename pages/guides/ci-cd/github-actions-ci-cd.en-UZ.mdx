@@ -498,7 +498,7 @@ jobs:
           context: .
           file: ./API.Dockerfile
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.REPO_NAME}}/${{ env.API_IMAGE_NAME }}-${{ github.sha }}
+          tags: ${{ env.REGISTRY }}/${{ env.REPO_NAME}}/${{ env.API_IMAGE_NAME }}:${{ github.sha }}
           cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.REPO_NAME}}/${{ env.API_IMAGE_NAME }}:buildcache
           cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.REPO_NAME}}/${{ env.API_IMAGE_NAME }}:buildcache,mode=max
 
@@ -508,7 +508,7 @@ jobs:
           context: .
           file: ./UI.Dockerfile
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.REPO_NAME}}/${{ env.UI_IMAGE_NAME }}-${{ github.sha }}
+          tags: ${{ env.REGISTRY }}/${{ env.REPO_NAME}}/${{ env.UI_IMAGE_NAME }}:${{ github.sha }}
           cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.REPO_NAME}}/${{ env.UI_IMAGE_NAME }}:buildcache
           cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.REPO_NAME}}/${{ env.UI_IMAGE_NAME }}:buildcache,mode=max
   
@@ -533,8 +533,8 @@ jobs:
             docker stop "${{ env.API_CONTAINER_NAME }}" || true
             docker rm "${{ env.UI_CONTAINER_NAME }}" || true
             docker rm "${{ env.API_CONTAINER_NAME }}" || true
-            docker run -d --name "${{ env.API_CONTAINER_NAME }}" -p "${{ env.API_PORT }}" "${{ env.REGISTRY }}/${{ env.REPO_NAME}}/${{ env.API_IMAGE_NAME }}-${{ github.sha }}"
-            docker run -d --name "${{ env.UI_CONTAINER_NAME }}" -p "${{ env.UI_PORT }}" "${{ env.REGISTRY }}/${{ env.REPO_NAME}}/${{ env.UI_IMAGE_NAME }}-${{ github.sha }}" 
+            docker run -d --name "${{ env.API_CONTAINER_NAME }}" -p "${{ env.API_PORT }}" "${{ env.REGISTRY }}/${{ env.REPO_NAME}}/${{ env.API_IMAGE_NAME }}:${{ github.sha }}"
+            docker run -d --name "${{ env.UI_CONTAINER_NAME }}" -p "${{ env.UI_PORT }}" "${{ env.REGISTRY }}/${{ env.REPO_NAME}}/${{ env.UI_IMAGE_NAME }}:${{ github.sha }}" 
 ```
 
 Ushbu multi container ham yuqoridagi bitta containerlidek bir xil ishlaydi faqat bir nechta container bilan birga. Ushbu Github Actions ikkita docker image build qilib push qiladi va serverda eski ikkita containerni to'xtatib o'chirib yangi Container Registrydagi ikkita containerni berilgan portda berilgan nom bilan ishga tushirib qo'yadi.
@@ -893,9 +893,9 @@ Qo'shimcha Resurslar
  * [**Koddan Servergacha: Jenkins bilan Docker CI/CD va Discord bilan integratsiya**](https://devops-journey.uz/guides/ci-cd/jenkins-docker-ci-cd)
  * [**Kubernetes CI/CD | GitHub Actions + Argo CD | GitOps**](https://devops-journey.uz/guides/ci-cd/github-actions-argocd-cicd)
 
- **Sana:** 2024.01.30(2024-yil 30-yanvar)
+**Sana:** 2024.02.04(2024-yil 4-fevral)
 
-**Oxirgi yangilanish:** 2024.01.31(2024-yil 31-yanvar)
+**Oxirgi yangilanish:** 2024.02.05(2024-yil 5-fevral)
 
 **Muallif: Otabek Ismoilov**
 
