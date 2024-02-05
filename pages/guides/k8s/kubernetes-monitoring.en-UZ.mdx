@@ -3,3 +3,62 @@ import { Callout } from "nextra-theme-docs";
 ## Kubernetes Monitoring
 
 ![k8s-monitoring](/images/tutorials/k8s/k8s-monitoring/banner.png)
+
+
+Ushbu amaliyotda biz Kubernetes clusterni monitoring qilishni ko'rib chiqamiz. Kubernetes monitoring qilishda **Prometheus** va **Grafana** ishlatamiz. Prometheus va Grafna haqida ma'lumot.
+
+* [**Prometheus nima?**](https://devops-journey.uz/tutorials/article/gnp-monitoring#prometheus-nima)
+* [**Grafana nima?**](https://devops-journey.uz/tutorials/article/gnp-monitoring#grafana-nima)
+* [**Grafana Dashboardni import qilish**](https://devops-journey.uz/tutorials/article/gnp-monitoring#grafana-dashboardni-import-qilish)
+
+## Ishni boshlash
+
+Ushbu amaliyot uchun bizga kerak bo'ladi:
+
+* Ishlab turgan Kubernetes cluster
+* **helm** va **NGINX Ingress Controller**
+* **Cert-Manager**
+
+<Callout type="info" emoji="">
+Ushbu qo'llanmani yaxshi tushinish uchun quyidagi qo'llanmalarni ko'rib chiqish tavsiya qilinadi!
+
+* Ishlashga tayyor Kubernetes yaratish uchun: [**Kubernetes klaster yaratish va sozlash(kubeadm)**](https://devops-journey.uz/guides/k8s/k8s-cluster-setup)
+
+* Cert-Manager uchun: [**Kubernetesga Cert-Manager o'rnatish va sozlash**](https://devops-journey.uz/guides/k8s/k8s-cert-manager)
+</Callout>
+
+**Rasmda Kubernetes [Prometheus arxitekturasi](https://prometheus.io/docs/introduction/overview/)**
+
+![k8s-monitoring](/images/tutorials/k8s/k8s-monitoring/architecture.png)
+
+Kubernetes Prometheus stackidagi komponentlar:
+
+* Prometheus Server
+* Alert Manager
+* Grafana
+
+## Prometheus o'rnatish
+
+Keling Kubernetesga Prometheus, Grafana va boshqa monitoing toollarni ishlatish uchun **monitoring** nomli namespace ochib ishlaymiz.
+
+**1->** Monitoring uchun namespace yaratib olamiz.
+
+```bash
+kubectl create namespace monitoring
+```
+
+**2->** Helm orqali Prometheus repositoriyani qo'shib monitoring namespacega o'rnatamiz.
+
+```bash
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
+helm install prometheus prometheus-community/prometheus --namespace monitoring
+```
+
+**3->** Statusini tekshiramiz.
+
+```bash
+kubectl get all -n monitoring
+```
+
+![k8s-monitoring](/images/tutorials/k8s/k8s-monitoring/monitoring1.png)
