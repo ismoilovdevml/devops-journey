@@ -52,5 +52,11 @@
     "icon": "▶️",
     "description": "GitOpsga Kirish",
     "href": "/guides/k8s/argo-cd-install"
+  },
+  "kubernetes-monitoring": {
+    "title": "Kubernetes Monitoring",
+    "icon": "▶️",
+    "description": "Prometheus, Grafana",
+    "href": "/guides/k8s/kubernetes-monitoring"
   }
 }
