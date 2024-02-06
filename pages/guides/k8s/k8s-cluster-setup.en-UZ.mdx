@@ -14,7 +14,7 @@ System administrator/DevOps Engineer yoki oddiygina konteyner orkestratsiyasi ol
 
 ## Ishni boshlash
 
-Ushbu amaliyotda biz on-primese serverlarda **kubeadm** bilan kubernetes cluster yaratimiz va ishlashga tayyor qilib sozlaymiz. Bu amaliyotda biz **HAProxy, MetalLB, NGINX Ingress, flannel, HELM** va boshqa texnologiyalarni ishlatamiz.
+Ushbu amaliyotda biz on-primese serverlarda **kubeadm** bilan kubernetes cluster yaratimiz va ishlashga tayyor qilib sozlaymiz. Bu amaliyotda biz **HAProxy, MetalLB, NGINX Ingress, flannel, HELM, Longhorn** va boshqa texnologiyalarni ishlatamiz.
 
 <Callout type="info" emoji="">
 
@@ -396,9 +396,79 @@ sudo systemctl status haproxy
 Ushbu arxitektura quyidagicha rasmda ko'rsatilganidek ishlaydi. NGINX Ingress k8s-master server ichida internal IPni olgan va shu bilan ishlaydi, tashqi kirib chiqish uchun esa HAProxy o'rnatib TCP modeda konfiguratsiya qildik, Ya'ni tashqi kirish chiqishlar HAProxy orqali o'tadi.
 ![k8s-cluster](/images/tutorials/k8s/cluster-setup/k8s-draw.png)
 
-## Kubernetesga Cert-Manager o'rnatish va sozlash
+## Cert-Manager o'rnatish va sozlash
 
 Kubernetes clusterimizga **Cert-Manager** o'rnatish bo'yicha [**devops-journey**](ttps://devops-journey.uz) platformasida qo'llanma mavjud bo'lib ushu [**Kubernesga Cert-Manager o'rnatish va sozlash**](https://devops-journey.uz/guides/k8s/k8s-cert-manager) qo'llamadan foydalanib o'rnatib sozlab olishingiz mumkin.
+
+## Longhorn o'rnatish va sozlash
+
+Kubernetes **Longhorn** - bu Kubernetes environmentlari uchun maxsus ishlab chiqilgan **distributed block storage** tizimi. Bu Kubernetes klasterlarida persistent storage(doimiy xotira) ehtiyojlari uchun ishonchli va kengaytiriladigan yechim bo'lib xizmat qiladi. Longhorn Kubernetes bilan muammosiz integratsiyalashib, platformada ishlaydigan stateful applicationlari uchun persistent storageni(doimiy xotira) ta'minlaydi.
+
+Asosan, Longhorn Kubernetes-da storageni boshqarish uchun juda muhim xususiyatlarni taklif etadi, masalan, replikatsiya, snapshotlar, backuplar va volume expansion. Ushbu funktsiyalar ma'lumotlarning ishonchliligi(data reliability), availability va nosozliklarga chidamliligini ta'minlaydi. Longhorn yordamida admin/devopslar storage volumeni bevosita Kubernetes API-dan osongina ta'minlashi va boshqarishi mumkin, bu esa storageni boshqarish vazifalarini soddalashtiradi.
+
+**1->** Helm orqali Longhorn repositoriyani qo'shib olamiz va **longhorn-system** namespacega o'rnatamiz.
+
+```bash
+helm repo add longhorn https://charts.longhorn.io
+helm repo update
+helm install longhorn longhorn/longhorn --namespace longhorn-system --create-namespace
+```
+
+**2->** Longhornni o'rnatib bo'lganimizdan keyin unin  NGINX Ingress orqali domen ulab expose qilamiz.
+
+Longhorn o'rnatilganidan keyin servicelarni ko'rib chiqaylik.
+
+```bash
+kubectl get svc -n longhorn-system
+```
+
+![k8s-cluster](/images/tutorials/k8s/cluster-setup/longhorn.png)
+
+Biz ushbu servicelardan `longhorn-frontend`ni expose qilamiz domen ulab.
+
+**longhorn** nomli papka yaratib olamiz longhorn uchun va ichida **longhorn-ingress.yaml** nomli configuratsiya fayl ochib olamiz.
+```bash
+mkdir longhorn
+cd longhorn
+nano longhorn-ingress.yaml
+```
+
+**longhorn-ingress.yaml** konfiguratsiyamiz quyidagicha
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: longhorn-ingress
+  namespace: longhorn-system
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  ingressClassName: "nginx"
+  rules:
+  - host: longhorn.xilol.uz
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: longhorn-frontend
+            port:
+              number: 80
+  tls:
+  - hosts:
+    - longhorn.xilol.uz
+    secretName: longhorn-tls
+```
+
+DNS hostimizdan domenimizni k8s-master static IP manizlini ulaymiz va konfiguratsiyamizni apply qilamiz.
+
+```bash
+kubectl apply -f longhorn-ingress.yaml
+```
+
+konfiguratsiyamizni apply qilganimizdan keyin brauzerdan(Firefox tezroq) `https://longhorn.xilol.uz` kirganingizda sizda Longhorn dashboardi ochilishi kerak.
 
 ## Kubernetes Dashboard
 
@@ -555,7 +625,9 @@ Nihoyat bizda ishlashga tayyor kubernetes klaster bor. Bu juda oson va qiyinchil
  * [**Kubernetesga Argo CD o'rnatish va sozlash**](https://devops-journey.uz/guides/k8s/argo-cd-install)
  * [**Kuberntes CI/CD | Github Actions + Argo CD | GitOps**](https://devops-journey.uz/guides/ci-cd/github-actions-argocd-cicd)
 
-**Oxirgi yangilanish:** 2024.01.19(2024-yil 19-yanvar)
+**Sana:** 2024.01.19(2024-yil 19-yanvar)
+
+**Oxirgi yangilanish:** 2024.02.06(2024-yil 6-fevral)
 
 **Muallif: Otabek Ismoilov**
 

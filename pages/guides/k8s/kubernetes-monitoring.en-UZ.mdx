@@ -62,3 +62,100 @@ kubectl get all -n monitoring
 ```
 
 ![k8s-monitoring](/images/tutorials/k8s/k8s-monitoring/monitoring1.png)
+
+Okey hammasi yaxshi biz hozir Prometheusni o'rnatib oldik.
+
+## Grafana o'rnatish
+
+**1->** Helm orqali Grafana repositoriyani qo'shib yangilab olamiz.
+
+```bash
+helm repo add grafana https://grafana.github.io/helm-charts
+helm repo update
+```
+
+**2->** helm orqali **monitoring** namespacega Grafana o'rnatamiz.
+
+```bash
+helm install grafana grafana/grafana --namespace monitoring
+```
+
+Grafan o'rnatib olganimzidan keyin uni domen ulab NGINX Ingress orqali expose qilamiz.
+
+**4->** grafana nomli papka ochin ichiga **grafana-ingress.yaml** configuratsiya fayl ochamiz.
+
+```bash
+mkdir grafana
+cd grafana
+nano grafana-ingress.yaml
+```
+
+**5->** monitoing namespaceda grafana serviceni ko'rsak u 80 portda ishlab turibti.
+![k8s-monitoring](/images/tutorials/k8s/k8s-monitoring/grafana.png)
+
+Ya'ni garafna service monitoring namespaceda 80 portda ishlaydi.
+
+Bizning grafana-ingress.yaml konfiguratsiyamiz quyidagicha.
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: grafana-ingress
+  namespace: monitoring
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  ingressClassName: "nginx"
+  rules:
+  - host: grafana.xilol.uz
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: grafana
+            port:
+              number: 80
+  tls:
+  - hosts:
+    - grafana.xilol.uz
+    secretName: grafana-tls
+```
+
+DNS hostimizdan Kubernetes clasterga domen ulab konfiguratsiyamizni apply qilamiz.
+
+```bash
+kubectl apply -f grafana-ingress.yaml
+```
+
+## Grafana Dashboard sozlash
+
+**1->** Yuqorida Grafana o'rnatib domenga ulab expose qilgandik endi shu domen orqali grafana kiamiz bizda birinchi admin bo'lib login qilish oynasi ochilishi kerak.
+
+![k8s-monitoring](/images/tutorials/k8s/k8s-monitoring/grafana1.png)
+
+* **Email or username->** admin
+* **Password->** admin passwordni olish uchun quyidagi buyruqdan foydalansiz
+
+admin user passwordni olish uchun
+```bash
+kubectl get secret --namespace monitoring grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
+```
+
+**2->** Grafanga login qilib kirib olganimizdan keyin **Data Source** sozlab olishimiz kerak yani Prometheusni ulab olishimiz kerak. Login qilib kirganimizdan keyin ochilgan **Home** pagedan **DATA SOURCES** bo'limga o'tamiz.
+
+![k8s-monitoring](/images/tutorials/k8s/k8s-monitoring/grafana2.png)
+
+Data Sourceda Prometheusni tanlaymiz sizda quyidagi oyna ochiladi.
+
+![k8s-monitoring](/images/tutorials/k8s/k8s-monitoring/grafana3.png)
+
+**Connection** bo'limdan Prometheus server URLga quyidagi URLNI beramiz.
+
+```url
+http://prometheus-server.monitoring.svc.cluster.local/
+``` 
+
+va **Save & test** bosib ulab olamiz hammasi to'gri bo'lsa muvvaqiyatli ulanishi kerak.
