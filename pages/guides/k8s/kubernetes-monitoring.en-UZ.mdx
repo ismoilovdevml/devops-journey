@@ -71,7 +71,7 @@ Okey hammasi yaxshi biz hozir Prometheusni o'rnatib oldik.
 
 ## Metrics exporterlar o'rnatish
 
-Kubernetes clasterimizni analiz qilib moinitoring qilishimiz uchun bizga metrics exporterlar kerak bo'ladi, ular Kubernetes claster metrikalarini olib berib turadi.
+Kubernetes clasterimizni analiz qilib moinitoring qilishimiz uchun bizga metrics exporterlar kerak bo'ladi, ular Kubernetes cluster metrikalarini olib berib turadi.
 
 **1->** [kube-state-metrics](https://github.com/kubernetes/kube-state-metrics) o'rnatish
 
@@ -106,7 +106,7 @@ helm install grafana grafana/grafana --namespace monitoring
 
 Grafan o'rnatib olganimzidan keyin uni domen ulab NGINX Ingress orqali expose qilamiz.
 
-**4->** grafana nomli papka ochin ichiga **grafana-ingress.yaml** configuratsiya fayl ochamiz.
+**4->** grafana nomli papka ochib ichiga **grafana-ingress.yaml** configuratsiya fayl ochamiz.
 
 ```bash
 mkdir grafana
@@ -117,7 +117,7 @@ nano grafana-ingress.yaml
 **5->** monitoing namespaceda grafana serviceni ko'rsak u 80 portda ishlab turibti.
 ![k8s-monitoring](/images/tutorials/k8s/k8s-monitoring/grafana.png)
 
-Ya'ni garafna service monitoring namespaceda 80 portda ishlaydi.
+Ya'ni grafana service monitoring namespaceda 80 portda ishlaydi.
 
 Bizning **grafana-ingress.yaml** konfiguratsiyamiz quyidagicha.
 
@@ -156,9 +156,9 @@ kubectl apply -f grafana-ingress.yaml
 
 ## Grafana Dashboard sozlash
 
-Grafana bu metrikalarni vizualizatsiya qilib beradigan tool hiosblanadi. Grafanaga Data Soiurcelar ulanadi yani metrikalarni to;plab grafanaga beruvchilar  bizning holatda bu Prometheus. Grafanaga Prometheusni ulab olganimizdan keyin Grafana Prometheus metrikalaridan foydalana oladi. Prometheusdagi metrikalarni vizualizatsiya qilish uchun esa Grafanaga dashboard qo'yiladi. Biz ushu amaliyot uchun [github.com/dotdc/grafana-dashboards-kubernetes](https://github.com/dotdc/grafana-dashboards-kubernetes) dashboardlar to'plamini tanladik.
+Grafana bu metrikalarni vizualizatsiya qilib beradigan tool hisoblanadi. Grafanaga Data Sourcelar ulanadi yani metrikalarni to'plab grafanaga beruvchilar  bizning holatda bu Prometheus. Grafanaga Prometheusni ulab olganimizdan keyin Grafana Prometheus metrikalaridan foydalana oladi. Prometheusdagi metrikalarni vizualizatsiya qilish uchun esa Grafanaga dashboard qo'yiladi. Biz ushu amaliyot uchun [github.com/dotdc/grafana-dashboards-kubernetes](https://github.com/dotdc/grafana-dashboards-kubernetes) dashboardlar to'plamini tanladik.
 
-**1->** Yuqorida Grafana o'rnatib domenga ulab expose qilgandik endi shu domen orqali grafana kiamiz bizda birinchi admin bo'lib login qilish oynasi ochilishi kerak.
+**1->** Yuqorida Grafana o'rnatib domenga ulab expose qilgandik endi shu domen orqali grafana kiramiz bizda birinchi admin bo'lib login qilish oynasi ochilishi kerak.
 
 ![k8s-monitoring](/images/tutorials/k8s/k8s-monitoring/grafana1.png)
 
@@ -184,7 +184,7 @@ Data Sourceda Prometheusni tanlaymiz sizda quyidagi oyna ochiladi.
 http://prometheus-server.monitoring.svc.cluster.local/
 ``` 
 
-va **Save & test** bosib ulab olamiz hammasi to'gri bo'lsa muvvaqiyatli ulanishi kerak.
+va **Save & test** bosib ulab olamiz hammasi to'gri bo'lsa muvaffaqiyatli ulanishi kerak.
 
 ![k8s-monitoring](/images/tutorials/k8s/k8s-monitoring/monitoring2.png)
 
@@ -205,21 +205,34 @@ va **Save & test** bosib ulab olamiz hammasi to'gri bo'lsa muvvaqiyatli ulanishi
 
 ![k8s-monitoring](/images/tutorials/k8s/k8s-monitoring/monitoring3.png)
 
-Undan keyingi oynada Data Sourceni Prometheusni belgilab **Import** qilamiz.
+Undan keyingi oynada Data Sourcega Prometheusni belgilab **Import** qilamiz.
 
 ![k8s-monitoring](/images/tutorials/k8s/k8s-monitoring/grafana5.png)
 
-Bizda Grafana metrikalarni vizualizatsiya qilib ko'rsatishi  kerak edi.
+Bizda Grafana metrikalarni vizualizatsiya qilib ko'rsatishi  kerak.
 
 ![k8s-monitoring](/images/tutorials/k8s/k8s-monitoring/grafana6.png)
 
-Okey yaxshi biz hammasi muvvaqiyatli uddaldik endi qolgan dashboardlarni ham import qilib ulab chiqamiz.
+Okey yaxshi biz hammasini muvaffaqiyatli uddaladik endi qolgan dashboardlarni ham import qilib ulab chiqamiz.
+
+Dashboardlar ro'yxati.
+
+| Dashboard                       | ID    |
+| ------------------------------- | ----- |
+| k8s-addons-prometheus.json      | 19105 |
+| k8s-addons-trivy-operator.json  | 16337 |
+| k8s-system-api-server.json      | 15761 |
+| k8s-system-coredns.json         | 15762 |
+| k8s-views-global.json           | 15757 |
+| k8s-views-namespaces.json       | 15758 |
+| k8s-views-nodes.json            | 15759 |
+| k8s-views-pods.json             | 15760 |
 
 ## NGINX Ingress monitoring
 
 Keling Prometheus Garafana orqali NGINX Ingressni ham monitoring qilamiz.
 
-**1->** NGINX Ingress controllerimizni yangilab expoertni yoqib prometheusga ulashimiz kerak.
+**1->** NGINX Ingress controllerimizni yangilab exporterni yoqib prometheusga ulashimiz kerak.
 
 ```bash
 helm upgrade ingress-nginx ingress-nginx \
@@ -248,8 +261,33 @@ controller:
     prometheus.io/scrape: "true"
 ```
 
-**2->** NGINX Ingressni monitoring qilish uchun Dashboard import qilamiz. NGINX Ingress monitoring qilish uchun quyidagi JSOn model dashboardan foydalanmiz.
+**2->** NGINX Ingressni monitoring qilish uchun Dashboard import qilamiz. NGINX Ingress monitoring qilish uchun quyidagi JSON model dashboardan foydalanamiz.
 
 Ushbu JSON kodni nusxalab dashboardni import qilishingiz mumkin: [https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/grafana/dashboards/nginx.json](https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/grafana/dashboards/nginx.json)
 
+NGINX ingress Controllerni monitoring qilish bo'yicha [rasmiy qo'llanma.](https://github.com/kubernetes/ingress-nginx/blob/main/docs/user-guide/monitoring.md)
+
 ![k8s-monitoring](/images/tutorials/k8s/k8s-monitoring/grafana7.png)
+
+## Qo'shimcha
+<Callout type="info" emoji="">
+Qo'shimcha Resurslar
+ 
+ * [**Kubernetesga Kirish**](https://devops-journey.uz/guides/k8s/k8s-kirish)
+ * [**Kubernetes Arxitekturasi**](https://devops-journey.uz/guides/k8s/k8s-architecture)
+ * [**Kubernetes Obyektlari**](https://devops-journey.uz/guides/k8s/k8s-objects)
+ * [**Kubernetes cluster yaratish va sozlash(kubeadm)**](https://devops-journey.uz/guides/k8s/k8s-cluster-setup)
+ * [**Kubernetesga Argo CD o'rnatish va sozlash**](https://devops-journey.uz/guides/k8s/argo-cd-install)
+ * [**Kuberntes CI/CD | Github Actions + Argo CD | GitOps**](https://devops-journey.uz/guides/ci-cd/github-actions-argocd-cicd)
+
+**Sana:** 2024.02.07(2024-yil 7-fevral)
+
+**Oxirgi yangilanish:** 2024.02.07(2024-yil 7-fevral)
+
+**Muallif: Otabek Ismoilov**
+
+| [Telegram](https://t.me/Otabek_Ismoilov) | [Github](https://github.com/ismoilovdevml) | [LinkedIn](https://www.linkedin.com/in/otabek-ismoilov-8625b0222/) |
+| - | - | - |
+
+
+</Callout>
