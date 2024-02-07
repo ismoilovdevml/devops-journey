@@ -18,6 +18,7 @@ Ushbu amaliyot uchun bizga kerak bo'ladi:
 * Ishlab turgan Kubernetes cluster
 * **helm** va **NGINX Ingress Controller**
 * **Cert-Manager**
+* **Longhorn**
 
 <Callout type="info" emoji="">
 Ushbu qo'llanmani yaxshi tushinish uchun quyidagi qo'llanmalarni ko'rib chiqish tavsiya qilinadi!
@@ -25,6 +26,8 @@ Ushbu qo'llanmani yaxshi tushinish uchun quyidagi qo'llanmalarni ko'rib chiqish 
 * Ishlashga tayyor Kubernetes yaratish uchun: [**Kubernetes klaster yaratish va sozlash(kubeadm)**](https://devops-journey.uz/guides/k8s/k8s-cluster-setup)
 
 * Cert-Manager uchun: [**Kubernetesga Cert-Manager o'rnatish va sozlash**](https://devops-journey.uz/guides/k8s/k8s-cert-manager)
+
+* Longhorn uchun: [**Longhorn o'rnatish va sozlash**](https://devops-journey.uz/guides/k8s/k8s-cluster-setup#longhorn-ornatish-va-sozlash)
 </Callout>
 
 **Rasmda Kubernetes [Prometheus arxitekturasi](https://prometheus.io/docs/introduction/overview/)**
@@ -58,12 +61,33 @@ helm install prometheus prometheus-community/prometheus --namespace monitoring
 **3->** Statusini tekshiramiz.
 
 ```bash
-kubectl get all -n monitoring
+kubectl get pods -n monitoring
+kubectl get svc -n monitoring
 ```
 
 ![k8s-monitoring](/images/tutorials/k8s/k8s-monitoring/monitoring1.png)
 
 Okey hammasi yaxshi biz hozir Prometheusni o'rnatib oldik.
+
+## Metrics exporterlar o'rnatish
+
+Kubernetes clasterimizni analiz qilib moinitoring qilishimiz uchun bizga metrics exporterlar kerak bo'ladi, ular Kubernetes claster metrikalarini olib berib turadi.
+
+**1->** [kube-state-metrics](https://github.com/kubernetes/kube-state-metrics) o'rnatish
+
+```bash
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
+helm install kube-state-metrics prometheus-community/kube-state-metrics --namespace monitoring
+```
+
+**2->** [prometheus-node-exporter](https://github.com/prometheus-community/helm-charts/tree/main/charts/prometheus-node-exporter) o'rnatish
+
+```bash
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
+helm install prometheus-node-exporter prometheus-community/prometheus-node-exporter --namespace monitoring
+```
 
 ## Grafana o'rnatish
 
@@ -95,7 +119,7 @@ nano grafana-ingress.yaml
 
 Ya'ni garafna service monitoring namespaceda 80 portda ishlaydi.
 
-Bizning grafana-ingress.yaml konfiguratsiyamiz quyidagicha.
+Bizning **grafana-ingress.yaml** konfiguratsiyamiz quyidagicha.
 
 ```yaml
 apiVersion: networking.k8s.io/v1
@@ -132,6 +156,8 @@ kubectl apply -f grafana-ingress.yaml
 
 ## Grafana Dashboard sozlash
 
+Grafana bu metrikalarni vizualizatsiya qilib beradigan tool hiosblanadi. Grafanaga Data Soiurcelar ulanadi yani metrikalarni to;plab grafanaga beruvchilar  bizning holatda bu Prometheus. Grafanaga Prometheusni ulab olganimizdan keyin Grafana Prometheus metrikalaridan foydalana oladi. Prometheusdagi metrikalarni vizualizatsiya qilish uchun esa Grafanaga dashboard qo'yiladi. Biz ushu amaliyot uchun [github.com/dotdc/grafana-dashboards-kubernetes](https://github.com/dotdc/grafana-dashboards-kubernetes) dashboardlar to'plamini tanladik.
+
 **1->** Yuqorida Grafana o'rnatib domenga ulab expose qilgandik endi shu domen orqali grafana kiamiz bizda birinchi admin bo'lib login qilish oynasi ochilishi kerak.
 
 ![k8s-monitoring](/images/tutorials/k8s/k8s-monitoring/grafana1.png)
@@ -159,3 +185,71 @@ http://prometheus-server.monitoring.svc.cluster.local/
 ``` 
 
 va **Save & test** bosib ulab olamiz hammasi to'gri bo'lsa muvvaqiyatli ulanishi kerak.
+
+![k8s-monitoring](/images/tutorials/k8s/k8s-monitoring/monitoring2.png)
+
+**3->** Grafanaga Dashboard ulash uchun, Grafana boshqaruv paneliga qayting. To'rt kvadratdan iborat `Dashboard` ikonkasini tanlang va ` + Import`-ni tanlang.
+![monitoring](/images/article/monitoring/17.png)
+**4->** Ushbu oynada Dashboard import qilamiz JSON model orqali yoki Grafana Dashboard ID orqali biz ID orqali import qilamiz. Biz [github.com/dotdc/grafana-dashboards-kubernetes](https://github.com/dotdc/grafana-dashboards-kubernetes) Kubernetes Dashboardlar to'plamini tanlagandik unda Dashboardlar ID raqamlari belgilangan ushbu dashboardlarni ID orqali import qilamiz. Masalan biz `k8s-views-global.json	15757` ni tanlaymiz va import qilamiz.
+
+| Dashboard                       | ID    |
+| ------------------------------- | ----- |
+| k8s-addons-prometheus.json      | 19105 |
+| k8s-addons-trivy-operator.json  | 16337 |
+| k8s-system-api-server.json      | 15761 |
+| k8s-system-coredns.json         | 15762 |
+| k8s-views-global.json           | 15757 |
+| k8s-views-namespaces.json       | 15758 |
+| k8s-views-nodes.json            | 15759 |
+| k8s-views-pods.json             | 15760 |
+
+![k8s-monitoring](/images/tutorials/k8s/k8s-monitoring/monitoring3.png)
+
+Undan keyingi oynada Data Sourceni Prometheusni belgilab **Import** qilamiz.
+
+![k8s-monitoring](/images/tutorials/k8s/k8s-monitoring/grafana5.png)
+
+Bizda Grafana metrikalarni vizualizatsiya qilib ko'rsatishi  kerak edi.
+
+![k8s-monitoring](/images/tutorials/k8s/k8s-monitoring/grafana6.png)
+
+Okey yaxshi biz hammasi muvvaqiyatli uddaldik endi qolgan dashboardlarni ham import qilib ulab chiqamiz.
+
+## NGINX Ingress monitoring
+
+Keling Prometheus Garafana orqali NGINX Ingressni ham monitoring qilamiz.
+
+**1->** NGINX Ingress controllerimizni yangilab expoertni yoqib prometheusga ulashimiz kerak.
+
+```bash
+helm upgrade ingress-nginx ingress-nginx \
+--repo https://kubernetes.github.io/ingress-nginx \
+--namespace ingress-nginx \
+--set controller.metrics.enabled=true \
+--set-string controller.podAnnotations."prometheus\.io/scrape"="true" \
+--set-string controller.podAnnotations."prometheus\.io/port"="10254"
+```
+
+NGINX ingresni yangi konfiglarni qo'shib yangilab olganimzidan keyin valuelarni tekshirib olishimiz mumkin.
+
+```bash
+helm get values ingress-nginx --namespace ingress-nginx
+```
+
+Sizda quyidagi konfig chiqishi kerak.
+
+```yaml
+USER-SUPPLIED VALUES:
+controller:
+  metrics:
+    enabled: true
+  podAnnotations:
+    prometheus.io/port: "10254"
+    prometheus.io/scrape: "true"
+```
+
+**2->** NGINX Ingressni monitoring qilish uchun Dashboard import qilamiz. NGINX Ingress monitoring qilish uchun quyidagi JSOn model dashboardan foydalanmiz.
+
+Ushbu JSON kodni nusxalab dashboardni import qilishingiz mumkin: [https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/grafana/dashboards/nginx.json](https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/grafana/dashboards/nginx.json)
+
+![k8s-monitoring](/images/tutorials/k8s/k8s-monitoring/grafana7.png)
