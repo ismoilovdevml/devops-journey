@@ -1,7 +1,8 @@
 import { Callout } from "nextra-theme-docs";
 
-# Linux Serverlarga Postgresql o'rnatish
+![postgresql-ornatish](/images/tutorials/database/postgresql.png)
 
+# Linux Serverlarga Postgresql o'rnatish
 
 ## Kirish
 
@@ -17,11 +18,11 @@ U bitta mashinadan tortib ma'lumotlar ombori yoki bir vaqtning o'zida ko'plab fo
 
 ## Ubuntu serverlarga Postgres o'rnatish
 
-### PostgreSQL Apt Repository
+**1->** PostgreSQL Apt Repository
 
 Agar Ubuntu versiyangizga kiritilgan versiya siz xohlagan versiya bo'lmasa, PostgreSQL Apt Repository dan foydalanishingiz mumkin. Ushbu repositoriya sizning oddiy tizimlaringiz va patch management bilan integratsiyalanadi va PostgreSQL-ni qo'llab-quvvatlash muddati davomida PostgreSQL-ning barcha qo'llab-quvvatlanadigan versiyalari uchun avtomatik yangilanishlarni ta'minlaydi.
 
-PostgreSQL Apt Repository Ubuntu ning joriy versiyalarini qo'llab-quvvatlaydi:
+PostgreSQL Apt Repository Ubuntuning joriy versiyalarini qo'llab-quvvatlaydi:
 
 * kinetic (22.10, LTS bo'lmagan)
 * jammy (22.04, LTS)
@@ -38,7 +39,7 @@ quyidagi arxitekturalar bo'yicha:
 Apt Repositorydan foydalanib PostgreSQL-ni o'rnatish:
 
 ```bash
-sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+sudo sh -c 'echo "deb https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
 wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
 sudo apt-get update
 sudo apt-get -y install postgresql
@@ -61,14 +62,15 @@ quyidagi arxitekturalar bo'yicha:
 * ppc64el
 
 Postgresqlni Debianga o'rnatish quyidagicha:
+
 ```bash
-sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+sudo sh -c 'echo "deb https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
 wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
 sudo apt-get update
 sudo apt-get -y install postgresql
 ```
 
-## Redhat oilasiga mansub linux serverlarga Postgresql o'rnatish
+## Redhat oilasiga mansub linux serverlar
 
 Red Hat distributivlar oilasiga quyidagilar kiradi:
 
@@ -78,33 +80,68 @@ Red Hat distributivlar oilasiga quyidagilar kiradi:
 * Fedora
 * Oracle Linux
 
-RHEL 6 va 7
+**Red Hat Enterprise, CentOS, Scientific yoki Oracle version 6(x86_64)**
 
 ```bash
-yum install postgresql-server
+sudo yum install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-6-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+sudo yum install -y postgresql16-server
+sudo service postgresql-16 initdb
+sudo chkconfig postgresql-16 on
+sudo service postgresql-16 start
 ```
 
-RHEL 8 va Fedora
+**Red Hat Enterprise, CentOS, Scientific yoki Oracle version 7(x86_64)**
 
 ```bash
-dnf install postgresql-server
+sudo yum install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+sudo yum install -y postgresql16-server
+sudo /usr/pgsql-16/bin/postgresql-16-setup initdb
+sudo systemctl enable postgresql-16
+sudo systemctl start postgresql-16
 ```
 
-RHEL / Rocky Linux / CentOS / SL / OL 7, 8, 9 yoki Fedora 36 va undan keyingi versiyalar uchun:
+**Red Hat Enterprise, Rocky, Almalinux yoki Oracle version 8(x86_64)**
 
 ```bash
-postgresql-setup --initdb
-systemctl enable postgresql.service
-systemctl start postgresql.service
+sudo dnf install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-8-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+sudo dnf -qy module disable postgresql
+sudo dnf install -y postgresql16-server
+sudo /usr/pgsql-16/bin/postgresql-16-setup initdb
+sudo systemctl enable postgresql-16
+sudo systemctl start postgresql-16
 ```
 
-RHEL / CentOS / SL / OL 6 uchun
+**Red Hat Enterprise, Rocky, Almalinux yoki Oracle version 9(x86_64)**
+
 ```bash
-service postgresql initdb
-chkconfig postgresql on
+sudo dnf install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-9-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+sudo dnf -qy module disable postgresql
+sudo dnf install -y postgresql16-server
+sudo /usr/pgsql-16/bin/postgresql-16-setup initdb
+sudo systemctl enable postgresql-16
+sudo systemctl start postgresql-16
 ```
 
-## PostgreSQL Rolelari va ma'lumotlar bazalaridan(Database) foydalanish
+**Fedora 38(x86_64)**
+
+```bash
+sudo dnf install -y https://download.postgresql.org/pub/repos/yum/reporpms/F-38-x86_64/pgdg-fedora-repo-latest.noarch.rpm
+sudo dnf install -y postgresql16-server
+sudo /usr/pgsql-16/bin/postgresql-16-setup initdb
+sudo systemctl enable postgresql-16
+sudo systemctl start postgresql-16
+```
+**Fedora 39(x86_64)**
+
+```bash
+sudo dnf install -y https://download.postgresql.org/pub/repos/yum/reporpms/F-39-x86_64/pgdg-fedora-repo-latest.noarch.rpm
+sudo dnf install -y postgresql16-server
+sudo /usr/pgsql-16/bin/postgresql-16-setup initdb
+sudo systemctl enable postgresql-16
+sudo systemctl start postgresql-16
+```
+
+## PostgreSQL rolelari va databasedan foydalanish
 
 Postgresql o'rnatganingizdan keyin uni serveringizda ishga tushirib statusini ko'rishingiz kerak
 
@@ -235,4 +272,22 @@ You are connected to database "asilbek" as user "asilbek" via socket in "/var/ru
 
 <Callout type="info" emoji="">
 E'tibor bering birinchi marta postgres user bilan kirganimizda terminal `postgres=# ` edi hozir biz yangi role ochin yangi user ochib kirganimizdan keyin `asilbek=# ` ga o'zgardi
+</Callout>
+
+## Qo'shimcha
+
+<Callout type="info" emoji="">
+
+ * [**PostgreSQLga kirish**](https://devops-journey.uz/guides/database/postgresql-kirish)
+ * [**PostgreSQL Monitoring**](https://devops-journey.uz/guides/database/postgres-monitoring)
+
+**Sana:** 2023.08.17(2023-yil 17-avgust)
+
+**Oxirgi yangilanish:** 2024.02.08(2024-yil 8-fevral)
+
+**Muallif: Otabek Ismoilov**
+
+| [Telegram](https://t.me/Otabek_Ismoilov) | [Github](https://github.com/ismoilovdevml) | [LinkedIn](https://www.linkedin.com/in/otabek-ismoilov-8625b0222/) |
+| - | - | - |
+
 </Callout>
