@@ -166,5 +166,26 @@
       "toc": false,
       "pagination": true
     }
+  },
+  "keycloak-identity-server": {
+    "title": "Keycloak bilan Identity Server sozlash",
+    "longTitle": "Keycloak bilan Identity Server sozlash",
+    "description": "keycloakdan foydalanaib identity Server sozlaymiz",
+    "level": "Hamma uchun",
+    "category": "DevOps",
+    "author": {
+      "name": "Otabek Ismoilov",
+      "image": "/images/tutorials/authors/ismoilovdev.jpeg"
+    },
+    "createdAt": "2024-02-10",
+    "minutesRead": 60,
+    "href": "/tutorials/article/keycloak-identity-server",
+    "theme": {
+      "breadcrumb": false,
+      "footer": true,
+      "sidebar": false,
+      "toc": false,
+      "pagination": true
+    }
   }
 }

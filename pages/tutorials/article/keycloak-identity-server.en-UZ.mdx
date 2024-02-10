@@ -1,0 +1,17 @@
+import { Callout } from "nextra-theme-docs";
+
+# Keycloak bilan Identity Server sozlash
+
+![keycloak-sozlash](/images/article/keycloak-server/banner.png)
+
+## Kirish
+
+Bugungi raqamli landshaftda applicationlar va resurslarga kirishni ta'minlash muhim ahamiyatga ega. **I**dentity and **A**ccess **M**anagement(**IAM**) yechimlari foydalanuvchi identifikatorlarini boshqarish, foydalanuvchilarni autentifikatsiya qilish va tashkilot ekotizimidagi turli resurslarga kirishni nazorat qilishda muhim rol o'ynaydi. Keycloak, open source IAM yechimi identifikatsiya va kirishni boshqarishni boshqarish uchun mustahkam va keng qamrovli platformani taklif etadi.
+
+Keycloak foydalanuvchilarga bir marta autentifikatsiya qilish va bir nechta applicationlarga muammosiz kirish imkonini beruvchi **s**ingle **s**ign-**o**n(**SSO**) yechimi sifatida xizmat qiladi. **Red Hat** tomonidan ishlab chiqilgan Keycloak **OpenID Connect**, **OAuth 2.0** va **SAML (Security Assertion Markup Language)** kabi turli xil autentifikatsiya protokollarini qo'llab-quvvatlaydi, bu uni ko'p qirrali va turli xil foydalanish holatlariga moslashtiradi.
+
+Keycloak-ning asosiy afzalliklaridan biri uning moslashuvchanligi(flexibility) va kengaytirilishidir(extensibility). U **LDAP (Lightweight Directory Access Protocol)** yoki **Active Directory** kabi mavjud identity storelari bilan birlashtirilishi mumkin, bu esa tashkilotlarga mavjud user repositoriyalaridan foydalanish imkonini beradi. Bundan tashqari, Keycloak user federation, fine-grained access control, multi-factor authentication va centralized user management kabi boy xususiyatlar to'plamini taklif etadi, bu esa tashkilotlarga xavfsizlik siyosatini samarali qo'llash imkonini beradi.
+
+Ushbu texnik qo'llanma **Ubuntu 20.04** serverida **Keycloak**ni o'rnatish bo'yicha keng qamrovli ko'rsatmalar berishga qaratilgan bo'lib, o'rnatish, sozlashni qamrab oladi. Ushbu qo'llanmaga amal qilish orqali admin/devopslar va dasturchilar o'z applicationlari xavfsizligini oshirish hamda foydalanuvchilari uchun autentifikatsiya va avtorizatsiya jarayonlarini soddalashtirish uchun Keycloak quvvatidan foydalanishlari mumkin.
+
+## Ishni boshlash

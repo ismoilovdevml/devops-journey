@@ -29,12 +29,6 @@
     "description": "Serverda VS Code ishlatish",
     "href": "/guides/konteyner/code-server"
   },
-  "wordpress": {
-    "title": "Wordpress o'rnatish",
-    "icon": "▶️",
-    "description": "Docker yordamida Wordpress o'rnatish",
-    "href": "/guides/konteyner/wordpress"
-  },
   "konteynerlash": {
     "title": "Loyihalarni konteynerlash",
     "icon": "▶️",
