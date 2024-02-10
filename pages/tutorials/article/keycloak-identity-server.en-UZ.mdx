@@ -30,6 +30,11 @@ Ushbu amaliyotni amalga oshirish uchun bizga quyidagi minimum server talablarida
 
 ## Keycloak o'rnatish
 
+Keycloak o'rnatishni biz ikki qismga bo'ldik ya'ni keycloak 16chi versiyagacha o'rnatish bosqacha bo'lgan va 17chi versiyadan boshlab o'rnatishdan katta o'zgarishlar bo'lgan shuning uchun biz 16 versiyagacha bo'lgan keycloak uchun alohida va 17dan boshlangan keycloak uchun boshqa o'rnatish qo'llanmasini yozdik. Keyclok versiyani loyihangi talablari yoki boshqa bo'gliklar orqali tanlaysiz.
+
+### 16-chi versiyagacha
+
+Ushbu o'rnatish 16-chi versiyagacha bo'lgan keycloak uchun o'rnatish qo'llanmasi va biz bunda **keycloak 15.0.0** versiyani o'rnatamiz.
 **1->** Serverni yangilab kerali dasturlarni o'rnatib olamiz.
 
 ```bash
@@ -55,20 +60,19 @@ OpenJDK Runtime Environment (build 17.0.9+9-Ubuntu-120.04)
 OpenJDK 64-Bit Server VM (build 17.0.9+9-Ubuntu-120.04, mixed mode, sharing)
 ```
 
-**3->** Ushbu amaliyotda biz source code orqali Keycloak **23.0.6** versiyasni ubuntu 20.04 serverga o'rnatamiz. Buning uchun keycloak source kodlarini serverimiz `/opt` papkasiga yuklab olamiz va arxivdan chiqaramiz. Rasmiy [Keycloak Downloads](https://www.keycloak.org/downloads.html) sahifasi.
+**3->** Ushbu amaliyotda biz source code orqali Keycloak **15.0.0** versiyasni ubuntu 20.04 serverga o'rnatamiz. Buning uchun keycloak source kodlarini serverimiz `/opt` papkasiga yuklab olamiz va arxivdan chiqaramiz. Rasmiy [Keycloak Downloads](https://www.keycloak.org/downloads.html) sahifasi.
 
 ```bash
 cd /opt
-sudo wget https://github.com/keycloak/keycloak/releases/download/23.0.6/keycloak-23.0.6.tar.gz
+sudo wget https://github.com/keycloak/keycloak/releases/download/15.0.0/keycloak-15.0.0.tar.gz
 ```
 
-**4->** Yuklab olgan keycloak source kodlarni .tar arxivini arxivdan chiqarib olamiz. Keycloak source kodlarini arxivdan chiqarib olganimizda source kodlar **keycloak-23.0.6** papkasida bo'ladi biz uni nomini **keycloak**ga o'zgartiramiz. Biz **/opt** papkasi ichidamiz.
+**4->** Yuklab olgan keycloak source kodlarni .tar arxivini arxivdan chiqarib olamiz. Keycloak source kodlarini arxivdan chiqarib olganimizda source kodlar **keycloak-15.0.0** papkasida bo'ladi biz uni nomini **keycloak**ga o'zgartiramiz. Biz **/opt** papkasi ichidamiz.
 
 ```bash
-sudo tar -xvzf keycloak-23.0.6.tar.gz
-sudo mv keycloak-23.0.6 /opt/keycloak
+sudo tar -xvzf keycloak-15.0.0.tar.gz
+sudo mv keycloak-15.0.0 /opt/keycloak
 ```
-![keycloak-sozlash](/images/article/keycloak-server/keycloak1.png)
 
 **4->** Xavfsizlik nuqtai nazaridan Keycloak dasturini root useri bilan ishga tushirmasligimiz kerak. Shuning uchun keycloakga linux **user** va **group** yaratib olamiz va keycloak home ishlaydigan directoriyasini `/opt/keycloak` qilib qo'yamiz.
 
@@ -107,4 +111,10 @@ Usbu sciptni keycloak user execute qilish uchun keycloak userni owner qilib qo'y
 
 ```bash
 sudo chown keycloak: /opt/keycloak/bin/launch.sh
+```
+
+**6->** `launch.sh` sciptda keycloak ishlaydigan directoriyani belgilashimiz kerak.
+
+```bash
+sudo nano /opt/keycloak/bin/launch.sh
 ```
