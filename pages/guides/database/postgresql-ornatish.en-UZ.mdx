@@ -190,6 +190,112 @@ Shunga qaramay, interaktiv Postgres seansidan quyidagi amallarni bajarish orqali
 postgres=# \q
 ```
 
+## PostgreSQL sozlash
+
+**1->** PostgreSQL o'rnatilganda default **postgres** user bilan parolsiz keladi. Xavfsizlik uchun **postgres** userga password qo'yib olamiz.
+
+```bash
+sudo -u postgres psql
+ALTER USER postgres WITH PASSWORD 'meningparolcham129c';
+\q
+```
+
+![postgresql-ornatish](/images/tutorials/database/postgresql1.png)
+
+**2->** Postgresql o'rnatilgan servermizga tashqi ulanishlarni yoqib chiqamiz. 
+
+Birinchi navbatda **postgresql.conf** kondiguratsiyadan **listen_addresses** qatorini izohdan chiqarib localhost o'rniga * qo'yib qo'yamiz yani barcha IP lar uchun.
+
+```bash
+sudo nano /etc/postgresql/16/main/postgresql.conf
+```
+
+```conf {2}
+# - Connection Settings -
+#listen_addresses = 'localhost'         # what IP address(es) to listen on;
+                                        # comma-separated list of addresses;
+                                        # defaults to 'localhost'; use '*' for all
+                                        # (change requires restart)
+port = 5432                             # (change requires restart)
+max_connections = 100                   # (change requires restart)
+#reserved_connections = 0               # (change requires restart)
+#superuser_reserved_connections = 3     # (change requires restart)
+unix_socket_directories = '/var/run/postgresql' # comma-separated list of directories
+                                        # (change requires restart)
+#unix_socket_group = ''                 # (change requires restart)
+#unix_socket_permissions = 0777         # begin with 0 to use octal notation
+```
+
+Quyidagicha o'zgartiramiz.
+
+```conf {2}
+# - Connection Settings -
+listen_addresses = '*'         # what IP address(es) to listen on;
+                                        # comma-separated list of addresses;
+                                        # defaults to 'localhost'; use '*' for all
+                                        # (change requires restart)
+port = 5432                             # (change requires restart)
+max_connections = 100                   # (change requires restart)
+#reserved_connections = 0               # (change requires restart)
+#superuser_reserved_connections = 3     # (change requires restart)
+unix_socket_directories = '/var/run/postgresql' # comma-separated list of directories
+                                        # (change requires restart)
+#unix_socket_group = ''                 # (change requires restart)
+#unix_socket_permissions = 0777         # begin with 0 to use octal notation
+```
+
+O'zgarishlarni saqlab chiqamiz.
+
+**3-> pg_hba.conf** konfiguratsiyamizga quyidagi konfiguratsiyani qo'shib qo'yamiz.
+
+```bash
+sudo nano /etc/postgresql/16/main/pg_hba.conf
+```
+```conf
+# Database administrative login by Unix domain socket
+local   all             postgres                                peer
+# TYPE  DATABASE        USER            ADDRESS                 METHOD
+# "local" is for Unix domain socket connections only
+local   all             all                                     peer
+# IPv4 local connections:
+host    all             all             127.0.0.1/32            scram-sha-256
+# IPv6 local connections:
+host    all             all             ::1/128                 scram-sha-256
+# Allow replication connections from localhost, by a user with the
+# replication privilege.
+local   replication     all                                     peer
+host    replication     all             127.0.0.1/32            scram-sha-256
+host    replication     all             ::1/128                 scram-sha-256
+```
+Konfiguratsiyamizga quyidagi konfiglarni qo'shamiz.
+
+```conf {15-16}
+# Database administrative login by Unix domain socket
+local   all             postgres                                peer
+# TYPE  DATABASE        USER            ADDRESS                 METHOD
+# "local" is for Unix domain socket connections only
+local   all             all                                     peer
+# IPv4 local connections:
+host    all             all             127.0.0.1/32            scram-sha-256
+# IPv6 local connections:
+host    all             all             ::1/128                 scram-sha-256
+# Allow replication connections from localhost, by a user with the
+# replication privilege.
+local   replication     all                                     peer
+host    replication     all             127.0.0.1/32            scram-sha-256
+host    replication     all             ::1/128                 scram-sha-256
+host    all             all              0.0.0.0/0              md5
+host    all             all              ::/0                   md5
+```
+
+**4->** Ushbu konfiguratsiyada barcha iplar ushbu Postgresql bazaga ulanishi kiritilgan. Konfiglarni qo'shib chiqganimizdan keyin o'zgarishlarni saqlab postgresqlga restart beramiz.
+
+```bash
+sudo systemctl restart postgresql
+ssudo systemctl status postgresql
+```
+PostgreSQLga restart berganimizdan keyin postgresql databazaga tashqaridan ulana olamiz.
+
 ## Yangi rol yaratish
 
 Agar siz postgres useri sifatida kirgan bo'lsangiz, quyidagi buyruqni ishga tushirish orqali yangi rol yaratishingiz mumkin:
