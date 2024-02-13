@@ -227,3 +227,32 @@ sudo systemctl restart keycloak
 Okey bizda **Administration Console** ochildi va kirganimizda quyidagi oyna ochilishi kerak
 
 ![keycloak-sozlash](/images/article/keycloak-server/keycloak3.png)
+
+Bizda muammo chiqdi yani biz http bilan kiryapmiz keycloak esa SSL https talab qilyapti. Buning uchun keycloakga domen ulab nginx orqali reverse proxy qilib expose qilishimiz mumkin yoki Kyecloakdan SSL verificationni o'chirib qo'yishimiz kerak. Keling keycloakdan SSL verificationni o'chirib qo'yamiz.
+
+```bash
+sudo /opt/keycloak/bin/kcadm.sh config credentials \
+    --server http://localhost:8080/auth \
+    --realm master \
+    --user admin \
+    --password adminparol239dw2
+```
+
+```bash
+sudo /opt/keycloak/bin/kcadm.sh update realms/master -s sslRequired=NONE
+```
+Keycloakga restart beramiz.
+
+```bash
+sudo systemctl restart keycloak
+```
+
+Keycloakga brauzerdan qayta kirib **Administration Console**ga kirganimzida bizda quyidagi login qilib kirish uchun oyna ochiladi.
+
+![keycloak-sozlash](/images/article/keycloak-server/keycloak4.png)
+
+Login qilib kiramiz birinchi oyna.
+
+![keycloak-sozlash](/images/article/keycloak-server/keycloak5.png)
+
+Okey bizda hammasi ishlayapti biz muvaffaqiyatli keycloak 15.0.0 o'rnatdik va dastlablki sozlashni yakunladik.
