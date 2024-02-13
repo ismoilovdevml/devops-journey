@@ -118,3 +118,112 @@ sudo chown keycloak: /opt/keycloak/bin/launch.sh
 ```bash
 sudo nano /opt/keycloak/bin/launch.sh
 ```
+
+Ya'ni `/opt/wildfly` ni `/opt/keycloak`ga o'zgartiramiz.
+
+```bash {4}
+#!/bin/bash
+
+if [ "x$WILDFLY_HOME" = "x" ]; then
+    WILDFLY_HOME="/opt/keycloak"
+fi
+
+if [[ "$1" == "domain" ]]; then
+    $WILDFLY_HOME/bin/domain.sh -c $2 -b $3
+else
+    $WILDFLY_HOME/bin/standalone.sh -c $2 -b $3
+fi
+```
+
+**7->** **/opt/keycloak/docs/contrib/scripts/systemd/** papkadagi `wildfly.service` faylini **/etc/systemd/system/** papkaga `keycloak.service` nomi bilan nusxalaymiz.
+
+```bash
+sudo cp /opt/keycloak/docs/contrib/scripts/systemd/wildfly.service /etc/systemd/system/keycloak.service
+```
+
+**8->** `keycloak.service` faylini nano matn muharrida ochib quyidagicha o'zgartishlar kiritamiz.
+
+```bash
+sudo nano /etc/systemd/system/keycloak.service
+```
+
+Dastlab keycloak.service konfiguratsiyamniz quyidagi ko'rinishda bo'ladi
+```bash
+[Unit]
+Description=The WildFly Application Server
+After=syslog.target network.target
+Before=httpd.service
+
+[Service]
+Environment=LAUNCH_JBOSS_IN_BACKGROUND=1
+EnvironmentFile=-/etc/wildfly/wildfly.conf
+User=wildfly
+LimitNOFILE=102642
+PIDFile=/var/run/wildfly/wildfly.pid
+ExecStart=/opt/wildfly/bin/launch.sh $WILDFLY_MODE $WILDFLY_CONFIG $WILDFLY_BIND
+StandardOutput=null
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Konfiguratsiyamizni yangilab o'zgarishlarni saqlab chiqamiz.
+
+```bash {2,8-10,12-13}
+[Unit]
+Description=The Keycloak Server
+After=syslog.target network.target
+Before=httpd.service
+
+[Service]
+Environment=LAUNCH_JBOSS_IN_BACKGROUND=1
+EnvironmentFile=-/etc/keycloak/keycloak.conf
+User=keycloak
+Group=keycloak
+LimitNOFILE=102642
+PIDFile=/var/run/keycloak/keycloak.pid
+ExecStart=/opt/keycloak/bin/launch.sh $WILDFLY_MODE $WILDFLY_CONFIG $WILDFLY_BIND
+StandardOutput=null
+
+[Install]
+WantedBy=multi-user.target
+```
+
+**9->**  systemd manager orqali daeon-reload berib keycloakni enable qilib qo'yamiz yani server o'chib yonganidan keyin avtomatik ishga tushishi uchun.
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable keycloak
+```
+
+**10->** Keycloakni start berib ishga tuhsiramiz va statusini ko'ramiz.
+
+```bash
+sudo systemctl start keycloak
+sudo systemctl status keycloak
+```
+
+**11->** Keycloakni muvaffaqiyatli ishga tushirganimizdan keyin brauzer orqali serverimiz public IPsi bilan **8080** portiga kirganimizda bizda Keycloak oynasi ochilishi kerak.
+
+http://0.0.0.0:8080/auth/
+
+![keycloak-sozlash](/images/article/keycloak-server/keycloak.png)
+
+Keycloak hech qanday birinchi Administrator user bilan kelmaydi shuning uchun biz uni o'zimiz yaratib olishimiz kerak. Biz hozir localhost:8080 qilib kirmaganimiz uchun UI orqali admni user yarata olmaymiz shuning uchun `add-user-keycloak.sh` scripti orqali admin user yarataib olamiz.
+
+```bash
+sudo /opt/keycloak/bin/add-user-keycloak.sh -r master -u admin -p adminparol239dw2
+```
+Keycloak admin user yaratib olganimzidan keyin avtomatik **master** realm bilan birga keladi.
+
+**11->** Keycloakga restart berib brauzer orqali qayta kiramiz.
+
+```bash
+sudo systemctl restart keycloak
+```
+
+![keycloak-sozlash](/images/article/keycloak-server/keycloak2.png)
+
+Okey bizda **Administration Console** ochildi va kirganimizda quyidagi oyna ochilishi kerak
+
+![keycloak-sozlash](/images/article/keycloak-server/keycloak3.png)

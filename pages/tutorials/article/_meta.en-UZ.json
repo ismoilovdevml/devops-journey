@@ -167,7 +167,7 @@
       "pagination": true
     }
   },
-  "keycloak-identity-server": {
+  "keycloak-identity-server-sozlash": {
     "title": "Keycloak bilan Identity Server sozlash",
     "longTitle": "Keycloak bilan Identity Server sozlash",
     "description": "keycloakdan foydalanaib identity Server sozlaymiz",
@@ -179,7 +179,7 @@
     },
     "createdAt": "2024-02-10",
     "minutesRead": 60,
-    "href": "/tutorials/article/keycloak-identity-server",
+    "href": "/tutorials/article/keycloak-identity-server-sozlash",
     "theme": {
       "breadcrumb": false,
       "footer": true,
