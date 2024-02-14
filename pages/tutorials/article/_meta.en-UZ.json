@@ -187,5 +187,26 @@
       "toc": false,
       "pagination": true
     }
+  },
+  "minio-server-sozlash": {
+    "title": "Minio Server sozlash",
+    "longTitle": "Minio Server sozlash",
+    "description": "Minio bilan Object Storage Server sozlash",
+    "level": "Hamma uchun",
+    "category": "DevOps",
+    "author": {
+      "name": "Otabek Ismoilov",
+      "image": "/images/tutorials/authors/ismoilovdev.jpeg"
+    },
+    "createdAt": "2024-02-14",
+    "minutesRead": 30,
+    "href": "/tutorials/article/minio-server-sozlash",
+    "theme": {
+      "breadcrumb": false,
+      "footer": true,
+      "sidebar": false,
+      "toc": false,
+      "pagination": true
+    }
   }
 }
