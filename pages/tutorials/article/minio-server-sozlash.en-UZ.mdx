@@ -27,7 +27,7 @@ Ushbu amaliyotni amalga oshirish uchun bizga quyidagi minimum server talablarida
 
 </Callout>
 
-## Minio o'rnatish
+## Minio Server o'rnatish va sozlash
 
 Minio o'rntaishni bir nechta usullari bor. Masalan.
 
@@ -99,10 +99,16 @@ WantedBy=multi-user.target
 
 **3->** Xavfsizlik yuzasidan minio uchun minio guruh va user ochib minio storage pathga ownerlik beramiz. Biz minio storage pathini  **mnt/data**ga belgilab qo'yamiz.
 
+Minio uchun papka yaratib olamiz.
+
 ```bash
-groupadd -r minio-user
-useradd -M -r -g minio-user minio-user
-chown minio-user:minio-user /mnt/disk1 /mnt/data
+sudo mkdir -p /mnt/data
+```
+
+```bash
+sudo groupadd -r minio-user
+sudo useradd -M -r -g minio-user minio-user
+sudo chown minio-user:minio-user /mnt/data
 ```
 
 **4->** Minio sozlash uchun minio config yaratib sozlab olamiz.
@@ -139,4 +145,106 @@ MINIO_OPTS="--console-address :9001"
 
 Ushbu konfiguratsiyamizda minio admin user/parol va console-addres/minio-volume belgilab sozlaymiz.
 
-**5->**
+**5->** Minio Serverimini SsystemD orqali ishga tushiramiz.
+
+```bash
+sudo systemctl start minio.service
+```
+
+Statusini tekshirib ko'ramiz.
+
+```bash
+sudo systemctl status minio.service
+```
+
+Server o'chib yonganda Minio service avtomatik ishga tuhsmaydi shuning uchun avtomatik ishga tushishni yoqib qo'yamiz.
+
+```bash
+sudo systemctl enable minio.service
+```
+
+![keycloak-sozlash](/images/article/minio-server/minio1.png)
+
+```txt
+Feb 15 12:45:27 devops minio[19390]: MinIO Object Storage Server
+Feb 15 12:45:27 devops minio[19390]: Copyright: 2015-2024 MinIO, Inc.
+Feb 15 12:45:27 devops minio[19390]: License: GNU AGPLv3 <https://www.gnu.org/licenses/agpl-3.0.html>
+Feb 15 12:45:27 devops minio[19390]: Version: RELEASE.2024-02-14T21-36-02Z (go1.21.7 linux/amd64)
+Feb 15 12:45:27 devops minio[19390]: Status:         1 Online, 0 Offline.
+Feb 15 12:45:27 devops minio[19390]: S3-API: http://10.0.0.4:9000  http://127.0.0.1:9000
+Feb 15 12:45:27 devops minio[19390]: Console: http://10.0.0.4:9001 http://127.0.0.1:9001
+Feb 15 12:45:27 devops minio[19390]: Documentation: https://min.io/docs/minio/linux/index.html
+Feb 15 12:45:27 devops minio[19390]: Warning: The standard parity is set to 0. This can lead to data loss.
+```
+
+Quyida applicationlar bo'glanishi uchun S3 API va Console ko'rsatilgan. Applicationlar Minio serverga 0.0.0.0:9000 serverimiz public IP manzilida 9000 portda bo'glana oladi Minio UI ga esa 0.0.0.0:9001 9001 port orqali brauzerdan kira olamiz.
+
+
+**6->** Minio Console boshqaruv paneliga kirish uchun o'zingizga qulay brauzerdan serveringiz public IPsi va 9001 portga kirsangiz sizda Minio Console ochilishi kerak.
+
+![keycloak-sozlash](/images/article/minio-server/minio2.png)
+![keycloak-sozlash](/images/article/minio-server/mino3.png)
+
+Okey biz Minioni muvaffaqiyatli o'rnatib oldik keling birorta bucket ochib fayl yuklab ko'ramiz. Bucket ochayotganimizda **Versioning**ni yoqib qo'yish maslahat beriladi.
+
+![keycloak-sozlash](/images/article/minio-server/minio4.png)
+
+Qo'shimcha sozlashlarni bucket Settingidan sozlab olasiz. Bucketni private yoki public qilish va qo'shimcha sozlamalarni o'z ichiga oladi.
+![keycloak-sozlash](/images/article/minio-server/minio6.png)
+
+### Minioga domen ulash.
+
+Keling Minio S3 API va Console UI'ga domen ulab domen orqali kiradigan qilib ishga tushiramiz.
+
+**1->** Nginx va certbot o'rnatib olamiz.
+
+```bash
+sudo apt update
+sudo apt install certbot python3-certbot-nginx -y
+```
+
+**2->** Nginx o'rnatib olganimzidan keyin uni ishga tushirib statusini tekshiramiz.
+
+```bash
+sudo systemctl start nginx
+sudo systemctl status nginx
+sudo systemctl enable nginx
+```
+
+**3->** Minio S3 API ni domen ulab nginx configuratsiya qilamiz. **/etc/nginx/sites-available/domenimiz.uz** faylida domenimiz nomi bilan konfiguratsiya ochib olamiz va quyidagicha konfiguratsiya qilamiz. Masalan menda xilol.uz domeni bor shuni uchun men minio-api nomli subdomen qilib minio-api.xilol.uz domenini ishlataman. Bu yerda minio-api.xilol.uz bu namuna uchun siz o'z domengizni qo'ying.
+
+```bash
+sudo /etc/nginx/sites-available/minio-api.xilol.uz
+```
+minio-api.xilol.uz konfiguratsiyamiz quyidagicha bo'ladi. Minio S3 API yani applicationlar ulanishi uchun ishlaydigan API **9000** portda ishlaydi shu portni ngingx reverse proxy, proxy_pass qilib expose qilamiz.
+
+```bash {3,6}
+server {
+    listen 80;
+    server_name minio-api.xilol.uz;
+
+    location / {
+        proxy_pass http://localhost:9000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+Ushbu Nginx konfiguratsiya **minio-api.xilol.uz** ga kelgan barcha requestlarni **:9000** portga yo'naltiradi.
+
+Konfiguratsiyamizni **sites-available**dan **sites-enabled**ga `ln -s` qilib symbolic link qilib bo'glaymiz.
+```bash
+sudo ln -s /etc/nginx/sites-available/minio-api.xilol.uz /etc/nginx/sites-enabled/
+```
+
+DNS domen hostimizdan domenimizga subdomen qo'shib serverimiz static public IPsini bo'glaymiz. Rasmda Ahostdan namuna. 0.0.0.0 o'rniga serveringiz static IP manizlini yozing.
+
+![keycloak-sozlash](/images/article/minio-server/ahost.png)
+
+DNS dan domenni ulaganimzidan keyin cerbot orqali **Let's Encrypt** SSL sertifikat olamiz.
+
+```bash
+sudo certbot --nginx -d minio-api.xilol.uz
+```
