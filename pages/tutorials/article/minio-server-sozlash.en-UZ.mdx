@@ -2,7 +2,7 @@ import { Callout } from "nextra-theme-docs";
 
 # Minio bilan Object Storage Server sozlash
 
-![keycloak-sozlash](/images/article/minio-server/banner.png)
+![minio-server-sozlash](/images/article/minio-server/banner.png)
 
 ## Kirish
 
@@ -163,7 +163,7 @@ Server o'chib yonganda Minio service avtomatik ishga tuhsmaydi shuning uchun avt
 sudo systemctl enable minio.service
 ```
 
-![keycloak-sozlash](/images/article/minio-server/minio1.png)
+![minio-server-sozlash](/images/article/minio-server/minio1.png)
 
 ```txt
 Feb 15 12:45:27 devops minio[19390]: MinIO Object Storage Server
@@ -182,15 +182,15 @@ Quyida applicationlar bo'glanishi uchun S3 API va Console ko'rsatilgan. Applicat
 
 **6->** Minio Console boshqaruv paneliga kirish uchun o'zingizga qulay brauzerdan serveringiz public IPsi va 9001 portga kirsangiz sizda Minio Console ochilishi kerak.
 
-![keycloak-sozlash](/images/article/minio-server/minio2.png)
-![keycloak-sozlash](/images/article/minio-server/mino3.png)
+![minio-server-sozlash](/images/article/minio-server/minio2.png)
+![minio-server-sozlash](/images/article/minio-server/mino3.png)
 
 Okey biz Minioni muvaffaqiyatli o'rnatib oldik keling birorta bucket ochib fayl yuklab ko'ramiz. Bucket ochayotganimizda **Versioning**ni yoqib qo'yish maslahat beriladi.
 
-![keycloak-sozlash](/images/article/minio-server/minio4.png)
+![minio-server-sozlash](/images/article/minio-server/minio4.png)
 
 Qo'shimcha sozlashlarni bucket Settingidan sozlab olasiz. Bucketni private yoki public qilish va qo'shimcha sozlamalarni o'z ichiga oladi.
-![keycloak-sozlash](/images/article/minio-server/minio6.png)
+![minio-server-sozlash](/images/article/minio-server/minio6.png)
 
 ### Minioga domen ulash.
 
@@ -234,17 +234,23 @@ server {
 ```
 Ushbu Nginx konfiguratsiya **minio-api.xilol.uz** ga kelgan barcha requestlarni **:9000** portga yo'naltiradi.
 
-Konfiguratsiyamizni **sites-available**dan **sites-enabled**ga `ln -s` qilib symbolic link qilib bo'glaymiz.
+**4->** Konfiguratsiyamizni **sites-available**dan **sites-enabled**ga `ln -s` qilib symbolic link qilib bo'glaymiz.
 ```bash
 sudo ln -s /etc/nginx/sites-available/minio-api.xilol.uz /etc/nginx/sites-enabled/
 ```
 
 DNS domen hostimizdan domenimizga subdomen qo'shib serverimiz static public IPsini bo'glaymiz. Rasmda Ahostdan namuna. 0.0.0.0 o'rniga serveringiz static IP manizlini yozing.
 
-![keycloak-sozlash](/images/article/minio-server/ahost.png)
+![minio-server-sozlash](/images/article/minio-server/ahost.png)
 
-DNS dan domenni ulaganimzidan keyin cerbot orqali **Let's Encrypt** SSL sertifikat olamiz.
+**5->** DNS dan domenni ulaganimzidan keyin cerbot orqali **Let's Encrypt** SSL sertifikat olamiz.
 
 ```bash
 sudo certbot --nginx -d minio-api.xilol.uz
 ```
+
+Siz buni quyidagicha emalga oshirasiz **teshmat@gmail.com** o'rniga ishlaydigan o'zingizning emailingizni yozing.
+![minio-server-sozlash](/images/article/minio-server/server.png)
+![minio-server-sozlash](/images/article/minio-server/server1.png)
+
+**6->** Okey hammasi yaxshi keling endi Minio S3 API ni test qilib ishlatib ko'ramiz.
