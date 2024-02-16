@@ -253,4 +253,67 @@ Siz buni quyidagicha emalga oshirasiz **teshmat@gmail.com** o'rniga ishlaydigan 
 ![minio-server-sozlash](/images/article/minio-server/server.png)
 ![minio-server-sozlash](/images/article/minio-server/server1.png)
 
-**6->** Okey hammasi yaxshi keling endi Minio S3 API ni test qilib ishlatib ko'ramiz.
+**6->** Okey hammasi yaxshi keling endi Minio S3 API ni test qilib ishlatib ko'ramiz. Buning uchun Minio Console UIdan birorta bucket ochib uni public qilamiz va birorta rasm yuklaymiz bucketimizga uniURL manizilini olib birorta brauzerdan kirib ko'rsak shu rasmni berilgan odmen va path orqali ochishi kerak.
+
+Keling **storage** nomli bucket yaratib olib uni public qilamiz.
+
+![minio-server-sozlash](/images/article/minio-server/minio4.png)
+
+Bucketimiz settingidan **Access Policy**ni **public** qilib qo'yamiz bu shunchaki test uchun.
+
+![minio-server-sozlash](/images/article/minio-server/minio7.png)
+
+Endi esa bucketimizga kirrib birorta rasm yuklaymiz.
+
+![minio-server-sozlash](/images/article/minio-server/minio8.png)
+
+Okey men **storage** nomli backuetimga **bmw-m4.jpg** nomli rasm faylni yukladim  menda bu file URL **/storage/bmw-m4.jpg** bo'ladi. Bu holda Minio S3 API miz domenini ham bo'glaganimzida quyidagi URL bo'ladi [minio-api.xilol.uz/storage/bmw-m4.jpg](https://minio-api.xilol.uz/storage/bmw-m4.jpg). Okey keling shu URLga birorta brauxer orqali kiraylik.
+
+![minio-server-sozlash](/images/article/minio-server/image.png)
+
+Okeey hammasi zo'r biz Minio S3 API ga muvaffaqiyatli domen ulab uni test ham qilib ko'rdik.
+
+**8->** Keling endi Minio Console UI uchun ham domen ulab Ningx konfiguratsiya qilib certbot bilan SSL sertifikat olamiz. Hammasi yuqoridagi jarayonlar bilan bir xil bo'ladi.
+
+Minio Console UI uchun minio-ui subdomenni ishlatamiz shunda namuna domenimiz minio-ui.xilol.uz bo'ladiu. Nginx konfiguratsiya fayl yaratib olamiz.
+
+```bash
+sudo nano /etc/nginx/sites-available/minio-ui.xilol.uz
+```
+Yuqoridagi konfiguratsiyamizdan Minio Console UI porti va domenni o'zgartirgan holda konfigni yozib o'zgarishlarni saqlab chiqamiz.
+
+```bash {3,6}
+server {
+    listen 80;
+    server_name minio-ui.xilol.uz;
+
+    location / {
+        proxy_pass http://localhost:9001;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+
+```bash
+sudo ln -s /etc/nginx/sites-available/minio-ui.xilol.uz /etc/nginx/sites-enabled/
+```
+
+DNS hostimizdan subdomen qo'shib unga serverimiz public IP yimizni ulab qo'yamiz. DNS hostingdan domen IP ga domen bog'laganimizdan keyin certbot orqali SSL sertifikat olamiz.
+
+```bash
+sudo certbot --nginx -d minio-ui.xilol.uz
+```
+
+Hammasini yakunlaganimizdan keyin minio-ui.xilol.uz domeniga brauzerdan kirganimizda htps bilan Minio Console UI ochilishi kerak. SSL sertifikat olib Chrome brauzerdan kirsa SSLni sezishi biroz vaqt oladi ya'ni SSL yo'q deb turadi. Firefox ancha tezkor ishlaydi.
+
+![minio-server-sozlash](/images/article/minio-server/server2.png)
+
+Uhh nihoyat biz barchasini muvaffaqiyat yakunladik. Biz minioni binary holatda o'rnatdik va SsystemD orqali bosghqarish uchun service konfiguratsiya qilidik  va Minio qo'shimcha sozlamalar uchun konfig yaratib  minio fayllarni saqlash joyini **/mnt/data**ga bog'ladik. Minio S3 API va Minio Console UIga Nginx konfiguratsiya qilib domen ulab cerbot orqali SSL sertifikat olib ishga tushirdik.
+
+Bizda hozir
+
+* **[minio-ui.xilol.uz](https://minio-ui.xilol.uz/)->** Bu Minioni boshqarish uchun  Console UI.
+* **[minio-api.xilol.uz](https://minio-api.xilol.uz/)->** Bu applicationlarimiz ulanioshi uchun Minio S3 API
