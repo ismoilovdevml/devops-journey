@@ -90,7 +90,7 @@ on:
 
 ```yaml
 env:
-  IMAGE_NAME: ${{ github.repository }}
+  REPO_NAME: ${{ github.repository }}
   CONTAINER_NAME: devops-journey
   REGISTRY: ghcr.io
 ```
@@ -141,8 +141,8 @@ Ushbu bosqichda **REGISTRY**ga **github.actor**ning **GITHUB_TOKEN**'ni bilan [d
   with:
     context: .
     push: true
-    tags: "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
-    cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:buildcache
+    tags: "${{ env.REGISTRY }}/${{ env.REPO_NAME }}:${{ github.sha }}"
+    cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.REPO_NAME}}:buildcache
     cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.REPO_NAME}}:buildcache,mode=max
 ```
 
