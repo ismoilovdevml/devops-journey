@@ -8,7 +8,7 @@ import { Callout } from "nextra-theme-docs";
 
 Bugungi raqamli landshaftda kengaytiriladigan va samarali storage solutiolariga bo'lgan ehtiyoj birinchi o'ringa chiqdi. Tashkilotlar borgan sari katta hajmdagi ma'lumotlarni ishlab chiqargan va boshqarayotganligi sababli, an'anaviy(traditional) storage systemlari ko'pincha zamonaviy applicationlar va workflowlar talablariga mos kelish uchun kurash olib boradi. Bu yerda bizga **Minio** keladi.
 
-**Minio** - cloud-native va konteynerli environmentlar uchun yaratilgan open source, high-performance object storage serveridir. U ishlab developerlar va korxonalarga fotosuratlar, videolar, log fayllari, backuplar va boshqalar kabi tuzilmagan(unstructured) ma'lumotlarni saqlash va boshqarish uchun oddiy, ammo kuchli yechimni taqdim etadi. Minio-ni ajratib turadigan narsa uning **Amazon S3 API** bilan mosligi bo'lib, S3-compatible storagega tayanadigan mavjud applicationlar va ekotizimlarga integratsiyani osonlashtiradi.
+**Minio** - cloud-native va konteynerli environmentlar uchun yaratilgan open source, high-performance object storage serveridir. U developerlar va korxonalarga fotosuratlar, videolar, log fayllari, backuplar va boshqalar kabi tuzilmagan(unstructured) ma'lumotlarni saqlash va boshqarish uchun oddiy, ammo kuchli yechimni taqdim etadi. Minio-ni ajratib turadigan narsa uning **Amazon S3 API** bilan mosligi bo'lib, S3-compatible storagega tayanadigan mavjud applicationlar va ekotizimlarga integratsiyani osonlashtiradi.
 
 Minio yordamida tashkilotlar o'zlarining private cloud storage infratuzilmasini yaratishi mumkin, ular public cloud providerlari bilan bir xil darajada kengaytirilishi, chidamliligi va ishonchliligini ta'minlaydi, lekin ularning ma'lumotlari va infratuzilmasi ustidan to'liq nazoratga ega. On-premise yoki cloudda foydalanishdan qat'i nazar, Minio foydalanuvchilarga o'ziga xos ishlash, xavfsizlik va muvofiqlik talablariga javob beradigan storage solutionlarini yaratish imkonini beradi.
 
@@ -29,7 +29,7 @@ Ushbu amaliyotni amalga oshirish uchun bizga quyidagi minimum server talablarida
 
 ## Minio Server o'rnatish va sozlash
 
-Minio o'rntaishni bir nechta usullari bor. Masalan.
+Minio o'rnatishni bir nechta usullari bor. Masalan.
 
 * **[Single-Node Single-Drive](https://min.io/docs/minio/linux/operations/install-deploy-manage/deploy-minio-single-node-single-drive.html#minio-snsd)**
 * **[Single-Node Multi-Drive](https://min.io/docs/minio/linux/operations/install-deploy-manage/deploy-minio-single-node-multi-drive.html#minio-snmd)**
@@ -46,7 +46,7 @@ chmod +x minio
 sudo mv minio /usr/local/bin/
 ```
 
-**2->** Minio serverni binary holda o'rnatganimzi uchun SystemD bilan boshqarish uchun **minio.service** fayl yaratib konfiguratsiya qilamiz.
+**2->** Minio serverni binary holda o'rnatganimiz uchun SystemD bilan boshqarish uchun **minio.service** fayl yaratib konfiguratsiya qilamiz.
 
 ```bash
 sudo nano /usr/lib/systemd/system/minio.service
@@ -54,7 +54,7 @@ sudo nano /usr/lib/systemd/system/minio.service
 
 **minio.service** faylimizga quyidagi konfiglarni yozib saqlab chiqamiz.
 
-```bash
+```bash {6,9,11-12,15,17}
 [Unit]
 Description=MinIO
 Documentation=https://min.io/docs/minio/linux/index.html
@@ -111,14 +111,14 @@ sudo useradd -M -r -g minio-user minio-user
 sudo chown minio-user:minio-user /mnt/data
 ```
 
-**4->** Minio sozlash uchun minio config yaratib sozlab olamiz.
+**4->** Minio sozlash uchun minio Environment config yaratib sozlab olamiz.
 
 ```bash
 sudo nano /etc/default/minio
 ```
-**minio** konfigimiz quyidagicha to'ldiramiz.
+**minio** Environment konfigimizni quyidagicha to'ldiramiz.
 
-```bash
+```bash {6-7,11,15}
 # MINIO_ROOT_USER and MINIO_ROOT_PASSWORD sets the root account for the MinIO server.
 # This user has unrestricted permissions to perform S3 and administrative API operations on any resource in the deployment.
 # Omit to use the default values 'minioadmin:minioadmin'.
@@ -145,7 +145,7 @@ MINIO_OPTS="--console-address :9001"
 
 Ushbu konfiguratsiyamizda minio admin user/parol va console-addres/minio-volume belgilab sozlaymiz.
 
-**5->** Minio Serverimini SsystemD orqali ishga tushiramiz.
+**5->** Minio Serverimini systemd orqali ishga tushiramiz.
 
 ```bash
 sudo systemctl start minio.service
@@ -157,7 +157,7 @@ Statusini tekshirib ko'ramiz.
 sudo systemctl status minio.service
 ```
 
-Server o'chib yonganda Minio service avtomatik ishga tuhsmaydi shuning uchun avtomatik ishga tushishni yoqib qo'yamiz.
+Server o'chib yonganda Minio service avtomatik ishga tushmnaydi shuning uchun avtomatik ishga tushishni yoqib qo'yamiz.
 
 ```bash
 sudo systemctl enable minio.service
@@ -177,10 +177,10 @@ Feb 15 12:45:27 devops minio[19390]: Documentation: https://min.io/docs/minio/li
 Feb 15 12:45:27 devops minio[19390]: Warning: The standard parity is set to 0. This can lead to data loss.
 ```
 
-Quyida applicationlar bo'glanishi uchun S3 API va Console ko'rsatilgan. Applicationlar Minio serverga 0.0.0.0:9000 serverimiz public IP manzilida 9000 portda bo'glana oladi Minio UI ga esa 0.0.0.0:9001 9001 port orqali brauzerdan kira olamiz.
+Quyida applicationlar bo'glanishi uchun S3 API va Console ko'rsatilgan. Applicationlar Minio serverga `0.0.0.0:9000` serverimiz public IP manzilida `9000` portda bo'glana oladi Minio UI ga esa `0.0.0.0:9001` `9001` port orqali brauzerdan kira olamiz.
 
 
-**6->** Minio Console boshqaruv paneliga kirish uchun o'zingizga qulay brauzerdan serveringiz public IPsi va 9001 portga kirsangiz sizda Minio Console ochilishi kerak.
+**6->** Minio Console boshqaruv paneliga kirish uchun o'zingizga qulay brauzerdan serveringiz public IPsi va `9001` portga kirsangiz sizda Minio Console ochilishi kerak.
 
 ![minio-server-sozlash](/images/article/minio-server/minio2.png)
 ![minio-server-sozlash](/images/article/minio-server/mino3.png)
@@ -196,14 +196,14 @@ Qo'shimcha sozlashlarni bucket Settingidan sozlab olasiz. Bucketni private yoki 
 
 Keling Minio S3 API va Console UI'ga domen ulab domen orqali kiradigan qilib ishga tushiramiz.
 
-**1->** Nginx va certbot o'rnatib olamiz.
+**1->** Serverimizga Nginx va certbot o'rnatib olamiz.
 
 ```bash
 sudo apt update
-sudo apt install certbot python3-certbot-nginx -y
+sudo apt install nginx certbot python3-certbot-nginx -y
 ```
 
-**2->** Nginx o'rnatib olganimzidan keyin uni ishga tushirib statusini tekshiramiz.
+**2->** Serverimizga Nginx o'rnatib olganimizdan keyin uni ishga tushirib statusini tekshiramiz.
 
 ```bash
 sudo systemctl start nginx
@@ -211,12 +211,12 @@ sudo systemctl status nginx
 sudo systemctl enable nginx
 ```
 
-**3->** Minio S3 API ni domen ulab nginx configuratsiya qilamiz. **/etc/nginx/sites-available/domenimiz.uz** faylida domenimiz nomi bilan konfiguratsiya ochib olamiz va quyidagicha konfiguratsiya qilamiz. Masalan menda xilol.uz domeni bor shuni uchun men minio-api nomli subdomen qilib minio-api.xilol.uz domenini ishlataman. Bu yerda minio-api.xilol.uz bu namuna uchun siz o'z domengizni qo'ying.
+**3->** Minio S3 API ni domen ulab nginx configuratsiya qilamiz. **/etc/nginx/sites-available/domenimiz.uz** faylida domenimiz nomi bilan konfiguratsiya ochib olamiz va quyidagicha konfiguratsiya qilamiz. Masalan menda xilol.uz domeni bor shuning uchun men `minio-api` nomli subdomen qilib `minio-api.xilol.uz` domenini ishlataman. Bu yerda `minio-api.xilol.uz` bu namuna uchun siz o'z domengizni qo'ying.
 
 ```bash
 sudo /etc/nginx/sites-available/minio-api.xilol.uz
 ```
-minio-api.xilol.uz konfiguratsiyamiz quyidagicha bo'ladi. Minio S3 API yani applicationlar ulanishi uchun ishlaydigan API **9000** portda ishlaydi shu portni ngingx reverse proxy, proxy_pass qilib expose qilamiz.
+`minio-api.xilol.uz` konfiguratsiyamiz quyidagicha bo'ladi. Minio S3 API yani applicationlar ulanishi uchun ishlaydigan API **9000** portda ishlaydi shu portni nginx reverse proxy, proxy_pass qilib expose qilamiz.
 
 ```bash {3,6}
 server {
@@ -239,7 +239,7 @@ Ushbu Nginx konfiguratsiya **minio-api.xilol.uz** ga kelgan barcha requestlarni 
 sudo ln -s /etc/nginx/sites-available/minio-api.xilol.uz /etc/nginx/sites-enabled/
 ```
 
-DNS domen hostimizdan domenimizga subdomen qo'shib serverimiz static public IPsini bo'glaymiz. Rasmda Ahostdan namuna. 0.0.0.0 o'rniga serveringiz static IP manizlini yozing.
+DNS domen hostimizdan domenimizga subdomen qo'shib serverimiz static public IPsini bo'glaymiz. Rasmda Ahostdan namuna. `0.0.0.0 `o'rniga serveringiz static IP manzilini yozing.
 
 ![minio-server-sozlash](/images/article/minio-server/ahost.png)
 
@@ -249,11 +249,11 @@ DNS domen hostimizdan domenimizga subdomen qo'shib serverimiz static public IPsi
 sudo certbot --nginx -d minio-api.xilol.uz
 ```
 
-Siz buni quyidagicha emalga oshirasiz **teshmat@gmail.com** o'rniga ishlaydigan o'zingizning emailingizni yozing.
+Siz buni quyidagicha amalga oshirasiz **teshmat@gmail.com** o'rniga ishlaydigan o'zingizning emailingizni yozing.
 ![minio-server-sozlash](/images/article/minio-server/server.png)
 ![minio-server-sozlash](/images/article/minio-server/server1.png)
 
-**6->** Okey hammasi yaxshi keling endi Minio S3 API ni test qilib ishlatib ko'ramiz. Buning uchun Minio Console UIdan birorta bucket ochib uni public qilamiz va birorta rasm yuklaymiz bucketimizga uniURL manizilini olib birorta brauzerdan kirib ko'rsak shu rasmni berilgan odmen va path orqali ochishi kerak.
+**6->** Okey hammasi yaxshi keling endi Minio S3 API ni test qilib ishlatib ko'ramiz. Buning uchun Minio Console UIdan birorta bucket ochib uni public qilamiz va birorta rasm yuklaymiz bucketimizga uni URL manzilini olib birorta brauzerdan kirib ko'rsak shu rasmni berilgan domen va path orqali ochishi kerak.
 
 Keling **storage** nomli bucket yaratib olib uni public qilamiz.
 
@@ -263,11 +263,11 @@ Bucketimiz settingidan **Access Policy**ni **public** qilib qo'yamiz bu shunchak
 
 ![minio-server-sozlash](/images/article/minio-server/minio7.png)
 
-Endi esa bucketimizga kirrib birorta rasm yuklaymiz.
+Endi esa bucketimizga kirib birorta rasm yuklaymiz.
 
 ![minio-server-sozlash](/images/article/minio-server/minio8.png)
 
-Okey men **storage** nomli backuetimga **bmw-m4.jpg** nomli rasm faylni yukladim  menda bu file URL **/storage/bmw-m4.jpg** bo'ladi. Bu holda Minio S3 API miz domenini ham bo'glaganimzida quyidagi URL bo'ladi [minio-api.xilol.uz/storage/bmw-m4.jpg](https://minio-api.xilol.uz/storage/bmw-m4.jpg). Okey keling shu URLga birorta brauxer orqali kiraylik.
+Okey men **storage** nomli backuetimga **bmw-m4.jpg** nomli rasm faylni yukladim  menda bu file URL **/storage/bmw-m4.jpg** bo'ladi. Bu holda Minio S3 API miz domenini ham bo'glaganimzida quyidagi URL bo'ladi [minio-api.xilol.uz/storage/bmw-m4.jpg](https://minio-api.xilol.uz/storage/bmw-m4.jpg). Okey keling shu URLga birorta brauzer orqali kiraylik.
 
 ![minio-server-sozlash](/images/article/minio-server/image.png)
 
@@ -275,7 +275,7 @@ Okeey hammasi zo'r biz Minio S3 API ga muvaffaqiyatli domen ulab uni test ham qi
 
 **8->** Keling endi Minio Console UI uchun ham domen ulab Ningx konfiguratsiya qilib certbot bilan SSL sertifikat olamiz. Hammasi yuqoridagi jarayonlar bilan bir xil bo'ladi.
 
-Minio Console UI uchun minio-ui subdomenni ishlatamiz shunda namuna domenimiz minio-ui.xilol.uz bo'ladiu. Nginx konfiguratsiya fayl yaratib olamiz.
+Minio Console UI uchun `minio-ui` subdomenni ishlatamiz shunda namuna domenimiz `minio-ui.xilol.uz` bo'ladiu. Nginx konfiguratsiya fayl yaratib olamiz.
 
 ```bash
 sudo nano /etc/nginx/sites-available/minio-ui.xilol.uz
@@ -307,18 +307,24 @@ DNS hostimizdan subdomen qo'shib unga serverimiz public IP yimizni ulab qo'yamiz
 sudo certbot --nginx -d minio-ui.xilol.uz
 ```
 
-Hammasini yakunlaganimizdan keyin minio-ui.xilol.uz domeniga brauzerdan kirganimizda htps bilan Minio Console UI ochilishi kerak. SSL sertifikat olib Chrome brauzerdan kirsa SSLni sezishi biroz vaqt oladi ya'ni SSL yo'q deb turadi. Firefox ancha tezkor ishlaydi.
+Hammasini yakunlaganimizdan keyin [minio-ui.xilol.uz](https://minio-ui.xilol.uz/) domeniga brauzerdan kirganimizda `https` bilan Minio Console UI ochilishi kerak. SSL sertifikat olib Chrome brauzerdan kirsa SSLni sezishi biroz vaqt oladi ya'ni SSL yo'q deb turadi. Firefox ancha tezkor ishlaydi.
 
 ![minio-server-sozlash](/images/article/minio-server/server2.png)
 
-Uhh nihoyat biz barchasini muvaffaqiyat yakunladik. Biz minioni binary holatda o'rnatdik va SsystemD orqali bosghqarish uchun service konfiguratsiya qilidik  va Minio qo'shimcha sozlamalar uchun konfig yaratib  minio fayllarni saqlash joyini **/mnt/data**ga bog'ladik. Minio S3 API va Minio Console UIga Nginx konfiguratsiya qilib domen ulab cerbot orqali SSL sertifikat olib ishga tushirdik.
+Uhh nihoyat biz barchasini muvaffaqiyat yakunladik. Biz minioni binary holatda o'rnatdik va SystemD orqali bosghqarish uchun service konfiguratsiya qilidik  va Minio qo'shimcha sozlamalar uchun konfig yaratib  minio fayllarni saqlash joyini **/mnt/data**ga bog'ladik. Minio S3 API va Minio Console UIga Nginx konfiguratsiya qilib domen ulab cerbot orqali SSL sertifikat olib ishga tushirdik.
 
 Bizda hozir
 
 * **[minio-ui.xilol.uz](https://minio-ui.xilol.uz/)->** Bu Minioni boshqarish uchun  Console UI.
-* **[minio-api.xilol.uz](https://minio-api.xilol.uz/)->** Bu applicationlarimiz ulanioshi uchun Minio S3 API
+* **[minio-api.xilol.uz](https://minio-api.xilol.uz/)->** Bu applicationlarimiz ulanishi uchun Minio S3 API
 
 <Callout type="info" emoji="">
+
+Qo'shimcha Resurslar
+ * [**Install and Deploy MinIO**](https://min.io/docs/minio/linux/operations/installation.html)
+ * [**Deploy MinIO: Single-Node Single-Drive**](https://min.io/docs/minio/linux/operations/install-deploy-manage/deploy-minio-single-node-single-drive.html#minio-snsd)
+ * [**Deploy MinIO: Single-Node Multi-Drive**](https://min.io/docs/minio/linux/operations/install-deploy-manage/deploy-minio-single-node-multi-drive.html#minio-snmd)
+ * [**Deploy MinIO: Multi-Node Multi-Drive**](https://min.io/docs/minio/linux/operations/install-deploy-manage/deploy-minio-multi-node-multi-drive.html#minio-mnmd)
 
 **Sana:** 2024.02.16(2024-yil 16-fevral)
 
