@@ -214,7 +214,7 @@ sudo systemctl enable nginx
 **3->** Minio S3 API ni domen ulab nginx configuratsiya qilamiz. **/etc/nginx/sites-available/domenimiz.uz** faylida domenimiz nomi bilan konfiguratsiya ochib olamiz va quyidagicha konfiguratsiya qilamiz. Masalan menda xilol.uz domeni bor shuning uchun men `minio-api` nomli subdomen qilib `minio-api.xilol.uz` domenini ishlataman. Bu yerda `minio-api.xilol.uz` bu namuna uchun siz o'z domengizni qo'ying.
 
 ```bash
-sudo /etc/nginx/sites-available/minio-api.xilol.uz
+sudo nano /etc/nginx/sites-available/minio-api.xilol.uz
 ```
 `minio-api.xilol.uz` konfiguratsiyamiz quyidagicha bo'ladi. Minio S3 API yani applicationlar ulanishi uchun ishlaydigan API **9000** portda ishlaydi shu portni nginx reverse proxy, proxy_pass qilib expose qilamiz.
 
