@@ -1,0 +1,8 @@
+{
+    "azure-network-sozlash": {
+      "title": "Azure Network sozlash",
+      "icon": "▶️",
+      "description": "Azure virtual network va subnet sozlash",
+      "href": "/guides/cloud/azure-network-sozlash"
+    }
+}

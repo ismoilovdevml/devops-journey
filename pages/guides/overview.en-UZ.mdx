@@ -5,12 +5,13 @@ import konteynerGuides from './konteyner/_meta.en-UZ.json';
 import k8sGuides from './k8s/_meta.en-UZ.json';
 import databaseGuides from './database/_meta.en-UZ.json';
 import webserverGuides from './web-server/_meta.en-UZ.json';
+import cloudGuides from './cloud/_meta.en-UZ.json';
 
 # Qo'llanmalar
 
 Hamjamiyat tomonidan yozilgan dokumentatsiya va qo'llanmalar. Mavzular CI/CD, Konteynerlash, Kubernetes(k8s), Monitoring, network, load-balancing va boshqalarni o'z ichiga oladi.
 
-<Tabs items={['▶️ CI-CD', '▶️ Konteynerlash', '▶️ Kubernetes(k8s)', '▶️ Database', '▶️ Web Serverlar']}>
+<Tabs items={['▶️ CI/CD', '▶️ Konteynerlash', '▶️ Kubernetes(k8s)', '▶️ Database', '▶️ Web Serverlar', '▶️ Cloud']}>
   <Tab style={{ paddingTop: 8 }}>
     <Cards
       num={3}
@@ -81,16 +82,16 @@ Hamjamiyat tomonidan yozilgan dokumentatsiya va qo'llanmalar. Mavzular CI/CD, Ko
       ))}
     />
   </Tab>
-  <Tab style={{ paddingTop: 8 }}>
+  <Tab>
     <Cards
       num={3}
-      children={Object.keys(webserverGuides).map((key, i) => (
+      children={Object.keys(cloudGuides).map((key, i) => (
         <Card
           key={i}
-          title={webserverGuides[key].title}
-          description={webserverGuides[key].description}
-          icon={webserverGuides[key].icon}
-          href={webserverGuides[key].href}
+          title={cloudGuides[key].title}
+          description={cloudGuides[key].description}
+          icon={cloudGuides[key].icon}
+          href={cloudGuides[key].href}
         />
       ))}
     />

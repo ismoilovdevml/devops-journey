@@ -15,7 +15,7 @@ Hamjamiyat [Telegram
 community](https://t.me/devopsuzb) guruhiga qo'shilish
 
 <div className="mt-8">
-  <Tabs items={['CI/CD', 'Konteynerlash', 'Kubernetes(k8s)', 'Database', 'Web Serverlar']}>
+  <Tabs items={['CI/CD', 'Konteynerlash', 'Kubernetes(k8s)', 'Database', 'Web Serverlar', 'Cloud']}>
     <Tab>
       <div className="mb-8">
         DevOps CI/CD sayohatini biz bilang boshlang!
@@ -158,7 +158,24 @@ community](https://t.me/devopsuzb) guruhiga qo'shilish
         />
       </Cards>
       <div className="text-right mt-4">
-        <Link href="/guides/web-server">Hammasini ko'rish -></Link>
+        <Link href="/guides/cloud">Hammasini ko'rish -></Link>
+      </div>
+    </Tab>
+        <Tab>
+      <div className="mb-8">
+        Cloud bilan sayohatni boshlang!
+      </div>
+      <div className="mb-4 text-xl font-bold">Qo'llanmalar</div>
+      <Cards num={3}>
+        <Card
+          title="Azure Network sozlash"
+          description="Azure virtual network va subnet sozlash"
+          icon="▶️"
+          href="/guides/cloud/azure-network-sozlash"
+        />
+      </Cards>
+      <div className="text-right mt-4">
+        <Link href="/guides/cloud">Hammasini ko'rish -></Link>
       </div>
     </Tab>
   </Tabs>
