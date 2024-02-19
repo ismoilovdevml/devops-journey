@@ -4,6 +4,8 @@ import { Callout } from "nextra-theme-docs";
 
 ![azure-network-sozlash](/images/tutorials/cloud/azure-network/banner.png)
 
+## Kirish
+
 **Microsoft Azure** cloudda keng ko'lamli application va servicelarni deploy qilish uchun mustahkam va ko'p qirrali platformani taklif etadi. Uning asosiy xususiyatlaridan biri foydalanuvchilarga moslashuvchan va kengaytiriladigan tarmoq infratuzilmasini taqdim etuvchi virtual networklar (**VNets**) va **subnet**larni yaratish qobiliyatidir.
 
 Azure-dan tarmoq uchun foydalanishning afzalliklaridan biri uning global mavjudligi, data centerlari butun dunyo bo'ylab strategik joylashgan. Bu foydalanuvchilarga resurslarni maqsadli auditoriyaga yaqinroq joylashtirish, kechikishni kamaytirish va umumiy ish faoliyatini yaxshilash imkonini beradi.
@@ -21,3 +23,33 @@ Bugungi amaliyotimizda Azure cloudda Virtual network yaratib unda subnet yaratam
 
 ## Ishni boshlash
 
+Ushbu amaliyotda quyidagi rasmndagi arxitekturani quramiz.
+
+![azure-network-sozlash](/images/tutorials/cloud/azure-network/architecture.png)
+
+Bu amaliyotda **k8s-network** nomli virtual network yaratib olamiz unda **k8s-subnet** nomli subnet yaratib olamiz IP range **172.20.0.0/16** qilib belgilaymiz. Ushbu virtual networkdan foydalanib ikkita virtual machine(vm) yaratib olamiz va ularni internal IP lar bilan bo'glab bir bir bilan aloqasini tekshirib ko'ramiz. 
+
+## Azure Virtual Network yaratish
+
+Birinchi bo'lib ishni Azure Virtual Network yaratishdan boshlaymiz. Buning uchun [portal.azure.com](https://portal.azure.com/#home) kirib search qismidan virtual network deb qidirib kiramiz.
+
+![azure-network-sozlash](/images/tutorials/cloud/azure-network/azure1.png)
+
+**Virtual networks**ga kirib `Create` bosamiz.
+![azure-network-sozlash](/images/tutorials/cloud/azure-network/azure2.png)
+
+Bizda Virtual network yaratish bo'limining `Bacis` qimsi ochiladi. Bu qismda **Subcribtion** tanlaymiz va bitta yangi `k8s-cluster` nomli **Resource group** yaratib olamiz. `Virtual network name`ga `k8s-network` deb nom beramiz va keyingi `IP addresses` qismiga o'tamiz.
+![azure-network-sozlash](/images/tutorials/cloud/azure-network/azure3.png)
+
+Ushbu qismda IPv4 range beramiz va subnet yaratib olamiz. Azure cloudda `default` subnetda bo'ladi bunda `10.0.0.0/16` IP range bo'ladi. Keling biz boshqa IP range yaratib `default` subnetni o'chirib o'zimiz subnet ochib olamiz.
+![azure-network-sozlash](/images/tutorials/cloud/azure-network/azure4.png)
+
+Biz `172.20.0.0/16` IPv4 range kirtamiz va `defaul` subnetni o'chirib tashlaymiz. 
+![azure-network-sozlash](/images/tutorials/cloud/azure-network/azure5.png)
+Yangi subnet qo'shish uchun `+ Add a subnet` bosamiz bizda subnet qo'shish oynasi ochiladi
+![azure-network-sozlash](/images/tutorials/cloud/azure-network/azure6.png)
+Ushbu oynada **subnet**imiz nomini yozamiz va IPv4 address rangeni kiritamiz va **Addd** qilib qo'shib olamiz.
+Subnet qo'shganimizdan keyin quyidagicha ko'rinadi va biz `Review + create` qilib Virtual Network va Subnet yaratib olamiz.
+![azure-network-sozlash](/images/tutorials/cloud/azure-network/azure7.png)
+`Review + create` oynasi quyidagicha ochiladi biz `Create` bosib yaratib oilamiz.
+![azure-network-sozlash](/images/tutorials/cloud/azure-network/azure8.png)
