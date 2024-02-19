@@ -53,3 +53,37 @@ Subnet qo'shganimizdan keyin quyidagicha ko'rinadi va biz `Review + create` qili
 ![azure-network-sozlash](/images/tutorials/cloud/azure-network/azure7.png)
 `Review + create` oynasi quyidagicha ochiladi biz `Create` bosib yaratib oilamiz.
 ![azure-network-sozlash](/images/tutorials/cloud/azure-network/azure8.png)
+
+Yaratish jarayonim muvaffaqiyatli yakunlangada quyidagi oyna ochiladi va `Go to sesource` bosib ko'rishimiz mumkin.
+![azure-network-sozlash](/images/tutorials/cloud/azure-network/azure9.png)
+
+![azure-network-sozlash](/images/tutorials/cloud/azure-network/azure10.png)
+
+Okey biz muvaffaqiyatli Virtual network va subnet yaratib oldik endi keyingio bosqichlarga o'tsak bo'ladi.
+
+## Azure VM yaratish
+
+Yuqorida biz muvaffaqiyatli  Resource group, virtual network va subnet yaratib oldik keling endi shu networkda Azure VMlar yaratamiz va internal IP lar orqali bir biriga ulanishini tekshiramiz.
+
+Buning uchun [portal.azure.com](https://portal.azure.com/#home) kirib search qismidan virtual machine deb qidirib kiramiz.
+
+![azure-network-sozlash](/images/tutorials/cloud/azure-network/azure-vm1.png)
+
+`Virtual machines` bo'limga kirib **+ Create** bosib `Azure virtual machine`ni tanlab virtual machine yaratish qismiga o'tamiz.
+![azure-network-sozlash](/images/tutorials/cloud/azure-network/azure-vm2.png)
+
+Bizda Virtual Machine yaratishning **Basics** qismi ochiladi. Ushbu qismdan `Resource group`ni yaratib olgan **k8s-cluster** nomli reseorce groupimizni belgilab qo'yamiz. **Virtual machine name:** ga vm nom beramiz va kerakli portlarni firewalldan ochib `Networking` qsimiga o'tamiz.
+![azure-network-sozlash](/images/tutorials/cloud/azure-network/azure-vm3.png)
+![azure-network-sozlash](/images/tutorials/cloud/azure-network/azure-vm4.png)
+
+`Networking` qismida`Virtual network` qismida yaratib olgan **k8s-network** nomli virtual networkimizni belgilaymiz va `Subnet`ga esa **k8s-subnet**ni belgilaymiz va `Review + create` bosib oxirgi bosqichga o'tamiz.
+![azure-network-sozlash](/images/tutorials/cloud/azure-network/azure-vm5.png)
+
+`Review + create` qsimida quyidagicha ochilishi kerak. `Create` bosib Azure VM yaratib olamiz.
+![azure-network-sozlash](/images/tutorials/cloud/azure-network/azure-vm6.png)
+Networking qismi 
+![azure-network-sozlash](/images/tutorials/cloud/azure-network/azure-vm7.png)
+
+Virtual Machine yaratish jarayonida Azure serverga ssh orqali kirish uchun secret **.pem** key beradi keyni yuklab olamiz.
+
+![azure-network-sozlash](/images/tutorials/cloud/azure-network/key.png)
