@@ -3,3 +3,19 @@ import { Callout } from "nextra-theme-docs";
 # Patroni va HAProxy yordamida Highly Available PostgreSQL clusterini yaratish
 
 ![postgres-cluster](/images/tutorials/database/postgres-cluster/banner.png)
+
+Kirish:
+
+Bugungi raqamli landshaftda ma'lumotlar bazalarining high availability va ishonchliligini ta'minlash barcha o'lchamdagi korxonalar va tashkilotlar uchun muhim ahamiyatga ega. O'zining mustahkamligi, scalability va extensibility bilan mashhur bo'lgan PostgreSQL ko'plab muhim application uchun asos bo'lib xizmat qiladi. PostgreSQL ma'lumotlar bazalarining ishlash muddati va barqarorligini oshirish uchun highly available bo'lgan klaster arxitekturasini o'rnatishga ehtiyoj seziladi.
+
+Ushbu texnik qo'llanma sizga **Patroni** va **HAProxy**-dan foydalangan holda highly available bo'lgan PostgreSQL klasterini yaratish jarayonini o'tkazishga qaratilgan. Patroni, PostgreSQL uchun high-leveldagi Python orkestratori postgreSQL klasterlarini o'zgartirish va replikatsiya kabi vazifalarni avtomatlashtirish orqali boshqarishni soddalashtiradi. HAProxy, ko'p qirrali va kuchli load balancer, clientlar ulanishlarini bir nechta PostgreSQL misollari bo'ylab taqsimlashni osonlashtiradi, resurslardan samarali foydalanish va uzluksiz uzilishni ta'minlaydi.
+
+Ushbu qo'llanmaning oxirida siz bardoshli PostgreSQL klaster arxitekturasini qanday loyihalash, amalga oshirish va qo'llab-quvvatlash haqida  tushunchaga ega bo'lasiz, bu sizga ma'lumotlar bazasi infratuzilmangizda yuqori darajadagi mavjudlik(high availability) va xatolarga chidamlilik(tolerance) talablarini qondirish imkonini beradi. Keling, potentsial nosozliklarga chidamli va qimmatli ma'lumotlaringizga uzluksiz kirishni ta'minlaydigan mustahkam PostgreSQL klasterini yaratish yo'lida ushbu sayohatni boshlaylik.
+
+## Kirish
+
+Ushbu amaliyotda biz **Ubuntu 20.04** serverlarda patroni, etcd, HAProxy yordamida PostgreSQL cluster yaratamiz. 
+
+**Patroni** - bu PostgreSQL klasterlarini boshqarishni avtomatlashtirish uchun mo'ljallangan open-source tool bo'lib, high availability va barqarorlikni ta'minlashga qaratilgan. U PostgreSQL instancelarini bir nechta nodelar bo'ylab joylashtirish va ularga xizmat ko'rsatishni, ularni doimiy ravishda  helath check qilib kuzatib borish va nosozliklar yoki jiddiy muammolar yuzaga kelganda avtomatlashtirilgan uzilish protseduralarini tartibga solish orqali soddalashtiradi.
+
+Patronining asosiy xususiyatlari quyidagilardan iborat: avtomatlashtirilgan uzilish, taqsimlangan consensus algoritmlaridan foydalangan holda leaderni tanlash, markazlashtirilgan konfiguratsiyani boshqarish, **pgBouncer** va **HAProxy** kabi ekotizim toollari bilan uzluksiz integratsiya va sozlash uchun kengaytirilganlik.
