@@ -35,11 +35,11 @@
       "description": "MongoDB nima va undan nima uchun foydalaniladi?",
       "href": "/guides/database/start-mongodb"
     },
-    "postgres-cluster": {
-      "title": "Highly Available PostgreSQL clusterini yaratish",
+    "postgres-cluster-sozlash": {
+      "title": "PostgreSQL Cluster yaratish",
       "icon": "▶️",
-      "description": "Patroni va HAProxy yordamida Highly Available PostgreSQL clusterini yaratish",
-      "href": "/guides/database/postgres-cluster"
+      "description": "Patroni va HAProxy yordamida Highly Available PostgreSQL Clusterini yaratish",
+      "href": "/guides/database/postgres-cluster-sozlash"
     },
     "start-mysql": {
       "title": "MySQL",
