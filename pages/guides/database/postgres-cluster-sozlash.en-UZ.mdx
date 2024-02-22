@@ -26,7 +26,18 @@ Patronining asosiy xususiyatlari quyidagilardan iborat: avtomatlashtirilgan uzil
 
 <Callout type="info" emoji="">
 Ushbu amaliyotda biz production uchun yuqorida darajada yozilgan [github.com/vitabaks/postgresql_cluster](https://github.com/vitabaks/postgresql_cluster) **Ansible** playbookdan foydalanamiz. Ushbu amaliyot uchun moslangan versiyasi [github.com/devops-journey-uz/postgresql_cluster](https://github.com/devops-journey-uz/postgresql_cluster)
+
+Ushbu Ansible playbook qo'llab quvvvatlaydigan serverlar
+* **Debian:** 10, 11, 12
+* **Ubuntu:** 18.04, 20.04, 22.04
+* **CentOS:** 7, 8
+* **CentOS Stream:** 8, 9
+* **Oracle Linux:** 7, 8, 9
+* **Rocky Linux:** 8, 9
+* **AlmaLinux:** 8, 9
 </Callout>
+
+## Arxitekura
 
 Ushbu amaliyotda quyidagi rasmdagi arxitekturani quramiz. Bizda bitta **etcd** va bitta **load-balancer** serverimiz bo'ladi. Ikkita postgres replica va bitta masterimiz bo'ladi.
 
@@ -39,3 +50,45 @@ Quyidagi rasmda esa network arxitekturamiz.
 
 Bizda Postgresql clusterimiz uchun **db-network**kimiz bor uni ichida esa **db-subnet** nomli **172.20.0.0/16** IP rangelik subnetimiz bor. Barcha serverlarimiz bir biriga internal IP bilan bo'glanib ishlaydi, bitta load-balancer serverimizda static(public) IP address bo'ladi holos. Agar siz Azure ishlatsangiz [Azureda Network sozlash](https://devops-journey.uz/guides/cloud/azure-network-sozlash) amaliyotidan quyidagi networkni qurib olishingiz mumkin.
 
+## Enviornment sozlash
+
+Ushbu amaliyotni cloud va on-primise environmentda qilishimiz mumkin. Buning uchun bizga bitta network va subnet kerak bo'ladi serverlarimiz internal IP bilan bog'lanishi uchun. Minimum 6ta server kerak bo'ladi.
+
+Ushbu amaliyot uchun ishlatilgan server IP manzillarimiz namuna hisoblanadi qo'llanmada chalg'imasligingiz uchun.
+
+| RAM            | CPU           | Xotira       | Internal IP  |  Server Nomi         |
+| -------------- | ------------- |------------- | ------------ | -------------------- |
+| 8GB            | 2vCPU 2 core  | 100GB        | 170.20.0.4   | etcd                 |
+| 8GB            | 2vCPU 2 core  | 50GB         | 170.20.0.5   | load-balancer        |
+| 8GB            | 2vCPU 2 core  | 50GB         | 170.20.0.6   | node1                |
+| 8GB            | 2vCPU 2 core  | 50GB         | 170.20.0.7   | node2                |
+| 8GB            | 2vCPU 2 core  | 50GB         | 170.20.0.8   | node3                |
+| 4GB            | 2vCPU 2 core  | 50GB         | 170.20.0.9   | ansible              |
+
+
+## Network sozlash
+
+Ushbu amaliyotda birinchi qiladigan ishimiz bu network sozlashdir keling ishni network sozlashdan boshlaymiz.
+
+Siz quyidagidek network sozlab olishingiz kerak bo'ladi barcha serverlar bitta networkda bitta subnetda bo'lishi va bir bir bilan internal IP bilan bog'lanib ishlashi kerak faqat load-balancer serverimizda static(public) IP address bo'ladi ya'ni tashqaridan ulana olish uchun. Ushnu network arxitektura PostgreSQL clusterimizni kengaytirishda ham ko'p qulaylik beradi.
+
+![postgres-cluster](/images/tutorials/database/postgres-cluster/network-architecture.png)
+
+Ushbu network arxitekturani on-primise va cloudda ham sozlashingiz mumkin. Agar siz **Microsoft Azure** ishlatsangiz [Azure Network sozlash](https://devops-journey.uz/guides/cloud/azure-network-sozlash) qo'llanmaisdan quyidagi networkni sozlab olishingiz mumkin.
+
+## Ansible server sozlash
+
+Network sozlab olganimizdan keyin shu networkda bitta ansible server yaratib olamiz. Barcha ishni shu ansible server orqali bajaramiz va ansible server boshqa serverlarga internal IP bilan ulana olishi kerak.
+
+Ansible serverimizga ansible o'rnatimiz olamiz.
+
+```bash
+sudo apt update && sudo apt upgrade -y
+```
+
+```bash
+sudo apt-get install software-properties-common
+sudo apt-add-repository ppa:ansible/ansible
+sudo apt-get update
+sudo apt-get install ansible
+```
