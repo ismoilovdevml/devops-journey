@@ -4,7 +4,7 @@ import { Callout } from "nextra-theme-docs";
 
 ![postgres-cluster](/images/tutorials/database/postgres-cluster/banner.png)
 
-Kirish:
+## Kirish
 
 Bugungi raqamli landshaftda ma'lumotlar bazalarining high availability va ishonchliligini ta'minlash barcha o'lchamdagi korxonalar va tashkilotlar uchun muhim ahamiyatga ega. O'zining mustahkamligi, scalability va extensibility bilan mashhur bo'lgan PostgreSQL ko'plab muhim application uchun asos bo'lib xizmat qiladi. PostgreSQL ma'lumotlar bazalarining ishlash muddati va barqarorligini oshirish uchun highly available bo'lgan klaster arxitekturasini o'rnatishga ehtiyoj seziladi.
 
@@ -12,10 +12,30 @@ Ushbu texnik qo'llanma sizga **Patroni** va **HAProxy**-dan foydalangan holda hi
 
 Ushbu qo'llanmaning oxirida siz bardoshli PostgreSQL klaster arxitekturasini qanday loyihalash, amalga oshirish va qo'llab-quvvatlash haqida  tushunchaga ega bo'lasiz, bu sizga ma'lumotlar bazasi infratuzilmangizda yuqori darajadagi mavjudlik(high availability) va xatolarga chidamlilik(tolerance) talablarini qondirish imkonini beradi. Keling, potentsial nosozliklarga chidamli va qimmatli ma'lumotlaringizga uzluksiz kirishni ta'minlaydigan mustahkam PostgreSQL klasterini yaratish yo'lida ushbu sayohatni boshlaylik.
 
-## Kirish
+## Ishni Boshlash
 
-Ushbu amaliyotda biz **Ubuntu 20.04** serverlarda patroni, etcd, HAProxy yordamida PostgreSQL cluster yaratamiz. 
+Ushbu amaliyotda biz **Ubuntu 20.04** serverlarda patroni, etcd, pgbouncer va HAProxy yordamida PostgreSQL cluster yaratamiz. 
 
 **Patroni** - bu PostgreSQL klasterlarini boshqarishni avtomatlashtirish uchun mo'ljallangan open-source tool bo'lib, high availability va barqarorlikni ta'minlashga qaratilgan. U PostgreSQL instancelarini bir nechta nodelar bo'ylab joylashtirish va ularga xizmat ko'rsatishni, ularni doimiy ravishda  helath check qilib kuzatib borish va nosozliklar yoki jiddiy muammolar yuzaga kelganda avtomatlashtirilgan uzilish protseduralarini tartibga solish orqali soddalashtiradi.
 
 Patronining asosiy xususiyatlari quyidagilardan iborat: avtomatlashtirilgan uzilish, taqsimlangan consensus algoritmlaridan foydalangan holda leaderni tanlash, markazlashtirilgan konfiguratsiyani boshqarish, **pgBouncer** va **HAProxy** kabi ekotizim toollari bilan uzluksiz integratsiya va sozlash uchun kengaytirilganlik.
+
+**PgBouncer** - bu PostgreSQL ma'lumotlar bazalari uchun lightweight connection pooler. U client applicationlari va PostgreSQL ma'lumotlar bazasi serverlari o'rtasida joylashgan bo'lib, ma'lumotlar bazasi ulanishlarini boshqaradigan va optimallashtiradigan vositachi sifatida ishlaydi.U ma'lumotlar bazasi arxitekturalarida, ayniqsa ulanishning uzilishi yoki talab qilinadigan ish yuklari bo'lgan muhitlarda muhim komponent bo'lib xizmat qiladi, ma'lumotlar bazasi resurslaridan samarali foydalanish va client applicationlari uchun javob berish qobiliyatini oshiradi.
+
+**etcd** - yuqori ishonchli distributed systemlarni yaratish uchun mo'ljallangan distributed key-value store. CoreOS tomonidan ishlab chiqilgan bo'lib, u barqarorlik va nosozliklarga chidamliligini ta'minlagan holda ma'lumotlarni machinelar klasterida saqlashning ishonchli usulini ta'minlaydi. Oddiy API va mustahkam dizayni bilan etcd distributed applicationlarni ishlab chiqishni soddalashtiradi va dinamik muhitda muammosiz masshtablash va moslashuvchanlikni ta'minlaydi.
+
+<Callout type="info" emoji="">
+Ushbu amaliyotda biz production uchun yuqorida darajada yozilgan [github.com/vitabaks/postgresql_cluster](https://github.com/vitabaks/postgresql_cluster) **Ansible** playbookdan foydalanamiz. Ushbu amaliyot uchun moslangan versiyasi [github.com/devops-journey-uz/postgresql_cluster](https://github.com/devops-journey-uz/postgresql_cluster)
+</Callout>
+
+Ushbu amaliyotda quyidagi rasmdagi arxitekturani quramiz. Bizda bitta **etcd** va bitta **load-balancer** serverimiz bo'ladi. Ikkita postgres replica va bitta masterimiz bo'ladi.
+
+![postgres-cluster](/images/tutorials/database/postgres-cluster/architecture.png)
+
+
+Quyidagi rasmda esa network arxitekturamiz.
+
+![postgres-cluster](/images/tutorials/database/postgres-cluster/network-architecture.png)
+
+Bizda Postgresql clusterimiz uchun **db-network**kimiz bor uni ichida esa **db-subnet** nomli **172.20.0.0/16** IP rangelik subnetimiz bor. Barcha serverlarimiz bir biriga internal IP bilan bo'glanib ishlaydi, bitta load-balancer serverimizda static(public) IP address bo'ladi holos. Agar siz Azure ishlatsangiz [Azureda Network sozlash](https://devops-journey.uz/guides/cloud/azure-network-sozlash) amaliyotidan quyidagi networkni qurib olishingiz mumkin.
+
