@@ -157,6 +157,259 @@ cd postgresql_cluster/
 
 ![postgres-cluster](/images/tutorials/database/postgres-cluster/pgbouncer1.png)
 
-**3->** Barchasini o'zimizga moslab sozlab olganimizdan keyin barcha serverlarga ulanish bor yoki yo'qligini tekshiramiz.
+**5->** Barchasini o'zimizga moslab sozlab olganimizdan keyin barcha serverlarga ulanish bor yoki yo'qligini tekshiramiz.
 
 ![postgres-cluster](/images/tutorials/database/postgres-cluster/ping.png)
+
+**6->** Yuqoridagidek barcha serverlarga ansible serverimiz muvaffaqiyatli ulana olagidan keyin **deploy_pgcluster.yml** orqali TimescaleDB bilan  postgres clusterni yaratishni boshlaymiz. Bu serverlar holati va internet tezligi qaran vaqt oladi.
+
+**->** [**Timescale PostgreSQL ++**](https://www.timescale.com/)
+
+```bash
+ansible-playbook deploy_pgcluster.yml -e "enable_timescale=true"
+```
+
+**7->** Jarayon muvaffaqiyatli tugaganida quyidagicha ko'rinishda bo'ladi.
+
+![postgres-cluster](/images/tutorials/database/postgres-cluster/ansible1.png)
+![postgres-cluster](/images/tutorials/database/postgres-cluster/ansible2.png)
+
+Okey bizda hammasi muvaffaqiyatli yakunlandi keling endi etcd, patroni va pgbouncer statusini va konfiguratsiyalarini ko'rib chiqamiz.
+
+etcd serverimizda etcd muvaffaqiyatli o'rnatilib konfiguratsiya qilingan va holatyi aktiv ishlamoqda.
+![postgres-cluster](/images/tutorials/database/postgres-cluster/ansible3.png)
+
+![postgres-cluster](/images/tutorials/database/postgres-cluster/etcd.png)
+
+birorta node1,node2,node3 serverlimizga kirib patroni orqali Postgresql clusterimiz statusini ko'ramiz.
+
+![postgres-cluster](/images/tutorials/database/postgres-cluster/patroni.png)
+
+Patroni statusni tekshiramiz.
+
+![postgres-cluster](/images/tutorials/database/postgres-cluster/patroni2.png)
+
+Patroni konfiguratsiya(node3).
+
+```bash
+---
+
+scope: postgres-cluster
+name: pgnode03
+namespace: /service
+
+
+restapi:
+  listen: 170.20.0.8:8008
+  connect_address: 170.20.0.8:8008
+#  certfile: /etc/ssl/certs/ssl-cert-snakeoil.pem
+#  keyfile: /etc/ssl/private/ssl-cert-snakeoil.key
+#  authentication:
+#    username: username
+#    password: password
+
+etcd3:
+  hosts: 170.20.0.4:2379
+
+bootstrap:
+  method: initdb
+  dcs:
+    ttl: 30
+    loop_wait: 10
+    retry_timeout: 10
+    maximum_lag_on_failover: 1048576
+    master_start_timeout: 300
+    synchronous_mode: false
+    synchronous_mode_strict: false
+    synchronous_node_count: 1
+    postgresql:
+      use_pg_rewind: true
+      use_slots: true
+      parameters:
+        max_connections: 500
+        superuser_reserved_connections: 5
+        password_encryption: scram-sha-256
+        max_locks_per_transaction: 512
+        max_prepared_transactions: 0
+        huge_pages: try
+        shared_buffers: 1972MB
+        effective_cache_size: 5916MB
+        work_mem: 128MB
+        maintenance_work_mem: 256MB
+        checkpoint_timeout: 15min
+        checkpoint_completion_target: 0.9
+        min_wal_size: 2GB
+        max_wal_size: 8GB
+        wal_buffers: 32MB
+        default_statistics_target: 1000
+        seq_page_cost: 1
+        random_page_cost: 1.1
+        effective_io_concurrency: 200
+        synchronous_commit: on
+        autovacuum: on
+        autovacuum_max_workers: 5
+        autovacuum_vacuum_scale_factor: 0.01
+        autovacuum_analyze_scale_factor: 0.01
+        autovacuum_vacuum_cost_limit: 500
+        autovacuum_vacuum_cost_delay: 2
+        autovacuum_naptime: 1s
+        max_files_per_process: 4096
+        archive_mode: on
+        archive_timeout: 1800s
+        archive_command: cd .
+        wal_level: replica
+        wal_keep_size: 2GB
+        max_wal_senders: 10
+        max_replication_slots: 10
+        hot_standby: on
+        wal_log_hints: on
+        wal_compression: on
+        pg_stat_statements.max: 10000
+        pg_stat_statements.track: all
+        pg_stat_statements.track_utility: false
+        pg_stat_statements.save: true
+        auto_explain.log_min_duration: 10s
+        auto_explain.log_analyze: true
+        auto_explain.log_buffers: true
+        auto_explain.log_timing: false
+        auto_explain.log_triggers: true
+        auto_explain.log_verbose: true
+        auto_explain.log_nested_statements: true
+        auto_explain.sample_rate: 0.01
+        track_io_timing: on
+        log_lock_waits: on
+        log_temp_files: 0
+        track_activities: on
+        track_activity_query_size: 4096
+        track_counts: on
+        track_functions: all
+        log_checkpoints: on
+        logging_collector: on
+        log_truncate_on_rotation: on
+        log_rotation_age: 1d
+        log_rotation_size: 0
+        log_line_prefix: '%t [%p-%l] %r %q%u@%d '
+        log_filename: postgresql-%a.log
+        log_directory: /var/log/postgresql
+        hot_standby_feedback: on
+        max_standby_streaming_delay: 30s
+        wal_receiver_status_interval: 10s
+        idle_in_transaction_session_timeout: 10min
+        jit: off
+        max_worker_processes: 24
+        max_parallel_workers: 8
+        max_parallel_workers_per_gather: 2
+        max_parallel_maintenance_workers: 2
+        tcp_keepalives_count: 10
+        tcp_keepalives_idle: 300
+        tcp_keepalives_interval: 30
+        shared_preload_libraries: pg_stat_statements,auto_explain,timescaledb
+
+  initdb:  # List options to be passed on to initdb
+    - encoding: UTF8
+    - locale: en_US.UTF-8
+    - data-checksums
+
+  pg_hba:  # Add following lines to pg_hba.conf after running 'initdb'
+    - host replication replicator 127.0.0.1/32 scram-sha-256
+    - host all all 0.0.0.0/0 scram-sha-256
+
+
+postgresql:
+  listen: 170.20.0.8,127.0.0.1:5432
+  connect_address: 170.20.0.8:5432
+  use_unix_socket: true
+  data_dir: /var/lib/postgresql/16/main
+  bin_dir: /usr/lib/postgresql/16/bin
+  config_dir: /etc/postgresql/16/main
+  pgpass: /var/lib/postgresql/.pgpass_patroni
+  authentication:
+    replication:
+      username: replicator
+      password: replicator-parol-IIWfghweQHRW32
+    superuser:
+      username: postgres
+      password: admin-parol-qvcnwepOYUI45Wds
+#    rewind:  # Has no effect on postgres 10 and lower
+#      username: rewind_user
+#      password: rewind_password
+  parameters:
+    unix_socket_directories: /var/run/postgresql
+
+
+  remove_data_directory_on_rewind_failure: false
+  remove_data_directory_on_diverged_timelines: false
+
+
+  create_replica_methods:
+    - basebackup
+  basebackup:
+    max-rate: '100M'
+    checkpoint: 'fast'
+
+
+watchdog:
+  mode: automatic  # Allowed values: off, automatic, required
+  device: /dev/watchdog  # Path to the watchdog device
+  safety_margin: 5
+
+tags:
+  nofailover: false
+  noloadbalance: false
+  clonefrom: false
+  nosync: false
+
+  # specify a node to replicate from (cascading replication)
+#  replicatefrom: (node name)
+```
+
+Okey bizda patroni muvaffaqiyatli ishga tushirilib production uchun konfiguratsiya qilingan.
+
+PGBouncer statusini tekshiramiz.
+
+![postgres-cluster](/images/tutorials/database/postgres-cluster/pgbouncer.png)
+
+`/etc/pgbouncer/pgbouncer.ini` konfiguratsiya
+
+```bash
+[databases]
+postgres = host=/var/run/postgresql port=5432 dbname=postgres 
+
+* = host=/var/run/postgresql port=5432
+
+[pgbouncer]
+logfile = /var/log/pgbouncer/pgbouncer.log
+pidfile = /run/pgbouncer/pgbouncer.pid
+listen_addr = 0.0.0.0
+listen_port = 6432
+unix_socket_dir = /var/run/pgbouncer
+auth_type = scram-sha-256
+auth_user = pgbouncer
+auth_dbname = postgres
+auth_query = SELECT usename, passwd FROM user_search($1)
+admin_users = postgres
+stats_users = postgres
+ignore_startup_parameters = extra_float_digits,geqo,search_path
+
+pool_mode = session
+server_reset_query = DISCARD ALL
+max_client_conn = 10000
+default_pool_size = 20
+query_wait_timeout = 120
+reserve_pool_size = 1
+reserve_pool_timeout = 1
+max_db_connections = 1000
+pkt_buf = 8192
+listen_backlog = 4096
+max_prepared_statements = 1024
+so_reuseport = 1
+
+log_connections = 0
+log_disconnections = 0
+
+# Documentation https://pgbouncer.github.io/config.html
+```
+
+Okeey hammasi zo'r hammasi muvaffaqiyatli ishga tushdi va ishlab turibti endi master va replicalar uchun HAProxy load balancer sozlashimiz kerak.
+
+## HAProxy sozlash
