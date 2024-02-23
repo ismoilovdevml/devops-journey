@@ -8,13 +8,11 @@ import { Callout } from "nextra-theme-docs";
 
 Bugungi raqamli landshaftda ma'lumotlar bazalarining high availability va ishonchliligini ta'minlash barcha o'lchamdagi korxonalar va tashkilotlar uchun muhim ahamiyatga ega. O'zining mustahkamligi, scalability va extensibility bilan mashhur bo'lgan PostgreSQL ko'plab muhim application uchun asos bo'lib xizmat qiladi. PostgreSQL ma'lumotlar bazalarining ishlash muddati va barqarorligini oshirish uchun highly available bo'lgan klaster arxitekturasini o'rnatishga ehtiyoj seziladi.
 
-Ushbu texnik qo'llanma sizga **Patroni** va **HAProxy**-dan foydalangan holda highly available bo'lgan PostgreSQL klasterini yaratish jarayonini o'tkazishga qaratilgan. Patroni, PostgreSQL uchun high-leveldagi Python orkestratori postgreSQL klasterlarini o'zgartirish va replikatsiya kabi vazifalarni avtomatlashtirish orqali boshqarishni soddalashtiradi. HAProxy, ko'p qirrali va kuchli load balancer, clientlar ulanishlarini bir nechta PostgreSQL misollari bo'ylab taqsimlashni osonlashtiradi, resurslardan samarali foydalanish va uzluksiz uzilishni ta'minlaydi.
+Ushbu texnik qo'llanma sizga **Patroni** va **HAProxy**-dan foydalangan holda highly available bo'lgan PostgreSQL klasterini yaratish jarayonini o'tkazishga qaratilgan.
 
 Ushbu qo'llanmaning oxirida siz bardoshli PostgreSQL klaster arxitekturasini qanday loyihalash, amalga oshirish va qo'llab-quvvatlash haqida  tushunchaga ega bo'lasiz, bu sizga ma'lumotlar bazasi infratuzilmangizda yuqori darajadagi mavjudlik(high availability) va xatolarga chidamlilik(tolerance) talablarini qondirish imkonini beradi. Keling, potentsial nosozliklarga chidamli va qimmatli ma'lumotlaringizga uzluksiz kirishni ta'minlaydigan mustahkam PostgreSQL klasterini yaratish yo'lida ushbu sayohatni boshlaylik.
 
 ## Ishni Boshlash
-
-Ushbu amaliyotda biz **Ubuntu 20.04** serverlarda patroni, etcd, pgbouncer va HAProxy yordamida PostgreSQL cluster yaratamiz. 
 
 **Patroni** - bu PostgreSQL klasterlarini boshqarishni avtomatlashtirish uchun mo'ljallangan open-source tool bo'lib, high availability va barqarorlikni ta'minlashga qaratilgan. U PostgreSQL instancelarini bir nechta nodelar bo'ylab joylashtirish va ularga xizmat ko'rsatishni, ularni doimiy ravishda  helath check qilib kuzatib borish va nosozliklar yoki jiddiy muammolar yuzaga kelganda avtomatlashtirilgan uzilish protseduralarini tartibga solish orqali soddalashtiradi.
 
@@ -27,7 +25,7 @@ Patronining asosiy xususiyatlari quyidagilardan iborat: avtomatlashtirilgan uzil
 <Callout type="info" emoji="">
 Ushbu amaliyotda biz production uchun yuqorida darajada yozilgan [github.com/vitabaks/postgresql_cluster](https://github.com/vitabaks/postgresql_cluster) **Ansible** playbookdan foydalanamiz. Ushbu amaliyot uchun moslangan versiyasi [github.com/devops-journey-uz/postgresql_cluster](https://github.com/devops-journey-uz/postgresql_cluster)
 
-Ushbu Ansible playbook qo'llab quvvvatlaydigan serverlar
+Ushbu Ansible playbookni qo'llab quvvatlaydigan serverlar
 * **Debian:** 10, 11, 12
 * **Ubuntu:** 18.04, 20.04, 22.04
 * **CentOS:** 7, 8
@@ -37,9 +35,9 @@ Ushbu Ansible playbook qo'llab quvvvatlaydigan serverlar
 * **AlmaLinux:** 8, 9
 </Callout>
 
-## Arxitekura
+## Arxitektura
 
-Ushbu amaliyotda quyidagi rasmdagi arxitekturani quramiz. Bizda bitta **etcd** va bitta **load-balancer** serverimiz bo'ladi. Ikkita postgres replica va bitta masterimiz bo'ladi.
+Ushbu amaliyotda quyidagi rasmdagi arxitekturani quramiz. Bizda bitta **etcd** va bitta **load-balancer** serverimiz bo'ladi. Ikkita postgres **replica** va bitta **master**imiz bo'ladi.
 
 ![postgres-cluster](/images/tutorials/database/postgres-cluster/architecture.png)
 
@@ -48,22 +46,22 @@ Quyidagi rasmda esa network arxitekturamiz.
 
 ![postgres-cluster](/images/tutorials/database/postgres-cluster/network-architecture.png)
 
-Bizda Postgresql clusterimiz uchun **db-network**kimiz bor uni ichida esa **db-subnet** nomli **172.20.0.0/16** IP rangelik subnetimiz bor. Barcha serverlarimiz bir biriga internal IP bilan bo'glanib ishlaydi, bitta load-balancer serverimizda static(public) IP address bo'ladi holos. Agar siz Azure ishlatsangiz [Azureda Network sozlash](https://devops-journey.uz/guides/cloud/azure-network-sozlash) amaliyotidan quyidagi networkni qurib olishingiz mumkin.
+Bizda Postgresql clusterimiz uchun **db-network**kimiz bor uni ichida esa **db-subnet** nomli **172.20.0.0/16** IP diapozonli subnetimiz bor. Barcha serverlarimiz bir biriga internal IP bilan bo'glanib ishlaydi, bitta load-balancer serverimizda static(public) IP address bo'ladi holos. Agar siz Azure ishlatsangiz [Azureda Network sozlash](https://devops-journey.uz/guides/cloud/azure-network-sozlash) amaliyotidan quyidagi networkni qurib olishingiz mumkin.
 
 ## Environment sozlash
 
-Ushbu amaliyotni cloud va on-primise environmentda qilishimiz mumkin. Buning uchun bizga bitta network va subnet kerak bo'ladi serverlarimiz internal IP bilan bog'lanishi uchun. Minimum 6ta server kerak bo'ladi.
+Ushbu amaliyotni cloud va on-primise environmentda qilishimiz mumkin. Buning uchun bizga bitta network va subnet kerak bo'ladi serverlarimiz internal IP bilan bog'lanishi uchun.  Bu amaliyot uchun minimum 6-ta server kerak bo'ladi.
 
 Ushbu amaliyot uchun ishlatilgan server IP manzillarimiz namuna hisoblanadi qo'llanmada chalg'imasligingiz uchun.
 
 | RAM            | CPU           | Xotira       | Internal IP  |  Server Nomi         |
 | -------------- | ------------- |------------- | ------------ | -------------------- |
-| 8GB            | 2vCPU 2 core  | 100GB        | 170.20.0.4   | etcd                 |
-| 8GB            | 2vCPU 2 core  | 50GB         | 170.20.0.5   | load-balancer        |
-| 8GB            | 2vCPU 2 core  | 50GB         | 170.20.0.6   | node1                |
-| 8GB            | 2vCPU 2 core  | 50GB         | 170.20.0.7   | node2                |
-| 8GB            | 2vCPU 2 core  | 50GB         | 170.20.0.8   | node3                |
-| 4GB            | 2vCPU 2 core  | 50GB         | 170.20.0.9   | ansible              |
+| 8GB            | 4vCPU 2 core  | 100GB        | 170.20.0.4   | etcd                 |
+| 8GB            | 4vCPU 2 core  | 50GB         | 170.20.0.5   | load-balancer        |
+| 8GB            | 4vCPU 2 core  | 50GB         | 170.20.0.6   | node1                |
+| 8GB            | 4vCPU 2 core  | 50GB         | 170.20.0.7   | node2                |
+| 8GB            | 4vCPU 2 core  | 50GB         | 170.20.0.8   | node3                |
+| 4GB            | 2vCPU 2 core  | 30GB         | 170.20.0.9   | ansible              |
 
 
 ## Network sozlash
@@ -74,13 +72,13 @@ Siz quyidagidek network sozlab olishingiz kerak bo'ladi barcha serverlar bitta n
 
 ![postgres-cluster](/images/tutorials/database/postgres-cluster/network-architecture.png)
 
-Ushbu network arxitekturani on-primise va cloudda ham sozlashingiz mumkin. Agar siz **Microsoft Azure** ishlatsangiz [Azure Network sozlash](https://devops-journey.uz/guides/cloud/azure-network-sozlash) qo'llanmaisdan quyidagi networkni sozlab olishingiz mumkin.
+Ushbu network arxitekturani on-primise va cloudda ham sozlashingiz mumkin. Agar siz **Microsoft Azure** ishlatsangiz [Azure Network sozlash](https://devops-journey.uz/guides/cloud/azure-network-sozlash) qo'llanmasidan quyidagi networkni sozlab olishingiz mumkin.
 
 ## Ansible server sozlash
 
 Network sozlab olganimizdan keyin shu networkda bitta ansible server yaratib olamiz. Barcha ishni shu ansible server orqali bajaramiz va ansible server boshqa serverlarga internal IP bilan ulana olishi kerak.
 
-Ansible serverimizga ansible o'rnatimiz olamiz.
+Ansible serverimizga ansible o'rnatib olamiz.
 
 ```bash
 sudo apt update && sudo apt upgrade -y
@@ -95,7 +93,7 @@ sudo apt-get update
 sudo apt-get install ansible
 ```
 
-Ansible o'rnatib olganimizdan keyin Ansible serverimizda ssh key generatsiya qilib barcha serverlarga root user bilann ssh orqali ulanishini sozlab chiqishimiz kerak. Buning uchun ansible servermizda ssh key generatsiya qilamiz va public keyni ansible serverimiz authorized_keys'gan qo'shib qo'yamiz. Ansible serverimizdagi public ssh keyimizni esa barcha serverlarda root userga kirib authorized_keys'ga qo'shib chiqamiz va har bir serverga root userdan ansible serverdan ulanib ko'ramiz.
+Ansible o'rnatib olganimizdan keyin Ansible serverimizda ssh key generatsiya qilib barcha serverlarga root user bilan ssh orqali ulanishini sozlab chiqishimiz kerak. Buning uchun ansible servermizda ssh key generatsiya qilamiz va public keyni ansible serverimiz **authorized_keys**'gan qo'shib qo'yamiz. Ansible serverimizdagi public ssh keyimizni esa barcha serverlarda root userga kirib **authorized_keys**'ga qo'shib chiqamiz va har bir serverga root userdan ansible serverdan ulanib ko'ramiz.
 
 **1->** Ansible serverdan
 
@@ -112,7 +110,7 @@ cd ~/.ssh/
 cat db-cluster.pub
 ```
 
-**2->** Boshqa serverlarda. Ansible boshqa serverlarga root user bilan kira olishi kerak. barcha serverlarda **db-cluster.pub** keyimizni serverlar authorized_keys'ga qo'shib chiqganimzidan keyin internal ip bilan ssh orqali bog'lanishni tekshirib ko'ramiz.
+**2->** Boshqa serverlarda. Ansible boshqa serverlarga root user bilan kira olishi kerak. Barcha serverlarda **db-cluster.pub** keyimizni serverlar **authorized_keys**'ga qo'shib chiqganimzidan keyin internal ip bilan ssh orqali bog'lanishni tekshirib ko'ramiz.
 
 ```bash
 sudo su
@@ -134,7 +132,7 @@ git clone https://github.com/vitabaks/postgresql_cluster.git
 cd postgresql_cluster/
 ```
 
-**2->** `inventory` konfiguratsiya fayliga serverlarimiz internal IP addrslarini qo'shib chiqamiz.
+**2->** `inventory` konfiguratsiya fayliga serverlarimiz internal IP addresslarini qo'shib chiqamiz.
 
 | server         | Internal IP    |
 | -------------- | -------------- |
@@ -147,7 +145,7 @@ cd postgresql_cluster/
 
 ![postgres-cluster](/images/tutorials/database/postgres-cluster/inventory.png)
 
-**3->** `postgresql_cluster/vars/system.yml` konfiguratsiya faylidan timezoneni belgilaymiz.
+**3->** `postgresql_cluster/vars/system.yml` konfiguratsiya faylidan timezonani belgilaymiz.
 
 ![postgres-cluster](/images/tutorials/database/postgres-cluster/timezone.png)
 
@@ -161,7 +159,7 @@ cd postgresql_cluster/
 
 ![postgres-cluster](/images/tutorials/database/postgres-cluster/ping.png)
 
-**6->** Yuqoridagidek barcha serverlarga ansible serverimiz muvaffaqiyatli ulana olagidan keyin **deploy_pgcluster.yml** orqali TimescaleDB bilan  postgres clusterni yaratishni boshlaymiz. Bu serverlar holati va internet tezligi qaran vaqt oladi.
+**6->** Yuqoridagidek barcha serverlarga ansible serverimiz muvaffaqiyatli ulana olaganidan keyin **deploy_pgcluster.yml** orqali **TimescaleDB** bilan  postgres clusterni yaratishni boshlaymiz. Bu serverlar holati va internet tezligi qarab vaqt oladi.
 
 **->** [**Timescale PostgreSQL ++**](https://www.timescale.com/)
 
@@ -176,16 +174,16 @@ ansible-playbook deploy_pgcluster.yml -e "enable_timescale=true"
 
 Okey bizda hammasi muvaffaqiyatli yakunlandi keling endi etcd, patroni va pgbouncer statusini va konfiguratsiyalarini ko'rib chiqamiz.
 
-etcd serverimizda etcd muvaffaqiyatli o'rnatilib konfiguratsiya qilingan va holatyi aktiv ishlamoqda.
+etcd serverimizda etcd muvaffaqiyatli o'rnatilib konfiguratsiya qilingan va holati aktiv ishlamoqda.
 ![postgres-cluster](/images/tutorials/database/postgres-cluster/ansible3.png)
 
 ![postgres-cluster](/images/tutorials/database/postgres-cluster/etcd.png)
 
-birorta node1,node2,node3 serverlimizga kirib patroni orqali Postgresql clusterimiz statusini ko'ramiz.
+birorta node1,node2,node3 serverlarimizga kirib patroni orqali Postgresql clusterimiz statusini ko'ramiz.
 
 ![postgres-cluster](/images/tutorials/database/postgres-cluster/patroni.png)
 
-Patroni statusni tekshiramiz.
+Patroni statusini tekshiramiz.
 
 ![postgres-cluster](/images/tutorials/database/postgres-cluster/patroni2.png)
 
@@ -365,7 +363,7 @@ tags:
 
 Okey bizda patroni muvaffaqiyatli ishga tushirilib production uchun konfiguratsiya qilingan.
 
-PGBouncer statusini tekshiramiz.
+**PGBouncer** statusini tekshiramiz.
 
 ![postgres-cluster](/images/tutorials/database/postgres-cluster/pgbouncer.png)
 
@@ -442,11 +440,11 @@ sudo systemctl status haproxy
 sudo systemctl enable haproxy
 ```
 
-**4->** HAProxyni biz master va replicalar uchun roundrobin load balancing algoritmidan foydalanib konfiguratsiya qilamiz. PostgreSQL clustermizda ikkta postgres porti bo'ladi port: 5000 va port: 5001. 5000 port master bo'lib read/write uchun port: 5001 replica va read only uchun ximzat qiladi. Buning uchun applicationingiz ham read/write uchun 5000 read only uchunn 5001 portlarini ishlatish uchun moslab yozilgan bo'lishi kerak.
+**4->** HAProxyni biz master va replicalar uchun roundrobin load balancing algoritmidan foydalanib konfiguratsiya qilamiz. PostgreSQL clustermizda ikkta postgres porti bo'ladi **port: 5000** va **port: 5001**. **5000** port **master** bo'lib **read/write** uchun **port: 5001** **replica** va **read only** uchun xizmat qiladi. Buning uchun applicationingiz ham **read/write** uchun 5000 **read only** uchunn 5001 portlarini ishlatish uchun moslab yozilgan bo'lishi kerak.
 
 HAProxy konfiguratsiya fayli `/etc/haproxy` directoriyada `haproxy.cfg` fayli bo'lib hisoblanadi.
 
-`haproxy.cfg` HAProxy konfiguratsiyamizni quyidagi koniguratsiya qilamiz.
+`haproxy.cfg` HAProxy konfiguratsiyamizni quyidagicha konfiguratsiya qilamiz.
 
 
 ```bash filename="/etc/haproxy/haproxy.cfg"
@@ -547,12 +545,12 @@ Okey bizda hmmasi zo'r hamma ish bitti biz hammasini muvaffaqiyatli yakunladik.
 
 ## Test
 
-Bu amaliyotda biz high availability PostgreSQL Cluster asosini yaratib sozladik. Bunda keyingi bosqichlarni yani backuplar bilan ishlash load balancerlarni, etcd serverlar va nodelarni ko'paytirish o'zingizga amalga oshirasiz. Yaratgan postgresql clusterimizni test qilib ko'ramiz, hozir birorta node serverni o'chiramiz postgresql clusterimiz buzilib yiqilib qolmasligi kerak va o'chirgan nodemiznni qayta yoqamiz sevrer yonganidan o'chgan node avtomatik clusterga qo'shilib muammosiz ishlab ketishi kerak keyin leader(master) serverni o'chiramiz cluster avtomatik boshqa leader tanlashi va ishlashdan to'xtamasligi kerak.
+Bu amaliyotda biz high availability PostgreSQL Cluster asosini yaratib sozladik. Bunda keyingi bosqichlarni yani backuplar bilan ishlash load balancerlarni, etcd serverlar va nodelarni ko'paytirish o'zingizga amalga oshirasiz. Yaratgan postgresql clusterimizni test qilib ko'ramiz, hozir birorta node serverni o'chiramiz postgresql clusterimiz buzilib yiqilib qolmasligi kerak va o'chirgan nodemiznni qayta yoqamiz server yonganidan o'chgan node avtomatik clusterga qo'shilib muammosiz ishlab ketishi kerak keyin leader(master) serverni o'chiramiz cluster avtomatik boshqa leader tanlashi va ishlashdan to'xtamasligi kerak.
 
 Testlardan muvaffaqiyatli o'tganidan keyin yangi node qo'shishni ko'rib chiqamiz. Yangilanishlar qo'llash oson Ansible playbookga yangilashlarni kiritib playbookni ishga tushirsak yangilangan konfiguratsiya bilan ishlaydi.
 
 
-**1->** Bizda hozir status quyidagicha. 2ta (pgnode02,pgnode02) Replica va bitta pgnode01 Leader hisoblanadi. Keling pgnode03 node serverimizni o'chirib statusni tekshiramiz.
+**1->** Bizda hozir status quyidagicha. 2-ta (**pgnode02,pgnode02**) Replica va bitta pgnode01 Leader hisoblanadi. Keling **pgnode03** node serverimizni o'chirib statusini tekshiramiz.
 
 ```bash
 patronictl -c /etc/patroni/patroni.yml list
@@ -564,17 +562,38 @@ patronictl -c /etc/patroni/patroni.yml list
 
 ![postgres-cluster](/images/tutorials/database/postgres-cluster/patroni3.png)
 
-**pgnode03** sevverimizni qayta yoqatmiz postgres clusterga avtomatik muamosiz ulanishi kerak buni o'zingzi tekshirib olasiz.
+**pgnode03** sevverimizni qayta yoqamiz postgres clusterga avtomatik muamosiz ulanishi kerak buni o'zingiz tekshirib olasiz.
 
 Keling endi **pgnode01** Leader serverni o'chiramiz postgres clustermiz avtomatik Leader tanlashi kerak.
 
 ![postgres-cluster](/images/tutorials/database/postgres-cluster/patroni4.png)
 
-Ko'rib turganimizdek postgres clusterimizda oldin **pgnode01** Leader edi u server o'chganidan keryin **pgnode03** ga Leaderlik berildi bizda hech qanday uzulish kuzatilmasligi kerak. Qolgan qo'shimcha testlarni o'zinmgiz o'tkizib olasiz.
+Ko'rib turganimizdek postgres clusterimizda oldin **pgnode01** Leader edi u server o'chganidan keyin **pgnode03** ga Leaderlik berildi bizda hech qanday uzulish kuzatilmasligi kerak. Qolgan qo'shimcha testlarni o'zinmgiz o'tkizib olasiz.
 
 
-Yangi node qo'shish uchun inventory konfiguratsiya faylimizga yangi node internal IP ni yozib ansible server bilan yangi node serverni ulaymiz va quyidagi scriptni ishga tuhsirish orqali yangi node serverni qo'shib olamiz.
+Yangi node qo'shish uchun inventory konfiguratsiya faylimizga yangi node internal IP ni yozib ansible server bilan yangi node serverni ulaymiz va quyidagi scriptni ishga tushirish orqali yangi node serverni qo'shib olamiz.
 
 ```bash
 ansible-playbook add_pgnode.yml
 ```
+
+Shu qismda biz ushbu amaliyotni yakunlaymiz o'ylaymizni sizda hammasi muvaffaqiyatli bo'ldi.
+
+## Qo'shimcha
+
+<Callout type="info" emoji="">
+
+ * [**PostgreSQL High-Availability Cluster**](https://github.com/vitabaks/postgresql_cluster)
+ * [**PostgreSQLga kirish**](https://devops-journey.uz/guides/database/postgresql-kirish)
+ * [**PostgreSQL Monitoring**](https://devops-journey.uz/guides/database/postgres-monitoring)
+
+**Sana:** 2024.02.23(2024-yil 23-fevral)
+
+**Oxirgi yangilanish:** 2024.02.23(2024-yil 23-fevral)
+
+**Muallif: Otabek Ismoilov**
+
+| [Telegram](https://t.me/Otabek_Ismoilov) | [Github](https://github.com/ismoilovdevml) | [LinkedIn](https://www.linkedin.com/in/otabek-ismoilov-8625b0222/) |
+| - | - | - |
+
+</Callout>
