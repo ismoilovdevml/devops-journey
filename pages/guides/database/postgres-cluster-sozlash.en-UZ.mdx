@@ -537,8 +537,44 @@ Ulanish uchun pgadmin yoki birorta bazalarga ulanadigan dastur yoki hech bo'lmas
 psql -h 172.214.40.99 -p 5000 -U postgres;
 ```
 
+postgres parol `postgresql_cluster/vars/main.yml` konfiguratsiya faylida belgilagan `admin-parol-qvcnwepOYUI45Wds` parolimizdir.
+![postgres-cluster](/images/tutorials/database/postgres-cluster/password.png)
+
 ![postgres-cluster](/images/tutorials/database/postgres-cluster/pg.png)
 
 
 Okey bizda hmmasi zo'r hamma ish bitti biz hammasini muvaffaqiyatli yakunladik.
 
+## Test
+
+Bu amaliyotda biz high availability PostgreSQL Cluster asosini yaratib sozladik. Bunda keyingi bosqichlarni yani backuplar bilan ishlash load balancerlarni, etcd serverlar va nodelarni ko'paytirish o'zingizga amalga oshirasiz. Yaratgan postgresql clusterimizni test qilib ko'ramiz, hozir birorta node serverni o'chiramiz postgresql clusterimiz buzilib yiqilib qolmasligi kerak va o'chirgan nodemiznni qayta yoqamiz sevrer yonganidan o'chgan node avtomatik clusterga qo'shilib muammosiz ishlab ketishi kerak keyin leader(master) serverni o'chiramiz cluster avtomatik boshqa leader tanlashi va ishlashdan to'xtamasligi kerak.
+
+Testlardan muvaffaqiyatli o'tganidan keyin yangi node qo'shishni ko'rib chiqamiz. Yangilanishlar qo'llash oson Ansible playbookga yangilashlarni kiritib playbookni ishga tushirsak yangilangan konfiguratsiya bilan ishlaydi.
+
+
+**1->** Bizda hozir status quyidagicha. 2ta (pgnode02,pgnode02) Replica va bitta pgnode01 Leader hisoblanadi. Keling pgnode03 node serverimizni o'chirib statusni tekshiramiz.
+
+```bash
+patronictl -c /etc/patroni/patroni.yml list
+```
+
+![postgres-cluster](/images/tutorials/database/postgres-cluster/patroni.png)
+
+**pgnode03** serverimizni o'chirgandagi status.
+
+![postgres-cluster](/images/tutorials/database/postgres-cluster/patroni3.png)
+
+**pgnode03** sevverimizni qayta yoqatmiz postgres clusterga avtomatik muamosiz ulanishi kerak buni o'zingzi tekshirib olasiz.
+
+Keling endi **pgnode01** Leader serverni o'chiramiz postgres clustermiz avtomatik Leader tanlashi kerak.
+
+![postgres-cluster](/images/tutorials/database/postgres-cluster/patroni4.png)
+
+Ko'rib turganimizdek postgres clusterimizda oldin **pgnode01** Leader edi u server o'chganidan keryin **pgnode03** ga Leaderlik berildi bizda hech qanday uzulish kuzatilmasligi kerak. Qolgan qo'shimcha testlarni o'zinmgiz o'tkizib olasiz.
+
+
+Yangi node qo'shish uchun inventory konfiguratsiya faylimizga yangi node internal IP ni yozib ansible server bilan yangi node serverni ulaymiz va quyidagi scriptni ishga tuhsirish orqali yangi node serverni qo'shib olamiz.
+
+```bash
+ansible-playbook add_pgnode.yml
+```
