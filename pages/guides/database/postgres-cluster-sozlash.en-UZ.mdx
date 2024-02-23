@@ -413,3 +413,132 @@ log_disconnections = 0
 Okeey hammasi zo'r hammasi muvaffaqiyatli ishga tushdi va ishlab turibti endi master va replicalar uchun HAProxy load balancer sozlashimiz kerak.
 
 ## HAProxy sozlash
+
+**HAProxy** serverimizni sozlashni boshlaymiz.
+
+**1->** Tizimingizni yangilang.
+
+```bash
+sudo apt-get update && sudo apt-get upgrade -y
+```
+
+**2->** HAProxy o'rnating. HAProxy ko'pgina Linux distributivlarining package management systemlariga kiritilgan:
+
+Debian based uchun. Debian va Ubuntu uchun maxsus HAProxy versiylarini o'rnatish uchun quyidagi websaytdan foydalanishingiz mumkin. [haproxy.debian.net](https://haproxy.debian.net/)
+
+```bash
+sudo apt install haproxy -y
+```
+Fedora uchun
+
+```bash
+sudo yum install haproxy
+```
+
+**3->** HAProxy o'rnatilganidan keyin statusini tekshiring.
+
+```bash
+sudo systemctl status haproxy
+sudo systemctl enable haproxy
+```
+
+**4->** HAProxyni biz master va replicalar uchun roundrobin load balancing algoritmidan foydalanib konfiguratsiya qilamiz. PostgreSQL clustermizda ikkta postgres porti bo'ladi port: 5000 va port: 5001. 5000 port master bo'lib read/write uchun port: 5001 replica va read only uchun ximzat qiladi. Buning uchun applicationingiz ham read/write uchun 5000 read only uchunn 5001 portlarini ishlatish uchun moslab yozilgan bo'lishi kerak.
+
+HAProxy konfiguratsiya fayli `/etc/haproxy` directoriyada `haproxy.cfg` fayli bo'lib hisoblanadi.
+
+`haproxy.cfg` HAProxy konfiguratsiyamizni quyidagi koniguratsiya qilamiz.
+
+
+```bash filename="/etc/haproxy/haproxy.cfg"
+global
+    maxconn 100000
+    log /dev/log    local0
+    log /dev/log    local1 notice
+    chroot /var/lib/haproxy
+    stats socket /run/haproxy/admin.sock mode 660 level admin expose-fd listeners
+    stats timeout 30s
+    user haproxy
+    group haproxy
+    daemon
+
+defaults
+    mode               tcp
+    log                global
+    retries            2
+    timeout queue      5s
+    timeout connect    5s
+    timeout client     60m
+    timeout server     60m
+    timeout check      15s
+
+listen master
+    bind 170.20.0.5:5000
+    maxconn 10000
+    option tcplog
+    option httpchk OPTIONS /primary
+    http-check expect status 200
+    default-server inter 3s fastinter 1s fall 3 rise 4 on-marked-down shutdown-sessions
+ server pgnode01 170.20.0.6:6432 check port 8008
+ server pgnode02 170.20.0.7:6432 check port 8008
+ server pgnode03 170.20.0.8:6432 check port 8008
+
+
+listen replicas
+    bind 170.20.0.5:5001
+    maxconn 10000
+    option tcplog
+    option httpchk OPTIONS /replica?lag=100MB
+    balance roundrobin
+    http-check expect status 200
+    default-server inter 3s fastinter 1s fall 3 rise 2 on-marked-down shutdown-sessions
+ server pgnode01 170.20.0.6:6432 check port 8008
+ server pgnode02 170.20.0.7:6432 check port 8008
+ server pgnode03 170.20.0.8:6432 check port 8008
+
+
+listen replicas_sync
+    bind 170.20.0.5:5002
+    maxconn 10000
+    option tcplog
+    option httpchk OPTIONS /sync
+    balance roundrobin
+    http-check expect status 200
+    default-server inter 3s fastinter 1s fall 3 rise 2 on-marked-down shutdown-sessions
+ server pgnode01 170.20.0.6:6432 check port 8008
+ server pgnode02 170.20.0.7:6432 check port 8008
+ server pgnode03 170.20.0.8:6432 check port 8008
+
+
+listen replicas_async
+    bind 170.20.0.5:5003
+    maxconn 10000
+    option tcplog
+    option httpchk OPTIONS /async?lag=100MB
+    balance roundrobin
+    http-check expect status 200
+    default-server inter 3s fastinter 1s fall 3 rise 2 on-marked-down shutdown-sessions
+ server pgnode01 170.20.0.6:6432 check port 8008
+ server pgnode02 170.20.0.7:6432 check port 8008
+ server pgnode03 170.20.0.8:6432 check port 8008
+```
+
+Konfiguratsiyani yangilab haproxyga restart beramiz.
+
+```bash
+sudo systemctl restart haproxy
+sudo systemctl status haproxy
+```
+
+HAProxy load balancerimiz 5000 va 5001 portlari firewaldan ochiq bo'lishi kerak. Keling hammasini tekshirib ko'rish uchun ushbu postgresql clusterga ulanib ko'ramiz.
+
+Ulanish uchun pgadmin yoki birorta bazalarga ulanadigan dastur yoki hech bo'lmasa serverda psql orqali. Load balancer serverimiz static IP manzili, postgres user va read/write uchun 5000 port orqali ulanib ko'ramiz.
+
+```bash
+psql -h 172.214.40.99 -p 5000 -U postgres;
+```
+
+![postgres-cluster](/images/tutorials/database/postgres-cluster/pg.png)
+
+
+Okey bizda hmmasi zo'r hamma ish bitti biz hammasini muvaffaqiyatli yakunladik.
+
