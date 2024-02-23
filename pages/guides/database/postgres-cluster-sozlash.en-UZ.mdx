@@ -50,7 +50,7 @@ Quyidagi rasmda esa network arxitekturamiz.
 
 Bizda Postgresql clusterimiz uchun **db-network**kimiz bor uni ichida esa **db-subnet** nomli **172.20.0.0/16** IP rangelik subnetimiz bor. Barcha serverlarimiz bir biriga internal IP bilan bo'glanib ishlaydi, bitta load-balancer serverimizda static(public) IP address bo'ladi holos. Agar siz Azure ishlatsangiz [Azureda Network sozlash](https://devops-journey.uz/guides/cloud/azure-network-sozlash) amaliyotidan quyidagi networkni qurib olishingiz mumkin.
 
-## Enviornment sozlash
+## Environment sozlash
 
 Ushbu amaliyotni cloud va on-primise environmentda qilishimiz mumkin. Buning uchun bizga bitta network va subnet kerak bo'ladi serverlarimiz internal IP bilan bog'lanishi uchun. Minimum 6ta server kerak bo'ladi.
 
@@ -87,8 +87,76 @@ sudo apt update && sudo apt upgrade -y
 ```
 
 ```bash
-sudo apt-get install software-properties-common
+sudo apt-get install software-properties-common python3-pip sshpass git
 sudo apt-add-repository ppa:ansible/ansible
+```
+```bash
 sudo apt-get update
 sudo apt-get install ansible
 ```
+
+Ansible o'rnatib olganimizdan keyin Ansible serverimizda ssh key generatsiya qilib barcha serverlarga root user bilann ssh orqali ulanishini sozlab chiqishimiz kerak. Buning uchun ansible servermizda ssh key generatsiya qilamiz va public keyni ansible serverimiz authorized_keys'gan qo'shib qo'yamiz. Ansible serverimizdagi public ssh keyimizni esa barcha serverlarda root userga kirib authorized_keys'ga qo'shib chiqamiz va har bir serverga root userdan ansible serverdan ulanib ko'ramiz.
+
+**1->** Ansible serverdan
+
+```bash
+ssh-keygen -f ~/.ssh/db-cluster
+cd ~/.ssh/
+cat db-cluster.pub >> authorized_keys
+```
+
+Ansible serverdagi **db-cluster.pub** keyni nusxalab olamiz.
+
+```bash
+cd ~/.ssh/
+cat db-cluster.pub
+```
+
+**2->** Boshqa serverlarda. Ansible boshqa serverlarga root user bilan kira olishi kerak. barcha serverlarda **db-cluster.pub** keyimizni serverlar authorized_keys'ga qo'shib chiqganimzidan keyin internal ip bilan ssh orqali bog'lanishni tekshirib ko'ramiz.
+
+```bash
+sudo su
+```
+```bash
+cat >> ~/.ssh/authorized_keys <<EOF
+ssh-rsa ssh-keyimizni joylashtiramiz
+EOF
+```
+
+## Cluster yaratish
+
+Ansible serverimizni sozlab boshqa sereverlar bilan ssh ulanishni bog'laganimizdan keyin Postgresql cluster yaratishni boshlasak bo'ladi. [github.com/vitabaks/postgresql_cluster](https://github.com/vitabaks/postgresql_cluster) ansible playbookni ansible serverimizda git clone qilib olamiz va o'zimizga moslab configuratsiya qilib olamiz.
+
+**1->** Ansible serverimizda ansible playbookni git clone qilib olamiz.
+
+```bash
+git clone https://github.com/vitabaks/postgresql_cluster.git
+cd postgresql_cluster/
+```
+
+**2->** `inventory` konfiguratsiya fayliga serverlarimiz internal IP addrslarini qo'shib chiqamiz.
+
+| server         | Internal IP    |
+| -------------- | -------------- |
+| etcd           | 170.20.0.4     |
+| load-balancer  | 170.20.0.5     |
+| node1          | 170.20.0.6     |
+| node2          | 170.20.0.7     |
+| node3          | 170.20.0.8     |
+
+
+![postgres-cluster](/images/tutorials/database/postgres-cluster/inventory.png)
+
+**3->** `postgresql_cluster/vars/system.yml` konfiguratsiya faylidan timezoneni belgilaymiz.
+
+![postgres-cluster](/images/tutorials/database/postgres-cluster/timezone.png)
+
+**4->** `postgresql_cluster/vars/main.yml` konfiguratsiya faylidan postgres pgbouncer parollarnini belgilaymiz.
+
+![postgres-cluster](/images/tutorials/database/postgres-cluster/password.png)
+
+![postgres-cluster](/images/tutorials/database/postgres-cluster/pgbouncer1.png)
+
+**3->** Barchasini o'zimizga moslab sozlab olganimizdan keyin barcha serverlarga ulanish bor yoki yo'qligini tekshiramiz.
+
+![postgres-cluster](/images/tutorials/database/postgres-cluster/ping.png)
