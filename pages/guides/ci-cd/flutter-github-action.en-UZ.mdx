@@ -14,10 +14,47 @@ Biz loyihamizni discord bilan integratsiya qilish uchun `Discord webhook` dan fo
 Discord channel ochish va Discord webhook olib Githubdagi loyiha bilan integratsiya qilish bo'yicha quyidagi [video qo'llanmani](https://youtu.be/-KDQqWNK3Tw?si=L8YYPAX4RKVi1ACa) ko'rib chiqishingiz mumkin.
 </Callout>
 
-## Github Release
+## Github Actions CI
 
-Kleing birinchi Flutter CI/CD'ni oddiyidan yani Github Release bilan ishlaydiganidan boshlaymiz keyin keyingi bosqichlarga o'tamiz. Flutter uchun **CI** qismi macos yoki linuxda belgilangan flutter versiyani setup qilib kodni checkout qilib oladi va flutter **pub** paket manageri orqali loyiha packagelarni o'rnatadi keyin  esa uni asosan **Android(apk),iOS(ipa)** va **Web,Desktop** uchun build qilib test qiladi
+Keling boshlanioshiga oddiy **CI** yozamiz. CI quyidagicha ishlaydi **main** branchda o'zgarish bo'lganda yoki pull request tushganda avtomatik ishga tushadi. Github Actionsni **macos** runnerda ishlashi va bir nechta build bo'lishini belgilaymiz, yani **apk --debug, appbundle --debug, ios --no-codesign , macos va web**. Birinchi navbatda loyihamizda **.github** nomli papka ochib ichida yana bitta **workflows** papka ochib ichiga **build.yml** YAML konfiguratsiya fayl ochib olamiz va quyidagicha konfiguratsiya qilamiz.
 
-Github Actions ishlashi uchun loyihamizda **.github/worklows** papka ochib olamiz birinchisiga **release.yml** nomli yaml konfiguratsiya faylni ochib olamiz.
+```yml filename=".github/workflows/release.yml"
+name: Builds
 
-Ushbu birinchi bosqichdagi bizning **CI/CD**miz quyidagicha ishlaydi.
+on:
+    push:
+      branches: [ main ]
+    pull_request:
+      branches: [ main ]
+
+permissions: read-all
+
+jobs:
+  build:
+    name: Build ${{ matrix.target }}
+    runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        target: ["apk --debug", "appbundle --debug", "ios --no-codesign", macos, web]
+    steps:
+      - name: Set up JDK 11
+        uses: actions/setup-java@v4
+        with:
+          java-version: 11
+          distribution: temurin
+
+      - name: Clone Flutter repository with master channel
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.16.9'
+          channel: 'stable'
+      - run: flutter doctor -v
+
+      - name: Checkout gallery code
+        uses: actions/checkout@v4
+      - run: flutter pub get
+
+      - run: flutter build ${{ matrix.target }}
+```
+
