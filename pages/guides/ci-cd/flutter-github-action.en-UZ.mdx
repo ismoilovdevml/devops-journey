@@ -2,7 +2,7 @@ import { Callout } from "nextra-theme-docs";
 
 # Github Actions bilan Flutter CI/CD
 
-![android](/images/ci-cd/flutter/banner.png)
+![flutter-ci-cd](/images/tutorials/ci-cd/flutter-cicd/banner.png)
 
 CI/CD ni ko'p hollarda Docker yoki web ilovalar uchun yozilganini ko'p ko'rganmiz lekin mobil dasturlar uchun yozilganini kam ko'rganmiz. Bugun biz Flutterda yozilgan dasturlarga **Flutter CI/CD yozamiz**. Bu juda qiziq bo'ladi va biz Discord bilan integratsiya qilamiz yani gitga push qilganimizda pull requestlarni merge qilganimizda yoki pull requestlar kelsa va CI/CD action fail yoki succses bo'lganida discordga notification yuborib turadigan qilib sozlaymiz. Keling ishni Discord bila integratsiya qilishdan boshlaymiz.
 
@@ -18,7 +18,7 @@ Discord channel ochish va Discord webhook olib Githubdagi loyiha bilan integrats
 
 Keling boshlanioshiga oddiy **CI** yozamiz. CI quyidagicha ishlaydi **main** branchda o'zgarish bo'lganda yoki pull request tushganda avtomatik ishga tushadi. Github Actionsni **macos** runnerda ishlashi va bir nechta build bo'lishini belgilaymiz, yani **apk --debug, appbundle --debug, ios --no-codesign , macos va web**. Birinchi navbatda loyihamizda **.github** nomli papka ochib ichida yana bitta **workflows** papka ochib ichiga **build.yml** YAML konfiguratsiya fayl ochib olamiz va quyidagicha konfiguratsiya qilamiz.
 
-```yml filename=".github/workflows/release.yml"
+```bash filename=".github/workflows/release.yml"
 name: Builds
 
 on:
@@ -58,3 +58,7 @@ jobs:
       - run: flutter build ${{ matrix.target }}
 ```
 
+Ushbu konfiguratsiyalarni qo'shib **main** branchga push qilganimizda avtomatik Github Actionimiz ishga tushishi kerak buni  repositoriyamiz **Actions** bo'limidan ko'rishimiz mumkin.
+
+![flutter-ci-cd](/images/tutorials/ci-cd/flutter-cicd/actions1.png)
+![flutter-ci-cd](/images/tutorials/ci-cd/flutter-cicd/actions2.png)
