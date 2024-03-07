@@ -126,7 +126,7 @@ sudo systemctl status jenkins
 
 Yangi Jenkins misoliga birinchi marta kirganingizda, uni avtomatik ravishda yaratilgan parol yordamida qulfdan chiqarish so'raladi. http://localhost:8080 (yoki uni o'rnatishda Jenkins uchun qaysi portni sozlagan bo'lsangiz) sahifasini ko'rib chiqing va **Unlock Jenkins** sahifasi paydo bo'lguncha kuting.
 
-![jenkins](/images/ci-cd/1.jpg)
+![jenkins](/images/tutorials/ci-cd/jenkins-ornatish/1.jpg)
 
 Parolni ko'rish uchun Jenkins parol qayerda turganini ko'rsatib, parol fayliga yo'l ko'rstaib qo'yadi ya'ni `/var/lib/jenkins/secrets/initialAdminPassword`. Parolni olish uchun quyidagi buyruqdan foydalanamiz.
 
@@ -135,27 +135,28 @@ sudo cat /var/lib/jenkins/secrets/initialAdminPassword
 ```
 Bu buyruq `sudo cat /var/lib/jenkins/secrets/initialAdminPassword` parolni konsolda chop etadi. Terminaldan 32 belgidan iborat alphanumeric paroldan nusxa oling va uni Administrator paroli maydoniga joylashtiring, so'ng `Continue` tugmasini bosing. Keyingi ekranda tavsiya etilgan plaginlarni o'rnatish yoki maxsus plaginlarni tanlash imkoniyati mavjud:
 
-![jenkins](/images/ci-cd/2.png)
+![jenkins](/images/tutorials/ci-cd/jenkins-ornatish/2.png)
 
 Biz `Install suggested plugins` opsiyasini bosamiz, bu darhol o'rnatish jarayonini boshlaydi.
 
-![jenkins](/images/ci-cd/3.png)
+![jenkins](/images/tutorials/ci-cd/jenkins-ornatish/3.png)
 
 O'rnatish tugallangach, sizdan birinchi `Admin User` o'rnatish so'raladi. Bu bosqichni o'tkazib yuborish va yuqoridagi boshlang'ich parol yordamida administrator sifatida davom etish mumkin, lekin foydalanuvchi yaratishga biroz vaqt ajratamiz.
 
-![jenkins](/images/ci-cd/4.png)
+![jenkins](/images/tutorials/ci-cd/jenkins-ornatish/4.png)
 
 Siz Jenkins instance uchun afzal qilingan URL manzilini tasdiqlashingizni so'raydigan Instance Configuration sahifasini olasiz. Serveringiz uchun domen nomini yoki serveringizning IP manzilini tasdiqlang:
 
-![jenkins](/images/ci-cd/5.png)
+![jenkins](/images/tutorials/ci-cd/jenkins-ornatish/5.png)
 
 Tegishli ma'lumotlarni tasdiqlaganingizdan so'ng, `Save and Finish` tugmasini bosing. Siz `"Jenkins is Ready!"` degan tasdiqlash sahifasini olasiz:
 
-![jenkins](/images/ci-cd/6.png)
+![jenkins](/images/tutorials/ci-cd/jenkins-ornatish/6.png)
 
 Asosiy Jenkins boshqaruv paneliga tashrif buyurish uchun `Start using Jenkins` tugmasini bosing:
 
-![jenkins](/images/ci-cd/8.png)
+![jenkins](/images/tutorials/ci-cd/jenkins-ornatish/8.png)
+
 
 Shu nuqtada siz Jenkins-ni muvaffaqiyatli o'rnatdingiz. Keyingi qismga o'tamiz.
 
