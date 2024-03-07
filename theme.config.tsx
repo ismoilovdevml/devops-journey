@@ -69,7 +69,7 @@ const config: DocsThemeConfig = {
   },
   useNextSeoProps() {
     return {
-      titleTemplate: `%s - DevOps`,
+      titleTemplate: `%s - DevOps Journey`,
     };
   },
   head() {

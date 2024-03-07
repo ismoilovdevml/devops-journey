@@ -6,6 +6,11 @@ import { Callout } from "nextra-theme-docs";
 
 CI/CD ni ko'p hollarda Docker yoki web ilovalar uchun yozilganini ko'p ko'rganmiz lekin mobil dasturlar uchun yozilganini kam ko'rganmiz. Bugun biz Flutterda yozilgan dasturlarga **Flutter CI/CD yozamiz**. Bu juda qiziq bo'ladi va biz Discord bilan integratsiya qilamiz yani gitga push qilganimizda pull requestlarni merge qilganimizda yoki pull requestlar kelsa va CI/CD action fail yoki succses bo'lganida discordga notification yuborib turadigan qilib sozlaymiz. Keling ishni Discord bila integratsiya qilishdan boshlaymiz.
 
+<Callout type="info" emoji="">
+Amaliyotda ishlatilgan [**devops-journey-uz/flutter-ci-cd**](https://github.com/devops-journey-uz/flutter-ci-cd) repositoriya. Github Actions namuna fayllarni [**ismoilovdevml/devops-tools**](https://github.com/ismoilovdevml/devops-tools/tree/master/Github-Actions)dan topishingiz mumkin.
+</Callout>
+
+
 ## Discord bilan integratsiya
 
 Biz loyihamizni discord bilan integratsiya qilish uchun `Discord webhook` dan foydalanamiz. Discord bilan integratsiya qilishda Discord server ochib olishimiz va serverda channel ochishimiz kerak. 
@@ -62,3 +67,62 @@ Ushbu konfiguratsiyalarni qo'shib **main** branchga push qilganimizda avtomatik 
 
 ![flutter-ci-cd](/images/tutorials/ci-cd/flutter-cicd/actions1.png)
 ![flutter-ci-cd](/images/tutorials/ci-cd/flutter-cicd/actions2.png)
+![flutter-ci-cd](/images/tutorials/ci-cd/flutter-cicd/actions3.png)
+
+Bizda hammasi muvaffaqiyatli build bo'ldi.
+![flutter-ci-cd](/images/tutorials/ci-cd/flutter-cicd/actions4.png)
+
+Keling endi ushbu YAML konfiguratsiyamizni bo'laklarga bo'lib o'rganib chiqamiz.
+
+
+```bash {3-7}
+name: Builds
+
+on:
+    push:
+      branches: [ main ]
+    pull_request:
+      branches: [ main ]
+```
+
+Ushbu qimsda birinchi qator Action nomini belgilaydi bu holda bizda **Builds** bo'ladi. Keyingi  Belgilangan qism esa **Trigger** deb nomlanadik, ya'ni loyihamiz repositoriyasi **main** branchga commit bo'lib o'zgarish bo'lganida va yoki pull request kelib tushganda avtomatik Github Actions ishga tushishini bildiradi.
+
+```bash
+permissions: read-all
+```
+
+Bu esa Github Actions ushbu repositoriyada barchasiga faqat read(o'qish) ruxsatini qo'shadi.
+
+```bash
+jobs:
+  build:
+    name: Build ${{ matrix.target }}
+    runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        target: ["apk --debug", "appbundle --debug", "ios --no-codesign", macos, web]
+```
+
+Ushbu qism **build** nomli **macos-latest** runnerda ishlaydigan jobni belgilaydi. BUni **matrix** strategiya orqali ishga tushiradi. Matrix **apk --debug, appbundle --debug, ios --no-codesign , macos va web** build targetlarni o'z ichiga oladi
+
+```bash
+    steps:
+      - name: Set up JDK 11
+        uses: actions/setup-java@v4
+        with:
+          java-version: 11
+          distribution: temurin
+```
+
+Bu qism [actions/setup-java@v4](https://github.com/actions/setup-java) orqali Java Development Kitning 11 temurin distributioni o'rnatadi
+
+```bash
+      - name: Clone Flutter repository with master channel
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.16.9'
+          channel: 'stable'
+```
+Bu qism [subosito/flutter-action@v2](https://github.com/subosito/flutter-action) orqali Flutterning **3.16.9 stable** versiyasini o'rnatadi.
+
