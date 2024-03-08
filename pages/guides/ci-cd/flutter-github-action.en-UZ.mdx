@@ -49,7 +49,7 @@ jobs:
           java-version: 11
           distribution: temurin
 
-      - name: Clone Flutter repository with master channel
+      - name: Clone Flutter repository with stable channel
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.16.9'
@@ -107,22 +107,29 @@ jobs:
 Ushbu qism **build** nomli **macos-latest** runnerda ishlaydigan jobni belgilaydi. BUni **matrix** strategiya orqali ishga tushiradi. Matrix **apk --debug, appbundle --debug, ios --no-codesign , macos va web** build targetlarni o'z ichiga oladi
 
 ```bash
-    steps:
-      - name: Set up JDK 11
-        uses: actions/setup-java@v4
-        with:
-          java-version: 11
-          distribution: temurin
+steps:
+  - name: Set up JDK 11
+    uses: actions/setup-java@v4
+    with:
+      java-version: 11
+      distribution: temurin
 ```
 
 Bu qism [actions/setup-java@v4](https://github.com/actions/setup-java) orqali Java Development Kitning 11 temurin distributioni o'rnatadi
 
 ```bash
-      - name: Clone Flutter repository with master channel
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '3.16.9'
-          channel: 'stable'
+- name: Clone Flutter repository with stable channel
+  uses: subosito/flutter-action@v2
+  with:
+    flutter-version: '3.16.9'
+    channel: 'stable'
+- run: flutter doctor -v
 ```
-Bu qism [subosito/flutter-action@v2](https://github.com/subosito/flutter-action) orqali Flutterning **3.16.9 stable** versiyasini o'rnatadi.
+Bu qism [subosito/flutter-action@v2](https://github.com/subosito/flutter-action) orqali Flutterning **3.16.9 stable** versiyasini o'rnatadi. `run: flutter doctor -v` esa flutter environmentni tekshiradi.
 
+
+```bash
+  - name: Checkout gallery code
+    uses: actions/checkout@v4
+  - run: flutter pub get
+```
