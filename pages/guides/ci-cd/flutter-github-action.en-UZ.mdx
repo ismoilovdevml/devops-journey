@@ -218,3 +218,101 @@ Repositoriyaga kirib Settings bo'limiga o'tib **-> Secrets and variables -> Acti
 
 Github Secretsga PERSONAL_TOKEN tokenimizni qo'shib qo'yagnimzidan keyin **release.yml** konfiguratsiyani **main** branchga push qilamiz. Github Repositoiyamiz **Actions** bo'limiga o'tib Github Actionsni kuzatib borishimiz mumkin.
 
+![flutter-ci-cd](/images/tutorials/ci-cd/flutter-cicd/actions5.png)
+![flutter-ci-cd](/images/tutorials/ci-cd/flutter-cicd/actions6.png)
+
+Hamma bosqichlat muvaffaqiyat tugaganida.
+![flutter-ci-cd](/images/tutorials/ci-cd/flutter-cicd/actions7.png)
+
+Barcha bosqichlar muvaffaqiyat tugaganidan keyin Github Repositoriyamizda **Release** bo'limda **v1.0.1** verisyali release chiqgan bo'lishi kerak.
+![flutter-ci-cd](/images/tutorials/ci-cd/flutter-cicd/actions8.png)
+
+**Release**ga kirganimizda Soirce kodlar va Android release **.apk** formatda applicationni olamiz,
+![flutter-ci-cd](/images/tutorials/ci-cd/flutter-cicd/actions9.png)
+
+Okeyy ushbu Github Actions CI/CD'miz ham muvaffaqiyat ishladi keling endi ushbu YAML konfiguratsiyani o'rganib chiqamiz.
+
+
+Bu **Trigger** qsimi hisoblanadi bu yuqorida tushuntirib o'tildi.
+```bash
+name: Test, Build and Release APK
+
+on:
+  push:
+    branches: 
+      - main
+  pull_request:
+    branches: 
+      - main
+```
+ Bu qism **Build APK** nomli **ubuntu-latest** runnerda ishlaydigan job ochadi va **contents: read** va **packages: write** permissionlarni beradi.
+```bash
+jobs:
+  build:
+    name: Build APK
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+```
+Bu qism loyiha kodlarini [actions/checkout@v4](https://github.com/actions/checkout) orqali checkout qilib klon qilib oladi.
+```bash
+steps:
+  - name: Checkout Repository
+    uses: actions/checkout@v4
+```
+
+[actions/setup-java@v4](https://github.com/actions/setup-java) orqali Javani o'rnatadi.
+```bash
+- name: Set up Java
+  uses: actions/setup-java@v4
+  with:
+    distribution: 'temurin'
+    java-version: '17.x'
+```
+
+Bu qism [subosito/flutter-action@v2](https://github.com/subosito/flutter-action) orqali Flutter **3.16.9** stable versiyani o'rnatadi.
+```bash
+- name: Set up Flutter
+  uses: subosito/flutter-action@v2
+  with:
+    flutter-version: '3.16.9'
+    channel: 'stable'
+```
+Bu qsim [actions/cache@v4](https://github.com/actions/cache) orqali Gradleni keshlaydi bu keyingi bosqichlar tezlashtiradi.
+
+```bash
+- name: Cache Gradle dependencies
+  uses: actions/cache@v4
+  with:
+    path: ~/.gradle/caches
+    key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+    restore-keys: |
+      ${{ runner.os }}-gradle-
+```
+**flutter pub get** buyrug'i orqali flutter loyaimiz dependencilarni oladi.
+
+```bash
+- name: Get dependencies
+  run: flutter pub get
+```
+**flutter build apk --release** buyrug'i orqali Android uchun APK release build qiladi.
+
+```bash
+- name: Build APK
+  run: flutter build apk --release
+```
+
+Ushbu bosqich Android release APK build qilingandan keyin Github Secretsdagi **PERSONAL_TOKEN** orqali APK artifactni yo'lini **build/app/outputs/flutter-apk/*.apk** belgilab [ncipollo/release-action@v1](https://github.com/ncipollo/release-action)  orqali Github Release chiqaradi.
+
+```bash
+- name: Create a Release APK
+  uses: ncipollo/release-action@v1
+  with:
+    artifacts: "build/app/outputs/flutter-apk/*.apk"
+    token: ${{ secrets.PERSONAL_TOKEN }}
+    commit: main
+    tag: v1.0.${{ github.run_number }}
+```
+
