@@ -56,7 +56,7 @@ jobs:
           channel: 'stable'
       - run: flutter doctor -v
 
-      - name: Checkout gallery code
+      - name: Checkout Code
         uses: actions/checkout@v4
       - run: flutter pub get
 
@@ -104,7 +104,7 @@ jobs:
         target: ["apk --debug", "appbundle --debug", "ios --no-codesign", macos, web]
 ```
 
-Ushbu qism **build** nomli **macos-latest** runnerda ishlaydigan jobni belgilaydi. BUni **matrix** strategiya orqali ishga tushiradi. Matrix **apk --debug, appbundle --debug, ios --no-codesign , macos va web** build targetlarni o'z ichiga oladi
+Ushbu qism **build** nomli **macos-latest** runnerda ishlaydigan jobni belgilaydi. Buni **matrix** strategiya orqali ishga tushiradi. Matrix **apk --debug, appbundle --debug, ios --no-codesign , macos va web** build targetlarni o'z ichiga oladi. **macos-latest** runner tanlanganinin sabba ios va macos uchun build qilish uchun.
 
 ```bash
 steps:
@@ -129,7 +129,92 @@ Bu qism [subosito/flutter-action@v2](https://github.com/subosito/flutter-action)
 
 
 ```bash
-  - name: Checkout gallery code
+  - name: Checkout Code
     uses: actions/checkout@v4
   - run: flutter pub get
 ```
+
+Bu qism [actions/checkout@v4](https://github.com/actions/checkout) orqali loyiha kodlarni klon qilib oladi `flutter pub get` orqali loyiha dependencilarini o'rnatadi.  
+
+```bash
+- run: flutter build ${{ matrix.target }}
+```
+Ushbu bochqichda matrixda berilgan targetlar bilan `flutter build` buyrug'ini macos-latest runnerda ishga tushiradi.
+
+## Github Release
+
+Yuqorida flutter loyihani build qilib tekshiradigan **Github Actions CI** yozgan edik, Keling endi Github Release bilan ishlaydigan **CI/CD** yozamiz.
+**.github/workflows** papkasida **release.yml** konfiguratsiya fayl ochamiz. 
+
+Mana bizning **release.yml** Github Release bilan ishlaydigan Android CI/CD konfiguratsiyamiz.
+
+```bash
+name: Test, Build and Release APK
+
+on:
+  push:
+    branches: 
+      - main
+  pull_request:
+    branches: 
+      - main
+
+jobs:
+  build:
+    name: Build APK
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17.x'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.16.9'
+          channel: 'stable'
+
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Build APK
+        run: flutter build apk --release
+
+      - name: Create a Release APK
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "build/app/outputs/flutter-apk/*.apk"
+          token: ${{ secrets.PERSONAL_TOKEN }}
+          commit: main
+          tag: v1.0.${{ github.run_number }}
+```
+
+Ushbu Github Actions konfiguratsiya orqali Github Release bilan ishlash uchun loyihamiz repositoriyasiga `PERSONAL_TOKEN` nomli secret ochib github personal tokenimizni joylashtiramiz. GitHub personal accsess token olish uchun quyidagi qo'llanmadan foydalanishingiz mumkin [**GitHub Personal Access Token**](https://devops-journey.uz/guides/ci-cd/jenkins-docker-ci-cd#github-uchun).
+
+Repositoriyaga kirib Settings bo'limiga o'tib **-> Secrets and variables -> Actions -> New repository secret**ga o'tib secretlar yaratib olamiz.
+
+**-> Repository -> Settings -> Secrets and variables -> Actions -> New repository secret**
+
+![k8s](/images/tutorials/ci-cd/k8s/gitops1.png)
+
+![flutter-ci-cd](/images/tutorials/ci-cd/flutter-cicd/secret.png)
+
+Github Secretsga PERSONAL_TOKEN tokenimizni qo'shib qo'yagnimzidan keyin **release.yml** konfiguratsiyani **main** branchga push qilamiz. Github Repositoiyamiz **Actions** bo'limiga o'tib Github Actionsni kuzatib borishimiz mumkin.
+
