@@ -233,7 +233,7 @@ Barcha bosqichlar muvaffaqiyat tugaganidan keyin Github Repositoriyamizda **Rele
 Okeyy ushbu Github Actions CI/CD'miz ham muvaffaqiyat ishladi keling endi ushbu YAML konfiguratsiyani o'rganib chiqamiz.
 
 
-Bu **Trigger** qsimi hisoblanadi bu yuqorida tushuntirib o'tildi.
+Bu **Trigger** qismi hisoblanadi bu yuqorida tushuntirib o'tildi.
 ```bash
 name: Test, Build and Release APK
 
@@ -280,7 +280,7 @@ Bu qism [subosito/flutter-action@v2](https://github.com/subosito/flutter-action)
     flutter-version: '3.16.9'
     channel: 'stable'
 ```
-Bu qsim [actions/cache@v4](https://github.com/actions/cache) orqali Gradleni keshlaydi bu keyingi bosqichlar tezlashtiradi.
+Bu qsim [actions/cache@v4](https://github.com/actions/cache) orqali Gradleni keshlaydi bu keyingi bosqichlar tezlashtirishga yordma beradi.
 
 ```bash
 - name: Cache Gradle dependencies
@@ -291,7 +291,7 @@ Bu qsim [actions/cache@v4](https://github.com/actions/cache) orqali Gradleni kes
     restore-keys: |
       ${{ runner.os }}-gradle-
 ```
-**flutter pub get** buyrug'i orqali flutter loyaimiz dependencilarni oladi.
+**flutter pub get** buyrug'i orqali flutter loyihamiz dependencilarni oladi.
 
 ```bash
 - name: Get dependencies
@@ -316,3 +316,81 @@ Ushbu bosqich Android release APK build qilingandan keyin Github Secretsdagi **P
     tag: v1.0.${{ github.run_number }}
 ```
 
+## Code Scanning: OpenSSF Scorecard
+
+Flutter loyihamizni yanada yaxshilash uchun kod scanerlash, kod analizlarni CI/CD'yimizga integbratsiya qilishimiz kerak. Kod scanerlash uchun biz **OpenSSF**(**O**pen **S**ource **S**ecurity **F**oundation)'ning open source [**Scorecard**](https://securityscorecards.dev/)'dan foydalanib CI/CD'ga integratsiya qilamiz. Biz **Scorecard**ni github actions uchun yozilgan [scorecard-action](https://github.com/ossf/scorecard-action)dan foydalanamiz va Security Dashboard uchun Github Security Dashboarddan foydalanamiz.
+
+**1->** Github repositoriyamizdan **Security** bo'limga o'tib **Code Scanning** bo'limidan **Scorecard** konfiguratsiya qilamiz.
+
+**-> Security -> Code scanning -> Configure scanning tool** o'tamiz.
+
+![flutter-ci-cd](/images/tutorials/ci-cd/flutter-cicd/scanning1.png)
+
+**2->** **Code scanning**  bo'limidan **other tools**dan **Explore workflows** bosib actionslar ro'yxatiga kiramiz.
+![flutter-ci-cd](/images/tutorials/ci-cd/flutter-cicd/scanning2.png)
+
+**3->** Bu qisdan **scorecard** deb qidirib **OSSF Scorecard**dan **Configure** bosib konfiguratsiya qo'yish bo'limiga o'tamiz.
+![flutter-ci-cd](/images/tutorials/ci-cd/flutter-cicd/scanning3.png)
+
+**4->** Ushbu qismdan default YAML konfiguratsiyani o'chirib tahslab quyidagi configuratsiyani joylashtirishimiz kerak.
+![flutter-ci-cd](/images/tutorials/ci-cd/flutter-cicd/scanning4.png)
+
+default konfiguratsiya o'rniga quyidagi konfiguratsiyani qo'yamiz.
+```bash
+name: Scorecards supply-chain security
+on:
+  branch_protection_rule:
+  push:
+    branches: [main]
+
+permissions: read-all
+
+jobs:
+  analysis:
+    name: Scorecards analysis
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      actions: read
+      contents: read
+      id-token: write
+
+    steps:
+      - name: "Checkout code"
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: "Run analysis"
+        uses: ossf/scorecard-action@v2.3.1
+        with:
+          results_file: results.sarif
+          results_format: sarif
+          repo_token: ${{ secrets.PERSONAL_TOKEN }}
+          publish_results: true
+
+      - name: "Upload artifact"
+        uses: actions/upload-artifact@v4
+        with:
+          name: SARIF file
+          path: results.sarif
+          retention-days: 5
+          
+      - name: "Upload to code-scanning"
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: results.sarif
+```
+
+konfiguratsiyani o'zgartirganimzidan keyin **Commit changes**'ni bosib main branchga commit qilamiz.
+
+![flutter-ci-cd](/images/tutorials/ci-cd/flutter-cicd/scanning5.png)
+
+**5->** Scorecardni konfiguratsiya qilib Github Repositoiyamiz **Actiosn** bo'limidan jarayonni kuzatib borishimiz mumkin.
+
+![flutter-ci-cd](/images/tutorials/ci-cd/flutter-cicd/scorecard1.png)
+Okeyyy hammasi muvaffaqiyat ishga tushgan endi Security alertlarni ko'rish uchun Github Repositoiyamizdan **Security -> Code scanning** bo'limiga o'tib ko'rishimiz mumkin.
+
+![flutter-ci-cd](/images/tutorials/ci-cd/flutter-cicd/scorecard2.png)
+
+Biz bu yerda loyihamizning Security alertlarini ko'rishimniz mumkin.
