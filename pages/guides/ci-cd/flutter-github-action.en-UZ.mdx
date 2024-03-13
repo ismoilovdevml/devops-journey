@@ -491,3 +491,57 @@ on:
 permissions: read-all
 ```
 
+Bu qism **fastlane-deploy** nomli **ubuntu-latest** runnerda ishlaydigan jobni belgilaydi
+
+```bash
+jobs:
+  fastlane-deploy:
+    runs-on: ubuntu-latest
+    steps:
+```
+
+Bu qism [subosito/flutter-action@v2](https://github.com/subosito/flutter-action) orqali Flutterning **3.16.9 stable** versiyasini o'rnatadi. `run: flutter doctor -v` esa flutter environmentni tekshiradi.
+```bash
+- name: Set up Flutter
+  uses: subosito/flutter-action@v2
+  with:
+    flutter-version: '3.16.9'
+    channel: 'stable'
+- run: flutter doctor -v
+```
+
+Bu qism [actions/checkout@v4](https://github.com/actions/checkout) orqali loyiha kodlarni klon qilib oladi `flutter pub get` orqali loyiha dependencilarini o'rnatadi.  
+```bash
+- name: Get dependencies
+  uses: actions/checkout@v4
+- run: flutter pub get
+```
+
+Bu bosqichda **Fastlane** o'rnatiladi. [ruby/setup-ruby@v1](https://github.com/ruby/setup-ruby) orqali Ruby 2.6 versiya o'rnatiladi va **bundler-cache** yoqiladi, bundler-cache Ruby dependencilarini keshlaydi va **working-directory** uchun **android** papkasi belgilangan.
+
+```bash
+# Setup Ruby, Bundler, and Gemfile dependencies
+- name: Setup Fastlane
+  uses: ruby/setup-ruby@v1
+  with:
+    ruby-version: "2.6"
+    bundler-cache: true
+    working-directory: android
+```
+
+Ushbu bosqichda Andorid appimizni Play Storega chiqarish uchun Keystore sozlaymiz.
+```bash
+- name: Configure Keystore
+  run: |
+    echo "$PLAY_STORE_UPLOAD_KEY" | base64 --decode > app/upload-keystore.jks
+    echo "storeFile=upload-keystore.jks" >> key.properties
+    echo "keyAlias=$KEYSTORE_KEY_ALIAS" >> key.properties
+    echo "storePassword=$KEYSTORE_STORE_PASSWORD" >> key.properties
+    echo "keyPassword=$KEYSTORE_KEY_PASSWORD" >> key.properties
+  env:
+    PLAY_STORE_UPLOAD_KEY: ${{ secrets.PLAY_STORE_UPLOAD_KEY }}
+    KEYSTORE_KEY_ALIAS: ${{ secrets.KEYSTORE_KEY_ALIAS }}
+    KEYSTORE_KEY_PASSWORD: ${{ secrets.KEYSTORE_KEY_PASSWORD }}
+    KEYSTORE_STORE_PASSWORD: ${{ secrets.KEYSTORE_STORE_PASSWORD }}
+  working-directory: android
+````

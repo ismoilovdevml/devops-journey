@@ -1,0 +1,8 @@
+{
+    "openvpn-server": {
+      "title": "OpenVPN server sozlash",
+      "icon": "▶️",
+      "description": "VPN Server sozlash",
+      "href": "/guides/network/openvpn-server"
+    }
+}

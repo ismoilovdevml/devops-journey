@@ -4,5 +4,7 @@
   "konteyner": "▶️ Konteynerlash",
   "k8s": "▶️ Kubernetes(k8s)",
   "database": "▶️ Database",
-  "web-server": "▶️ Web Serverlar"
+  "web-server": "▶️ Web Serverlar",
+  "cloud": "▶️ Cloud",
+  "network": "▶️ Network"
 }

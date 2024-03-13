@@ -15,7 +15,7 @@ Hamjamiyat [Telegram
 community](https://t.me/devopsuzb) guruhiga qo'shilish
 
 <div className="mt-8">
-  <Tabs items={['CI/CD', 'Konteynerlash', 'Kubernetes(k8s)', 'Database', 'Web Serverlar', 'Cloud']}>
+  <Tabs items={['CI/CD', 'Konteynerlash', 'Kubernetes', 'Database', 'Web Serverlar', 'Cloud', 'Network']}>
     <Tab>
       <div className="mb-8">
         DevOps CI/CD sayohatini biz bilang boshlang!
@@ -158,10 +158,10 @@ community](https://t.me/devopsuzb) guruhiga qo'shilish
         />
       </Cards>
       <div className="text-right mt-4">
-        <Link href="/guides/cloud">Hammasini ko'rish -></Link>
+        <Link href="/guides/web-server">Hammasini ko'rish -></Link>
       </div>
     </Tab>
-        <Tab>
+    <Tab>
       <div className="mb-8">
         Cloud bilan sayohatni boshlang!
       </div>
@@ -176,6 +176,23 @@ community](https://t.me/devopsuzb) guruhiga qo'shilish
       </Cards>
       <div className="text-right mt-4">
         <Link href="/guides/cloud">Hammasini ko'rish -></Link>
+      </div>
+    </Tab>
+    <Tab>
+      <div className="mb-8">
+        Tarmoq sir-sinoatlarini o'rganishni oshlang!
+      </div>
+      <div className="mb-4 text-xl font-bold">Qo'llanmalar</div>
+      <Cards num={3}>
+        <Card
+          title="OpenVpn Server Sozlash"
+          description="VPN Server Sozlash"
+          icon="▶️"
+          href="/guides/network/openvpn-server"
+        />
+      </Cards>
+      <div className="text-right mt-4">
+        <Link href="/guides/network">Hammasini ko'rish -></Link>
       </div>
     </Tab>
   </Tabs>
