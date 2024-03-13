@@ -21,7 +21,7 @@ Discord channel ochish va Discord webhook olib Githubdagi loyiha bilan integrats
 
 ## Github Actions CI
 
-Keling boshlanioshiga oddiy **CI** yozamiz. CI quyidagicha ishlaydi **main** branchda o'zgarish bo'lganda yoki pull request tushganda avtomatik ishga tushadi. Github Actionsni **macos** runnerda ishlashi va bir nechta build bo'lishini belgilaymiz, yani **apk --debug, appbundle --debug, ios --no-codesign , macos va web**. Birinchi navbatda loyihamizda **.github** nomli papka ochib ichida yana bitta **workflows** papka ochib ichiga **build.yml** YAML konfiguratsiya fayl ochib olamiz va quyidagicha konfiguratsiya qilamiz.
+Keling boshlanishiga oddiy **CI** yozamiz. **CI** quyidagicha ishlaydi **main** branchda o'zgarish bo'lganda yoki pull request tushganda avtomatik ishga tushadi. Github Actionsni **macos** runnerda ishlashi va bir nechta build bo'lishini belgilaymiz, yani **apk --debug, appbundle --debug, ios --no-codesign , macos va web**. Birinchi navbatda loyihamizda **.github** nomli papka ochib ichida yana bitta **workflows** papka ochib ichiga **build.yml** YAML konfiguratsiya fayl ochib olamiz va quyidagicha konfiguratsiya qilamiz.
 
 ```bash filename=".github/workflows/release.yml"
 name: Builds
@@ -49,7 +49,7 @@ jobs:
           java-version: 11
           distribution: temurin
 
-      - name: Clone Flutter repository with stable channel
+      - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.16.9'
@@ -85,7 +85,7 @@ on:
       branches: [ main ]
 ```
 
-Ushbu qimsda birinchi qator Action nomini belgilaydi bu holda bizda **Builds** bo'ladi. Keyingi  Belgilangan qism esa **Trigger** deb nomlanadik, ya'ni loyihamiz repositoriyasi **main** branchga commit bo'lib o'zgarish bo'lganida va yoki pull request kelib tushganda avtomatik Github Actions ishga tushishini bildiradi.
+Ushbu qismda birinchi qator Action nomini belgilaydi bu holda bizda **Builds** bo'ladi. Keyingi  Belgilangan qism esa **Trigger** deb nomlanadi, ya'ni loyihamiz repositoriyasi **main** branchga commit bo'lib o'zgarish bo'lganida va yoki pull request kelib tushganda avtomatik Github Actions ishga tushishini bildiradi.
 
 ```bash
 permissions: read-all
@@ -104,7 +104,7 @@ jobs:
         target: ["apk --debug", "appbundle --debug", "ios --no-codesign", macos, web]
 ```
 
-Ushbu qism **build** nomli **macos-latest** runnerda ishlaydigan jobni belgilaydi. Buni **matrix** strategiya orqali ishga tushiradi. Matrix **apk --debug, appbundle --debug, ios --no-codesign , macos va web** build targetlarni o'z ichiga oladi. **macos-latest** runner tanlanganinin sabba ios va macos uchun build qilish uchun.
+Ushbu qism **build** nomli **macos-latest** runnerda ishlaydigan jobni belgilaydi. Buni **matrix** strategiya orqali ishga tushiradi. Matrix **apk --debug, appbundle --debug, ios --no-codesign , macos va web** build targetlarni o'z ichiga oladi. **macos-latest** runner tanlanganinin sabab ios va macos uchun build qilish uchun.
 
 ```bash
 steps:
@@ -118,7 +118,7 @@ steps:
 Bu qism [actions/setup-java@v4](https://github.com/actions/setup-java) orqali Java Development Kitning 11 temurin distributioni o'rnatadi
 
 ```bash
-- name: Clone Flutter repository with stable channel
+- name: Set up Flutter
   uses: subosito/flutter-action@v2
   with:
     flutter-version: '3.16.9'
@@ -129,9 +129,9 @@ Bu qism [subosito/flutter-action@v2](https://github.com/subosito/flutter-action)
 
 
 ```bash
-  - name: Checkout Code
-    uses: actions/checkout@v4
-  - run: flutter pub get
+- name: Checkout Code
+  uses: actions/checkout@v4
+- run: flutter pub get
 ```
 
 Bu qism [actions/checkout@v4](https://github.com/actions/checkout) orqali loyiha kodlarni klon qilib oladi `flutter pub get` orqali loyiha dependencilarini o'rnatadi.  
@@ -139,14 +139,22 @@ Bu qism [actions/checkout@v4](https://github.com/actions/checkout) orqali loyiha
 ```bash
 - run: flutter build ${{ matrix.target }}
 ```
-Ushbu bochqichda matrixda berilgan targetlar bilan `flutter build` buyrug'ini macos-latest runnerda ishga tushiradi.
+Ushbu bochqichda matrixda berilgan targetlar bilan `flutter build` buyrug'ini macos-latest runnerda ishga tushiradi. 
+
+**Ya'ni:**
+
+* **flutter build apk --debug**
+* **flutter build appbundle --debug**
+* **flutter build ios --no-codesign**
+* **flutter build macos**
+* **flutter build web**
 
 ## Github Release
 
 Yuqorida flutter loyihani build qilib tekshiradigan **Github Actions CI** yozgan edik, Keling endi Github Release bilan ishlaydigan **CI/CD** yozamiz.
 **.github/workflows** papkasida **release.yml** konfiguratsiya fayl ochamiz. 
 
-Mana bizning **release.yml** Github Release bilan ishlaydigan Android CI/CD konfiguratsiyamiz.
+Mana bizning **release.yml** Github Release bilan ishlaydigan **Android CI/CD** konfiguratsiyamiz.
 
 ```bash
 name: Test, Build and Release APK
@@ -206,7 +214,7 @@ jobs:
           tag: v1.0.${{ github.run_number }}
 ```
 
-Ushbu Github Actions konfiguratsiya orqali Github Release bilan ishlash uchun loyihamiz repositoriyasiga `PERSONAL_TOKEN` nomli secret ochib github personal tokenimizni joylashtiramiz. GitHub personal accsess token olish uchun quyidagi qo'llanmadan foydalanishingiz mumkin [**GitHub Personal Access Token**](https://devops-journey.uz/guides/ci-cd/jenkins-docker-ci-cd#github-uchun).
+Ushbu Github Actions konfiguratsiya orqali Github Release bilan ishlash uchun loyihamiz repositoriyasiga `PERSONAL_TOKEN` nomli secret ochib github personal access tokenimizni joylashtiramiz. GitHub personal access token olish uchun quyidagi qo'llanmadan foydalanishingiz mumkin [**GitHub Personal Access Token**](https://devops-journey.uz/guides/ci-cd/jenkins-docker-ci-cd#github-uchun).
 
 Repositoriyaga kirib Settings bo'limiga o'tib **-> Secrets and variables -> Actions -> New repository secret**ga o'tib secretlar yaratib olamiz.
 
@@ -216,7 +224,7 @@ Repositoriyaga kirib Settings bo'limiga o'tib **-> Secrets and variables -> Acti
 
 ![flutter-ci-cd](/images/tutorials/ci-cd/flutter-cicd/secret.png)
 
-Github Secretsga PERSONAL_TOKEN tokenimizni qo'shib qo'yagnimzidan keyin **release.yml** konfiguratsiyani **main** branchga push qilamiz. Github Repositoiyamiz **Actions** bo'limiga o'tib Github Actionsni kuzatib borishimiz mumkin.
+Github Secretsga `PERSONAL_TOKEN` tokenimizni qo'shib qo'yganimizdan keyin **release.yml** konfiguratsiyani **main** branchga push qilamiz. Github Repositoriyamizda **Actions** bo'limiga o'tib Github Actionsni kuzatib borishimiz mumkin.
 
 ![flutter-ci-cd](/images/tutorials/ci-cd/flutter-cicd/actions5.png)
 ![flutter-ci-cd](/images/tutorials/ci-cd/flutter-cicd/actions6.png)
@@ -224,10 +232,10 @@ Github Secretsga PERSONAL_TOKEN tokenimizni qo'shib qo'yagnimzidan keyin **relea
 Hamma bosqichlat muvaffaqiyat tugaganida.
 ![flutter-ci-cd](/images/tutorials/ci-cd/flutter-cicd/actions7.png)
 
-Barcha bosqichlar muvaffaqiyat tugaganidan keyin Github Repositoriyamizda **Release** bo'limda **v1.0.1** verisyali release chiqgan bo'lishi kerak.
+Barcha bosqichlar muvaffaqiyat tugaganidan keyin Github Repositoriyamizda **Release** bo'limda **v1.0.1** versiyali release chiqgan bo'lishi kerak.
 ![flutter-ci-cd](/images/tutorials/ci-cd/flutter-cicd/actions8.png)
 
-**Release**ga kirganimizda Soirce kodlar va Android release **.apk** formatda applicationni olamiz,
+**Release**ga kirganimizda source kodlar va Android release **.apk** formatda applicationni olamiz.
 ![flutter-ci-cd](/images/tutorials/ci-cd/flutter-cicd/actions9.png)
 
 Okeyy ushbu Github Actions CI/CD'miz ham muvaffaqiyat ishladi keling endi ushbu YAML konfiguratsiyani o'rganib chiqamiz.
@@ -280,7 +288,7 @@ Bu qism [subosito/flutter-action@v2](https://github.com/subosito/flutter-action)
     flutter-version: '3.16.9'
     channel: 'stable'
 ```
-Bu qsim [actions/cache@v4](https://github.com/actions/cache) orqali Gradleni keshlaydi bu keyingi bosqichlar tezlashtirishga yordma beradi.
+Bu qsim [actions/cache@v4](https://github.com/actions/cache) orqali Gradleni keshlaydi bu keyingi bosqichlar tezlashtirishga yordam beradi.
 
 ```bash
 - name: Cache Gradle dependencies
@@ -318,7 +326,7 @@ Ushbu bosqich Android release APK build qilingandan keyin Github Secretsdagi **P
 
 ## Code Scanning: OpenSSF Scorecard
 
-Flutter loyihamizni yanada yaxshilash uchun kod scanerlash, kod analizlarni CI/CD'yimizga integbratsiya qilishimiz kerak. Kod scanerlash uchun biz **OpenSSF**(**O**pen **S**ource **S**ecurity **F**oundation)'ning open source [**Scorecard**](https://securityscorecards.dev/)'dan foydalanib CI/CD'ga integratsiya qilamiz. Biz **Scorecard**ni github actions uchun yozilgan [scorecard-action](https://github.com/ossf/scorecard-action)dan foydalanamiz va Security Dashboard uchun Github Security Dashboarddan foydalanamiz.
+Flutter loyihamizni yanada yaxshilash uchun kod scanerlash, kod analizlarni **CI/CD**'yimizga integratsiya qilishimiz kerak. Kod scanerlash uchun biz **OpenSSF**(**O**pen **S**ource **S**ecurity **F**oundation)'ning open source [**Scorecard**](https://securityscorecards.dev/)'dan foydalanib CI/CD'ga integratsiya qilamiz. Biz **Scorecard**ni github actions uchun yozilgan [scorecard-action](https://github.com/ossf/scorecard-action)dan foydalanamiz va Security Dashboard uchun Github Security Dashboarddan foydalanamiz.
 
 **1->** Github repositoriyamizdan **Security** bo'limga o'tib **Code Scanning** bo'limidan **Scorecard** konfiguratsiya qilamiz.
 
@@ -332,7 +340,7 @@ Flutter loyihamizni yanada yaxshilash uchun kod scanerlash, kod analizlarni CI/C
 **3->** Bu qisdan **scorecard** deb qidirib **OSSF Scorecard**dan **Configure** bosib konfiguratsiya qo'yish bo'limiga o'tamiz.
 ![flutter-ci-cd](/images/tutorials/ci-cd/flutter-cicd/scanning3.png)
 
-**4->** Ushbu qismdan default YAML konfiguratsiyani o'chirib tahslab quyidagi configuratsiyani joylashtirishimiz kerak.
+**4->** Ushbu qismdan default YAML konfiguratsiyani o'chirib tashlab quyidagi configuratsiyani joylashtirishimiz kerak.
 ![flutter-ci-cd](/images/tutorials/ci-cd/flutter-cicd/scanning4.png)
 
 default konfiguratsiya o'rniga quyidagi konfiguratsiyani qo'yamiz.
@@ -382,24 +390,24 @@ jobs:
           sarif_file: results.sarif
 ```
 
-konfiguratsiyani o'zgartirganimzidan keyin **Commit changes**'ni bosib main branchga commit qilamiz.
+konfiguratsiyani o'zgartirganimizdan keyin **Commit changes**'ni bosib main branchga commit qilamiz.
 
 ![flutter-ci-cd](/images/tutorials/ci-cd/flutter-cicd/scanning5.png)
 
-**5->** Scorecardni konfiguratsiya qilib Github Repositoiyamiz **Actiosn** bo'limidan jarayonni kuzatib borishimiz mumkin.
+**5->** Scorecardni konfiguratsiya qilib Github Repositoriyamiz **Actions** bo'limidan jarayonni kuzatib borishimiz mumkin.
 
 ![flutter-ci-cd](/images/tutorials/ci-cd/flutter-cicd/scorecard1.png)
-Okeyyy hammasi muvaffaqiyat ishga tushgan endi Security alertlarni ko'rish uchun Github Repositoiyamizdan **Security -> Code scanning** bo'limiga o'tib ko'rishimiz mumkin.
+Okeyyy hammasi muvaffaqiyat ishga tushgan endi Security alertlarni ko'rish uchun Github Repositoriyamizdan **Security -> Code scanning** bo'limiga o'tib ko'rishimiz mumkin.
 
 ![flutter-ci-cd](/images/tutorials/ci-cd/flutter-cicd/scorecard2.png)
 
-Biz bu yerda loyihamizning Security alertlarini ko'rishimniz mumkin.
+Biz bu yerda loyihamizning Security alertlarini ko'rishimiz mumkin.
 
 ## Play Store  
 
-Yuqorida biz Flutter CI/CD bir nechta turlarini ko'rib chiqdik ushbu qismda biz **Google Play Storega** ga Android application chiqaradigan Github Actions yozamiz. Bu bosqichdagi Github Actionimiz avtomatik ishga tushmaydi uni o'zimiz qo'lda manual ishga tushiramiz va ikkita release qilamiz **beta** va **production** va bu uchun biz **Fastlane**dan foydalanamiz. 
+Yuqorida biz **Flutter CI/CD** bir nechta turlarini ko'rib chiqdik ushbu qismda biz **Google Play Storega**'ga Android application chiqaradigan Github Actions yozamiz. Bu bosqichdagi Github Actionimiz avtomatik ishga tushmaydi uni o'zimiz qo'lda manual ishga tushiramiz va ikkita release qilamiz **beta** va **production** va bu uchun biz **Fastlane**dan foydalanamiz. 
 
-Fastlane - bu asosan mobil ilovalarni ishlab chiquvchilar tomonidan mobil ilovalarni deploy qilish va release jarayonini avtomatlashtirish uchun ishlatiladigan mashhur open source toolset. U build qilish, testdan o'tkazish, code signing va ilovalarni Apple App Store va Google Play Storelar kabi app storelarga release kabi deployment bilan bog'liq turli vazifalarni soddalashtiradi.
+**Fastlane** - bu asosan mobil ilovalarni ishlab chiquvchilar tomonidan mobil ilovalarni deploy qilish va release jarayonini avtomatlashtirish uchun ishlatiladigan mashhur open source toolset. U build qilish, testdan o'tkazish, code signing va ilovalarni Apple App Store va Google Play Storelar kabi app storelarga release kabi deployment bilan bog'liq turli vazifalarni soddalashtiradi.
 
 **.github/workflows/** papkada **deploy_play_store.yml** YAML konfiguratsiya ochib olamiz. 
 
@@ -467,12 +475,12 @@ jobs:
         working-directory: android
 ```
 
-Keling ushbu Github Actionsni ishga tuhsirmasdan oldin ko'rib chiqamiz.
+Keling ushbu Github Actionsni ishga tushirmasdan oldin ko'rib chiqamiz.
 
-Birinchi belgilangan konfiguratsiya **name:** bu Github Actiosni nomini bildiradi. 
+Birinchi belgilangan konfiguratsiya **name:** bu Github Actionsi nomini bildiradi. 
 
 * **workflow_dispatch:** qo'lda manual ishga tushirishni yoqadi. 
-* **inputs:** bu Github Actionsda kirishlarni bildiradi. Uni ichida yozilgan konfiguratsiya esa **description** tavsifni bildiradi va manual run qilganda ikkata tanlovdan(**beta va production**)ni tanlashni bildiradi. Default holda beta ishga tushadi **required: true** orqali birortasini tanlash majburisy qilib qo'yilgan. **permissions: read-all** esa ushbu Repositoiyada barchasifaqa read(o'qish) ruxsatiga egalikni bildiradi.
+* **inputs:** bu Github Actionsda kirishlarni bildiradi. Uni ichida yozilgan konfiguratsiya esa **description** tavsifni bildiradi va manual run qilganda ikkata tanlovdan(**beta va production**)ni tanlashni bildiradi. Default holda beta ishga tushadi **required: true** orqali birortasini tanlash majburiy qilib qo'yilgan. **permissions: read-all** esa ushbu repositoriyada barchasiga read(o'qish) ruxsatiga egalikni bildiradi.
 ```bash {1,4,9,11-13,14}
 name: Deploy to Play Store
 on:
@@ -517,7 +525,7 @@ Bu qism [actions/checkout@v4](https://github.com/actions/checkout) orqali loyiha
 - run: flutter pub get
 ```
 
-Bu bosqichda **Fastlane** o'rnatiladi. [ruby/setup-ruby@v1](https://github.com/ruby/setup-ruby) orqali Ruby 2.6 versiya o'rnatiladi va **bundler-cache** yoqiladi, bundler-cache Ruby dependencilarini keshlaydi va **working-directory** uchun **android** papkasi belgilangan.
+Bu bosqichda **Fastlane** o'rnatiladi. [ruby/setup-ruby@v1](https://github.com/ruby/setup-ruby) orqali **Ruby 2.6** versiya o'rnatiladi va **bundler-cache** yoqiladi, bundler-cache Ruby dependencilarini keshlaydi va **working-directory** uchun **android** papkasi belgilangan.
 
 ```bash
 # Setup Ruby, Bundler, and Gemfile dependencies
@@ -552,10 +560,10 @@ Ushbu bosqichda Andorid appimizni Play Storega chiqarish uchun Keystore sozlaymi
 
 O'zgarishlarni saqlab to'liq YAML konfiguratsityani Githubga push qilganimizdan keyin **Actions** bo'limiga o'tib manual qo'lda ishga tushirishimiz kerak bo'ladi.
 
-**-> Github Repositoiya -> Actions -> All workflows** da **Deploy To Play Store** deb bizni Actionimiz chiqib turadi.
+**-> Github Repositoriya -> Actions -> All workflows** da **Deploy To Play Store** deb bizni Actionimiz chiqib turadi.
 ![flutter-ci-cd](/images/tutorials/ci-cd/flutter-cicd/play-store1.png)
 
-**Deploy To Play Store** bosib kirganimizda quyidagi oyna ochiladi undan biz **Run worfklow** bosamiz va **beta** yoki **production** tanlab *Run worfklow** bosib Github Actionimizni ishga tushiramiz.
+**Deploy To Play Store** bosib kirganimizda quyidagi oyna ochiladi undan biz **Run worfklow** bosamiz va **beta** yoki **production** tanlab **Run worfklow** bosib Github Actionimizni ishga tushiramiz.
 ![flutter-ci-cd](/images/tutorials/ci-cd/flutter-cicd/play-store2.png)
 Okeeey bizda jarayon muvaffaqiyat tugadi.
 ![flutter-ci-cd](/images/tutorials/ci-cd/flutter-cicd/play-store4.png)
@@ -572,6 +580,11 @@ Qo'shimcha Resurslar
  * [**Linux Serverlarga Jenkins o'rnatish**](https://devops-journey.uz/guides/ci-cd/jenkins-ornatish)
  * [**Koddan Servergacha: Jenkins bilan Docker CI/CD va Discord bilan integratsiya**](https://devops-journey.uz/guides/ci-cd/jenkins-docker-ci-cd)
  * [**Kubernetes CI/CD | GitHub Actions + Argo CD | GitOps**](https://devops-journey.uz/guides/ci-cd/github-actions-argocd-cicd)
+
+Qo'llanma uchun foydalanilgan resurslar
+ * [**github.com/flutter/gallery**](https://github.com/flutter/gallery/tree/main/.github/workflows)
+ * [**github.com/nabilnalakath/flutter-githubaction**](https://github.com/nabilnalakath/flutter-githubaction/tree/master/.github/workflows)
+ * [**nuous delivery with Flutter**](https://docs.flutter.dev/deployment/cd)
 
 **Sana:** 2024.03.14(2024-yil 14-mart)
 
