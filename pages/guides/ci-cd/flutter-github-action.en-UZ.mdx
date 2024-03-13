@@ -544,4 +544,42 @@ Ushbu bosqichda Andorid appimizni Play Storega chiqarish uchun Keystore sozlaymi
     KEYSTORE_KEY_PASSWORD: ${{ secrets.KEYSTORE_KEY_PASSWORD }}
     KEYSTORE_STORE_PASSWORD: ${{ secrets.KEYSTORE_STORE_PASSWORD }}
   working-directory: android
-````
+```
+
+> Siz Play Store akkount ochib olishingiz kerak bo'ladi va ilovangiz uchun kerakli key kalitlarni olib Github Secretsga joylashtirib qo'yasiz
+
+![flutter-ci-cd](/images/tutorials/ci-cd/flutter-cicd/secret1.png)
+
+O'zgarishlarni saqlab to'liq YAML konfiguratsityani Githubga push qilganimizdan keyin **Actions** bo'limiga o'tib manual qo'lda ishga tushirishimiz kerak bo'ladi.
+
+**-> Github Repositoiya -> Actions -> All workflows** da **Deploy To Play Store** deb bizni Actionimiz chiqib turadi.
+![flutter-ci-cd](/images/tutorials/ci-cd/flutter-cicd/play-store1.png)
+
+**Deploy To Play Store** bosib kirganimizda quyidagi oyna ochiladi undan biz **Run worfklow** bosamiz va **beta** yoki **production** tanlab *Run worfklow** bosib Github Actionimizni ishga tushiramiz.
+![flutter-ci-cd](/images/tutorials/ci-cd/flutter-cicd/play-store2.png)
+Okeeey bizda jarayon muvaffaqiyat tugadi.
+![flutter-ci-cd](/images/tutorials/ci-cd/flutter-cicd/play-store4.png)
+
+## Qo'shimcha
+
+<Callout type="info" emoji="">
+
+<Callout type="info" emoji="">
+Amaliyotda ishlatilgan [**devops-journey-uz/flutter-ci-cd**](https://github.com/devops-journey-uz/flutter-ci-cd)repositoriyalar. Github Actions namuna fayllarni [**ismoilovdevml/devops-tools**](https://github.com/ismoilovdevml/devops-tools/tree/master/Github-Actions)dan topishingiz mumkin.
+</Callout>
+Qo'shimcha Resurslar
+ * [**Github Actions CI/CD**](https://devops-journey.uz/guides/ci-cd/github-actions-ci-cd)
+ * [**Linux Serverlarga Jenkins o'rnatish**](https://devops-journey.uz/guides/ci-cd/jenkins-ornatish)
+ * [**Koddan Servergacha: Jenkins bilan Docker CI/CD va Discord bilan integratsiya**](https://devops-journey.uz/guides/ci-cd/jenkins-docker-ci-cd)
+ * [**Kubernetes CI/CD | GitHub Actions + Argo CD | GitOps**](https://devops-journey.uz/guides/ci-cd/github-actions-argocd-cicd)
+
+**Sana:** 2024.03.14(2024-yil 14-mart)
+
+**Oxirgi yangilanish:** 2024.03.14(2024-yil 14-mart)
+
+**Muallif: Otabek Ismoilov**
+
+| [Telegram](https://t.me/Otabek_Ismoilov) | [GitHub](https://github.com/ismoilovdevml) | [LinkedIn](https://www.linkedin.com/in/otabek-ismoilov-8625b0222/) |
+| - | - | - |
+
+</Callout>
