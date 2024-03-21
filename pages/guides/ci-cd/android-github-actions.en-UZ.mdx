@@ -145,9 +145,9 @@ jobs:
 
 ### Perform lint check
 
-**-> Cache Gradle dependencies** bosqichidan keyin undan keyingi bosqichlar parallel ishga tusha boshlaydi.
+**-> Cache Gradle dependencies** bosqichidan keyin undan keyingi bosqichlar parallel ishga tusha boshlaydi. Ushbu **Perform lint check** bosqichi Android loyihani lint check qilib kodlarni tekshirishdan iborat. Ushbu bosqich ubuntu-latest runnerda ishlaydi va  birinchi qadami gradle keshlarini olishdan boshlanadi, keyin [actions/checkout@v4](https://github.com/actions/checkout) orqali loyiha kodlarini klon qilib oladi, JDK 17 o'rnatadi runnerda muhitni sozlab oladi. `gradlew` ga chmod +x qilib execute permission beriladi va `./gradlew lintDebug` buyrug'i orqali lint check boshlandi. Lin check report html faylda bo'lib  `app/build/reports/lint-results-debug.html` joylashgan bo'ladi biz bu reportni [actions/upload-artifact@v2](https://github.com/actions/upload-artifact) orqali `lint.html` qilib Github Actions artifatlarga yuklab qo'yamiz.
 
-```bash
+```bash {18-19,21-25}
   lint:
     name: Perform lint check
     needs: [cache-gradle]
@@ -173,4 +173,66 @@ jobs:
         with:
           name: lint.html
           path: app/build/reports/lint-results-debug.html
+```
+
+### Perform Unit Testing
+
+Ushbu bosqichda Android loyihamizga yozilgan *Unit Test**larni ishga tushirib loyihani test qiladi. **Unit Test** reportlar `pp/build/reports/test/testDebugUnitTest/` joylashgab bo'ladi va biz uni [actions/upload-artifact@v2](https://github.com/actions/upload-artifact) orqali `unit_test_report.zip` qilib Github Actions artifatlarga yuklab qo'yamiz.
+```bash {15-16, 18-22}
+unit-test:
+  name: Perform Unit Testing
+  needs: [cache-gradle]
+  runs-on: ubuntu-latest
+  steps:
+    - name: Checkout the code
+      uses: actions/checkout@v4
+
+    - name: Set up Java JDK 17
+      uses: actions/setup-java@v2
+      with:
+        java-version: '17'
+        distribution: 'adopt'
+
+    - name: Run tests
+      run: ./gradlew test
+
+    - name: Upload test report
+      uses: actions/upload-artifact@v2
+      with:
+        name: unit_test_report
+        path: app/build/reports/test/testDebugUnitTest/
+```
+
+### Perform Instrumentation Testing
+
+Bu bosqichda Android applicationimizda **Instrumentation Test, Espresso**larni, ishga tushiradi. 
+
+**Espresso** - bu Android applicationlar uchun **UI** testlarini yozish uchun keng qo'llaniladigan test tizimi. U Android applicationning foydalanuvchi interfeysidagi elementlarning xatti-harakatlari bilan o'zaro aloqada bo'lish va tasdiqlash uchun fluent API taqdim etadi. **ubuntu-latest** runnerda Espresso testlarini ishga tushirish uchun [reactivecircus/android-emulator-runner@v2](https://github.com/ReactiveCircus/android-emulator-runner) yordamida **API leveli  29** bo'lgan Android emulator o'natiladi va `./gradlew connectedCheck` buyrug'i yordamida o'rnatilgan android emulatorda Espresso testlari ishga tushira boshlanadi. Instrumentation Test reportlari `app/build/reports/androidTests/connected` joylashgan bo'ladi biz uni `instrumentation_test_report.zip` qilib  Github Actions artifactlarga yuklaymiz.
+
+```bash {15-19,21-25}
+instrumentation-test:
+  name: Perform Instrumentation Testing
+  needs: [cache-gradle]
+  runs-on: macos-latest
+  steps:
+    - name: Checkout the code
+      uses: actions/checkout@v4
+
+    - name: Set up Java JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'adopt'
+
+    - name: Run espresso tests
+      uses: reactivecircus/android-emulator-runner@v2
+      with:
+        api-level: 29
+        script: ./gradlew connectedCheck
+
+    - name: Upload Instrumentation Test report
+      uses: actions/upload-artifact@v2
+      with:
+        name: instrumentation_test_report
+        path: app/build/reports/androidTests/connected
 ```

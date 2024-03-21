@@ -6,7 +6,7 @@ Loyihamizga hissa qo'shganingiz uchun tashakkur! Muammolar haqida xabar berish, 
 ## Contirbutorlik qilish usullari
 * **Xatolar haqida xabar bering(Report Bugs):** Agar biror xato yoki kutilmagan xatti-harakatlarga duch kelsangiz, [github issuesda](https://github.com/ismoilovdevml/devops-journey/issues) issue oching.
 * **Xususiyat soʻrovlarini yuborish(Feature Request):** Yangi funksiya haqida ajoyib fikringiz bormi? Muammo issue va uni batafsil tavsiflang.
-* **Kodga contributorlik qilish:** Kodga contirbutorlikni qadrlaymiz! Ko'rsatmalarimizga amal qilgan holda repositoriyani fork qiling, o'zgartirishlaringizni kiriting va ull requestni yuboring.
+* **Kodga contributorlik qilish:** Kodga contirbutorlikni qadrlaymiz! Ko'rsatmalarimizga amal qilgan holda repositoriyani fork qiling, o'zgartirishlaringizni kiriting va pull requestni yuboring.
 * **Hujjatlar:** Matndagi xatolarini tuzatish, misollar qo'shish yoki tushuntirishlarni yaxshilash orqali hujjatlarimizni yaxshilashga yordam bering.
 * **Pull Requestlarni ko'rib chiqish:** Pull Requestlarni ko'rib chiqish qimmatlidir. Mavjud pull requestlarni izohlang, sinab ko'ring va yaxshilanishlarni taklif qiling.
 
