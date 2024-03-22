@@ -4,12 +4,12 @@ import { Callout } from "nextra-theme-docs";
 
 ![android](/images/tutorials/ci-cd/android-cicd/banner.png)
 
-Mobil applicationlarni ishlab chiqaradigan katta jamolarda ishlarni avtomatlashtirish uchun CI/CD pipelinelar ishlab chiqadilar. Bugun biz Android applicationlar uchun Github Actions bilan CI/CD yozamiz o'ylaymanki bu ko'pchilik mobil dasturchilar uchun qiziqarli va foydali bo'ladi. Bugun CI/CD biz Android applarda har xil testlar qilasiz kodni analiz qilamiz Android release qilamiz va oxirida Google Play Storega deploy qilamiz. Notificationlar uchun Githubni Discord bilan inetegratsiya qilamiz. ushbu qo'llanmda biz kod analiz uchun **Sonarqube**, Test uchun esa **JUnit** ishlatamiz.
+Mobil applicationlarni ishlab chiqaradigan katta jamoalarda ishlarni avtomatlashtirish uchun CI/CD pipelinelar ishlab chiqadilar. Bugun biz Android applicationlar uchun Github Actions bilan CI/CD yozamiz o'ylaymanki bu ko'pchilik mobil dasturchilar uchun qiziqarli va foydali bo'ladi. Bu amaliyotdagi CI/CD'da biz Android applicationlarda bir nechta testlarni o'tkazamiz kodni analiz qilamiz Android release qilamiz va oxirida Google Play Storega deploy qilamiz. Notificationlar uchun Githubni Discord bilan inetegratsiya qilamiz. ushbu qo'llanmada biz kod analiz uchun **SonarCloud**, Test uchun esa **JUnit** ishlatamiz.
 
 
 ## Discord bilan integratsiya
 
-Biz loyihamizni discord bilan integratsiya qilish uchun `Discord webhook` dan foydalanamiz. Discord bilan integratsiya qilishda Discord server ochib olishimiz va serverda channel ochishimiz kerak. 
+Biz loyihamizni Discord bilan integratsiya qilish uchun `Discord webhook` dan foydalanamiz. Discord bilan integratsiya qilishda Discord server ochib olishimiz va serverda channel ochishimiz kerak. 
 
 <Callout type="info" emoji="">
 Discord channel ochish va Discord webhook olib Githubdagi loyiha bilan integratsiya qilish bo'yicha quyidagi [video qo'llanmani](https://youtu.be/-KDQqWNK3Tw?si=L8YYPAX4RKVi1ACa) ko'rib chiqishingiz mumkin.
@@ -24,7 +24,7 @@ Discord Webhookni quyidagicha konfiguratsitya qilamiz.
 
 Har doimgidek CI/CD yozishni birinchi bo'lib CI yozishdan boshlaymiz. Birinchi navbatda loyihamiz root papkasida **.github** papka ochib ichida yana **workflows** papka ochib unda **android-ci.yml** ochib olamiz.
 
-Keling birinchi oddiy **Android CI** yozamiz uni vazifasi kerakli dasturlarni o'rnatik APK build qiladi.
+Keling birinchi oddiy **Android CI** yozamiz uni vazifasi kerakli dasturlarni o'rnatib APK build qiladi.
 
 ```bash
 name: Build and Release APK
@@ -44,10 +44,11 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup JDK 17
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
+          cache: gradle
 
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
@@ -55,7 +56,7 @@ jobs:
       - name: Build APK
         run: ./gradlew assembleRelease
 ```
-Keling ushbu oddiy **Andorid CI** konfiguratsiyani yozib **main** branchga push qilamiz. Repositoriyamizga **android-ci.yml** konfiguratsiyamizni **main** branchga push qilganimizdan keyin repositoriyamiz **Actions** bo'limiga o'tib jarayonni kuzatishimiz mumkin.
+Keling ushbu oddiy **Andorid CI** konfiguratsiyani yozib **main** branchga push qilamiz. Repositoriyamizga **android-ci.yml** konfiguratsiyamizni **main** branchga push qilganimizdan keyin repositoriyamizda **Actions** bo'limiga o'tib jarayonni kuzatishimiz mumkin.
 
 ![android](/images/tutorials/ci-cd/android-cicd/actions1.png)
 
@@ -64,7 +65,7 @@ Okey bizda jarayon muvaffaqiyatli yakunlandi.
 
 Endi keling ushbu kichik **Andorid CI** tuzulishini qanday ishlashini ko'rib chiqamiz, undan keyin keyingi bosqichlarga o'tsak bo'ladi.
 
-```bash
+```bash {1,3-7}
 name: Build and Release APK
 
 on:
@@ -74,7 +75,7 @@ on:
     branches: [main]
 ```
 
-Ushbu qismda birinchi qator Action nomini belgilaydi bu holda bizda **Build and Release APK** bo'ladi. Keyingi  Belgilangan qism esa **Trigger** deb nomlanadi, ya'ni loyihamiz repositoriyasi **main** branchga commit bo'lib o'zgarish bo'lganida va yoki pull request kelib tushganda avtomatik Github Actions ishga tushishini bildiradi.
+Ushbu qismda birinchi qator workflow nomini belgilaydi bu holda bizda **Build and Release APK** bo'ladi. Keyingi belgilangan qism esa **Trigger** deb nomlanadi, ya'ni loyihamiz repositoriyasi **main** branchga commit bo'lib o'zgarish bo'lganida va yoki pull request kelib tushganda avtomatik Github Actions ishga tushishini bildiradi.
 
 
 ```bash
@@ -96,6 +97,7 @@ Bu qism [actions/checkout@v4](https://github.com/actions/checkout) orqali loyiha
   with:
     java-version: '17'
     distribution: 'temurin'
+    cache: gradle
 ```
 
 Ushbu qismda **ubuntu-latest** runnerga [actions/setup-java@v4](https://github.com/actions/setup-java) orqali Java **JDK 17 temurin** distributioni o'rnatadi.
@@ -104,17 +106,17 @@ Ushbu qismda **ubuntu-latest** runnerga [actions/setup-java@v4](https://github.c
 - name: Grant execute permission for gradlew
   run: chmod +x ./gradlew
 ```
-Gradle orqali APK buil qilishimiz uchun **gradlew** executeb qilish permissionni beramiz.
+Gradle orqali APK build qilishimiz uchun **gradlew**ga execute qilish permissionni beramiz.
 
 ```bash
 - name: Build APK
   run: ./gradlew assembleRelease
 ```
-Gradle yordamida APK buil qilamiz.
+Gradle yordamida APK build qilamiz.
 
 Yuqorida biz oddiy, sodda Android CI yozdik keling endi Andorid CI'ni kengaytiramiz.
 
-```bash
+```bash {4-7,9-12,17-22}
 name: Android CI
 
 on:
@@ -132,13 +134,13 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Cache Gradle
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
           restore-keys: ${{ runner.os }}-gradle-
 ```
-**android-ci.yml** konfiguratsiyamizni quyidagi yangilaymiz. ushbu yangilashda biz keyingi CI'lar tezroq ishlashi uchun [actions/cache@v2](https://github.com/actions/cache) yordamida Gradle keshlashni sozladik. Ushbu CI qismda biz matrix usuldan foydalanamiz va bir nechta boshqichlar qo'shamiz bular quyidagilar:
+**android-ci.yml** konfiguratsiyamizni quyidagi yangilaymiz. ushbu yangilashda biz keyingi CI'lar tezroq ishlashi uchun [actions/cache@v4 ](https://github.com/actions/cache) yordamida Gradle keshlashni sozladik. Ushbu CI qismda biz matrix usuldan foydalanamiz va bir nechta boshqichlar qo'shamiz bular quyidagilar:
 
 
 * **-> Cache Gradle dependencies**
@@ -150,9 +152,9 @@ jobs:
 
 ### Perform lint check
 
-**-> Cache Gradle dependencies** bosqichidan keyin undan keyingi bosqichlar parallel ishga tusha boshlaydi. Ushbu **Perform lint check** bosqichi Android loyihani lint check qilib kodlarni tekshirishdan iborat. Ushbu bosqich ubuntu-latest runnerda ishlaydi va  birinchi qadami gradle keshlarini olishdan boshlanadi, keyin [actions/checkout@v4](https://github.com/actions/checkout) orqali loyiha kodlarini klon qilib oladi, JDK 17 o'rnatadi runnerda muhitni sozlab oladi. `gradlew` ga chmod +x qilib execute permission beriladi va `./gradlew lintDebug` buyrug'i orqali lint check boshlandi. Lin check report html faylda bo'lib  `app/build/reports/lint-results-debug.html` joylashgan bo'ladi biz bu reportni [actions/upload-artifact@v2](https://github.com/actions/upload-artifact) orqali `lint.html` qilib Github Actions artifatlarga yuklab qo'yamiz.
+**-> Cache Gradle dependencies** bosqichidan keyin undan keyingi bosqichlar parallel ishga tusha boshlaydi. Ushbu **Perform lint check** bosqichi Android loyihani lint check qilib kodlarni tekshirishdan iborat. Ushbu bosqich ubuntu-latest runnerda ishlaydi va  birinchi qadami gradle keshlarini olishdan boshlanadi, keyin [actions/checkout@v4](https://github.com/actions/checkout) orqali loyiha kodlarini klon qilib oladi, JDK 17 o'rnatadi runnerda muhitni sozlab oladi. `gradlew` ga `chmod +x` qilib execute permission beriladi va `./gradlew lintDebug` buyrug'i orqali lint check boshlandi. Lin check report html faylda bo'lib  `app/build/reports/lint-results-debug.html` joylashgan bo'ladi biz bu reportni [actions/upload-artifact@v4](https://github.com/actions/upload-artifact) orqali `lint.html` qilib Github Actions artifatlarga yuklab qo'yamiz.
 
-```bash {18-19,21-25}
+```bash {19-20,22-26}
   lint:
     name: Perform lint check
     needs: [cache-gradle]
@@ -162,10 +164,11 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up Java JDK 17
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
+          cache: gradle
 
       - name: Make Gradle executable
         run: chmod +x ./gradlew
@@ -174,7 +177,7 @@ jobs:
         run: ./gradlew lintDebug
 
       - name: Upload html test report
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: lint.html
           path: app/build/reports/lint-results-debug.html
@@ -182,8 +185,8 @@ jobs:
 
 ### Perform Unit Testing
 
-Ushbu bosqichda Android loyihamizga yozilgan *Unit Test**larni ishga tushirib loyihani test qiladi. **Unit Test** reportlar `pp/build/reports/test/testDebugUnitTest/` joylashgab bo'ladi va biz uni [actions/upload-artifact@v2](https://github.com/actions/upload-artifact) orqali `unit_test_report.zip` qilib Github Actions artifatlarga yuklab qo'yamiz.
-```bash {15-16, 18-22}
+Ushbu bosqichda Android loyihamizga yozilgan **Unit Test**larni ishga tushirib loyihani test qiladi. **Unit Test** reportlar `app/build/reports/test/testDebugUnitTest/` joylashgab bo'ladi va biz uni [actions/upload-artifact@v4](https://github.com/actions/upload-artifact) orqali `unit_test_report.zip` qilib Github Actions artifaktlarga yuklab qo'yamiz.
+```bash {16-17, 19-23}
 unit-test:
   name: Perform Unit Testing
   needs: [cache-gradle]
@@ -193,16 +196,17 @@ unit-test:
       uses: actions/checkout@v4
 
     - name: Set up Java JDK 17
-      uses: actions/setup-java@v2
+      uses: actions/setup-java@v4
       with:
         java-version: '17'
         distribution: 'temurin'
+        cache: gradle
 
     - name: Run tests
       run: ./gradlew test
 
     - name: Upload test report
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: unit_test_report
         path: app/build/reports/test/testDebugUnitTest/
@@ -210,11 +214,11 @@ unit-test:
 
 ### Perform Instrumentation Testing
 
-Bu bosqichda Android applicationimizda **Instrumentation Test, Espresso**larni, ishga tushiradi. 
+Bu bosqichda Android applicationimizda **Instrumentation Test, Espresso**larni ishga tushiradi. 
 
 **Espresso** - bu Android applicationlar uchun **UI** testlarini yozish uchun keng qo'llaniladigan test tizimi. U Android applicationning foydalanuvchi interfeysidagi elementlarning xatti-harakatlari bilan o'zaro aloqada bo'lish va tasdiqlash uchun fluent API taqdim etadi. **ubuntu-latest** runnerda Espresso testlarini ishga tushirish uchun [reactivecircus/android-emulator-runner@v2](https://github.com/ReactiveCircus/android-emulator-runner) yordamida **API leveli  29** bo'lgan Android emulator o'natiladi va `./gradlew connectedCheck` buyrug'i yordamida o'rnatilgan android emulatorda Espresso testlari ishga tushira boshlanadi. Instrumentation Test reportlari `app/build/reports/androidTests/connected` joylashgan bo'ladi biz uni `instrumentation_test_report.zip` qilib  Github Actions artifactlarga yuklaymiz.
 
-```bash {15-19,21-25}
+```bash {16-20,22-26}
 instrumentation-test:
   name: Perform Instrumentation Testing
   needs: [cache-gradle]
@@ -228,6 +232,7 @@ instrumentation-test:
       with:
         java-version: '17'
         distribution: 'temurin'
+        cache: gradle
 
     - name: Run espresso tests
       uses: reactivecircus/android-emulator-runner@v2
@@ -236,7 +241,7 @@ instrumentation-test:
         script: ./gradlew connectedCheck
 
     - name: Upload Instrumentation Test report
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: instrumentation_test_report
         path: app/build/reports/androidTests/connected
@@ -246,7 +251,7 @@ instrumentation-test:
 
 Bu bosqichda biz debug APK build qilamiz. **ubuntu-latest** runnerda APK build qilish uchun envrironment sozlab olingandan keyin  `./gradlew assembleDebug --stacktrace` buyrug'i yordamida debug APK build qilamiz. Debug APK `app/build/outputs/apk/debug/app-debug.apk`da joylashgan bo'ladi biz uni **sample-app.apk** qilib Github Actions artifactlarga yuklab qo'yamiz
 
-```bash {15-16,18-22}
+```bash {16-17,19-23}
 debug-apk:
   name: Generate Debug APK
   needs: [cache-gradle]
@@ -260,12 +265,13 @@ debug-apk:
       with:
         java-version: '17'
         distribution: 'temurin'
+        cache: gradle
 
     - name: Build debug APK
       run: ./gradlew assembleDebug --stacktrace
 
     - name: Upload APK
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: sample-app.apk
         path: app/build/outputs/apk/debug/app-debug.apk
@@ -273,7 +279,7 @@ debug-apk:
 
 Ushbu qismda bizning to'liq **android-ci.yml** Github Actions CI pipelinemiz quyidagicha.
 
-```bash {10-22, 24-48,50-71,73-97, 99-120}
+```bash {10-22, 24-49,51-73,75-100, 102-124}
 name: Android CI
 
 on:
@@ -291,7 +297,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Cache Gradle
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
@@ -306,10 +312,11 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up Java JDK 17
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
+          cache: gradle
 
       - name: Make Gradle executable
         run: chmod +x ./gradlew
@@ -318,7 +325,7 @@ jobs:
         run: ./gradlew lintDebug
 
       - name: Upload html test report
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: lint.html
           path: app/build/reports/lint-results-debug.html
@@ -332,16 +339,17 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up Java JDK 17
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
+          cache: gradle
 
       - name: Run tests
         run: ./gradlew test
 
       - name: Upload test report
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: unit_test_report
           path: app/build/reports/test/testDebugUnitTest/
@@ -359,6 +367,7 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+          cache: gradle
 
       - name: Run espresso tests
         uses: reactivecircus/android-emulator-runner@v2
@@ -367,7 +376,7 @@ jobs:
           script: ./gradlew connectedCheck
 
       - name: Upload Instrumentation Test report
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: instrumentation_test_report
           path: app/build/reports/androidTests/connected
@@ -385,12 +394,13 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+          cache: gradle
 
       - name: Build debug APK
         run: ./gradlew assembleDebug --stacktrace
 
       - name: Upload APK
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: sample-app.apk
           path: app/build/outputs/apk/debug/app-debug.apk
@@ -402,7 +412,7 @@ Ushbu Android CI'ni **main** branchga push qilamiz u avtomatik ishga tushadi va 
 
 Okeey bizda barcha **Anroid CI** bosqichlar muvaffaqiyatli o'z ishini tugatdi.
 ![android](/images/tutorials/ci-cd/android-cicd/actions4.png)
-**Artifats** bo'limiga o'tsak bizda artifactga yuklagan artifactlarimizni ko'rishimiz mumkin.
+**Artifacts** bo'limiga o'tsak bizda artifactga yuklagan artifactlarimizni ko'rishimiz mumkin.
 ![android](/images/tutorials/ci-cd/android-cicd/actions5.png)
 
 Keling **instrumentation_test_report** va **lint.html** artifactlarni yuklab olamiz bizga .zip arxivda yuklab olamiz bularni arxivdan chiqarib olib  **index.html** faylini brauzer orqali ochamiz, shunda biz reportlarni ko'rishimiz mumkin.
@@ -417,7 +427,7 @@ Keling **instrumentation_test_report** va **lint.html** artifactlarni yuklab ola
 
 Ushbu bosqichda biz kodni sifatini aniqlash uchun static kod analizlardan foydalanamiz bu holda bizda **SonarQube**.
 
-**SonarQube** kod sifatini tekshirish va statik tahlil qilish vositalaridir. Ular muammolarni erta aniqlash, kodlash standartlarini joriy etish, xavfsizlik zaifliklarini aniqlash, texnik debtlarni boshqarish va fikr-mulohazalar uchun CI/CD pipelinelar bilan integratsiyalashuv orqali yuqori sifatli kodni ta'minlaydi. Ushbu toollar dasturiy ta'minot loyihalarida kod sifati, xavfsizligi va barqarorligini ta'minlash uchun zarurdir.
+**SonarQube** kod sifatini tekshirish va statik tahlil qilish tooldir. Ular muammolarni erta aniqlash, kodlash standartlarini joriy etish, xavfsizlik zaifliklarini aniqlash, texnik debtlarni boshqarish va fikr-mulohazalar uchun CI/CD pipelinelar bilan integratsiyalashuv orqali yuqori sifatli kodni ta'minlaydi. Ushbu toollar dasturiy ta'minot loyihalarida kod sifati, xavfsizligi va barqarorligini ta'minlash uchun zarurdir.
 
 Biz ushbu loyiha uchun **SonarCloud**dan foydalanamiz. 
 
@@ -427,10 +437,10 @@ Biz ushbu loyiha uchun **SonarCloud**dan foydalanamiz.
 **2->** Github orqali ro'yxatdan o'tganimizdan keyin organizatsiya import qilamiz **-> Import an organization**
 ![android](/images/tutorials/ci-cd/android-cicd/sonarqube1.png)
 
-**3-> Import an organization** bosganimzidan keyin SonarClodni qaysi repositoriyalarga yoki barcha repositoriyalarga o'rnatishni so'raydi, siz hohlsangiz bitta repositoriyaga yoki barcha repositoriyalarni tanlab SonarCloudni o'rnatishingiz mumkin.
+**3-> Import an organization** bosganimzidan keyin SonarCloudni qaysi repositoriyalarga yoki barcha repositoriyalarga o'rnatishni so'raydi, siz hohalsangiz bitta repositoriyaga yoki barcha repositoriyalarni tanlab SonarCloudni o'rnatishingiz mumkin.
 ![android](/images/tutorials/ci-cd/android-cicd/sonarcloud2.png)
 
-**4->** Organizatsiya import qilinganidan keyin sizdan organizatsiya sozlash oynasi ochiladi siz organizatsiya nomini va unga keyini yozib kiritasiz va plan tanlaysiz bu iushbu amaliyot uchun free(bepul) planni tanlab ishlaymiz lekin free planda faqat public repositoriyalarda SonarCloudni ishlata olasiz. Agar siz SonarQubeni private repositorilar uchun ham ishlatmochi bo'lsangiz **SonarQube Community Edition**ni serveringizga o'rnatib olib ishlatishingiz mumkin.
+**4->** Organizatsiya import qilinganidan keyin sizdan organizatsiya sozlash oynasi ochiladi siz organizatsiya nomini va unga keyini yozib kiritasiz va plan tanlaysiz bu ushbu amaliyot uchun free(bepul) planni tanlab ishlaymiz lekin free planda faqat public repositoriyalarda SonarCloudni ishlata olasiz. Agar siz SonarQubeni private repositoriyalar uchun ham ishlatmochi bo'lsangiz **SonarQube Community Edition**ni serveringizga o'rnatib olib ishlatishingiz mumkin.
 ![android](/images/tutorials/ci-cd/android-cicd/sonarcloud3.png)
 ![android](/images/tutorials/ci-cd/android-cicd/sonarcloud4.png)
 
@@ -443,7 +453,7 @@ Biz ushbu loyiha uchun **SonarCloud**dan foydalanamiz.
 Va bizda quyidagi oyna ochiladi.
 ![android](/images/tutorials/ci-cd/android-cicd/sonarcloud7.png)
 
-Okeey hozir biz loyiahmiz uchun SonarCloud sozlab oldik keling endi uni ishlashini test qilib sinab ko'ramiz. Github repositoriyamizda birorta o'zgartirish qilib **main** branchga push qilamiz va bizda **SonarCloud CI** ishlashi kerak.
+Okeey hozir biz loyihamiz uchun SonarCloud sozlab oldik keling endi uni ishlashini test qilib sinab ko'ramiz. Github repositoriyamizda birorta o'zgartirish qilib **main** branchga push qilamiz va bizda **SonarCloud CI** ishlashi kerak.
 
 Github Actionsda ko'rganimizda bizda **SonarCloud Code Analysis** muvaffaqiyatli ishlaganini ko'rishimiz mumkin.
 ![android](/images/tutorials/ci-cd/android-cicd/actions6.png)
@@ -453,11 +463,11 @@ Okeey Github Actionsda SonarCloud ishladi keling buni SonarCloud o'zida ham teks
 ![android](/images/tutorials/ci-cd/android-cicd/report5.png)
 
 
-Okeey hammasi zo'r biz **Android CI**bi shu yerda to'xtatamiz va keyingi bosqichga ya'ni **Android CD**'ga o'tamiz.
+Okeey hammasi zo'r biz **Android CI**ni shu yerda to'xtatamiz va keyingi bosqichga ya'ni **Android CD**'ga o'tamiz.
 
 ## Android CD
 
-Yuqorida biz **Android CI**ni yozishni ko'rib chiqdik bu qismda esa biz **Android CD**ni ko'rib chiqamiz. **Android CI**da biz **Android CI** muvaffaqiyatli tugagidan keyin boshlashini belgilaymiz va Android applicationli Play Storega joylash uchun imzolaymiz va **AAB** (**A**ndroid **A**pp **B**undle) ko'rinishda Play Storega joylashtirishni ko'rib chiqamiz.
+Yuqorida biz **Android CI**ni yozishni ko'rib chiqdik bu qismda esa biz **Android CD**ni ko'rib chiqamiz. **Android CD**da biz **Android CI** muvaffaqiyatli tugagidan keyin boshlashini belgilaymiz va Android applicationni Play Storega joylash uchun imzolaymiz va **AAB** (**A**ndroid **A**pp **B**undle) ko'rinishda Play Storega joylashtirishni ko'rib chiqamiz.
 
 **.github/workflows** papkasida **android-cd.yml** YML konfiguratsiya ochib olamiz.
 
@@ -471,7 +481,7 @@ Yuqorida biz **Android CI**ni yozishni ko'rib chiqdik bu qismda esa biz **Androi
 Esingizda bo'lsa biz **android-ci.yml** konfiguratsiyamizda **Workflow**ga **Android CI** deb nom bergan edik.
 
 
-```bash {1}
+```bash {1} filename="./github/workflows/android-ci.yml"
 name: Android CI
 
 on:
@@ -483,7 +493,7 @@ on:
 
 Biz **android-cd.yml** konfiguratsiyamizni quyidagicha yozamiz.
 
-```bash {1,5}
+```bash {1,5} filename="./github/workflows/android-cd.yml"
 name: Android CD
 
 on:
@@ -509,6 +519,7 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
+          cache: gradle
 ```
 
 Bu konfiguratsiya **apk** nomli jobni belgilaydi, jobga **Build Release signed APK** deb nom beriladi va bu job **ubuntu-latest** runnerda ishga tushadi. [actions/checkout@v4](https://github.com/actions/checkout) orqali loyiha kodlarni runnerda klon qilib oladi va [actions/setup-java@v4](https://github.com/actions/setup-java) orqali Java **JDK 17 temurin** distributioni o'rnatadi.
@@ -537,7 +548,7 @@ Bu qismda Gradle `gradlew`ni execute qilish uchun  permission beriladi va `./gra
     BUILD_TOOLS_VERSION: "30.0.2"
 ```
 <Callout type="info" emoji="">
-Sizda Google Play Store ochilgan va aktiv holatda bo'lishi kerak. Siz applicationingizni Play Storega joylashtirishingiz uchun applicationingizni imzolab olishingiz kerak. Buning uchun quyidagi secretlarni **Actions Secrets**ga qo'shib qo'yishingiz kerak bo'ladi.
+Sizda Google Play Store ochilgan va aktiv holatda bo'lishi kerak. Siz applicationingizni Play Storega joylashtirishingiz uchun applicationingizni imzolab olishingiz kerak. Github Actions Play Storega kira olishi va application joylashtira olishi uchun quyidagi Play Store secretlarni **Actions Secrets**ga qo'shib qo'yishingiz kerak bo'ladi.
 </Callout>
 
 Actions secretsga seretlarni qo'shish uchun:
@@ -546,18 +557,18 @@ Actions secretsga seretlarni qo'shish uchun:
 
 ![android](/images/tutorials/ci-cd/android-cicd/secret.png)
 
-Bu bosqichda [r0adkll/sign-android-release@v1](https://github.com/r0adkll/sign-android-release) yordamida applicationimizni Playstorega chiqarish uchun imzolaymiz. **Build Tools Version: 30.0.2** belgilagan holda **app/build/outputs/apk/release** papkadagi applicationni imzolaymiz.
+Bu bosqichda [r0adkll/sign-android-release@v1](https://github.com/r0adkll/sign-android-release) yordamida applicationimizni Play Storega chiqarish uchun imzolaymiz. **Build Tools Version: 30.0.2** belgilagan holda **app/build/outputs/apk/release** papkadagi applicationni imzolaymiz.
 
 
 ```bash
 - name: Upload Signed APK
-  uses: actions/upload-artifact@v2
+  uses: actions/upload-artifact@v4
   with:
     name: sample-app-signed
     path: app/build/outputs/apk/release/*.apk 
 ```
 
-Bu bosqichda esa imzolangan applicationni Github Actions Articatlarga yuklaymiz, ya'ni **app/build/outputs/apk/release/*.apk ** joylashgan imzolangan applicationni **sample-app-signed** nom bilan Github Actions Artifatga yuklaymiz.
+Bu bosqichda esa imzolangan applicationni Github Actions Articatlarga yuklaymiz, ya'ni **app/build/outputs/apk/release/*.apk** joylashgan imzolangan applicationni **sample-app-signed** nom bilan Github Actions Artifatga yuklaymiz.
 
 ```bash {1-4}
 deploy:
@@ -580,7 +591,7 @@ deploy:
         inAppUpdatePriority: 5
 ```
 
-Bu bosqichda ynagi **deploy** nomli job belgilanadi va bu job **apk** nomli job o'z ishini muvaffaqiyat tugatganidan keyin ishga tushadi.
+Bu bosqichda yangi **deploy** nomli job belgilanadi va bu job **apk** nomli job o'z ishini muvaffaqiyatli tugatganidan keyin ishga tushadi.
 
 ```bash
 - name: Create service_account.json
@@ -600,7 +611,7 @@ Bu qismda Actions Secretsdagi `SERVICE_ACCOUNT_JSON` secretni olib `service_acco
     mappingFile: app/build/outputs/mapping/release/mapping.txt
     inAppUpdatePriority: 5
 ```
-Ushbu qismda [r0adkll/sign-android-release@v1](https://github.com/r0adkll/sign-android-release) yordamidaPlay Storega `service_account.json` bilan kiradi va bundan oldingi jobda AAB build qilinib imzolangan applicationni(`app/build/outputs/bundle/release/*.aab`) Play Storega deploy qiladi.
+Ushbu qismda [r0adkll/sign-android-release@v1](https://github.com/r0adkll/sign-android-release) yordamida Play Storega `service_account.json` bilan kiradi va bundan oldingi jobda AAB build qilinib imzolangan applicationni(`app/build/outputs/bundle/release/*.aab`) Play Storega deploy qiladi.
 
 **track: internal** bu Play Storega deploy qilinganda keng jamoaga emas balki tashkilot jamoasi, asosan QA testerlar ko'rishi uchun ochiladi va QA Testerlar tasdiqlaganidan keyin public keng jamoatchilikga ko'rinadi.
 
@@ -613,7 +624,7 @@ Ushbu qismda [r0adkll/sign-android-release@v1](https://github.com/r0adkll/sign-a
 
 Biz to'liq **Android CD** quyidagicha.
 
-```bash {1,5,10-12,14-15,17-21,23-27,29-39,41-45,47-50,52-53,55-64}
+```bash {1,5,11-12,14-15,17-21,24-28,30-40,42-46,48-51,52-54,56-65}
 name: Android CD
 
 on:
@@ -635,6 +646,7 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
+          cache: gradle
           
       - name: Make Gradle executable
         run: chmod +x ./gradlew
@@ -655,9 +667,9 @@ jobs:
           BUILD_TOOLS_VERSION: "30.0.2"
   
       - name: Upload Signed APK
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
-          name: sample-app-signed  # Artifact Name
+          name: sample-app-signed
           path: app/build/outputs/apk/release/*.apk 
   
   deploy:
