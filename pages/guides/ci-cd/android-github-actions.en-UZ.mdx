@@ -42,7 +42,7 @@ jobs:
         uses: actions/setup-java@v2
         with:
           java-version: '17'
-          distribution: 'adopt'
+          distribution: 'temurin'
 
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
@@ -87,13 +87,13 @@ Bu qism [actions/checkout@v4](https://github.com/actions/checkout) orqali loyiha
 
 ```bash
 - name: Setup JDK 17
-  uses: actions/setup-java@v2
+  uses: actions/setup-java@v4
   with:
     java-version: '17'
-    distribution: 'adopt'
+    distribution: 'temurin'
 ```
 
-Ushbu qismda **ubuntu-latest** runnerga [actions/setup-java@v2](https://github.com/actions/setup-java) orqali Java **JDK 17 adopt** distributioni o'rnatadi.
+Ushbu qismda **ubuntu-latest** runnerga [actions/setup-java@v4](https://github.com/actions/setup-java) orqali Java **JDK 17 temurin** distributioni o'rnatadi.
 
 ```bash
 - name: Grant execute permission for gradlew
@@ -160,7 +160,7 @@ jobs:
         uses: actions/setup-java@v2
         with:
           java-version: '17'
-          distribution: 'adopt'
+          distribution: 'temurin'
 
       - name: Make Gradle executable
         run: chmod +x ./gradlew
@@ -191,7 +191,7 @@ unit-test:
       uses: actions/setup-java@v2
       with:
         java-version: '17'
-        distribution: 'adopt'
+        distribution: 'temurin'
 
     - name: Run tests
       run: ./gradlew test
@@ -222,7 +222,7 @@ instrumentation-test:
       uses: actions/setup-java@v4
       with:
         java-version: '17'
-        distribution: 'adopt'
+        distribution: 'temurin'
 
     - name: Run espresso tests
       uses: reactivecircus/android-emulator-runner@v2
@@ -254,7 +254,7 @@ debug-apk:
       uses: actions/setup-java@v4
       with:
         java-version: '17'
-        distribution: 'adopt'
+        distribution: 'temurin'
 
     - name: Build debug APK
       run: ./gradlew assembleDebug --stacktrace
@@ -304,7 +304,7 @@ jobs:
         uses: actions/setup-java@v2
         with:
           java-version: '17'
-          distribution: 'adopt'
+          distribution: 'temurin'
 
       - name: Make Gradle executable
         run: chmod +x ./gradlew
@@ -330,7 +330,7 @@ jobs:
         uses: actions/setup-java@v2
         with:
           java-version: '17'
-          distribution: 'adopt'
+          distribution: 'temurin'
 
       - name: Run tests
         run: ./gradlew test
@@ -353,7 +353,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: '17'
-          distribution: 'adopt'
+          distribution: 'temurin'
 
       - name: Run espresso tests
         uses: reactivecircus/android-emulator-runner@v2
@@ -379,7 +379,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: '17'
-          distribution: 'adopt'
+          distribution: 'temurin'
 
       - name: Build debug APK
         run: ./gradlew assembleDebug --stacktrace
@@ -450,4 +450,227 @@ Okeey Github Actionsda SonarCloud ishladi keling buni SonarCloud o'zida ham teks
 
 Okeey hammasi zo'r biz **Android CI**bi shu yerda to'xtatamiz va keyingi bosqichga ya'ni **Android CD**'ga o'tamiz.
 
-### Android CD
+## Android CD
+
+Yuqorida biz **Android CI**ni yozishni ko'rib chiqdik bu qismda esa biz **Android CD**ni ko'rib chiqamiz. **Android CI**da biz **Android CI** muvaffaqiyatli tugagidan keyin boshlashini belgilaymiz va Android applicationli Play Storega joylash uchun imzolaymiz va **AAB** (**A**ndroid **A**pp **B**undle) ko'rinishda Play Storega joylashtirishni ko'rib chiqamiz.
+
+**.github/workflows** papkasida **android-cd.yml** YML konfiguratsiya ochib olamiz.
+
+```bash
+.github
+└── workflows
+    ├── android-cd.yml
+    └── android-ci.yml
+```
+
+Esingizda bo'lsa biz **android-ci.yml** konfiguratsiyamizda **Workflow**ga **Android CI** deb nom bergan edik.
+
+
+```bash {1}
+name: Android CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+```
+
+Biz **android-cd.yml** konfiguratsiyamizni quyidagicha yozamiz.
+
+```bash {1,5}
+name: Android CD
+
+on:
+  workflow_run:
+    workflows: ["Android CI"]
+    types:
+      - completed
+```
+Bu konfiguratsiya **Android CI** nomli workflow muvaffaqiyatli o'z ishini tugatganidan keyin ushbu workflow ishga tushini bildiradi, ya'ni **Android CI** muvaffaqiyatli tugaganidan keyin **Android CD** workflow ishga tushadi.
+
+
+```bash
+jobs:
+  apk:
+    name: Build Release signed APK
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v4
+  
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+```
+
+Bu konfiguratsiya **apk** nomli jobni belgilaydi, jobga **Build Release signed APK** deb nom beriladi va bu job **ubuntu-latest** runnerda ishga tushadi. [actions/checkout@v4](https://github.com/actions/checkout) orqali loyiha kodlarni runnerda klon qilib oladi va [actions/setup-java@v4](https://github.com/actions/setup-java) orqali Java **JDK 17 temurin** distributioni o'rnatadi.
+
+
+```bash
+- name: Make Gradle executable
+  run: chmod +x ./gradlew
+
+- name: Build Release APK
+  run: ./gradlew assembleRelease
+```
+Bu qismda Gradle `gradlew`ni execute qilish uchun  permission beriladi va `./gradlew assembleRelease` buyrug'i orqali production uchun Android Release qilinadi
+
+```bash {2,5,11}
+- name: Sign APK
+  uses: r0adkll/sign-android-release@v1
+  id: sign_app
+  with:
+    releaseDirectory: app/build/outputs/apk/release
+    signingKeyBase64: ${{ secrets.SIGNING_KEY }}
+    alias: ${{ secrets.KEY_ALIAS }}
+    keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
+    keyPassword: ${{ secrets.KEY_PASSWORD }}
+  env:
+    BUILD_TOOLS_VERSION: "30.0.2"
+```
+<Callout type="info" emoji="">
+Sizda Google Play Store ochilgan va aktiv holatda bo'lishi kerak. Siz applicationingizni Play Storega joylashtirishingiz uchun applicationingizni imzolab olishingiz kerak. Buning uchun quyidagi secretlarni **Actions Secrets**ga qo'shib qo'yishingiz kerak bo'ladi.
+</Callout>
+
+Actions secretsga seretlarni qo'shish uchun:
+
+**-> Github repositoriyamiz -> Settings -> Secrets and variables -> Actions -> New repository secret** 
+
+![android](/images/tutorials/ci-cd/android-cicd/secret.png)
+
+Bu bosqichda [r0adkll/sign-android-release@v1](https://github.com/r0adkll/sign-android-release) yordamida applicationimizni Playstorega chiqarish uchun imzolaymiz. **Build Tools Version: 30.0.2** belgilagan holda **app/build/outputs/apk/release** papkadagi applicationni imzolaymiz.
+
+
+```bash
+- name: Upload Signed APK
+  uses: actions/upload-artifact@v2
+  with:
+    name: sample-app-signed
+    path: app/build/outputs/apk/release/*.apk 
+```
+
+Bu bosqichda esa imzolangan applicationni Github Actions Articatlarga yuklaymiz, ya'ni **app/build/outputs/apk/release/*.apk ** joylashgan imzolangan applicationni **sample-app-signed** nom bilan Github Actions Artifatga yuklaymiz.
+
+```bash {1-4}
+deploy:
+  name: Deploy release AAB on Playstore
+  needs: [apk]
+  runs-on: ubuntu-latest
+  steps:
+    - name: Create service_account.json
+      run: echo '${{ secrets.SERVICE_ACCOUNT_JSON }}' > service_account.json
+
+    - name: Deploy to Play Store
+      uses: r0adkll/upload-google-play@v1
+      with:
+        serviceAccountJson: service_account.json
+        packageName: ${{ github.event.inputs.app_id }}
+        releaseFiles: app/build/outputs/bundle/release/*.aab
+        track: internal
+        whatsNewDirectory: whatsnew/
+        mappingFile: app/build/outputs/mapping/release/mapping.txt
+        inAppUpdatePriority: 5
+```
+
+Bu bosqichda ynagi **deploy** nomli job belgilanadi va bu job **apk** nomli job o'z ishini muvaffaqiyat tugatganidan keyin ishga tushadi.
+
+```bash
+- name: Create service_account.json
+  run: echo '${{ secrets.SERVICE_ACCOUNT_JSON }}' > service_account.json
+```
+Bu qismda Actions Secretsdagi `SERVICE_ACCOUNT_JSON` secretni olib `service_account.json` yaratib oladi.
+
+```bash {2,4,6-10}
+- name: Deploy to Play Store
+  uses: r0adkll/upload-google-play@v1
+  with:
+    serviceAccountJson: service_account.json
+    packageName: ${{ github.event.inputs.app_id }}
+    releaseFiles: app/build/outputs/bundle/release/*.aab
+    track: internal
+    whatsNewDirectory: whatsnew/
+    mappingFile: app/build/outputs/mapping/release/mapping.txt
+    inAppUpdatePriority: 5
+```
+Ushbu qismda [r0adkll/sign-android-release@v1](https://github.com/r0adkll/sign-android-release) yordamidaPlay Storega `service_account.json` bilan kiradi va bundan oldingi jobda AAB build qilinib imzolangan applicationni(`app/build/outputs/bundle/release/*.aab`) Play Storega deploy qiladi.
+
+**track: internal** bu Play Storega deploy qilinganda keng jamoaga emas balki tashkilot jamoasi, asosan QA testerlar ko'rishi uchun ochiladi va QA Testerlar tasdiqlaganidan keyin public keng jamoatchilikga ko'rinadi.
+
+**whatsNewDirectory: whatsnew/** esa yangi reliz chiqganida applicationda qanday o'zgarishlar bo'lgani haqida yozilgan papkani ko'rsatadi.
+
+**mappingFile: app/build/outputs/mapping/release/mapping.txt** bu esa **ProGuard mapping** faylga yo'lni(path)ni bildiradi. ProGuard  applicationni kichraytirish, optimallashtirish uchun ishlatiladigan tool hisoblanadi batafsil -> [ProGuard](https://www.guardsquare.com/manual/home)
+
+**inAppUpdatePriority: 5** bu foydalanuvchilar uchun ushbu applicationni yangilash prioritysi yani ustuvorligi hisoblanadi.
+
+
+Biz to'liq **Android CD** quyidagicha.
+
+```bash {1,5,10-12,14-15,17-21,23-27,29-39,41-45,47-50,52-53,55-64}
+name: Android CD
+
+on:
+  workflow_run:
+    workflows: ["Android CI"]
+    types:
+      - completed
+
+jobs:
+  apk:
+    name: Build Release signed APK
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v4
+  
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          
+      - name: Make Gradle executable
+        run: chmod +x ./gradlew
+
+      - name: Build Release APK
+        run: ./gradlew assembleRelease
+  
+      - name: Sign APK
+        uses: r0adkll/sign-android-release@v1
+        id: sign_app
+        with:
+          releaseDirectory: app/build/outputs/apk/release
+          signingKeyBase64: ${{ secrets.SIGNING_KEY }}
+          alias: ${{ secrets.KEY_ALIAS }}
+          keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
+          keyPassword: ${{ secrets.KEY_PASSWORD }}
+        env:
+          BUILD_TOOLS_VERSION: "30.0.2"
+  
+      - name: Upload Signed APK
+        uses: actions/upload-artifact@v2
+        with:
+          name: sample-app-signed  # Artifact Name
+          path: app/build/outputs/apk/release/*.apk 
+  
+  deploy:
+    name: Deploy release AAB on Playstore
+    needs: [apk]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create service_account.json
+        run: echo '${{ secrets.SERVICE_ACCOUNT_JSON }}' > service_account.json
+  
+      - name: Deploy to Play Store
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJson: service_account.json
+          packageName: ${{ github.event.inputs.app_id }}
+          releaseFiles: app/build/outputs/bundle/release/*.aab
+          track: internal
+          whatsNewDirectory: whatsnew/
+          mappingFile: app/build/outputs/mapping/release/mapping.txt
+          inAppUpdatePriority: 5
+```
