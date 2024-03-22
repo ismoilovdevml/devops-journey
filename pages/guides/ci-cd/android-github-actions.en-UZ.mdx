@@ -15,6 +15,11 @@ Biz loyihamizni discord bilan integratsiya qilish uchun `Discord webhook` dan fo
 Discord channel ochish va Discord webhook olib Githubdagi loyiha bilan integratsiya qilish bo'yicha quyidagi [video qo'llanmani](https://youtu.be/-KDQqWNK3Tw?si=L8YYPAX4RKVi1ACa) ko'rib chiqishingiz mumkin.
 </Callout>
 
+Discord Webhookni quyidagicha konfiguratsitya qilamiz. 
+
+**Which events would you like to trigger this webhook?** ga **Send me everything.** tanlaymiz.
+![android](/images/tutorials/ci-cd/android-cicd/webhook.png)
+
 ## Android CI
 
 Har doimgidek CI/CD yozishni birinchi bo'lib CI yozishdan boshlaymiz. Birinchi navbatda loyihamiz root papkasida **.github** papka ochib ichida yana **workflows** papka ochib unda **android-ci.yml** ochib olamiz.
@@ -674,3 +679,37 @@ jobs:
           mappingFile: app/build/outputs/mapping/release/mapping.txt
           inAppUpdatePriority: 5
 ```
+ Okeeey biz bu amaliyotda ko'p narsalarni ko'rib amaliyotda qo'llay oldik shu qismda amaliyot o'z niyohasiga yetadi. Biz **Android CI** qismida Android loyihamizda bir nechta testlarni ishga tushirishni qo'lladik va SonarCloud bilan integratsiya qilib kod analizni qo'shdik va biz standartlaga mos keluvchi **Android CI** yozdik. **Android CD** qismida esa biz applicationimizni imzolash va uni Play Storega chiqarishni ko'rib chiqdik. Notificationlar uchun biz **Discord**dan foydalandik, biz discord webhook orqali Github Repositoriyamizni ulab integratsiya qildik.
+
+ Mana bizdagi Discord Notificationlar.
+
+ ![android](/images/tutorials/ci-cd/android-cicd/discord.png)
+
+ ## Qo'shimcha
+
+<Callout type="info" emoji="">
+
+<Callout type="info" emoji="">
+Amaliyotda ishlatilgan [**devops-journey-uz/android-ci-cd**](https://github.com/devops-journey-uz/android-ci-cd)repositoriyalar. Github Actions namuna fayllarni [**ismoilovdevml/devops-tools**](https://github.com/ismoilovdevml/devops-tools/tree/master/Github-Actions)dan topishingiz mumkin.
+</Callout>
+
+Qo'shimcha Resurslar
+ * [**Github Actions bilan Flutter CI/CD**](https://devops-journey.uz/guides/ci-cd/flutter-github-action)
+ * [**Github Actions CI/CD**](https://devops-journey.uz/guides/ci-cd/github-actions-ci-cd)
+ * [**Linux Serverlarga Jenkins o'rnatish**](https://devops-journey.uz/guides/ci-cd/jenkins-ornatish)
+ * [**Koddan Servergacha: Jenkins bilan Docker CI/CD va Discord bilan integratsiya**](https://devops-journey.uz/guides/ci-cd/jenkins-docker-ci-cd)
+ * [**Kubernetes CI/CD | GitHub Actions + Argo CD | GitOps**](https://devops-journey.uz/guides/ci-cd/github-actions-argocd-cicd)
+
+Qo'llanma uchun foydalanilgan resurslar
+ * [**github.com/TharunBalaji2004/android-ci-cd**](https://github.com/TharunBalaji2004/android-ci-cd)
+
+**Sana:** 2024.03.23(2024-yil 23-mart)
+
+**Oxirgi yangilanish:** 2024.03.23(2024-yil 23-mart)
+
+**Muallif: Otabek Ismoilov**
+
+| [Telegram](https://t.me/Otabek_Ismoilov) | [GitHub](https://github.com/ismoilovdevml) | [LinkedIn](https://www.linkedin.com/in/otabek-ismoilov-8625b0222/) |
+| - | - | - |
+
+</Callout>
