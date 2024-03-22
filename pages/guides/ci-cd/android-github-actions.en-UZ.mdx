@@ -15,7 +15,7 @@ Biz loyihamizni discord bilan integratsiya qilish uchun `Discord webhook` dan fo
 Discord channel ochish va Discord webhook olib Githubdagi loyiha bilan integratsiya qilish bo'yicha quyidagi [video qo'llanmani](https://youtu.be/-KDQqWNK3Tw?si=L8YYPAX4RKVi1ACa) ko'rib chiqishingiz mumkin.
 </Callout>
 
-## Github Actions CI
+## Android CI
 
 Har doimgidek CI/CD yozishni birinchi bo'lib CI yozishdan boshlaymiz. Birinchi navbatda loyihamiz root papkasida **.github** papka ochib ichida yana **workflows** papka ochib unda **android-ci.yml** ochib olamiz.
 
@@ -407,3 +407,47 @@ Keling **instrumentation_test_report** va **lint.html** artifactlarni yuklab ola
 ![android](/images/tutorials/ci-cd/android-cicd/report1.png)
 **Perform lint check** reportlari.
 ![android](/images/tutorials/ci-cd/android-cicd/report2.png)
+
+### Perform static code analysis
+
+Ushbu bosqichda biz kodni sifatini aniqlash uchun static kod analizlardan foydalanamiz bu holda bizda **SonarQube**.
+
+**SonarQube** kod sifatini tekshirish va statik tahlil qilish vositalaridir. Ular muammolarni erta aniqlash, kodlash standartlarini joriy etish, xavfsizlik zaifliklarini aniqlash, texnik debtlarni boshqarish va fikr-mulohazalar uchun CI/CD pipelinelar bilan integratsiyalashuv orqali yuqori sifatli kodni ta'minlaydi. Ushbu toollar dasturiy ta'minot loyihalarida kod sifati, xavfsizligi va barqarorligini ta'minlash uchun zarurdir.
+
+Biz ushbu loyiha uchun **SonarCloud**dan foydalanamiz. 
+
+**1-> [sonarcloud.io](https://sonarcloud.io/login)**'dan Github orqali ro'yxatdan o'tamiz.
+![android](/images/tutorials/ci-cd/android-cicd/sonarqube.png)
+
+**2->** Github orqali ro'yxatdan o'tganimizdan keyin organizatsiya import qilamiz **-> Import an organization**
+![android](/images/tutorials/ci-cd/android-cicd/sonarqube1.png)
+
+**3-> Import an organization** bosganimzidan keyin SonarClodni qaysi repositoriyalarga yoki barcha repositoriyalarga o'rnatishni so'raydi, siz hohlsangiz bitta repositoriyaga yoki barcha repositoriyalarni tanlab SonarCloudni o'rnatishingiz mumkin.
+![android](/images/tutorials/ci-cd/android-cicd/sonarcloud2.png)
+
+**4->** Organizatsiya import qilinganidan keyin sizdan organizatsiya sozlash oynasi ochiladi siz organizatsiya nomini va unga keyini yozib kiritasiz va plan tanlaysiz bu iushbu amaliyot uchun free(bepul) planni tanlab ishlaymiz lekin free planda faqat public repositoriyalarda SonarCloudni ishlata olasiz. Agar siz SonarQubeni private repositorilar uchun ham ishlatmochi bo'lsangiz **SonarQube Community Edition**ni serveringizga o'rnatib olib ishlatishingiz mumkin.
+![android](/images/tutorials/ci-cd/android-cicd/sonarcloud3.png)
+![android](/images/tutorials/ci-cd/android-cicd/sonarcloud4.png)
+
+**5->** Bu qismda biz repositoriyamizni tanlaymiz va **Set Up** bosib keyingi SonarCloudni belgilangan repositoriya o'rnatamiz.
+![android](/images/tutorials/ci-cd/android-cicd/sonarcloud5.png)
+
+**6->** Ushbu qismdan biz har safar Githubgagi loyihamiz kodlari o'zgarganda kod analiz ishlashini tanlaymiz.
+
+![android](/images/tutorials/ci-cd/android-cicd/sonarcloud6.png)
+Va bizda quyidagi oyna ochiladi.
+![android](/images/tutorials/ci-cd/android-cicd/sonarcloud7.png)
+
+Okeey hozir biz loyiahmiz uchun SonarCloud sozlab oldik keling endi uni ishlashini test qilib sinab ko'ramiz. Github repositoriyamizda birorta o'zgartirish qilib **main** branchga push qilamiz va bizda **SonarCloud CI** ishlashi kerak.
+
+Github Actionsda ko'rganimizda bizda **SonarCloud Code Analysis** muvaffaqiyatli ishlaganini ko'rishimiz mumkin.
+![android](/images/tutorials/ci-cd/android-cicd/actions6.png)
+
+Okeey Github Actionsda SonarCloud ishladi keling buni SonarCloud o'zida ham tekshirib ko'ramiz.
+![android](/images/tutorials/ci-cd/android-cicd/report4.png)
+![android](/images/tutorials/ci-cd/android-cicd/report5.png)
+
+
+Okeey hammasi zo'r biz **Android CI**bi shu yerda to'xtatamiz va keyingi bosqichga ya'ni **Android CD**'ga o'tamiz.
+
+### Android CD
