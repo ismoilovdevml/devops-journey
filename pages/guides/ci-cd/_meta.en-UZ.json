@@ -20,7 +20,7 @@
   "start-gitlabci": {
     "title": "Gitlab CI",
     "icon": "▶️",
-    "description": "Gitlab CI bilan ishlaymiz",
+    "description": "Gitlab CI bilan Docker CI/CD",
     "href": "/guides/ci-cd/start-gitlabci"
   },
   "android-github-actions": {
