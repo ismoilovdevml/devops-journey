@@ -4,5 +4,11 @@
       "icon": "▶️",
       "description": "Azure virtual network va subnet sozlash",
       "href": "/guides/cloud/azure-network-sozlash"
+    },
+    "gcp-network-sozlash": {
+      "title": "GCP Network sozlash",
+      "icon": "▶️",
+      "description": "GCP virtual network va subnet sozlash",
+      "href": "/guides/cloud/gcp-network-sozlash"
     }
 }

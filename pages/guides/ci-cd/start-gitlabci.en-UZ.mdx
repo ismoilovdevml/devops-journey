@@ -3,3 +3,17 @@ import { Callout } from "nextra-theme-docs";
 # Gitlab CI bilan CI/CD
 
 ![android](/images/tutorials/ci-cd/gitlab-ci/banner.png)
+
+## Kirish
+
+**GitLab** - bu veb-ga asoslangan Git repository manageri va DevOps platformasi bo'lib, u dastruchilar o'rtasidagi hamkorlikni soddalashtiradi. U **GitLab CI** orqali versiyani boshqarish(version control), code review, issue tracking va **CI/CD**ni avtomatlashtirish kabi xususiyatlarni taklif etadi. GitLab CI bilan ishlab dasturchilar applicationlarni build qilish, testdan o'tkazish va deploymentni avtomatlashtirish uchun pipelinelarni belgilaydilar. Ushbu integratsiya jamoalarga yuqori sifatli dasturiy ta'minotni samarali va ishonchli yetkazib berish imkonini beradi.
+
+Qisqa qilib aytganda Gitlab web-based git repository manager buni Githubga o'xshatish mumkin, Githubda hamma ishlagan bo'lishi kerak menimcha. Github asosan Open Source loyihlar uchundir private organizatsiylarda ham ishlash mumkin lekin Gitlabdek qulayliklar bo'lmaydi. Githubni o'z serverlaringizda o'rnatib,sozlab ishlata olmaysiz bu ba'zi bir tashkilotlar qonun-qoidalariga to'gri kelmaydi, ko'p tashkilotlar o'z loyiha kodlarini o'z serverlarida saqlashni xohlashdi bunda bizga Gitlab keladi. Siz Gitlabni o'zingizni serverlaringizda o'rnatib o'z Gitlab serveringizni sozlab be'malol ishlashingiz mumkin.
+
+**Gitlab CI** bu Gitlabda loyihlarniga **CI/CD** pipelinelar yozish loyihlarni avtomatlashtirish bir nechta qulayliklarni beruvchi **CI/CD** tool hisoblanadi, **Gitlab CI**ni **Github Actions**ga o'xshatish mumkin.
+
+Bugungi amaliyotimizda biz docker containerlar bilan ishlaydigan birinchi sodda **CI/CD**'ni **Gitlab CI** yordamida yozamiz, keyin uni optimizatsiya qilish va kengaytirish ustida ishlaymiz, keyin esa **DEV, STAGE, PROD** environmentlar sozlab shunga moslab **Gitlab CI**'da **CI/CD**'lar yozamiz va buni kengaytirib boramiz. 
+
+<Callout type="info" emoji="">
+Amaliyotda ishlatilgan [**gitlab.com/devops-journey**](https://gitlab.com/ismoilovdev/devops-journey) repositoriya. **Gitlab CI** namuna fayllarni [**ismoilovdevml/devops-tools**](https://github.com/ismoilovdevml/devops-tools/tree/master/Gitlab)dan topishingiz mumkin.
+</Callout>
