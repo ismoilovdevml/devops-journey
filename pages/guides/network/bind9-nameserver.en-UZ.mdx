@@ -1,35 +1,35 @@
 import { Callout } from "nextra-theme-docs";
 
-# bind9 orqali nameserver sozlash
+# bind9 orqali DNS nameserver sozlash
 
 ## Kirish
-DNS serverlarsiz bugungi kunni tassavvur qilish ancha qiyin masala. Biz har bir veb sayt nomiga murojaat qilayotganimizda ushbu server orqali aylanib o'tamiz. Dasturchilar tomonidan esa ko'p holatlarda yandex, cloudflare yoki provayder orqali dnslarni boshqarish imkoni bor. Ammo domenning o’zi orqali boshqarishchi?
+**DNS** serverlarsiz bugungi kunni tassavvur qilish ancha qiyin masala. Biz har bir veb sayt nomiga murojaat qilayotganimizda ushbu server orqali aylanib o'tamiz. Dasturchilar tomonidan esa ko'p holatlarda **yandex, cloudflare** yoki **provayder** orqali **dns**larni boshqarish imkoni bor. Ammo domenning o'zi orqali boshqarishchi?
 
 Oddiyroq tilda tushuntirsam:
 
-kun.uz domenining ns ma'lumotlariga qaraydigan bo'lsa dns1.webspace.uz ma'lumotini topishimiz mumkin. Bunda siz kun.uz domenini brauzerga yozganingizda xuddi shu domen ip manzili webspace dns serveri orqali aniqlanadi.
+**[kun.uz](https://kun.uz/en)** domenining ns ma'lumotlariga qaraydigan bo'lsa **dns1.webspace.uz** ma'lumotini topishimiz mumkin. Bunda siz **[kun.uz](https://kun.uz/en)** domenini brauzerga yozganingizda xuddi shu domen ip manzili **webspace dns** serveri orqali aniqlanadi.
 
-Mendagi manu.uz domenini qaraydigan bo’lsak unda s1.manu.uz yozuvini kuzatamiz. Ya’ni men dns serverni o’z domenim orqali boshqaraman.
+Mendagi **[manu.uz](https://manu.uz/)** domenini qaraydigan bo'lsak unda **s1.manu.uz** yozuvini kuzatamiz. Ya'ni men dns serverni o'z domenim orqali boshqaraman.
 
 ## Ishni boshlash
 
 <Callout type="info" emoji="">
-Eslatma: ushbu sozlamalarni boshlashdan avval ns yozuv qilish kerak bo’lgan domen (masalan ns.domain.uz) provayder orqali kerakli ipga yo’naltirish kerak bo’ladi. Bu odatda email xat chiqarish orqali amalga oshiriladi.
+**Eslatma:** ushbu sozlamalarni boshlashdan avval ns yozuv qilish kerak bo'lgan domen (masalan **ns.domain.uz**) provayder orqali kerakli **IP**ga yo'naltirish kerak bo'ladi. Bu odatda email xat chiqarish orqali amalga oshiriladi.
 </Callout>
 
-Avvalo bunday sozlamani amalga oshirish uchun biz bind9 dasturini serverga o’rnatishimiz kerak bo’ladi.
+Avvalo bunday sozlamani amalga oshirish uchun biz **bind9** dasturini serverga o'rnatishimiz kerak bo'ladi.
 
 ```bash
 sudo apt update && sudo apt upgrade
 sudo apt install bind9 -y
 ```
-Shundan so’ng zonalar (ns yozuvlar) uchun alohida papka yaratamiz:
+Shundan so'ng zonalar (ns yozuvlar) uchun alohida papka yaratamiz:
 
 ```bash
 mkdir /etc/bind/zones/
 ```
 
-NS server uchun ko’rsatiladigan root domenimiz uchun zona yaratish:
+**NS server** uchun ko'rsatiladigan root domenimiz uchun zona yaratish:
 
 ```bash
 nano /etc/bind/named.conf.default-zones
@@ -48,9 +48,9 @@ zone "146.1.168.192.in-addr.arpa" {
 };
 ```
 
-Bunda: 192.168.1.146 server ip manzili. in-addr.arpa uchun xuddi shu ip manzilni teskari ko’rinishda sozlash lozim.
+Bunda: `192.168.1.146` server IP manzili. `in-addr.arpa` uchun xuddi shu IP manzilni teskari ko'rinishda sozlash lozim.
 
-Zona uchun ns ma’lumotlar xaritasini yaratish:
+Zona uchun ns ma'lumotlar xaritasini yaratish:
 
 ```bash
 nano /etc/bind/db.fwd.domain.uz
@@ -71,7 +71,7 @@ ns.domain.uz.          IN      A       192.168.1.146
 ;
 ```
 
-Ns manzilni o’zi uchun xarita:
+Ns manzilni o'zi uchun xarita:
 
 ```bash
 nano /etc/bind/db.rev.domain.uz
@@ -90,7 +90,7 @@ $TTL    3600
 30.10      IN      PTR    ns.domain.uz.
 ```
 
-Demon uchun tuzilgan kalitni aniqlaymiz:
+Domen uchun tuzilgan kalitni aniqlaymiz:
 
 ```bash
 cat /etc/bind/rndc.key
@@ -105,7 +105,7 @@ key "rndc-key" {
 };
 ```
 
-Shundan so’ng **nano /etc/bind/rndc.conf** faylini yaratib ichiga quyidagilarni yozamiz:
+Shundan so'ng **nano /etc/bind/rndc.conf** faylini yaratib ichiga quyidagilarni yozamiz:
 
 ```bash
 nano /etc/bind/rndc.conf
@@ -123,7 +123,7 @@ options {
 };
 ```
 
-Yozish va foydalanish huquqlarini qo’shamiz:
+Yozish va foydalanish huquqlarini qo'shamiz:
 
 ```bash
 chown root:bind -R /etc/bind
@@ -137,7 +137,7 @@ systemctl restart bind9.service
 systemctl status bind9
 ```
 
-Yangi domen qo’shish:
+Yangi domen qo'shish:
 
 ```bash
 nano /etc/bind/zones/db.example.uz
@@ -160,7 +160,7 @@ ns2     IN      A       192.168.1.146
 example.uz. IN      A       192.168.1.146
 www     IN      A       192.168.1.146
 ```
-Yangi zonani qo’shish:
+Yangi zonani qo'shish:
 
 ```bash
 nano /etc/bind/named.conf.local
@@ -180,7 +180,7 @@ Servisni qayta ishga tushirish
 systemctl restart bind9
 ```
 
-Yozuvlarni tekshirish ko’rish:
+Yozuvlarni tekshirish ko'rish:
 
 ```bash
 dig example.uz all
