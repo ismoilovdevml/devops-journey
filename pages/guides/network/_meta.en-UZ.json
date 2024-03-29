@@ -1,4 +1,10 @@
 {
+    "bind9-nameserver": {
+      "title": "DNS nameserver sozlash",
+      "icon": "▶️",
+      "description": "bind9 bilan nameserver sozlash",
+      "href": "/guides/network/bind9-nameserver"
+    },
     "openvpn-server": {
       "title": "OpenVPN server sozlash",
       "icon": "▶️",
