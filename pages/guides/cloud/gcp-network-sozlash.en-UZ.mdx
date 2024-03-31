@@ -5,3 +5,30 @@ import { Callout } from "nextra-theme-docs";
 ![gcp-network-sozlash](/images/tutorials/cloud/gcp-network/banner.png)
 
 ## Kirish
+
+Cloud computing sohasida uzluksiz aloqa, ma'lumotlar yaxlitligi va operatsion samaradorlikni ta'minlash uchun mustahkam va xavfsiz tarmoq infratuzilmasini yaratish muhim ahamiyatga ega. **G**oogle **C**loud **P**latform(**GCP**) network servicelarining keng qamrovli to'plamini taklif etadi, ular orasida **V**irtual **P**rivate **C**loud(**VPC**) izolyatsiya qilingan va moslashtirilgan tarmoq muhitlarini yaratish uchun asosiy qurilish bloki sifatida ajralib turadi. Ushbu qo'llanmada biz **GCP VPC** orqali network infrastruktura qurishni ko'rib chiqamiz, biz regional network yaratiz subnetlar ulaymiz va firewal bilan ishlaymiz.
+
+
+Biz bugungi amaliyotda quyidagi kichik network infratuzilmani amaliyotda ko'rib chiqamiz. Loyihamiz uchun GCP da network yaratib, subnet sozlaymiz va infrastruktura VM(Virtual Machine)larni internal(ichki) IP lar orqali bo'glaymiz. Infrastrukturada VMlar bir bir bilan **internal IP** lari bilan bo'glanib ishlashi sizning infrastrukturangizda xavfsizlikni oshiradi, harajatlarni kamaytiradi, perfermonceni oshiradi va konfiguratsiyani soddalashtiradi.
+![gcp-network-sozlash](/images/tutorials/cloud/gcp-network/vpc-architecture.png)
+
+## VPC Network yaratish
+
+Keling ishni VPC networkdan yaratishdan boshlaymiz, bundan oldin siz GCP'da project yaratib olgan bo'lishingiz kerak. Qidiruv bo'limidan **VPC networks** deb qidirib **VPC networks** bo'limiga o'tamiz
+
+![gcp-network-sozlash](/images/tutorials/cloud/gcp-network/gcp1.png)
+
+Sizda quyidagi oyna ochilishi kerak. Asosan GCP'da **default** network bo'ladi **CREATE VPC NETWORK** bosib yangi vpc network yaratib olamiz.
+
+![gcp-network-sozlash](/images/tutorials/cloud/gcp-network/gcp2.png)
+
+VPC Networkni quyidagi sozlaymiz, nom va description yozamiz va **Subnets** qismidan **Subnet creation mode**ni **Custom** tanlab VPC Networkimiz uchun subnet yaratib olamiz 
+![gcp-network-sozlash](/images/tutorials/cloud/gcp-network/vpc1.png)
+
+Bu qismda esa Subnetga nom va description yozamiz. Regionni **us-central1** tanladik **IP stack type** esa **IPv4* tanlab **172.23.0.0/24** IP range beramiz qolgan sozlamalarni esa default qoldiramiz.
+![gcp-network-sozlash](/images/tutorials/cloud/gcp-network/vpc2.png)
+
+Bis qismda biz **Firewall rule**larni sozlashimiz kerak bo'ladi biz **Ingress** type orqali **k8s-network**imizdagi vmlar bir birni bilan bemalol bo'glashini, icmp, rdp 3389 port va ssh ulanish uchun 22 portni firewalldan ochib qo'yamiz.
+![gcp-network-sozlash](/images/tutorials/cloud/gcp-network/vpc3.png)
+Oxirgi bosqichda biz **Dinamic routing mode**ni **Regional** deb belgilaymiz ya'ni faqat belgilagan regionimizda ishlaydi(us-cenrtral1) agar siz **Global** qilib tanlasangiz boshqa regionlarda ham ishlatishingiz mumkin. Hammasini o'zimizga moslab belgilab chiqganimizdan keyin **CREATE** bosib VPC Networkimizni yaratib olamiz.
+![gcp-network-sozlash](/images/tutorials/cloud/gcp-network/vpc4.png)
