@@ -5,24 +5,6 @@
     "description": "Kubernetesga ilk qadamlar",
     "href": "/guides/k8s/k8s-kirish"
   },
-  "minikube-wordpress": {
-    "title": "Kubernetesda Wordpress deploy qilish",
-    "icon": "▶️",
-    "description": "Minkubedan foydalanib wordpress ko'tarish",
-    "href": "/guides/k8s/minikube-wordpress"
-  },
-  "minikube": {
-    "title": "Minkube",
-    "icon": "▶️",
-    "description": "Minkube o'rnatish va sozlash",
-    "href": "/guides/k8s/minikube"
-  },
-  "minikube-multi-node": {
-    "title": "Multi-Node Clusterdan foydalanish",
-    "icon": "▶️",
-    "description": "Minkubeda Multi-Node Clusterdan foydalanish",
-    "href": "/guides/k8s/minikube-multi-node"
-  },
   "k8s-architecture": {
     "title": "Kubernetes Arxitekturasi",
     "icon": "▶️",
@@ -41,6 +23,12 @@
     "description": "kubeadm bilan kubernetes cluster sozlash",
     "href": "/guides/k8s/k8s-cluster-setup"
   },
+  "kubespray-setup": {
+    "title": "Kubesrpay bilan K8s cluster",
+    "icon": "▶️",
+    "description": "Production uchun K8s cluster sozlash",
+    "href": "/guides/k8s/kubespray-setup"
+  },
   "k8s-cert-manager": {
     "title": "Kubernetesga Cert-Manager o'rnatish",
     "icon": "▶️",
@@ -58,5 +46,23 @@
     "icon": "▶️",
     "description": "Prometheus, Grafana",
     "href": "/guides/k8s/kubernetes-monitoring"
+  },
+  "minikube": {
+    "title": "Minikube",
+    "icon": "▶️",
+    "description": "Minikube o'rnatish va sozlash",
+    "href": "/guides/k8s/minikube"
+  },
+  "minikube-multi-node": {
+    "title": "Multi-Node Clusterdan foydalanish",
+    "icon": "▶️",
+    "description": "Minkubeda Multi-Node Clusterdan foydalanish",
+    "href": "/guides/k8s/minikube-multi-node"
+  },
+  "minikube-wordpress": {
+    "title": "Kubernetesda Wordpress deploy qilish",
+    "icon": "▶️",
+    "description": "Minkubedan foydalanib wordpress ko'tarish",
+    "href": "/guides/k8s/minikube-wordpress"
   }
 }
