@@ -1,10 +1,4 @@
 {
-    "configuring-nginx-webserver": {
-      "title": "NGINX web-server sozlash",
-      "icon": "▶️",
-      "description": "NGINX va NGINX Plus-ni web-server sifatida sozlash",
-      "href": "/guides/web-server/configuring-nginx-webserver"
-    },
     "load-balancing": {
       "title": "Load Balancing",
       "icon": "▶️",
