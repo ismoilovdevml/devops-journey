@@ -279,12 +279,12 @@ kubectl get all -n ingress-nginx
 ### HAProxy
 Tashqaridan kiruvchi tarfikni TCP orqali kubernetes cluster ichidagi ingresga yo'naltirish uchun foydalanamiz.
 
-**1->** HAProxyni k8s-matser serverga o'rnatib olamiz.
+**1->** HAProxy **2.8 LTS** k8s-matser serverga o'rnatib olamiz.(Ubuntu 20.04 uchun)
 ```bash
 sudo apt update && sudo apt upgrade -y
-sudo apt install haproxy -y
-sudo systemctl enable haproxy
-sudo systemctl status haproxy
+sudo apt-get install --no-install-recommends software-properties-common
+sudo add-apt-repository ppa:vbernat/haproxy-2.8
+sudo apt-get install haproxy=2.8.\*
 ```
 **2->** HAProxyni o'rnatib olagnimizdan keyin `/etc/haproxy/haproxy.cfg` ni ochamiz. `haproxy.cfg` konfiguratsiya fayli dastlab default holda quyidagicha bo'ladi.
 ```bash filename="/etc/haproxy/haproxy.cfg"
