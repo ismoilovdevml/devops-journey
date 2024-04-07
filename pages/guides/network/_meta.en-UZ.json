@@ -5,6 +5,18 @@
       "description": "bind9 bilan nameserver sozlash",
       "href": "/guides/network/bind9-nameserver"
     },
+    "dinamik-to-static": {
+      "title": "Dinamik IP'dagi serverni global tarmoqga chiqarish",
+      "icon": "▶️",
+      "description": "Dinamikni Static qilish",
+      "href": "/guides/network/dinamik-to-static"
+    },
+    "openvpn-subnet": {
+      "title": "OpenVPN orqali subnetlarga ulanish",
+      "icon": "▶️",
+      "description": "OpenVPN network",
+      "href": "/guides/network/openvpn-subnet"
+    },
     "openvpn-server": {
       "title": "OpenVPN server sozlash",
       "icon": "▶️",
