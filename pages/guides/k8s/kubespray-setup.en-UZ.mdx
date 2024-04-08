@@ -3,3 +3,36 @@ import { Callout } from "nextra-theme-docs";
 # Kubespray yordamida production uchun Kubernetes Cluster sozlash
 
 ![k8s-monitoring](/images/tutorials/k8s/kubespray/banner.png)
+
+## Kirish
+
+Bundan oldi biz [**Kubernetes klaster yaratish va sozlash(kubeadm)**](https://devops-journey.uz/guides/k8s/k8s-cluster-setup) qo'llanmasida biz **on-premises** serverlarda **kubeadm** yordamida Kubernetes yaratib ishlashga tayyorlagandik. Bugun biz **Kubespray** yordamida **Production** uchun Kubernetes cluster sozlab ishlashgacha tayyorlaymiz.
+
+
+[**Kubespray**](https://kubespray.io/#/) - Ansibleda qurilgan [**open-source**](https://github.com/kubernetes-sigs/kubespray) loyiha bo'lib, Kubernetes klasterni oson deploy qilish va boshqarishni avtomatlashtirish uchun mo'ljallangan Ansible playbook hisoblanadi.
+
+## Ishni boshlash
+
+Bugungi amaliyotda biz Kubespray yordamida production uchun Kubernetes cluster sozlab ishga tushiramiz, biz bunda **Kubespray, Helm, NGINX Ingress, Flannel, Promethus/Grafana, Longhorn, Certmanager** va boshqa toollardan foydalanmiz.
+
+Amaliyot uchun minimum 4-ta server kerak bo'ladi, ya'ni bitta Ansible server va 3-ta minimum Kubernetes klaster uchun serverlar.
+
+<Callout type="info" emoji="">
+
+Ushbu amaliyot uchun kerak bo'ladigan serverlar.
+
+**Minimum Server talabi**
+
+| OS            | RAM            | CPU           | Xotira       | Static IP  | Server nomi  |
+| ------------- | -------------- | ------------- |------------- | ---------- | -----------  |
+| Ubuntu 20.04  | 4GB            | 2vCPU 1 core  | 50GB         | Ha kerak   | ansible-server |
+| Ubuntu 20.04  | 8GB            | 8vCPU 4 core  | 50GB         | Ha kerak   | k8s-master   |
+| Ubuntu 20.04  | 4GB            | 4vCPU 2 core  | 50GB         | shart emas | k8s-node1    |
+| Ubuntu 20.04  | 4GB            | 4vCPU 2 core  | 50GB         | shart emas | k8s-node2    |
+
+Umumiy hisobda bizga 4ta server, bitta k8s-master server va minimum uchta node server(k8s-node1,k8s-node2,k8s-node3) kerak bo'ladi.
+</Callout>
+
+## Network sozlash
+
+Kubernetes klaster sozlash uchun birinchi navbatda Kubernetes klaster uchun Network sozlab olishimiz kerak bo'ladi.
