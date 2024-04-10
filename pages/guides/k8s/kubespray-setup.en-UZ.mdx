@@ -85,9 +85,79 @@ curl -sS https://bootstrap.pypa.io/get-pip.py | python3.10
 python3 -m pip --version
 ```
 
-**3->** Ansible o'rnatamiz.
+**3->** **Ansible** o'rnatamiz.
 
 ```bash
 sudo add-apt-repository --yes --update ppa:ansible/ansible
 sudo apt install ansible -y
 ```
+
+Ansible serverimzida Ansible va Python o'rnatib olganimizdan keyin Kubesprayni sozlashni boshlasak bo'ladi. 
+
+Kubespray github repositoriyasidan [**Releases**](https://github.com/kubernetes-sigs/kubespray/releases)'ga o'tib latest versiyani **.zip** yuklab olamiz.
+
+```bash
+sudo wget https://github.com/kubernetes-sigs/kubespray/archive/refs/tags/v2.24.1.zip
+```
+Kubesprayni zipdan chiqarib olamiz va papka nomini kubespray'ga o'zgartiramiz.
+
+```bash
+sudo unzip v2.24.1.zip
+mv kubespray-2.24.1/ ./kubespray
+```
+![kubespray](/images/tutorials/k8s/kubespray/ansible1.png)
+
+Kubespray ansible playbookni ishga tushirish uchun ansible-serverimiz boshqa serverlarga **internal IP**lari orqali **root** userga **ssh** orqali ulana olishi kerak, shuning uchun **ansible-server**da ssh-key generatsiya qilib uni **public** keyini boshqa serverlarda **root** userga kirib **authorized_keys**ga qo'shib qo'yishimiz va **ansible-server**dan turib ssh ulanishni tekshirib ko'rishimiz kerak.
+
+ansible-serverimizda root userga kirib  ssh key generatsiya qilamiz.
+
+```bash
+sudo su
+ssh-keygen
+```
+![kubespray](/images/tutorials/k8s/kubespray/ssh.png)
+
+ssh papkaga kirib **id_rsa.pub** public keyni cat bilan chiqarib olib uni buferga nusxalab olamiz va boshqa serverlarimizda root userdan kirib authorized_keys'ga qo'shib qo'yamiz.
+
+Ansible serverda:
+```bash
+cd ~/.ssh/
+ls
+cat id_rsa.pub
+```
+
+Boshqa serverlarda:
+
+```bash
+sudo su
+cat >> ~/.ssh/authorized_keys <<EOF
+bu yerga ansible serverdan olgan id_rsa.pub ssh-keyimizni joylashtiramiz
+EOF
+```
+
+ansible server public ssh keyini boshqa serverlar authoirized_keys fayliga qo'shib bo'lganimizdan keyin ansible-serverdan turib root user bilan boshqa sereverlar internal IP lari orqali ssh ulanishni tekshiramiz.
+
+Ansible serverdan:
+
+```bash
+ssh root@172.23.0.16
+ssh root@172.23.0.17
+ssh root@172.23.0.18
+```
+
+Okeey hammasiga root user bilan Internal IP'lari orqali ssh bilan ulana olganimizdan keyin kubesprayni solashni boshlasak bo'ladi.
+
+Kubesprayni ishga tushirishdan oldin kubespray uchun python venv yaratib kerakli python paketlarni o'rnatib olamiz.
+
+Ansible serverda:
+
+```bash
+VENVDIR=kubespray-venv
+KUBESPRAYDIR=kubespray
+python3 -m venv $VENVDIR
+source $VENVDIR/bin/activate
+cd $KUBESPRAYDIR
+pip install --upgrade pip
+pip install -U -r requirements.txt
+```
+![kubespray](/images/tutorials/k8s/kubespray/ansible2.png)

@@ -5,6 +5,18 @@
       "description": "PostgreSQL haqida umumiy ma'lumot",
       "href": "/guides/database/postgresql-kirish"
     },
+    "start-mysql": {
+      "title": "MySQL",
+      "icon": "▶️",
+      "description": "MySQL Kirish",
+      "href": "/guides/database/start-mysql"
+    },
+    "start-mongodb": {
+      "title": "MongoDB",
+      "icon": "▶️",
+      "description": "MongoDB nima va undan nima uchun foydalaniladi?",
+      "href": "/guides/database/start-mongodb"
+    },
     "postgresql-ornatish": {
       "title": "Posgresql o'rnatish",
       "icon": "▶️",
@@ -17,11 +29,11 @@
       "description": "Ubuntu 20.04 serverga MongoDB o'rnatish",
       "href": "/guides/database/install-mongodb"
     },
-    "postgresql-bilan-ishlash": {
-      "title": "SQL querylar bilan ishlash",
+    "postgres-cluster-sozlash": {
+      "title": "PostgreSQL Cluster yaratish",
       "icon": "▶️",
-      "description": "PostgreSQL-da SQL querylar bilan ishlash",
-      "href": "/guides/database/postgresql-bilan-ishlash"
+      "description": "Patroni va HAProxy yordamida Highly Available PostgreSQL Clusterini yaratish",
+      "href": "/guides/database/postgres-cluster-sozlash"
     },
     "postgres-monitoring": {
       "title": "PostgreSQL Monitoring",
@@ -29,29 +41,17 @@
       "description": "Prometheus/Grafana va postgres_exporter bilan monitoring",
       "href": "/guides/database/postgres-monitoring"
     },
-    "start-mongodb": {
-      "title": "MongoDB",
-      "icon": "▶️",
-      "description": "MongoDB nima va undan nima uchun foydalaniladi?",
-      "href": "/guides/database/start-mongodb"
-    },
-    "postgres-cluster-sozlash": {
-      "title": "PostgreSQL Cluster yaratish",
-      "icon": "▶️",
-      "description": "Patroni va HAProxy yordamida Highly Available PostgreSQL Clusterini yaratish",
-      "href": "/guides/database/postgres-cluster-sozlash"
-    },
-    "start-mysql": {
-      "title": "MySQL",
-      "icon": "▶️",
-      "description": "MySQL Kirish",
-      "href": "/guides/database/start-mysql"
-    },
     "sql-injection": {
       "title": "SQL Injection Attack",
       "icon": "▶️",
       "description": "Bu nima va uni qanday oldini olish mumkin",
       "href": "/guides/database/sql-injection"
+    },
+    "postgresql-bilan-ishlash": {
+      "title": "SQL querylar bilan ishlash",
+      "icon": "▶️",
+      "description": "PostgreSQL-da SQL querylar bilan ishlash",
+      "href": "/guides/database/postgresql-bilan-ishlash"
     }
   }
   
