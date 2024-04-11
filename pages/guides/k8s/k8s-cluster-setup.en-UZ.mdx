@@ -169,8 +169,7 @@ MetalLB ishlab turgani bilish uchun statusini ko'ramiz.
 # barcha namescpaselar ro'yxatini ko'rish uchun
 kubectl get ns
 # metallb-system namespace podlarini ko'rish
-
-kubectl get all -n metallb-system
+kubectl get pods -n metallb-system
 ```
 ![k8s-cluster](/images/tutorials/k8s/cluster-setup/k8s10.png )
 
@@ -269,7 +268,7 @@ Statusni ko'rish uchun
 
 ```bash
 kubectl get svc -n ingress-nginx
-kubectl get all -n ingress-nginx
+kubectl get pods -n ingress-nginx
 ```
 
 ![k8s-cluster](/images/tutorials/k8s/cluster-setup/ip2.png)
@@ -398,7 +397,7 @@ Ushbu arxitektura quyidagicha rasmda ko'rsatilganidek ishlaydi. NGINX Ingress k8
 
 ## Cert-Manager o'rnatish va sozlash
 
-Kubernetes clusterimizga **Cert-Manager** o'rnatish bo'yicha [**devops-journey**](ttps://devops-journey.uz) platformasida qo'llanma mavjud bo'lib ushu [**Kubernesga Cert-Manager o'rnatish va sozlash**](https://devops-journey.uz/guides/k8s/k8s-cert-manager) qo'llamadan foydalanib o'rnatib sozlab olishingiz mumkin.
+Kubernetes clusterimizga **Cert-Manager** o'rnatish bo'yicha [**devops-journey**](ttps://devops-journey.uz) platformasida qo'llanma mavjud bo'lib ushu [**Kubernesga Cert-Manager o'rnatish va sozlash**](https://devops-journey.uz/guides/k8s/k8s-cert-manager) qo'llamasidan foydalanib o'rnatib sozlab olishingiz mumkin.
 
 ## Longhorn o'rnatish va sozlash
 
@@ -621,6 +620,7 @@ Nihoyat bizda ishlashga tayyor kubernetes klaster bor. Bu juda oson va qiyinchil
  * [**Kubernetesga Kirish**](https://devops-journey.uz/guides/k8s/k8s-kirish)
  * [**Kubernetes Arxitekturasi**](https://devops-journey.uz/guides/k8s/k8s-architecture)
  * [**Kubernetes Obyektlari**](https://devops-journey.uz/guides/k8s/k8s-objects)
+ * [**Kubespray yordamida production uchun Kubernetes Cluster sozlash**](https://devops-journey.uz/guides/k8s/kubespray-setup)
  * [**Kubernesga Cert-Manager o'rnatish va sozlash**](https://devops-journey.uz/guides/k8s/k8s-cert-manager)
  * [**Kubernetes Monitoring**](https://devops-journey.uz/guides/k8s/kubernetes-monitoring)
  * [**Kubernetesga Argo CD o'rnatish va sozlash**](https://devops-journey.uz/guides/k8s/argo-cd-install)
