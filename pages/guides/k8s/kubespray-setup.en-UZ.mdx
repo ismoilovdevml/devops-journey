@@ -706,8 +706,11 @@ TOKEN olganimizdan keyin Kubernetes Dashboardga kirishimiz mumkin.
 
 ![k8s-cluster](/images/tutorials/k8s/cluster-setup/dashboard1.png)
 
+## Kubernetes Monitoring
 
-Nihoyat bizda ishlashga tayyor kubernetes klaster bor. Bu juda oson va qiyinchiliksiz bo'ldi desak ham bo'ladi. Ushbu amaliyotda **on-primese** serverlarda **Kubespray** bilan Kubernetes cluster yaratdik va Networkni sozladik. Biz on-primese serverlarda network solution uchun **Flannel**dan LB uchun **MetalLB**dan tashqi trafik uchun esa **NGINX Ingress Controller** va **HAProxy**dan foydalanib konfiguratsiya qildik. Applicationlarimiz uchun avtomatik bepul **SSL/TLS** sertifikatlar olish uchun **Cert-Manager** o'rnatib sozladik. Klasterimiz ishlashga tayyor bo'lganida esa amaliyot uchun Kubernetes Dashboard o'rnatib domen ulab SSL sertifikat olib ishlashga tayyor qildik.
+Kubernetes klasterimizni monitoring qilishimiz uchun platformamizda [**Kubernetes Monitoring**](https://devops-journey.uz/guides/k8s/kubernetes-monitoring) qo'llanmamizni ko'rib chiqishingiz mumkin.
+
+Nihoyat bizda ishlashga tayyor kubernetes klaster bor. Bu juda oson va qiyinchiliksiz bo'ldi desak ham bo'ladi. Ushbu amaliyotda **on-primese** serverlarda **Kubespray** bilan Kubernetes cluster yaratdik va Networkni sozladik. Biz on-primese serverlarda network solution uchun **Flannel**dan LB uchun **MetalLB**dan tashqi trafik uchun esa **NGINX Ingress Controller** va **HAProxy**dan foydalanib konfiguratsiya qildik. Applicationlarimiz uchun avtomatik bepul **SSL/TLS** sertifikatlar olish uchun **Cert-Manager** o'rnatib sozladik. Klasterimizni monitoring qilish uchun Prometheus/Grafana stackni qo'lladik. Klasterimiz ishlashga tayyor bo'lganida esa amaliyot uchun Kubernetes Dashboard o'rnatib domen ulab SSL sertifikat olib ishlashga tayyor qildik.
 
 ## Qo'shimcha
 
