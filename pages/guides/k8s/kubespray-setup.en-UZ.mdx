@@ -246,7 +246,7 @@ sed -e "s/strictARP: false/strictARP: true/" | \
 kubectl apply -f - -n kube-system
 ```
 
-**4->** MetalLBdan oldin sozlash yakunlangandan keyin MetalLBni helm orqali o'rnatib olamiz. Kubespray ishga tushirib kubernetes cluter yaratganimizda helm ham o'rnatiladi ya'ni helm o'rntishga hojat yo'q.
+**4->** MetalLBdan oldin sozlash yakunlangandan keyin MetalLBni helm orqali o'rnatib olamiz. Kubespray ishga tushirib kubernetes cluter yaratganimizda helm ham o'rnatiladi ya'ni helm o'rnatishga hojat yo'q.
 
 ```bash
 helm repo add metallb https://metallb.github.io/metallb
@@ -337,7 +337,7 @@ Konfiguratsiya asosan IP-manzillar poolini (IPAddressPool) e'lon qiladi, undan M
 
 Ushbu konfiguratsiya MetalLB-ga tashqi IP-manzillarni LoadBalancer tipidagi servicelarga ajratish uchun belgilangan IP-manzil oralig'idan foydalanishni buyuradi va bu ma'lumotni tarmoqning to'g'ri rezolyutsiyasi uchun Layer 2 advertisement orqali yetkazadi. Bu tashqi trafikning Kubernetes klasteringizdagi tegishli podlarga yetib borishiga imkon berish uchun juda muhimdir.
 
-**6->** MetalLB konfiguratsiya faylimizni yozib bo'lganimzdan keyin uni apply qilib ishga tushiramiz.
+**6->** MetalLB konfiguratsiya faylimizni yozib bo'lganimizdan keyin uni apply qilib ishga tushiramiz.
 
 ```bash
 kubectl apply -f address-pool.yaml
@@ -357,7 +357,7 @@ helm repo update
 helm install ingress-nginx ingress-nginx/ingress-nginx --namespace ingress-nginx --create-namespace
 ```
 
-Statusni ko'rish uchun
+Statusini ko'rish uchun
 
 ```bash
 kubectl get svc -n ingress-nginx
@@ -378,7 +378,7 @@ sudo apt-get install --no-install-recommends software-properties-common
 sudo add-apt-repository ppa:vbernat/haproxy-2.8
 sudo apt-get install haproxy=2.8.\*
 ```
-**2->** HAProxyni o'rnatib olagnimizdan keyin `/etc/haproxy/haproxy.cfg` ni ochamiz. `haproxy.cfg` konfiguratsiya fayli dastlab default holda quyidagicha bo'ladi.
+**2->** HAProxyni o'rnatib olganimizdan keyin `/etc/haproxy/haproxy.cfg` ni ochamiz. `haproxy.cfg` konfiguratsiya fayli dastlab default holda quyidagicha bo'ladi.
 ```bash filename="/etc/haproxy/haproxy.cfg"
 global
 	log /dev/log	local0
@@ -707,7 +707,7 @@ TOKEN olganimizdan keyin Kubernetes Dashboardga kirishimiz mumkin.
 ![k8s-cluster](/images/tutorials/k8s/cluster-setup/dashboard1.png)
 
 
-Nihoyat bizda ishlashga tayyor kubernetes klaster bor. Bu juda oson va qiyinchiliksiz bo'ldi desak ham bo'ladi. Ushbu amaliyotda **on-primese** serverlarda **kubeadm** bilan Kubernetes cluster yaratdik va Networkni sozladik. Biz on-primese serverlarda network solution uchun **Flannel**dan LB uchun **MetalLB**dan tashqi trafik uchun esa **NGINX Ingress Controller** va **HAProxy**dan foydalanib konfiguratsiya qildik. Applicationlarimiz uchun avtomatik bepul **SSL/TLS** sertifikatlar olish uchun **Cert-Manager** o'rnatib solzadik. Klasterimiz ishlashga tayyor bo'lganida esa amaliyot uchun Kubernetes Dashboard o'rnatib domen ulab SSL sertifikat olib ishlashga tayyor qildik.
+Nihoyat bizda ishlashga tayyor kubernetes klaster bor. Bu juda oson va qiyinchiliksiz bo'ldi desak ham bo'ladi. Ushbu amaliyotda **on-primese** serverlarda **Kubespray** bilan Kubernetes cluster yaratdik va Networkni sozladik. Biz on-primese serverlarda network solution uchun **Flannel**dan LB uchun **MetalLB**dan tashqi trafik uchun esa **NGINX Ingress Controller** va **HAProxy**dan foydalanib konfiguratsiya qildik. Applicationlarimiz uchun avtomatik bepul **SSL/TLS** sertifikatlar olish uchun **Cert-Manager** o'rnatib sozladik. Klasterimiz ishlashga tayyor bo'lganida esa amaliyot uchun Kubernetes Dashboard o'rnatib domen ulab SSL sertifikat olib ishlashga tayyor qildik.
 
 ## Qo'shimcha
 
