@@ -29,6 +29,12 @@
     "description": "Gitlab CI bilan Docker CI/CD",
     "href": "/guides/ci-cd/start-gitlabci"
   },
+  "gitlab-ci-release-integrations": {
+    "title": "Gitlab CI Release && Integrations",
+    "icon": "▶️",
+    "description": "Release && Integrations",
+    "href": "/guides/ci-cd/gitlab-ci-release-integrations"
+  },
   "android-github-actions": {
     "title": "Android CI/CD",
     "icon": "▶️",
