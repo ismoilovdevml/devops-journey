@@ -3,3 +3,21 @@ import { Callout } from "nextra-theme-docs";
 # Gitlab CI | Releaselar va Integrationlar
 
 ![gitlab-ci](/images/tutorials/ci-cd/gitlabci-release-integrations/banner.png)
+
+Tashkilotlarda loyiha kodlarni samarali saqlash va boshqarish asosiy vazifalardan biri hisoblanadi. Bugungi amaliyotimizda biz loyiha kodlarini qanday qilib versiyalash va roolback(ortga qaytish)ni yo'lga qo'yamiz. Jamoa bilan ishlash uchun bir nechta integratsiyalarni ko'rib chiqamiz, bu amaliyotda asosan notification integrationlarni ko'rib chiqamiz.
+
+## Gitlab Releaselar
+
+Loyilarni versiyalash va rollback qilish uchun biz Gitlab releaselardan foydalanamiz. Loyiha kodlarini samarali boshqarishning bir nechta usullari bor, barcha tashkilotlarning o'z kod saqlash srategiyalar bor, keling bu amalaiyotda bir loyiha kodlarini samarali manage qilishning bir usulini ko'rib chiqamiz.
+
+![gitlab-ci](/images/tutorials/ci-cd/gitlabci-release-integrations/git-architecture.png)
+
+Rasmdagi kodni saqlash qarashni ko'rib chiqamiz:
+
+* Barcha loyihlarda environmentga qarab asosiy branchlar bo'ladi misol uchun: **dev,test,prod**
+* Barcha Dasturchilar guruhi loyihaning **dev** branchida ishlashadi va **dev** branch uchun **DEV** environmentga deploy bo'ladi.
+* Loyihaning **TEST(yoki STAGE)** va **PROD** branchlariga to'gridan to'gri o'zgartirish kiritish mumkin bo'lmaydi faqat **DEV -> TEST -> PROD** qilib qadamma qadam prodga chiqish mumkin bo'ladi.
+*  Stabil production kod **prod** yoki **main** branchda saqlanadi va shu branchlarda Release qilib kod versiyalanadi.
+
+
+Keling loyiha kodlarini versiyalashni ko'rib chiqamiz. Biz misol uchun **main** branchga o'zgarish bo'lganda Gitlab release qilib loyiha kodlarini versiyalaydigan Gitlab CI yozamiz.
