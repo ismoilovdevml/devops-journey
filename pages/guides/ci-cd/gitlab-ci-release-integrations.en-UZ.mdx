@@ -21,3 +21,70 @@ Rasmdagi kodni saqlash qarashni ko'rib chiqamiz:
 
 
 Keling loyiha kodlarini versiyalashni ko'rib chiqamiz. Biz misol uchun **main** branchga o'zgarish bo'lganda Gitlab release qilib loyiha kodlarini versiyalaydigan Gitlab CI yozamiz.
+
+Ushbu amaliyotda biz [gitlab.com/ismoilovdev/devops-journey](https://gitlab.com/ismoilovdev/devops-journey) loyihasi misolida ko'rib chiqamiz. Keling birinchi navbatda branchlar ochib chiqamiz.
+
+![gitlab-ci](/images/tutorials/ci-cd/gitlabci-release-integrations/gitlab1.png)
+
+![gitlab-ci](/images/tutorials/ci-cd/gitlabci-release-integrations/gitlab2.png)
+
+Rasmda ko'rsatilganidek **dev** va **stage** branchlar ochib olamiz **main** branchimiz esa prod chiqadigan branchimiz bo'ladi.
+
+Loyihamiz branchlar ro'yxati, bu yerda main branch default branch hisoblanadi. 
+![gitlab-ci](/images/tutorials/ci-cd/gitlabci-release-integrations/gitlab3.png)
+
+Keling default branchni main emas dev branchga o'zgartiramiz. Repositoriyaga kirib chap tomondan
+
+ **Settings -> Repository -> Branch defaults**dan devga o'zgartirib qo'yamiz.
+
+![gitlab-ci](/images/tutorials/ci-cd/gitlabci-release-integrations/gitlab4.png)
+
+
+## Gitlab CI
+
+Loyihamiz Repositoriyasini sozlab olganimizdan keyin keling ikkita bosqichli Gitlab CI yozamiz yani **build** va **release**. Qachonki loyihamiz **main** branchida o'zgarish bo'lsa Gitlab CI pipelienmiz avtomatik ishga tushadi va loyihani build qilib keyin loyihani pipeline ID'si bilan versiyalab Release chiqaradi.
+
+Gitlab Ci yozish uchun loyihamiz papkasida `.gitlab-ci.yml` CI pipeline fayl ochib olamiz. Mana bizning `gitlab-ci.yml` konfiguratsiyamiz.
+
+```bash filename=".gitlab-ci.yml"
+stages:
+  - build
+  - release
+
+variables:
+  NODE_VERSION: "20.x"
+
+cache:
+  key: "$CI_COMMIT_REF_SLUG"
+  paths:
+    - node_modules/
+
+before_script:
+  - |
+    if [[ "$CI_JOB_NAME" != *"release_job"* ]]; then
+      apt-get update -qy
+      apt-get install -y curl
+      curl -sL https://deb.nodesource.com/setup_20.x | bash -
+      apt-get install -y nodejs
+      npm install -g pnpm
+    fi
+
+build:
+  stage: build
+  image: node:20
+  script:
+    - pnpm install
+    - pnpm next build
+
+release_job:
+  stage: release
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+  script:
+    - echo "Running release_job for $TAG"
+  release:
+    tag_name: "v0.$CI_PIPELINE_IID"
+    description: "v0.$CI_PIPELINE_IID"
+    ref: "$CI_COMMIT_SHA"
+```
