@@ -75,18 +75,20 @@ build:
   script:
     - pnpm install
     - pnpm next build
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
 
 release_job:
   stage: release
   image: registry.gitlab.com/gitlab-org/release-cli:latest
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
   script:
     - echo "Running release_job for $TAG"
   release:
     tag_name: "v0.$CI_PIPELINE_IID"
     description: "v0.$CI_PIPELINE_IID"
     ref: "$CI_COMMIT_SHA"
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
 ``` 
 
 Keling loyihamizda **.gitlab-ci.yml** konfigga shu **Gitlab CI** konfiguratsiyani qo'shib **main** branchga push qilamiz va bizd loyihamiz **main** branchiga o'tganimizda Gitlab CI pipeline ishlayotganini ko'rishimiz mumkin.
@@ -146,6 +148,8 @@ build:
   script:
     - pnpm install
     - pnpm next build
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
 ```
 
 Ushbu bosqich **release** bosqich hisoblanadi. Bu bosqichda `registry.gitlab.com/gitlab-org/release-cli:latest` docker imagedan foydalangan holda Release chiqariladi. Release faqat **main** branchda o'zgarish bo'lganidagina ishlaydi.
@@ -153,14 +157,14 @@ Ushbu bosqich **release** bosqich hisoblanadi. Bu bosqichda `registry.gitlab.com
 release_job:
   stage: release
   image: registry.gitlab.com/gitlab-org/release-cli:latest
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
   script:
     - echo "Running release_job for $TAG"
   release:
     tag_name: "v0.$CI_PIPELINE_IID"
     description: "v0.$CI_PIPELINE_IID"
     ref: "$CI_COMMIT_SHA"
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
 ```
 
 ## Integrationlar
@@ -198,7 +202,7 @@ Channel ochib olganimzidan keyin **Integrations** bo'limga kirib **Webhooks**dan
 Discord Server ochib channellar ochib olganimizdan keyin G1itlabda Repositoriyaymizga o'tamiz va **-> Settings -> Integrations -> Discord Notifications** bo'limga o'tamiz.
 
 ![gitlab-ci](/images/tutorials/ci-cd/gitlabci-release-integrations/gitlab7.png)
-
+ 
 Integrations bo'limdan **Discord Notifications** bo'limga o'tamiz va **Configure** bosib konfiguratsiya bo'limiga o'tamiz.
 ![gitlab-ci](/images/tutorials/ci-cd/gitlabci-release-integrations/discord4.png)
 
@@ -219,3 +223,11 @@ Keling endi **main** branchdagi kodga o'zgartirish kiritib commit qilamiz, bu ho
 ![gitlab-ci](/images/tutorials/ci-cd/gitlabci-release-integrations/discord9.png)
 
 Okeyy biz Repositoriyamizni muvaffiqiyatli ravishda Discord bilan integratsiya qildik. 
+
+
+Email bilan integratsiya ham oddiy, o'zingizga moslab konfiguratsiya qilasiz va kimlarni emailiga notification yuborish keraligi belgilanadi.
+
+![gitlab-ci](/images/tutorials/ci-cd/gitlabci-release-integrations/email.png)
+
+Emailga quyidagicha notification keladi.
+![gitlab-ci](/images/tutorials/ci-cd/gitlabci-release-integrations/email1.png)
