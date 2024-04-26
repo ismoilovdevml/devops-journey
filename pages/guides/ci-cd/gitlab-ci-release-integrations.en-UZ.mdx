@@ -87,4 +87,78 @@ release_job:
     tag_name: "v0.$CI_PIPELINE_IID"
     description: "v0.$CI_PIPELINE_IID"
     ref: "$CI_COMMIT_SHA"
+``` 
+
+Keling loyihamizda **.gitlab-ci.yml** konfigga shu **Gitlab CI** konfiguratsiyani qo'shib **main** branchga push qilamiz va bizd loyihamiz **main** branchiga o'tganimizda Gitlab CI pipeline ishlayotganini ko'rishimiz mumkin.
+![gitlab-ci](/images/tutorials/ci-cd/gitlabci-release-integrations/ci.png)
+
+Repositoriyamizdan **-> Build -> Pipelines**ga o'tib jarayonni kuzatishimiz mumkin.
+![gitlab-ci](/images/tutorials/ci-cd/gitlabci-release-integrations/ci1.png)
+
+![gitlab-ci](/images/tutorials/ci-cd/gitlabci-release-integrations/ci4.png)
+
+Okeyyy bizda Gitlab Ci pipelinemiz muvaffiqiyatli ishga tushdi, keling loyihani versiyalab reliz chiqarganini ko'rib chiqamiz.
+![gitlab-ci](/images/tutorials/ci-cd/gitlabci-release-integrations/ci5.png)
+
+Repositoriyamizga o'tib **Release** bo'limiga o'tamiz.
+![gitlab-ci](/images/tutorials/ci-cd/gitlabci-release-integrations/gitlab5.png)
+
+**Release**ga kirganimizda loyihamizda bitta **v0.1** tag bilan reliz chiqganini ko'rishimiz mumkin.
+![gitlab-ci](/images/tutorials/ci-cd/gitlabci-release-integrations/gitlab6.png)
+
+Okeyy kleing endi bu Gitlab CI pipelineni va vazifalarini ko'rib chiqamiz.
+
+Bu qism ikkita stage bo'lishini belgilaydi ya'ni **build** va **release**
+```bash
+stages:
+  - build
+  - release
+```
+
+Bu qismda **variables** ga Nodejs **20.x** belgilanadi yani bu loyihani Nodejs **20.x** da ishga tushirishni bildiradi. **cache** qismi esa Nodejs loyihani ya'ni **node_modules/** papkani keshlashni bildiradi bu keyin CI larni tezlashtirishga yordam beradi.
+```bash
+variables:
+  NODE_VERSION: "20.x"
+ 
+cache:
+  key: "$CI_COMMIT_REF_SLUG"
+  paths:
+    - node_modules/
+```
+Bu qismda esa **before_script** Gitlab CI pipeline joblari ishga tuhsmasidan oldin ishga tushadigan qism hisoblanadi va NoeJS loyihani build qilish uchun runnerga NodeJS o'rnatib, pnpm ham o'rnatib loyihani build qilishga tayyor bo'ladi.
+```bash
+before_script:
+  - |
+    if [[ "$CI_JOB_NAME" != *"release_job"* ]]; then
+      apt-get update -qy
+      apt-get install -y curl
+      curl -sL https://deb.nodesource.com/setup_20.x | bash -
+      apt-get install -y nodejs
+      npm install -g pnpm
+    fi
+```
+
+Bu esa **build** bosqich hisoblanadi bu bosqichda **pnpm install** va **pnpm next build** buyruqlari yordamida Nodejs loyiha build qilinadi.
+```bash
+build:
+  stage: build
+  image: node:20
+  script:
+    - pnpm install
+    - pnpm next build
+```
+
+Ushbu bosqich **release** bosqich hisoblanadi. Bu bosqichda `registry.gitlab.com/gitlab-org/release-cli:latest` docker imagedan foydalangan holda Release chiqariladi. Release faqat **main** branchda o'zgarish bo'lganidagina ishlaydi.
+```bash
+release_job:
+  stage: release
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+  script:
+    - echo "Running release_job for $TAG"
+  release:
+    tag_name: "v0.$CI_PIPELINE_IID"
+    description: "v0.$CI_PIPELINE_IID"
+    ref: "$CI_COMMIT_SHA"
 ```
