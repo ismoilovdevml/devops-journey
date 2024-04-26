@@ -162,3 +162,60 @@ release_job:
     description: "v0.$CI_PIPELINE_IID"
     ref: "$CI_COMMIT_SHA"
 ```
+
+## Integrationlar
+
+Tashkilotda loyihalarni samarali boshqarish va jamoa bilan ishlashni yaxshilash uchun har xil usullardan foydalaniladi, bulardan eng keng tarqagani Repositoriyalarga notification integratsiyalar hisoblanadi. Bugun biz Loyihlarimizga notification uchun Discord bilan inetgegratsiya qilamiz.
+
+
+Keling birinchi o'rinda **Discord** sozlab olamiz.
+Discord kirib **Add a Server** bosib Server yaratib olamiz
+
+>![gitlab-ci](/images/tutorials/ci-cd/jenkins-docker/discord1.png)
+
+>![gitlab-ci](/images/tutorials/ci-cd/jenkins-docker/discord2.png)
+
+>![gitlab-ci](/images/tutorials/ci-cd/jenkins-docker/discord3.png)
+
+Serverga nom berib **Create** bosamiz.
+
+>![gitlab-ci](/images/tutorials/ci-cd/jenkins-docker/discord4.png)
+
+Discord Server yaratib olganimzidan keyin Serverimizda channel yaratib olamiz. **Create Channel**
+
+>![gitlab-ci](/images/tutorials/ci-cd/jenkins-docker/discord6.png)
+
+Channel nomini yozamiz masalan **merge-requests** -> **Create Channel**
+> ![gitlab-ci](/images/tutorials/ci-cd/gitlabci-release-integrations/discord.png)
+
+Channel ochib olganimzidan keyin **Integrations** bo'limga kirib **Webhooks**dan **Create Webhook** bosamiz
+> ![gitlab-ci](/images/tutorials/ci-cd/gitlabci-release-integrations/discord2.png)
+
+**Webhook** yaratib olganimizdan keyin uni nusxalab **Copy Webhook URL** olib qo'yamiz va Gitlab **Discord Notification**da ishlatish  uchun olib qo'yamiz.
+> ![gitlab-ci](/images/tutorials/ci-cd/gitlabci-release-integrations/discord3.png)
+
+
+Discord Server ochib channellar ochib olganimizdan keyin G1itlabda Repositoriyaymizga o'tamiz va **-> Settings -> Integrations -> Discord Notifications** bo'limga o'tamiz.
+
+![gitlab-ci](/images/tutorials/ci-cd/gitlabci-release-integrations/gitlab7.png)
+
+Integrations bo'limdan **Discord Notifications** bo'limga o'tamiz va **Configure** bosib konfiguratsiya bo'limiga o'tamiz.
+![gitlab-ci](/images/tutorials/ci-cd/gitlabci-release-integrations/discord4.png)
+
+Bu qismda Discord serverimizda yaratib olgan **Webhook**ni qo'shib qo'yamiz.
+![gitlab-ci](/images/tutorials/ci-cd/gitlabci-release-integrations/discord5.png)
+
+**Trigger** qismidan o'zimizni keraklisini sozlab olamiz. Bu holda yaxshi amaliyot bu har bir event uchun alohida Discord channel ochib uni webhookini Triggerga qo'shib chiqish kerak, Masalan Discord Serverda Merge Requests, Issue, Deployment status kabi Discord channellar ochib olinadi va quytidagi Trigger bo'limda kerakliu joylarga kerakli Discord channel webhook urllari qo'yib chiqiladi, shunda har bir event alohida Discord channelga keladi va ularni kuzatib manage qilish osonroq bo'ladi.
+![gitlab-ci](/images/tutorials/ci-cd/gitlabci-release-integrations/discord7.png)
+
+Bu qismda qaysi branchlar uchun notification kelishini belgilaymiz bu holda **All branches**. Konfiguratsiyani to'grilab chiqganimizdan keyin **Test settings** bosib konfiguratiya ishlashini tekshirib olamiz.
+![gitlab-ci](/images/tutorials/ci-cd/gitlabci-release-integrations/discord6.png)
+
+Konfiguratsiyamiz to'gri bo'lsa bizga Discord channelimizga quyidagicha test Notification keladi.
+![gitlab-ci](/images/tutorials/ci-cd/gitlabci-release-integrations/discord8.png)
+
+Keling endi **main** branchdagi kodga o'zgartirish kiritib commit qilamiz, bu holda yani Release chiqishi va Discordga Notification kelishi kerak.
+
+![gitlab-ci](/images/tutorials/ci-cd/gitlabci-release-integrations/discord9.png)
+
+Okeyy biz Repositoriyamizni muvaffiqiyatli ravishda Discord bilan integratsiya qildik. 
