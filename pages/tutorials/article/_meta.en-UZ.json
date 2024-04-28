@@ -210,9 +210,9 @@
     }
   },
   "elk-stack": {
-    "title": "ELK Stack",
-    "longTitle": "ELK Stack",
-    "description": "ELK Stack sozlash",
+    "title": "ELK Stackga Kirish",
+    "longTitle": "ELK Stack Kirish",
+    "description": "ELK Stack Kirish, Arxitketura va Componentlar",
     "level": "Hamma uchun",
     "category": "DevOps",
     "author": {
