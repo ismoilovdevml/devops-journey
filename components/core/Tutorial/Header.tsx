@@ -100,7 +100,7 @@ export default function Header() {
             {tutorial?.createdAt}
           </div>
           <div className="text-sm nx-text-gray-400 ml-4">
-            {tutorial?.minutesRead} daqiqa o'qildi
+            {tutorial?.minutesRead} daqiqa o'qiladi
           </div>
         </div>
         <div className="relative lg:w-[114%] lg:-ml-14 aspect-[16/9] mb-16 mt-12">

@@ -33,7 +33,7 @@ function Card({
             <div className="text-sm font-semibold ml-2">{author?.name}</div>
             <div className="text-sm nx-text-gray-400 ml-4">{createdAt}</div>
             <div className="text-sm nx-text-gray-400 ml-4">
-              {minutesRead} daqiqa o'qildi
+              {minutesRead} daqiqa o'qiladi
             </div>
           </div>
           <div className="text-sm bg-gray-200 p-1.5 px-4 rounded-full dark:bg-zinc-800 nx-text-gray-400 uppercase">
