@@ -1,0 +1,54 @@
+import { Callout } from "nextra-theme-docs";
+
+# ELK Stack o'rnatish va sozlash
+
+![elk-setup](public/images/article/elk-setup/banner.png)
+
+Oldingi [**ELK Stackga kirish**](https://devops-journey.uz/tutorials/article/elk-stack) mavzusida biz ELK nimaga ishlatilishi uning arxitekturasi va componentlari, qanday ishlashini ko'rib chiqgan edik. Bugungi amaliyotimizda biz ELK stack deploy qilishni ko'rib chiqamiz.
+<Callout type="info" emoji="">
+**Diqqat!** 
+* Ushbu amaliyotni boshlash uchun [**ELK Stackga kirish**](https://devops-journey.uz/tutorials/article/elk-stack) qo'llanmasini o'qib chiqgan bo'lishingiz kerak bo'ladi.
+* Ushbu amaliyotda biz **Elasticsearch** `7.17` versiyasidan foydalanamiz!
+</Callout>
+
+## Ishni boshlash
+
+Ushbu amaliyotni amalga oshirish uchun bizga quyidagi minimum server talablaridagi server kerak bo'ladi.
+
+<Callout type="info" emoji="">
+**Minimum Server talabi**
+
+| OS            | RAM            | CPU           | Xotira       |
+| ------------- | -------------- | ------------- |------------- |
+| Ubuntu 20.04  | 16GB           | 4vCPU,2 core  | 100GB        |
+
+</Callout>
+
+## Elasticsearch o'rnatish
+
+Elasticsearcni Debian based serverlarga o'rnatish, Ubuntuga ham mos keladi.
+
+**1->** Serverimizni yangilab kerakli dasturlarni o'rnatib olamiz.
+
+```bash
+sudo apt update && sudo apt upgrade -y
+sudo apt-get install apt-transport-https
+```
+
+**2->** Elasticsearch PGP Keyini import qilib olamiz.
+
+```bash
+wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo gpg --dearmor -o /usr/share/keyrings/elasticsearch-keyring.gpg
+```
+
+**3->** `/etc/apt/sources.list.d`ga elasticsearchni qo'shib qo'yamiz.
+
+```bash
+echo "deb [signed-by=/usr/share/keyrings/elasticsearch-keyring.gpg] https://artifacts.elastic.co/packages/7.x/apt stable main" | sudo tee /etc/apt/sources.list.d/elastic-7.x.list
+```
+
+**4->** Elasticsearcni o'rnatib olamiz.
+
+```bash
+sudo apt-get update && sudo apt-get install elasticsearch
+```
