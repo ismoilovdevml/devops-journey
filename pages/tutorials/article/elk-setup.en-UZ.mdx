@@ -52,3 +52,70 @@ echo "deb [signed-by=/usr/share/keyrings/elasticsearch-keyring.gpg] https://arti
 ```bash
 sudo apt-get update && sudo apt-get install elasticsearch
 ```
+
+**5->** Elasticsearchni ishga tushiramiz.
+
+daemonni reload qilamiz.
+
+```bash
+sudo systemctl daemon-reload
+```
+
+Elasticsearchni systemd yordamida avtomatik ishga tushishini yoqamiz.
+
+```bash
+sudo systemctl enable elasticsearch.service
+```
+Elasticsearchni ishga tushiramiz va statusini ko'ramiz.
+
+```bash
+sudo systemctl start elasticsearch.service
+sudo systemctl status elasticsearch.service
+```
+![elk-setup](public/images/article/elk-setup/systemd.png)
+
+Keling resurs ishlatilishini ko'ramiz.
+
+```bash
+htop
+```
+![elk-setup](public/images/article/elk-setup/htop.png)
+
+hahaaa resurs RAM usage 8.53GB ))
+
+**6->** Elasticsearch ishlayotganini bilish uchun `9200` portga HTTP request yuborib ko'ramiz.
+
+```bash
+curl -X GET "localhost:9200"
+```
+
+![elk-setup](public/images/article/elk-setup/curl.png)
+Sizda yuqoridagidek natija chiqsa Elasticsearch ishlamoqda.
+
+## Kibana o'rnatish
+
+**1->** APT orqali **Kibana**ni o'rnatib olamiz.
+
+```bash
+sudo apt-get install kibana -y
+```
+
+**2->** Kibanani ishga tushiramiz.
+
+daemonni reload qilamiz.
+
+```bash
+sudo systemctl daemon-reload
+```
+Kibanani systemd yordamida avtomatik ishga tushishini yoqamiz.
+
+```bash
+sudo systemctl enable kibana.service
+```
+Elasticsearchni ishga tushiramiz va statusini ko'ramiz.
+
+```bash
+sudo systemctl start kibana.service
+sudo systemctl status kibana.service
+```
+![elk-setup](public/images/article/elk-setup/systemd1.png)
