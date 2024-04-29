@@ -112,10 +112,65 @@ Kibanani systemd yordamida avtomatik ishga tushishini yoqamiz.
 ```bash
 sudo systemctl enable kibana.service
 ```
-Elasticsearchni ishga tushiramiz va statusini ko'ramiz.
+Kibanani ishga tushiramiz va statusini ko'ramiz.
 
 ```bash
 sudo systemctl start kibana.service
 sudo systemctl status kibana.service
 ```
 ![elk-setup](public/images/article/elk-setup/systemd1.png)
+
+**3->** Kibananin o'rnatib olganimizdan keyin tashqaridan brauzer orqali kirish uchun `/etc/kibana/kibana.yml` ni konfiguratsiya qilishimiz kerak.
+
+![elk-setup](public/images/article/elk-setup/yml.png)
+
+```bash {2,7}
+# Kibana is served by a back end server. This setting specifies the port to use.
+server.port: 5601
+
+# Specifies the address to which the Kibana server will bind. IP addresses and host names are both valid values.
+# The default is 'localhost', which usually means remote machines will not be able to connect.
+# To allow connections from remote users, set this parameter to a non-loopback address.
+server.host: "0.0.0.0"
+```
+Kibanaga restart beramiz.
+
+```bash
+sudo systemctl restart kibana.service
+```
+
+**4->** Kibana default `:5601` portda ishlaydi brauzerdan server IP adresi va `:5601` portga kirsak bizda Kibana dashboard ochilishi kerak.
+
+![elk-setup](public/images/article/elk-setup/kibana.png)
+
+Kibana dashboard statusini `:5601/status` pageda ko'rish mumkin.
+![elk-setup](public/images/article/elk-setup/kibana-status.png)
+
+## Logstash o'rnatish
+
+**Beats** to'g'ridan-to'g'ri Elasticsearch ma'lumotlar bazasiga ma'lumotlarni yuborishi mumkin bo'lsa-da, ma'lumotlarni qayta ishlash uchun **Logstash**-dan foydalanish odatiy holdir. Bu sizga turli manbalardan ma'lumotlarni to'plash, ularni umumiy formatga aylantirish va boshqa ma'lumotlar bazasiga eksport qilish uchun ko'proq moslashuvchanlikni beradi.
+
+**1->** APT orqali **Logstash**ni o'rnatib olamiz.
+
+```bash
+sudo apt-get install logstash -y
+```
+Logstashni o'rnatib bo'lganingizdan keyin sozlashga o'tishingiz mumkin. Logstash konfigursatsiya fayli `/etc/logstash/conf.d` joylashgan bo'ladi bu konfiguratsiya sintaksissi haqida [quyidagi havola](https://www.elastic.co/guide/en/logstash/current/configuration-file-structure.html) orqali ko'rib chiqishingiz mumkin.
+
+Logstashni ma'lumotlarni bir tomondan qabul qiladigan, u yoki bu tarzda qayta ishlab belgilangan joyga jo'natadigan pipeline deb tassavur qilsangiz bo'ladi. Logstash asosiy elementlari ikkita `input` va `output` qo'shimcha `filter`. `input` plaginlari manbadan ma'lumotlarni oladi, `filter` plaginlarini uni qayta ishlaydi va `output` plaginlari esa ma'lumotlarni belgilangan joyga yuboradi.
+
+![elk-setup](public/images/article/elk-setup/logstash.png)
+
+**2->** `02-beats-input.conf` nomli Filebeat inputni o'rnatadigan konfiguratsiya faylini yaratib olamiz.
+
+```bash
+sudo nano /etc/logstash/conf.d/02-beats-input.conf
+```
+Quyidagi konfiguratsiyani kiriting. Bu konfiguratsiya input konfiguratsiya hisoblanadi va `beats` TCP `5044` portida kirishni bildiradi.
+```bash filename="/etc/logstash/conf.d/02-beats-input.conf"
+input {
+  beats {
+    port => 5044
+  }
+}
+```
