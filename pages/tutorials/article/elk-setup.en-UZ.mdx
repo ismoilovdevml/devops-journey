@@ -94,6 +94,10 @@ Sizda yuqoridagidek natija chiqsa Elasticsearch ishlamoqda.
 
 ## Kibana o'rnatish
 
+[Rasmiy texnik hujjatlarga](https://www.elastic.co/guide/en/elastic-stack/current/installing-elastic-stack.html#install-order-elastic-stack) ko'ra , siz **Kibana**-ni faqat **Elasticsearch**-ni o'rnatganingizdan so'ng o'rnatishingiz kerak. Ushbu tartibda o'rnatish har bir productga bog'liq bo'lgan komponentlarning to'g'ri o'rnatilishini ta'minlaydi.
+
+Oldingi bosqichda Elastic package sourceni allaqachon qo'shganingiz uchun siz Elastik stackning qolgan komponentlarini quyidagicha `apt` yordamida o'rnatishingiz mumkin.
+
 **1->** APT orqali **Kibana**ni o'rnatib olamiz.
 
 ```bash
@@ -121,6 +125,10 @@ sudo systemctl status kibana.service
 ![elk-setup](public/images/article/elk-setup/systemd1.png)
 
 **3->** Kibananin o'rnatib olganimizdan keyin tashqaridan brauzer orqali kirish uchun `/etc/kibana/kibana.yml` ni konfiguratsiya qilishimiz kerak.
+
+```bash
+sudo nano /etc/kibana/kibana.yml
+```
 
 ![elk-setup](public/images/article/elk-setup/yml.png)
 
@@ -174,3 +182,63 @@ input {
   }
 }
 ```
+
+**3->** Logstash beatslardan kelgan ma'lumotlarni Elasticsearch(`:9200`) ga yuborishi uchun output konfiguratsiyani qo'shing. Bu Filebeat uchun.
+
+```bash
+sudo nano /etc/logstash/conf.d/30-elasticsearch-output.conf
+```
+
+```conf
+output {
+  if [@metadata][pipeline] {
+	elasticsearch {
+  	hosts => ["localhost:9200"]
+  	manage_template => false
+  	index => "%{[@metadata][beat]}-%{[@metadata][version]}-%{+YYYY.MM.dd}"
+  	pipeline => "%{[@metadata][pipeline]}"
+	}
+  } else {
+	elasticsearch {
+  	hosts => ["localhost:9200"]
+  	manage_template => false
+  	index => "%{[@metadata][beat]}-%{[@metadata][version]}-%{+YYYY.MM.dd}"
+	}
+  }
+}
+```
+
+**4->** Logstash konfiguratsiyani quyidagi buyruq bilan tekshirib ko'ring.
+
+```bash
+sudo -u logstash /usr/share/logstash/bin/logstash --path.settings /etc/logstash -t
+```
+
+Ushbu buyruq yozilgan konfiguratsiyani tekshirib chiqadi.
+
+Agar sintaksis xatosi bo'lmasa sizda **"Config Validation Result: OK. Exiting Logstash"** natija chiqsa demak hammasi yaxshi. Agar konfiguratsiya testingiz muvaffaqiyatli o'tgan bo'lsa **Logstash**ni ishga tushirishingiz mumkin.
+
+```bash
+sudo systemctl start logstash
+sudo systemctl enable logstash
+```
+Statusini ko'ramiz.
+
+```bash
+sudo systemctl status logstash
+```
+
+Logstash to'g'ri ishlayapti va to'liq sozlangan bo'lsa, **Filebeat**-ni o'rnatamiz.
+
+## Filebeat o'rnatish va sozlash
+
+**Elastic Stack** turli manbalardan ma'lumotlarni to'plash va ularni **Logstash** yoki **Elasticsearch**-ga o'tkazish uchun **Beats** deb nomlangan bir nechta lightweight data shipperlardan foydalanadi.
+
+Hozirda Elastic-dan mavjud bo'lgan Beatslar:
+
+* [**Filebeat**]()
+* [**Metricbeat**]()
+* [**Packetbeat**]()
+* [**Auditbeat**]()
+* [**Heartbeat**]()
+* [**Winlogbeat**]()
