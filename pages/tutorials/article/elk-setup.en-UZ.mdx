@@ -1,6 +1,6 @@
 import { Callout } from "nextra-theme-docs";
 
-# ELK Stack o'rnatish va sozlash
+# ELK Stack Cluster o'rnatish va sozlash
 
 ![elk-setup](public/images/article/elk-setup/banner.png)
 
@@ -11,6 +11,13 @@ Oldingi [**ELK Stackga kirish**](https://devops-journey.uz/tutorials/article/elk
 * Ushbu amaliyotda biz **Elasticsearch** `7.17` versiyasidan foydalanamiz!
 </Callout>
 
+## Arxitektura
+
+Ushbu amaliyotda biz kichik ELK stack cluster o'rnatib sozlayymiz. ELK stack uchun minmum 3ta server va ELK stack bilan ishlash uchun bitta app server kerak bo'ladi. Clusterdagi barcha serverlar bitta subnetda bo'lishi kerak bo'ladi chunki ELK componentlar bir bir bilan Internal IPlar bilan bo'glanib ishlaydi. ELK stack commentlari uchun 3ta alohida serverda sozlanadi Elasticsearch, Kibana va Logstash. Boshqa serverlarga Beatslar o'ratiladi, ba'zi beatslar loglarni logstashga yuboradi va logstash ular ustida ishlab uni elasticsearchga yuboradi, elasticsearchdan esa Kibana UI Dashboard orqali vizualizatsiya qilib monitoring ava analiz qilmaiz. Ba'zi beatlar va Integrationlar esa to'gridan-to'gri malumotlarni elasticsearchga yuboradi.  
+
+Bugungi amaliyotda rasmda ko'rsatilgan ELK clusterni o'rnatib sozlaymiz.
+
+![elk-setup](public/images/article/elk-setup/architecture.png)
 ## Ishni boshlash
 
 Ushbu amaliyotni amalga oshirish uchun bizga quyidagi minimum server talablaridagi server kerak bo'ladi.
@@ -18,10 +25,14 @@ Ushbu amaliyotni amalga oshirish uchun bizga quyidagi minimum server talablarida
 <Callout type="info" emoji="">
 **Minimum Server talabi**
 
-| OS            | RAM            | CPU           | Xotira       |
-| ------------- | -------------- | ------------- |------------- |
-| Ubuntu 20.04  | 16GB           | 4vCPU,2 core  | 100GB        |
+| Host        | OS            | RAM            | CPU           | Xotira       | IP          |
+| ----------- | ------------- | -------------- | ------------- |------------- | ----------- |
+|  elk        | Ubuntu 20.04  | 16GB           | 4vCPU,2 core  | 100GB        | 10.128.0.9  |
+|  kibana     | Ubuntu 20.04  | 4GB            | 2vCPU,1 core  | 50GB         | 10.128.0.10 |
+|  logstash   | Ubuntu 20.04  | 16GB           | 2vCPU,1 core  | 50GB         | 10.128.0.11 |
+|  app-server | Ubuntu 20.04  | 16GB           | 2vCPU,1 core  | 50GB         | 10.128.0.12 |
 
+![elk-setup](public/images/article/elk-setup/vm.png)
 </Callout>
 
 ## Elasticsearch o'rnatish
