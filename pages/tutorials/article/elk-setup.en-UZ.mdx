@@ -53,6 +53,21 @@ echo "deb [signed-by=/usr/share/keyrings/elasticsearch-keyring.gpg] https://arti
 sudo apt-get update && sudo apt-get install elasticsearch
 ```
 
+`elasticsearch.yml` konfiguratsiyadan `network.host`ni commentdan ochib `localhost`ga o'zgartiramiz.
+
+```bash
+sudo nano /etc/elasticsearch/elasticsearch.yml
+```
+
+```bash {6}
+# ---------------------------------- Network -----------------------------------
+#
+# By default Elasticsearch is only accessible on localhost. Set a different
+# address here to expose this node on the network:
+#
+network.host: localhost
+```
+
 **5->** Elasticsearchni ishga tushiramiz.
 
 daemonni reload qilamiz.
@@ -236,9 +251,163 @@ Logstash to'g'ri ishlayapti va to'liq sozlangan bo'lsa, **Filebeat**-ni o'rnatam
 
 Hozirda Elastic-dan mavjud bo'lgan Beatslar:
 
-* [**Filebeat**]()
-* [**Metricbeat**]()
-* [**Packetbeat**]()
-* [**Auditbeat**]()
-* [**Heartbeat**]()
-* [**Winlogbeat**]()
+* [**Filebeat**]() Log fayllarni to'playdi va jo'natadi.
+* [**Metricbeat**]() Tizimlar va servicelar metrikalarni to'playdi va jo'natadi.
+* [**Packetbeat**]() Tarmoq ma'lumotlarini to'playdi va jo'natadi.
+* [**Auditbeat**]() Linux audit framework ma'lumotlarini to'playdi va jo'natadi
+* [**Heartbeat**]() Servicelaringiz availability(mavjudligi)ni tekshirib turish orqali va nazorat qiladi.
+* [**Winlogbeat**]() Windows event loglarini to'playdi.
+
+**Beats**lar haqida [ba'tafsil.](https://www.elastic.co/guide/en/beats/libbeat/8.13/getting-started.html)
+
+
+Ushbu qo'llanmada biz **Filebeat** yordamida local loglarni Elastik steckga yo'naltiramiz.
+
+**1->** Filebeat o'rnatib olamiz.
+
+```bash
+sudo apt install filebeat -y
+```
+
+**2->** Filebeat Logstashga ulanishi uchun `filebeat.yml` ni sozlab olamiz.
+
+**Filebeat** ko'p chiqishlarni qo'llab quvvatlaydi lekin biz eventlarga qo'shimcha ishlov berish uchun Elasticsearch yoki Logstashga ma'lumotlarni yuboramiz. Bu qo'llanmada biz Filebeatdan yuborayotgan ma'lumotlarni to'gridan-to'gri Elasticsearch yubormaymiz, biz Filebeat yuborayotgan ma'lumotlarni boyitish va yaxshilash uchun Logstashni yuboramiz. Shuning uchun biz `filebeat.yml` konfiguratsiya faylidan ma'lumotlarni elasticsearchga yuborishni o'chirib qo'yib Logstashga yuborishni yoqib qo'yamiz.
+
+
+Elasticsearchga ma'lumotlarni yuborishni o'chirib qo'yamiz. `output.elasticsearch:` va `hosts`ni commentga olib qo'yamiz.
+
+```bash
+sudo nano /etc/filebeat/filebeat.yml
+```
+
+```bash {2,4}
+# ---------------------------- Elasticsearch Output ----------------------------
+#output.elasticsearch:
+  # Array of hosts to connect to.
+#  hosts: ["localhost:9200"]
+```
+
+Filebeat ma'lumotlarni logstashga yuborish uchun Logstashga yuborishni yoqamiz. `output.logstash:` va `hosts`ni commentdan ochib qo'yamiz.
+
+
+```bash {2,4}
+# ------------------------------ Logstash Output -------------------------------
+output.logstash:
+  # The Logstash hosts
+  hosts: ["localhost:5044"]
+```
+
+Filebeatni kengaytirish uchun bir nechta [Filebeat modullari](https://www.elastic.co/guide/en/beats/filebeat/7.6/filebeat-modules.html) bor. Biz bu amaliyotda Filebeat **system** modulidan foydalanamiz, system moduli linux tizimining loglari va servicelar tomonidan yaratilgan loglarni to'playdi va analiz qiladi.
+
+```bash
+sudo filebeat modules enable system
+```
+
+Ushbu buyruq orqali yoqilgan va o'chirilgan modullar qo'yxatini ko'rishingiz mumkin.
+
+```bash
+sudo filebeat modules list
+```
+Quyidagicha natija chiqishi kerak.
+
+```txt
+Enabled:
+system
+
+Disabled:
+activemq
+apache
+auditd
+aws
+awsfargate
+azure
+barracuda
+bluecoat
+cef
+checkpoint
+cisco
+.........
+```
+
+Logstash Elasticsearchga ma'lumotlarni yuborishdan oldin Filebeatdan kelgan ma'lumotlarlarni tahlil qiladigan **Filebeat ingest pipeline** o'rnatishimiz kerak. **system** module uchun quyidagi buyruq orqali o'rantishingiz mumkin.
+
+```bash
+sudo filebeat setup --pipelines --modules system
+```
+
+Keyin esa index templateni Elasticsearchga qo'shish kerak.
+
+Templateni qo'shish uchun quyidagi buyruqdan foydalaning.
+
+```bash
+sudo filebeat setup --index-management -E output.logstash.enabled=false -E 'output.elasticsearch.hosts=["localhost:9200"]'
+```
+
+```bash
+Output
+Index setup finished.
+```
+
+Filebeat o'zida Kibanada ma'lumotlarni ko'rish uchun Kibana dashboard bilan birga keladi. Dashboarddan foydalanishdan oldin index pattern yaratishimiz va Dashboardni Kibanaga o'rnatishimiz kerak bo'ladi.
+
+Dashboard yoqilganda Filebeat versiya ma'lmotlarini tekshirish uchun Elasticsearchga ulanadi. Logstash yoqilganda dashboardni yuklash uchun Logstash chiqishini o'chirishingiz va Elasticsearch chiqishini yoqishingiz kerak. Bu bir necha daqiqa vaqt oladi.
+
+```bash
+sudo filebeat setup -E output.logstash.enabled=false -E output.elasticsearch.hosts=['localhost:9200'] -E setup.kibana.host=localhost:5601
+```
+
+Endi Filebeatni ishga tushirishimiz mumkin.
+
+```bash
+sudo systemctl start filebeat
+sudo systemctl enable filebeat
+```
+Statusini tekshiramiz.
+```bash
+sudo systemctl status filebeat
+```
+
+Agar siz Elastic Stack-ni to'g'ri sozlagan bo'lsangiz, Filebeat tizim logi va avtorizatsiya loglarini Logstash-ga jo'natishni boshlaydi, keyin esa bu ma'lumotlarni Elasticsearch-ga yuklaydi.
+
+Elasticsearch haqiqatan ham ushbu ma'lumotlarni olayotganligini tekshirish uchun Filebeat indeksini ushbu buyruq bilan so'rang:
+
+```bash
+curl -XGET 'http://localhost:9200/filebeat-*/_search?pretty'
+```
+
+```json
+{
+  "took" : 16,
+  "timed_out" : false,
+  "_shards" : {
+    "total" : 2,
+    "successful" : 2,
+    "skipped" : 0,
+    "failed" : 0
+  },
+  "hits" : {
+    "total" : {
+      "value" : 8325,
+      "relation" : "eq"
+    },
+    "max_score" : 1.0,
+    "hits" : [
+      {
+        "_index" : "filebeat-7.17.20-2024.05.01",
+        "_type" : "_doc",
+        "_id" : "rBm1NI8Ba_iulf7QZROj",
+        "_score" : 1.0,
+        "_source" : {
+          "agent" : {
+            "hostname" : "elk",
+            "name" : "elk",
+            "id" : "25293b23-06d1-48cc-b07d-99fd73ddced0",
+            "ephemeral_id" : "093e3563-21c7-4b8d-9003-63d3ab4de274",
+            "type" : "filebeat",
+            "version" : "7.17.20"
+          },
+          "process" : {
+            "name" : "useradd",
+            "pid" : 575
+          },
+```
