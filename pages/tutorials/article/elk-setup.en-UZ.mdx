@@ -4,7 +4,7 @@ import { Callout } from "nextra-theme-docs";
 
 ![elk-setup](public/images/article/elk-setup/banner.png)
 
-Oldingi [**ELK Stackga kirish**](https://devops-journey.uz/tutorials/article/elk-stack) mavzusida biz ELK nimaga ishlatilishi uning arxitekturasi va componentlari, qanday ishlashini ko'rib chiqgan edik. Bugungi amaliyotimizda biz ELK stack deploy qilishni ko'rib chiqamiz.
+Oldingi [**ELK Stackga kirish**](https://devops-journey.uz/tutorials/article/elk-stack) mavzusida biz ELK nimaga ishlatilishi uning arxitekturasi va componentlari, qanday ishlashini ko'rib chiqgan edik. Bugungi amaliyotimizda biz ELK stack Cluster sozlahsni ko'rib chiqamiz.
 <Callout type="info" emoji="">
 **Diqqat!** 
 * Ushbu amaliyotni boshlash uchun [**ELK Stackga kirish**](https://devops-journey.uz/tutorials/article/elk-stack) qo'llanmasini o'qib chiqgan bo'lishingiz kerak bo'ladi.
@@ -439,8 +439,8 @@ Keyin esa index templateni Elasticsearchga qo'shish kerak.
 
 Templateni qo'shish uchun quyidagi buyruqdan foydalaning.
 
-```bash
-sudo filebeat setup --index-management -E output.logstash.enabled=false -E 'output.elasticsearch.hosts=["localhost:9200"]'
+```bash /10.128.0.9:9200/
+sudo filebeat setup --index-management -E output.logstash.enabled=false -E 'output.elasticsearch.hosts=["10.128.0.9:9200"]'
 ```
 
 ```bash
@@ -452,8 +452,8 @@ Filebeat o'zida Kibanada ma'lumotlarni ko'rish uchun Kibana dashboard bilan birg
 
 Dashboard yoqilganda Filebeat versiya ma'lmotlarini tekshirish uchun Elasticsearchga ulanadi. Logstash yoqilganda dashboardni yuklash uchun Logstash chiqishini o'chirishingiz va Elasticsearch chiqishini yoqishingiz kerak. Bu bir necha daqiqa vaqt oladi.
 
-```bash
-sudo filebeat setup -E output.logstash.enabled=false -E output.elasticsearch.hosts=['localhost:9200'] -E setup.kibana.host=localhost:5601
+```bash /10.128.0.9:9200/ /10.128.0.10:5601/
+sudo filebeat setup -E output.logstash.enabled=false -E output.elasticsearch.hosts=['10.128.0.9:9200'] -E setup.kibana.host=10.128.0.10:5601
 ```
 
 Endi Filebeatni ishga tushirishimiz mumkin.
@@ -472,12 +472,12 @@ Agar siz Elastic Stack-ni to'g'ri sozlagan bo'lsangiz, Filebeat tizim logi va av
 Elasticsearch haqiqatan ham ushbu ma'lumotlarni olayotganligini tekshirish uchun Filebeat indeksini ushbu buyruq bilan so'rang:
 
 ```bash
-curl -XGET 'http://localhost:9200/filebeat-*/_search?pretty'
+curl -XGET 'http://10.128.0.9:9200/filebeat-*/_search?pretty'
 ```
 
-```json
+```txt
 {
-  "took" : 16,
+  "took" : 18,
   "timed_out" : false,
   "_shards" : {
     "total" : 2,
@@ -487,27 +487,67 @@ curl -XGET 'http://localhost:9200/filebeat-*/_search?pretty'
   },
   "hits" : {
     "total" : {
-      "value" : 8325,
+      "value" : 5416,
       "relation" : "eq"
     },
     "max_score" : 1.0,
     "hits" : [
       {
-        "_index" : "filebeat-7.17.20-2024.05.01",
+        "_index" : "filebeat-7.17.20-2024.05.02",
         "_type" : "_doc",
-        "_id" : "rBm1NI8Ba_iulf7QZROj",
+        "_id" : "T_btOI8BKEKmsIHkns4z",
         "_score" : 1.0,
         "_source" : {
           "agent" : {
-            "hostname" : "elk",
-            "name" : "elk",
-            "id" : "25293b23-06d1-48cc-b07d-99fd73ddced0",
-            "ephemeral_id" : "093e3563-21c7-4b8d-9003-63d3ab4de274",
+            "hostname" : "app-server",
+            "name" : "app-server",
+            "id" : "7af24e65-2346-4c13-ba75-1554f9880bbc",
+            "ephemeral_id" : "5fc50b9f-887a-4f72-b0a5-c614b74d3f6e",
             "type" : "filebeat",
             "version" : "7.17.20"
           },
           "process" : {
-            "name" : "useradd",
-            "pid" : 575
+            "name" : "filebeat",
+            "pid" : 2511
           },
+............
 ```
+Agar sizning natijangiz 0 jami hitsni ko'rsatsa, Elasticsearch siz qidirgan indeks ostida hech qanday jurnalni yuklamayapti va siz xatolar uchun sozlamalaringizni ko'rib chiqishingiz kerak bo'ladi. Agar siz kutilgan natijani olgan bo'lsangiz, keyingi bosqichga o'tishingiz mumkin, unda biz Kibana dashbolard bilan ishlashni ko'rib chiqamiz.
+
+
+## Kibana Dashboard bilan ishlash
+
+Kibana serveringiz IP manzili `:5601` portiga brauzer orqali kirganingizda sizda Kibananing asosiy sahifasi ochilishi kerak.
+
+![elk-setup](public/images/article/elk-setup/kibana3.png)
+
+Kibana Dashboardan chap tomondagi bo'limga o'tib **Discover** bo'limiga o'tsak bizda **"filebeat-*"** ochilishi kerak.
+
+![elk-setup](public/images/article/elk-setup/kibana1.png)
+
+![elk-setup](public/images/article/elk-setup/kibana2.png)
+
+**Dashboard** bo'limga o'tib Filebeat system module uchun dashboard ishlab chiqilgan.
+
+![elk-setup](public/images/article/elk-setup/kibana3.png)
+
+![elk-setup](public/images/article/elk-setup/syslog.png)
+
+Ushbu Dashboardlardan syslogni analiz qilishingiz mumkin.
+
+**[Filebeat System] Syslog dashboard ECS**
+![elk-setup](public/images/article/elk-setup/syslog1.png)
+
+**[[Filebeat System] SSH login attempts ECS**
+![elk-setup](public/images/article/elk-setup/syslog2.png)
+
+Biz hozir ELK stack bilan  `app-server`(10.128.0.12) serverimizga Filebeat o'rnatib system moduledan foydalanib serverimiz loglarini analiz qilishni ko'rib chiqdik. Lekin app-serverimizni to'liq analiz qilishimiz va monitoring qilishimiz uchun asosiy **Beats**larni o'rnatamiz. Barcha beatslarni app-serverimizga o'rnatamiz.
+
+Biz quyidagi Beatslarni o'rnatamiz va sozlaymiz.
+
+* [**Filebeat**](https://www.elastic.co/beats/filebeat) Log fayllarni to'playdi va jo'natadi.
+* [**Metricbeat**](https://www.elastic.co/beats/metricbeat) Tizimlar va servicelar metrikalarni to'playdi va jo'natadi.
+* [**Packetbeat**](https://www.elastic.co/beats/packetbeat) Tarmoq ma'lumotlarini to'playdi va jo'natadi.
+* [**Auditbeat**](https://www.elastic.co/beats/auditbeat) Linux audit framework ma'lumotlarini to'playdi va jo'natadi
+* [**Heartbeat**](https://www.elastic.co/observability/aiops) Servicelaringiz availability(mavjudligi)ni tekshirib turish orqali va nazorat qiladi.
+* [**Winlogbeat**](https://www.elastic.co/beats/winlogbeat) Windows event loglarini to'playdi.
