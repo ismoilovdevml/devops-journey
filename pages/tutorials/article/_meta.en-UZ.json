@@ -231,8 +231,8 @@
     }
   },
   "elk-setup": {
-    "title": "ELK Stack o'rnatish va Sozlash",
-    "longTitle": "ELK Stack o'rnatish va Sozlash",
+    "title": "ELK Stack Cluster o'rnatish va sozlash",
+    "longTitle": "ELK Stack Cluster o'rnatish va sozlash",
     "description": "ELK Stack cluster sozlash",
     "level": "Hamma uchun",
     "category": "DevOps",

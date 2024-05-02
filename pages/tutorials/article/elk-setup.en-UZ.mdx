@@ -39,7 +39,7 @@ Ushbu amaliyotni amalga oshirish uchun bizga quyidagi minimum server talablarida
 
 Elasticsearcni Debian based serverlarga o'rnatish, Ubuntuga ham mos keladi.
 
-**1->** Serverimizni yangilab kerakli dasturlarni o'rnatib olamiz.
+**1->** `elk`(10.128.0.9) serverimizni yangilab kerakli dasturlarni o'rnatib olamiz.
 
 ```bash
 sudo apt update && sudo apt upgrade -y
@@ -64,19 +64,37 @@ echo "deb [signed-by=/usr/share/keyrings/elasticsearch-keyring.gpg] https://arti
 sudo apt-get update && sudo apt-get install elasticsearch
 ```
 
-`elasticsearch.yml` konfiguratsiyadan `network.host`ni commentdan ochib `localhost`ga o'zgartiramiz.
+`elasticsearch.yml` konfiguratsiyadan elasticsearchni tashqariga ochamiz.
 
 ```bash
 sudo nano /etc/elasticsearch/elasticsearch.yml
 ```
 
-```bash {6}
+```bash {6,11,24}
 # ---------------------------------- Network -----------------------------------
 #
 # By default Elasticsearch is only accessible on localhost. Set a different
 # address here to expose this node on the network:
 #
-network.host: localhost
+network.host: 0.0.0.0
+#
+# By default Elasticsearch listens for HTTP traffic on the first free port it
+# finds starting at 9200. Set a specific HTTP port here:
+#
+http.port: 9200
+#
+# For more information, consult the network module documentation.
+#
+# --------------------------------- Discovery ----------------------------------
+#
+# Pass an initial list of hosts to perform discovery when this node is started:
+# The default list of hosts is ["127.0.0.1", "[::1]"]
+#
+#discovery.seed_hosts: ["host1", "host2"]
+#
+# Bootstrap the cluster using an initial set of master-eligible nodes:
+#
+cluster.initial_master_nodes: ["127.0.0.1"]
 ```
 
 **5->** Elasticsearchni ishga tushiramiz.
@@ -109,10 +127,10 @@ htop
 
 hahaaa resurs RAM usage 8.53GB ))
 
-**6->** Elasticsearch ishlayotganini bilish uchun `9200` portga HTTP request yuborib ko'ramiz.
+**6->** Elasticsearch ishlayotganini bilish uchun elastic ishlab turgan subnetdagi birorta serverdan  elasticsearch serverga `"10.128.0.9:9200`ga HTTP request yuborib ko'ramiz. Masalan logstash serverdan.
 
 ```bash
-curl -X GET "localhost:9200"
+curl -X GET "10.128.0.9:9200"
 ```
 
 ![elk-setup](public/images/article/elk-setup/curl.png)
@@ -122,12 +140,31 @@ Sizda yuqoridagidek natija chiqsa Elasticsearch ishlamoqda.
 
 [Rasmiy texnik hujjatlarga](https://www.elastic.co/guide/en/elastic-stack/current/installing-elastic-stack.html#install-order-elastic-stack) ko'ra , siz **Kibana**-ni faqat **Elasticsearch**-ni o'rnatganingizdan so'ng o'rnatishingiz kerak. Ushbu tartibda o'rnatish har bir productga bog'liq bo'lgan komponentlarning to'g'ri o'rnatilishini ta'minlaydi.
 
-Oldingi bosqichda Elastic package sourceni allaqachon qo'shganingiz uchun siz Elastik stackning qolgan komponentlarini quyidagicha `apt` yordamida o'rnatishingiz mumkin.
 
-**1->** APT orqali **Kibana**ni o'rnatib olamiz.
+
+**1->** `kibana`(10.128.0.10) serverimizni yangilab kerakli dasturlarni o'rnatib olamiz.
 
 ```bash
-sudo apt-get install kibana -y
+sudo apt update && sudo apt upgrade -y
+sudo apt-get install apt-transport-https
+```
+
+**2->** Elasticsearch PGP Keyini import qilib olamiz.
+
+```bash
+wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo gpg --dearmor -o /usr/share/keyrings/elasticsearch-keyring.gpg
+```
+
+**3->** `/etc/apt/sources.list.d`ga elasticsearchni qo'shib qo'yamiz.
+
+```bash
+echo "deb [signed-by=/usr/share/keyrings/elasticsearch-keyring.gpg] https://artifacts.elastic.co/packages/7.x/apt stable main" | sudo tee /etc/apt/sources.list.d/elastic-7.x.list
+```
+
+**4->** Kibanani o'rnatib olamiz.
+
+```bash
+sudo apt-get update && sudo apt-get install kibana
 ```
 
 **2->** Kibanani ishga tushiramiz.
@@ -150,15 +187,13 @@ sudo systemctl status kibana.service
 ```
 ![elk-setup](public/images/article/elk-setup/systemd1.png)
 
-**3->** Kibananin o'rnatib olganimizdan keyin tashqaridan brauzer orqali kirish uchun `/etc/kibana/kibana.yml` ni konfiguratsiya qilishimiz kerak.
+**3->** Kibananin o'rnatib olganimizdan keyin tashqaridan brauzer orqali kirish uchun `/etc/kibana/kibana.yml` ni konfiguratsiya qilishimiz kerak va `elasticsearch.hosts` elasticsearch hostni belgilashimiz kerak.
 
 ```bash
 sudo nano /etc/kibana/kibana.yml
 ```
 
-![elk-setup](public/images/article/elk-setup/yml.png)
-
-```bash {2,7}
+```bash {2,7,9}
 # Kibana is served by a back end server. This setting specifies the port to use.
 server.port: 5601
 
@@ -166,6 +201,8 @@ server.port: 5601
 # The default is 'localhost', which usually means remote machines will not be able to connect.
 # To allow connections from remote users, set this parameter to a non-loopback address.
 server.host: "0.0.0.0"
+# The URLs of the Elasticsearch instances to use for all your queries.
+elasticsearch.hosts: ["http://10.128.0.9:9200"]
 ```
 Kibanaga restart beramiz.
 
@@ -184,10 +221,29 @@ Kibana dashboard statusini `:5601/status` pageda ko'rish mumkin.
 
 **Beats** to'g'ridan-to'g'ri Elasticsearch ma'lumotlar bazasiga ma'lumotlarni yuborishi mumkin bo'lsa-da, ma'lumotlarni qayta ishlash uchun **Logstash**-dan foydalanish odatiy holdir. Bu sizga turli manbalardan ma'lumotlarni to'plash, ularni umumiy formatga aylantirish va boshqa ma'lumotlar bazasiga eksport qilish uchun ko'proq moslashuvchanlikni beradi.
 
-**1->** APT orqali **Logstash**ni o'rnatib olamiz.
+**1->** `logstash`(10.128.0.11) serverimizni yangilab kerakli dasturlarni o'rnatib olamiz.
 
 ```bash
-sudo apt-get install logstash -y
+sudo apt update && sudo apt upgrade -y
+sudo apt-get install apt-transport-https
+```
+
+**2->** Elasticsearch PGP Keyini import qilib olamiz.
+
+```bash
+wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo gpg --dearmor -o /usr/share/keyrings/elasticsearch-keyring.gpg
+```
+
+**3->** `/etc/apt/sources.list.d`ga elasticsearchni qo'shib qo'yamiz.
+
+```bash
+echo "deb [signed-by=/usr/share/keyrings/elasticsearch-keyring.gpg] https://artifacts.elastic.co/packages/7.x/apt stable main" | sudo tee /etc/apt/sources.list.d/elastic-7.x.list
+```
+
+**4->** Logstashni o'rnatib olamiz.
+
+```bash
+sudo apt-get update && sudo apt-get install logstash
 ```
 Logstashni o'rnatib bo'lganingizdan keyin sozlashga o'tishingiz mumkin. Logstash konfigursatsiya fayli `/etc/logstash/conf.d` joylashgan bo'ladi bu konfiguratsiya sintaksissi haqida [quyidagi havola](https://www.elastic.co/guide/en/logstash/current/configuration-file-structure.html) orqali ko'rib chiqishingiz mumkin.
 
@@ -209,24 +265,24 @@ input {
 }
 ```
 
-**3->** Logstash beatslardan kelgan ma'lumotlarni Elasticsearch(`:9200`) ga yuborishi uchun output konfiguratsiyani qo'shing. Bu Filebeat uchun.
+**3->** Logstash beatslardan kelgan ma'lumotlarni Elasticsearch(`10.128.0.9:9200`) ga yuborishi uchun output konfiguratsiyani qo'shing. Bu Filebeat uchun.
 
 ```bash
 sudo nano /etc/logstash/conf.d/30-elasticsearch-output.conf
 ```
 
-```conf
+```conf /10.128.0.9:9200/
 output {
   if [@metadata][pipeline] {
 	elasticsearch {
-  	hosts => ["localhost:9200"]
+  	hosts => ["10.128.0.9:9200"]
   	manage_template => false
   	index => "%{[@metadata][beat]}-%{[@metadata][version]}-%{+YYYY.MM.dd}"
   	pipeline => "%{[@metadata][pipeline]}"
 	}
   } else {
 	elasticsearch {
-  	hosts => ["localhost:9200"]
+  	hosts => ["10.128.0.9:9200"]
   	manage_template => false
   	index => "%{[@metadata][beat]}-%{[@metadata][version]}-%{+YYYY.MM.dd}"
 	}
@@ -272,12 +328,31 @@ Hozirda Elastic-dan mavjud bo'lgan Beatslar:
 **Beats**lar haqida [ba'tafsil.](https://www.elastic.co/guide/en/beats/libbeat/8.13/getting-started.html)
 
 
-Ushbu qo'llanmada biz **Filebeat** yordamida local loglarni Elastik steckga yo'naltiramiz.
+Ushbu qo'llanmada biz **Filebeat** yordamida local loglarni Elastik stackga yo'naltiramiz.
 
-**1->** Filebeat o'rnatib olamiz.
+**1->** `app-server`(10.128.0.12) serverimizni yangilab kerakli dasturlarni o'rnatib olamiz.
 
 ```bash
-sudo apt install filebeat -y
+sudo apt update && sudo apt upgrade -y
+sudo apt-get install apt-transport-https
+```
+
+**2->** Elasticsearch PGP Keyini import qilib olamiz.
+
+```bash
+wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo gpg --dearmor -o /usr/share/keyrings/elasticsearch-keyring.gpg
+```
+
+**3->** `/etc/apt/sources.list.d`ga elasticsearchni qo'shib qo'yamiz.
+
+```bash
+echo "deb [signed-by=/usr/share/keyrings/elasticsearch-keyring.gpg] https://artifacts.elastic.co/packages/7.x/apt stable main" | sudo tee /etc/apt/sources.list.d/elastic-7.x.list
+```
+
+**4->** Filebeatni o'rnatib olamiz.
+
+```bash
+sudo apt-get update && sudo apt-get install filebeat
 ```
 
 **2->** Filebeat Logstashga ulanishi uchun `filebeat.yml` ni sozlab olamiz.
@@ -305,7 +380,21 @@ Filebeat ma'lumotlarni logstashga yuborish uchun Logstashga yuborishni yoqamiz. 
 # ------------------------------ Logstash Output -------------------------------
 output.logstash:
   # The Logstash hosts
-  hosts: ["localhost:5044"]
+  hosts: ["10.128.0.11:5044"]
+```
+
+```bash {5,11}
+# =================================== Kibana ===================================
+
+# Starting with Beats version 6.0.0, the dashboards are loaded via the Kibana API.
+# This requires a Kibana endpoint configuration.
+setup.kibana:
+
+  # Kibana Host
+  # Scheme and port can be left out and will be set to the default (http and 5601)
+  # In case you specify and additional path, the scheme is required: http://localhost:5601/path
+  # IPv6 addresses should always be defined as: https://[2001:db8::1]:5601
+  host: "10.128.0.10:5601"
 ```
 
 Filebeatni kengaytirish uchun bir nechta [Filebeat modullari](https://www.elastic.co/guide/en/beats/filebeat/7.6/filebeat-modules.html) bor. Biz bu amaliyotda Filebeat **system** modulidan foydalanamiz, system moduli linux tizimining loglari va servicelar tomonidan yaratilgan loglarni to'playdi va analiz qiladi.
