@@ -541,7 +541,7 @@ Ushbu Dashboardlardan syslogni analiz qilishingiz mumkin.
 **[[Filebeat System] SSH login attempts ECS**
 ![elk-setup](public/images/article/elk-setup/syslog2.png)
 
-Biz hozir ELK stack bilan  `app-server`(10.128.0.12) serverimizga Filebeat o'rnatib system moduledan foydalanib serverimiz loglarini analiz qilishni ko'rib chiqdik. Lekin app-serverimizni to'liq analiz qilishimiz va monitoring qilishimiz uchun asosiy **Beats**larni o'rnatamiz. Barcha beatslarni app-serverimizga o'rnatamiz.
+Biz hozir ELK stack bilan  `app-server`(10.128.0.12) serverimizga Filebeat o'rnatib system moduledan foydalanib serverimiz loglarini analiz qilishni ko'rib chiqdik. Lekin app-serverimizni to'liq analiz qilishimiz va monitoring qilishimiz uchun asosiy **Beats**larni o'rnatamiz. Betaslarni analiz va monitoing qilmoqchi bo'lgan serverlarimizga o'rnatamiz.
 
 Biz quyidagi Beatslarni o'rnatamiz va sozlaymiz.
 
@@ -551,3 +551,80 @@ Biz quyidagi Beatslarni o'rnatamiz va sozlaymiz.
 * [**Auditbeat**](https://www.elastic.co/beats/auditbeat) Linux audit framework ma'lumotlarini to'playdi va jo'natadi
 * [**Heartbeat**](https://www.elastic.co/observability/aiops) Servicelaringiz availability(mavjudligi)ni tekshirib turish orqali va nazorat qiladi.
 * [**Winlogbeat**](https://www.elastic.co/beats/winlogbeat) Windows event loglarini to'playdi.
+
+
+## Metricbeat o'rnatish va sozlash
+
+**1->** Biz analiz va monitoring qilmoqchi bo'lgan sereverlarimizga **Metricbeat** o'rnatib olamiz.
+
+```bash
+curl -L -O https://artifacts.elastic.co/downloads/beats/metricbeat/metricbeat-7.17.20-amd64.deb
+sudo dpkg -i metricbeat-7.17.20-amd64.deb
+```
+
+**2->** Metricbeatni Elastic stackga ulab olishimiz kerak, buning uchun biz `metricbeat.yml` konfiguratsiya faylida Kibana va Elasticsearch manzillarini ko'rsatishimiz kerak bo'ladi.
+
+```bash
+sudo nano /etc/metricbeat/metricbeat.yml
+```
+
+```bash {3,7}
+# =================================== Kibana ===================================
+setup.kibana:
+  host: "10.128.0.10:5601"
+# ---------------------------- Elasticsearch Output ----------------------------
+output.elasticsearch:
+  # Array of hosts to connect to.
+  hosts: ["10.128.0.9:9200"]
+```
+
+**3->** Metricbeatda bir enchta ma'lumotlarni yig'adigan modullari bor ulardan o'zimiz uchun kerakli modulni yoqib shu orqali analiz va monitoring qilishimiz mumkin.
+
+Metricbeat modullarini quyidagicha ko'rish mumkin.
+
+```bash
+sudo metricbeat modules list
+```
+Agar siz hech qanday modulni yoqmasangiz metadata default **system** modulini yoqilgan bo'ladi keling misol uchun **nginx** modulini yoqamiz.
+
+```bash
+sudo metricbeat modules enable nginx
+```
+Metricbeat ma'lumotlaringizni tahlil qilish, indekslash va vizualizatsiya qilish uchun oldindan belgilangan assetslar bilan birga keladi. Ushbu aasetslarni load qilishimiz kerak bo'ladi. Bu biroz vaqt oladi.
+
+```bash
+sudo metricbeat setup -e
+```
+
+**4->** Metricbeatni ishga tushiramiz
+
+```bash
+sudo service metricbeat start
+```
+
+Statusini ko'ramiz
+
+```bash
+sudo service metricbeat status
+```
+
+**5->** Kibana Dashboardga o'tib Metricbeat dashboardlarini qidirib modullari bo'yicha ko'rib chishishimiz mumkin.
+
+![elk-setup](public/images/article/elk-setup/metric-kibana.png)
+![elk-setup](public/images/article/elk-setup/metric-kibana2.png)
+
+system module uchun Kibana Dashboardlar
+
+**[Metricbeat System] Overview ECS**
+![elk-setup](public/images/article/elk-setup/metric-dashboard.png)
+
+**[[Metricbeat System] Host overview ECS**
+![elk-setup](public/images/article/elk-setup/metric-dashboard2.png)
+
+**Observability** bo'limga kirib ham ko'rishimiz mumkin
+![elk-setup](public/images/article/elk-setup/obs.png)
+
+![elk-setup](public/images/article/elk-setup/obs1.png)
+![elk-setup](public/images/article/elk-setup/obs2.png)
+
+
