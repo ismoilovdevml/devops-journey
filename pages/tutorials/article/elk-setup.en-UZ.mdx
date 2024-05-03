@@ -578,7 +578,7 @@ output.elasticsearch:
   hosts: ["10.128.0.9:9200"]
 ```
 
-**3->** Metricbeatda bir enchta ma'lumotlarni yig'adigan modullari bor ulardan o'zimiz uchun kerakli modulni yoqib shu orqali analiz va monitoring qilishimiz mumkin.
+**3->** Metricbeatda bir nechta ma'lumotlarni yig'adigan modullari bor ulardan o'zimiz uchun kerakli modulni yoqib shu orqali analiz va monitoring qilishimiz mumkin.
 
 Metricbeat modullarini quyidagicha ko'rish mumkin.
 
@@ -628,3 +628,52 @@ system module uchun Kibana Dashboardlar
 ![elk-setup](public/images/article/elk-setup/obs2.png)
 
 
+## Auditbeat o'rnatish va sozlash
+
+**1->** Biz analiz va monitoring qilmoqchi bo'lgan sereverlarimizga **Auditbeat** o'rnatib olamiz.
+
+```bash
+curl -L -O https://artifacts.elastic.co/downloads/beats/auditbeat/auditbeat-7.17.21-amd64.deb
+sudo dpkg -i auditbeat-7.17.21-amd64.deb
+```
+
+**2->** Auditbeatni Elastic stackga ulab olishimiz kerak, buning uchun biz `auditbeat.yml` konfiguratsiya faylida Kibana va Elasticsearch manzillarini ko'rsatishimiz kerak bo'ladi.
+
+```bash
+sudo nano /etc/auditbeat/auditbeat.yml 
+```
+
+```bash {3,7}
+# =================================== Kibana ===================================
+setup.kibana:
+  host: "10.128.0.10:5601"
+# ---------------------------- Elasticsearch Output ----------------------------
+output.elasticsearch:
+  # Array of hosts to connect to.
+  hosts: ["10.128.0.9:9200"]
+```
+
+**3->** Auditbeat ma'lumotlaringizni tahlil qilish, indekslash va vizualizatsiya qilish uchun oldindan belgilangan assetslar bilan birga keladi. Ushbu aasetslarni load qilishimiz kerak bo'ladi. Bu biroz vaqt oladi.
+
+```bash
+sudo auditbeat setup -e
+```
+
+**4->** Metricbeatni ishga tushiramiz
+
+```bash
+sudo service auditbeat start
+```
+
+Statusini ko'ramiz
+
+```bash
+sudo service auditbeat status
+```
+
+**5->** Kibana Dashboardga o'tib Auditbeat dashboardlarini ko'rib chishishimiz mumkin.
+
+![elk-setup](public/images/article/elk-setup/auditbeat1.png)
+
+**[Auditbeat Auditd] Overview ECS**
+![elk-setup](public/images/article/elk-setup/auditbeat.png)
