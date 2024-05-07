@@ -4,16 +4,16 @@ import { Callout } from "nextra-theme-docs";
 
 ![elk-setup](public/images/article/elk-setup/banner.png)
 
-Oldingi [**ELK Stackga kirish**](https://devops-journey.uz/tutorials/article/elk-stack) mavzusida biz ELK nimaga ishlatilishi uning arxitekturasi va componentlari, qanday ishlashini ko'rib chiqgan edik. Bugungi amaliyotimizda biz ELK stack Cluster sozlahsni ko'rib chiqamiz.
+Oldingi [**ELK Stackga kirish**](https://devops-journey.uz/tutorials/article/elk-stack) mavzusida biz ELK nimaga ishlatilishi uning arxitekturasi va componentlari, qanday ishlashini ko'rib chiqgan edik. Bugungi amaliyotimizda biz **ELK stack Cluster** sozlashni ko'rib chiqamiz.
 <Callout type="info" emoji="">
 **Diqqat!** 
-* Ushbu amaliyotni boshlash uchun [**ELK Stackga kirish**](https://devops-journey.uz/tutorials/article/elk-stack) qo'llanmasini o'qib chiqgan bo'lishingiz kerak bo'ladi.
+* Ushbu amaliyotni boshlash uchun [**ELK Stackga kirish**](https://devops-journey.uz/tutorials/article/elk-stack) qo'llanmasini o'qib chiqgan bo'lishingiz kerak bo'ladi!
 * Ushbu amaliyotda biz **Elasticsearch** `7.17` versiyasidan foydalanamiz!
 </Callout>
 
 ## Arxitektura
 
-Ushbu amaliyotda biz kichik ELK stack cluster o'rnatib sozlayymiz. ELK stack uchun minmum 3ta server va ELK stack bilan ishlash uchun bitta app server kerak bo'ladi. Clusterdagi barcha serverlar bitta subnetda bo'lishi kerak bo'ladi chunki ELK componentlar bir bir bilan Internal IPlar bilan bo'glanib ishlaydi. ELK stack commentlari uchun 3ta alohida serverda sozlanadi Elasticsearch, Kibana va Logstash. Boshqa serverlarga Beatslar o'ratiladi, ba'zi beatslar loglarni logstashga yuboradi va logstash ular ustida ishlab uni elasticsearchga yuboradi, elasticsearchdan esa Kibana UI Dashboard orqali vizualizatsiya qilib monitoring ava analiz qilmaiz. Ba'zi beatlar va Integrationlar esa to'gridan-to'gri malumotlarni elasticsearchga yuboradi.  
+Ushbu amaliyotda biz kichik ELK stack cluster o'rnatib sozlaymiz. ELK stack uchun minimum 3-ta server va ELK stack bilan ishlash uchun bitta app server kerak bo'ladi. Clusterdagi barcha serverlar bitta subnetda bo'lishi kerak bo'ladi chunki ELK componentlar bir bir bilan Internal IPlar bilan bo'glanib ishlaydi. ELK stack componentari uchun 3-ta alohida serverda sozlanadi **Elasticsearch, Kibana va Logstash**. Boshqa serverlarga **Beats**lar o'ratiladi, ba'zi beatslar loglarni logstashga yuboradi va logstash ular ustida ishlab uni elasticsearchga yuboradi, elasticsearchdan esa Kibana UI Dashboard orqali vizualizatsiya qilib monitoring va analiz qilamiz. Ba'zi beatlar va Integrationlar esa to'gridan-to'gri malumotlarni elasticsearchga yuboradi.  
 
 Bugungi amaliyotda rasmda ko'rsatilgan ELK clusterni o'rnatib sozlaymiz.
 
@@ -64,7 +64,7 @@ echo "deb [signed-by=/usr/share/keyrings/elasticsearch-keyring.gpg] https://arti
 sudo apt-get update && sudo apt-get install elasticsearch
 ```
 
-`elasticsearch.yml` konfiguratsiyadan elasticsearchni tashqariga ochamiz.
+`elasticsearch.yml` konfiguratsiyadan elasticsearchni tashqariga ochamiz, bu bizga boshqa serverlar elasticsearchga ulana olishi uchun kerak bo'ladi.
 
 ```bash
 sudo nano /etc/elasticsearch/elasticsearch.yml
@@ -105,7 +105,7 @@ daemonni reload qilamiz.
 sudo systemctl daemon-reload
 ```
 
-Elasticsearchni systemd yordamida avtomatik ishga tushishini yoqamiz.
+Elasticsearchni **systemd** yordamida avtomatik ishga tushishini yoqamiz, agar serverimiz o'chib qayta yonganida elasticsearch avtomatik ishga tushadi.
 
 ```bash
 sudo systemctl enable elasticsearch.service
@@ -127,7 +127,7 @@ htop
 
 hahaaa resurs RAM usage 8.53GB ))
 
-**6->** Elasticsearch ishlayotganini bilish uchun elastic ishlab turgan subnetdagi birorta serverdan  elasticsearch serverga `"10.128.0.9:9200`ga HTTP request yuborib ko'ramiz. Masalan logstash serverdan.
+**6->** Elasticsearch ishlayotganini va boshqa serverdan ulanish borligini bilish uchun elasticsearch ishlab turgan subnetdagi birorta serverdan  elasticsearch serverga `10.128.0.9:9200`ga HTTP request yuborib ko'ramiz. Masalan logstash serverdan.
 
 ```bash
 curl -X GET "10.128.0.9:9200"
@@ -187,7 +187,7 @@ sudo systemctl status kibana.service
 ```
 ![elk-setup](public/images/article/elk-setup/systemd1.png)
 
-**3->** Kibananin o'rnatib olganimizdan keyin tashqaridan brauzer orqali kirish uchun `/etc/kibana/kibana.yml` ni konfiguratsiya qilishimiz kerak va `elasticsearch.hosts` elasticsearch hostni belgilashimiz kerak.
+**3->** Kibananini o'rnatib olganimizdan keyin tashqaridan brauzer orqali kirish uchun `/etc/kibana/kibana.yml`ni konfiguratsiya qilishimiz kerak va Elasticsearchga ulana olishi uchun `elasticsearch.hosts`ga elasticsearch hostni belgilashimiz kerak.
 
 ```bash
 sudo nano /etc/kibana/kibana.yml
@@ -245,7 +245,7 @@ echo "deb [signed-by=/usr/share/keyrings/elasticsearch-keyring.gpg] https://arti
 ```bash
 sudo apt-get update && sudo apt-get install logstash
 ```
-Logstashni o'rnatib bo'lganingizdan keyin sozlashga o'tishingiz mumkin. Logstash konfigursatsiya fayli `/etc/logstash/conf.d` joylashgan bo'ladi bu konfiguratsiya sintaksissi haqida [quyidagi havola](https://www.elastic.co/guide/en/logstash/current/configuration-file-structure.html) orqali ko'rib chiqishingiz mumkin.
+Logstashni o'rnatib bo'lganingizdan keyin sozlashga o'tishingiz mumkin. Logstash konfigursatsiya fayli `/etc/logstash/conf.d` joylashgan bo'ladi bu konfiguratsiya sintaksisi haqida [quyidagi havola](https://www.elastic.co/guide/en/logstash/current/configuration-file-structure.html) orqali ko'rib chiqishingiz mumkin.
 
 Logstashni ma'lumotlarni bir tomondan qabul qiladigan, u yoki bu tarzda qayta ishlab belgilangan joyga jo'natadigan pipeline deb tassavur qilsangiz bo'ladi. Logstash asosiy elementlari ikkita `input` va `output` qo'shimcha `filter`. `input` plaginlari manbadan ma'lumotlarni oladi, `filter` plaginlarini uni qayta ishlaydi va `output` plaginlari esa ma'lumotlarni belgilangan joyga yuboradi.
 
@@ -328,7 +328,7 @@ Hozirda Elastic-dan mavjud bo'lgan Beatslar:
 **Beats**lar haqida [ba'tafsil.](https://www.elastic.co/guide/en/beats/libbeat/8.13/getting-started.html)
 
 
-Ushbu qo'llanmada biz **Filebeat** yordamida local loglarni Elastik stackga yo'naltiramiz.
+Hozir biz  app-server(10.128.0.12) serverimizga Filebeat o'rnatib **Filebeat** yordamida local loglarni Elastik stackga yo'naltiramiz.
 
 **1->** `app-server`(10.128.0.12) serverimizni yangilab kerakli dasturlarni o'rnatib olamiz.
 
@@ -357,7 +357,7 @@ sudo apt-get update && sudo apt-get install filebeat
 
 **2->** Filebeat Logstashga ulanishi uchun `filebeat.yml` ni sozlab olamiz.
 
-**Filebeat** ko'p chiqishlarni qo'llab quvvatlaydi lekin biz eventlarga qo'shimcha ishlov berish uchun Elasticsearch yoki Logstashga ma'lumotlarni yuboramiz. Bu qo'llanmada biz Filebeatdan yuborayotgan ma'lumotlarni to'gridan-to'gri Elasticsearch yubormaymiz, biz Filebeat yuborayotgan ma'lumotlarni boyitish va yaxshilash uchun Logstashni yuboramiz. Shuning uchun biz `filebeat.yml` konfiguratsiya faylidan ma'lumotlarni elasticsearchga yuborishni o'chirib qo'yib Logstashga yuborishni yoqib qo'yamiz.
+**Filebeat** ko'p chiqishlarni qo'llab quvvatlaydi lekin biz eventlarga qo'shimcha ishlov berish uchun Elasticsearch yoki Logstashga ma'lumotlarni yuboramiz. Bu qo'llanmada biz Filebeatdan yuborayotgan ma'lumotlarni to'gridan-to'gri Elasticsearch yubormaymiz, biz Filebeat yuborayotgan ma'lumotlarni boyitish va yaxshilash uchun Logstashga yuboramiz. Shuning uchun biz `filebeat.yml` konfiguratsiya faylidan ma'lumotlarni elasticsearchga yuborishni o'chirib qo'yib Logstashga yuborishni yoqib qo'yamiz.
 
 
 Elasticsearchga ma'lumotlarni yuborishni o'chirib qo'yamiz. `output.elasticsearch:` va `hosts`ni commentga olib qo'yamiz.
@@ -403,7 +403,7 @@ Filebeatni kengaytirish uchun bir nechta [Filebeat modullari](https://www.elasti
 sudo filebeat modules enable system
 ```
 
-Ushbu buyruq orqali yoqilgan va o'chirilgan modullar qo'yxatini ko'rishingiz mumkin.
+Ushbu buyruq orqali yoqilgan va o'chirilgan modullar ro'yxatini ko'rishingiz mumkin.
 
 ```bash
 sudo filebeat modules list
@@ -512,7 +512,7 @@ curl -XGET 'http://10.128.0.9:9200/filebeat-*/_search?pretty'
           },
 ............
 ```
-Agar sizning natijangiz 0 jami hitsni ko'rsatsa, Elasticsearch siz qidirgan indeks ostida hech qanday jurnalni yuklamayapti va siz xatolar uchun sozlamalaringizni ko'rib chiqishingiz kerak bo'ladi. Agar siz kutilgan natijani olgan bo'lsangiz, keyingi bosqichga o'tishingiz mumkin, unda biz Kibana dashbolard bilan ishlashni ko'rib chiqamiz.
+Agar sizning natijangiz 0 jami hitsni ko'rsatsa, Elasticsearch siz qidirgan indeks ostida hech qanday logni yuklamayapti va siz xatolar uchun sozlamalaringizni ko'rib chiqishingiz kerak bo'ladi. Agar siz kutilgan natijani olgan bo'lsangiz, keyingi bosqichga o'tishingiz mumkin, unda biz Kibana dashbolard bilan ishlashni ko'rib chiqamiz.
 
 
 ## Kibana Dashboard bilan ishlash
@@ -527,7 +527,7 @@ Kibana Dashboardan chap tomondagi bo'limga o'tib **Discover** bo'limiga o'tsak b
 
 ![elk-setup](public/images/article/elk-setup/kibana2.png)
 
-**Dashboard** bo'limga o'tib Filebeat system module uchun dashboard ishlab chiqilgan.
+**Dashboard** bo'limga o'tib Filebeat system module uchun dashboardlar ishlab chiqilgan.
 
 ![elk-setup](public/images/article/elk-setup/kibana3.png)
 
