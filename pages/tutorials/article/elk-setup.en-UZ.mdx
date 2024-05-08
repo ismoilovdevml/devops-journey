@@ -527,9 +527,7 @@ Kibana Dashboardan chap tomondagi bo'limga o'tib **Discover** bo'limiga o'tsak b
 
 ![elk-setup](public/images/article/elk-setup/kibana2.png)
 
-**Dashboard** bo'limga o'tib Filebeat system module uchun dashboardlar ishlab chiqilgan.
-
-![elk-setup](public/images/article/elk-setup/kibana3.png)
+**Dashboard** bo'limga o'tib Filebeat system module uchun dashboardlarni qdirib ularni ko'rib chiqishimiz mumkin.
 
 ![elk-setup](public/images/article/elk-setup/syslog.png)
 
@@ -549,8 +547,6 @@ Biz quyidagi Beatslarni o'rnatamiz va sozlaymiz.
 * [**Metricbeat**](https://www.elastic.co/beats/metricbeat) Tizimlar va servicelar metrikalarni to'playdi va jo'natadi.
 * [**Packetbeat**](https://www.elastic.co/beats/packetbeat) Tarmoq ma'lumotlarini to'playdi va jo'natadi.
 * [**Auditbeat**](https://www.elastic.co/beats/auditbeat) Linux audit framework ma'lumotlarini to'playdi va jo'natadi
-* [**Heartbeat**](https://www.elastic.co/observability/aiops) Servicelaringiz availability(mavjudligi)ni tekshirib turish orqali va nazorat qiladi.
-* [**Winlogbeat**](https://www.elastic.co/beats/winlogbeat) Windows event loglarini to'playdi.
 
 
 ## Metricbeat o'rnatish va sozlash
@@ -677,3 +673,56 @@ sudo service auditbeat status
 
 **[Auditbeat Auditd] Overview ECS**
 ![elk-setup](public/images/article/elk-setup/auditbeat.png)
+
+
+## Packetbeat o'rnatish va sozlash
+
+**1->** Biz analiz va monitoring qilmoqchi bo'lgan sereverlarimizga **Packetbeat** o'rnatib olamiz.
+
+```bash
+curl -L -O https://artifacts.elastic.co/downloads/beats/packetbeat/packetbeat-7.17.21-amd64.deb
+sudo dpkg -i packetbeat-7.17.21-amd64.deb
+```
+
+**2->** Packetbeatni Elastic stackga ulab olishimiz kerak, buning uchun biz `packetbeat.yml` konfiguratsiya faylida Kibana va Elasticsearch manzillarini ko'rsatishimiz kerak bo'ladi.
+
+```bash
+sudo nano /etc/packetbeat/packetbeat.yml 
+```
+
+```bash {3,7}
+# =================================== Kibana ===================================
+setup.kibana:
+  host: "10.128.0.10:5601"
+# ---------------------------- Elasticsearch Output ----------------------------
+output.elasticsearch:
+  # Array of hosts to connect to.
+  hosts: ["10.128.0.9:9200"]
+```
+
+**3->** Packetbeat ma'lumotlaringizni tahlil qilish, indekslash va vizualizatsiya qilish uchun oldindan belgilangan assetslar bilan birga keladi. Ushbu aasetslarni load qilishimiz kerak bo'ladi. Bu biroz vaqt oladi.
+
+```bash
+sudo packetbeat setup -e
+```
+
+**4->** Packetbeatni ishga tushiramiz
+
+```bash
+sudo service packetbeat start
+```
+
+Statusini ko'ramiz
+
+```bash
+sudo service packetbeat status
+```
+
+**5->** Kibana Dashboardga o'tib Packetbeat dashboardlarini ko'rib chishishimiz mumkin.
+
+![elk-setup](public/images/article/elk-setup/packetbeat-dash.png)
+
+**[Packetbeat] Overview ECS**
+![elk-setup](public/images/article/elk-setup/packetbeat-dash1.png)
+**[Packetbeat] Flows ECS**
+![elk-setup](public/images/article/elk-setup/packetbeat-dash2.png)
