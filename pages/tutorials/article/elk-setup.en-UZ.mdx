@@ -677,14 +677,21 @@ sudo service auditbeat status
 
 ## Packetbeat o'rnatish va sozlash
 
-**1->** Biz analiz va monitoring qilmoqchi bo'lgan sereverlarimizga **Packetbeat** o'rnatib olamiz.
+**Packetbeat** - bu real-time rejimida trafikni kuzatuvchi lightweight network paket analizatori. U tarmoq ma'lumotlarini ushlaydi, tahlil qiladi va HTTP requestlari, ma'lumotlar bazasi querilari va boshqa protokollar kabi tegishli ma'lumotlarni chiqaradi. Packetbeat tarmoq trafigini passiv sniffing orqali dastur ishlashi, tarmoq harakati va xavfsizlik tahdidlari haqida tushuncha beradi.
+
+**1->**  Ko'pgina platformalarda **Packetbeat** `libpcap` paketlarni yozib olish kutubxonasini talab qiladi. Operatsion tizimingizga qarab, uni o'rnatishingiz kerak bo'ladi:
+
+```bash
+sudo apt-get install libpcap0.8
+```
+**2->** Biz analiz va monitoring qilmoqchi bo'lgan sereverlarimizga **Packetbeat** o'rnatib olamiz.
 
 ```bash
 curl -L -O https://artifacts.elastic.co/downloads/beats/packetbeat/packetbeat-7.17.21-amd64.deb
 sudo dpkg -i packetbeat-7.17.21-amd64.deb
 ```
 
-**2->** Packetbeatni Elastic stackga ulab olishimiz kerak, buning uchun biz `packetbeat.yml` konfiguratsiya faylida Kibana va Elasticsearch manzillarini ko'rsatishimiz kerak bo'ladi.
+**3->** Packetbeatni Elastic stackga ulab olishimiz kerak, buning uchun biz `packetbeat.yml` konfiguratsiya faylida Kibana va Elasticsearch manzillarini ko'rsatishimiz kerak bo'ladi.
 
 ```bash
 sudo nano /etc/packetbeat/packetbeat.yml 
@@ -700,13 +707,30 @@ output.elasticsearch:
   hosts: ["10.128.0.9:9200"]
 ```
 
-**3->** Packetbeat ma'lumotlaringizni tahlil qilish, indekslash va vizualizatsiya qilish uchun oldindan belgilangan assetslar bilan birga keladi. Ushbu aasetslarni load qilishimiz kerak bo'ladi. Bu biroz vaqt oladi.
+**4->** `packetbeat.yml`dan trafikni olish uchun tarmoq qurilmalari(network device) va protokollarini sozlash kerak bo'ladi. **Sniffer** turini o'rnating. default holda, Packetbeat `pcaplibpcap` kutubxonasidan foydalanadi va ko'pgina platformalarda ishlaydi. Linuxda, `af_packet` memory-mapped sniffingdan foydalanish uchun sniffer turini o'rnating. Ushbu parametr `libpcap`-dan tezroq va kernel modulini talab qilmaydi, lekin u Linux-ga xosdir:
+
+```bash
+packetbeat.interfaces.type: af_packet
+```
+
+Trafikni olish uchun network deviceni belgilang, masalan:
+
+```bash
+packetbeat.interfaces.device: eth0
+```
+Mavjud network devicelarni ko'rish uchun.
+
+```bash
+sudo packetbeat devices
+```
+
+**4->** Packetbeat ma'lumotlaringizni tahlil qilish, indekslash va vizualizatsiya qilish uchun oldindan belgilangan assetslar bilan birga keladi. Ushbu aasetslarni load qilishimiz kerak bo'ladi. Bu biroz vaqt oladi.
 
 ```bash
 sudo packetbeat setup -e
 ```
 
-**4->** Packetbeatni ishga tushiramiz
+**5->** Packetbeatni ishga tushiramiz
 
 ```bash
 sudo service packetbeat start
@@ -718,7 +742,7 @@ Statusini ko'ramiz
 sudo service packetbeat status
 ```
 
-**5->** Kibana Dashboardga o'tib Packetbeat dashboardlarini ko'rib chishishimiz mumkin.
+**6->** Kibana Dashboardga o'tib Packetbeat dashboardlarini ko'rib chishishimiz mumkin.
 
 ![elk-setup](public/images/article/elk-setup/packetbeat-dash.png)
 
