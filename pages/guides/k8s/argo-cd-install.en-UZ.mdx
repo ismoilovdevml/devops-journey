@@ -2,7 +2,7 @@ import { Callout } from "nextra-theme-docs";
 
 # Kubernetesga Argo CD o'rnatish va sozlash
 
-![argo-cd](/images/tutorials/k8s/argo-cd/banner.png)
+![argo-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/argo-cd/banner.png)
 
 ## Kirish
 
@@ -33,7 +33,7 @@ Ushbu qo'llanmani yaxshi tushinish uchun quyidagi qo'llanmalarni ko'rib chiqish 
 
 ## Argo CD O'rnatish
 
-![argo-cd](/images/tutorials/k8s/argo-cd/argocd-ui.webp)
+![argo-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/argo-cd/argocd-ui.webp)
 
 Kubernetes klasterimizga Argo CD'ni helm orqali o'rnatamiz.
 
@@ -63,7 +63,7 @@ helm install argo-cd argo/argo-cd --version 5.53.8 --namespace argo-cd --create-
 ```bash
 kubectl get pods -n argo-cd
 ```
-![argo-cd](/images/tutorials/k8s/argo-cd/argo-cd.png)
+![argo-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/argo-cd/argo-cd.png)
 
 ## Argo CD epose qilish
 
@@ -84,7 +84,7 @@ konfiguratsiyamizni yozishdan oldin argo-cd servicelari statusini ko'rib chiqish
 ```bash
 kubectl get service -n argo-cd
 ```
-![argo-cd](/images/tutorials/k8s/argo-cd/argo-cd1.png)
+![argo-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/argo-cd/argo-cd1.png)
 
 Statusdan ko'radigan bo'lsak  biz `argocd-server` nomli serviceni expose qilishimiz kerak `80/443`. `argocd-server` esa `argo-cd` namesapceda.
 
@@ -128,7 +128,7 @@ kubectl apply -f argocd-ingress.yaml
 ```
 Konfiguratsiyani apply qilib argocd.xilol.uz domeniga brauzer orqali kirib ko'rganimizda quyidagi Argo CD kirish oynasi ochilishi kerak.
 
-![argo-cd](/images/tutorials/k8s/argo-cd/argo-cd2.png)
+![argo-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/argo-cd/argo-cd2.png)
 
 **6->** Argo CDga kirish uchun birinchi parolni olish
 
@@ -141,10 +141,10 @@ Argo CD o'rnatib brauzerdan kirganimzidan bizdan kirish uchun login parol so'ral
 **Username -> admin**
 
 **Passowrd -> yuroqidagi buyruq orqali olingan parol**
-![argo-cd](/images/tutorials/k8s/argo-cd/argo-cd3.png)
+![argo-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/argo-cd/argo-cd3.png)
 
 Argo CD ga kirganimzida quyidagi oyna ochiladi.
-![argo-cd](/images/tutorials/k8s/argo-cd/argo-cd4.png)
+![argo-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/argo-cd/argo-cd4.png)
 
 ## Amaliyot
 

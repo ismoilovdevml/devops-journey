@@ -2,7 +2,7 @@ import { Callout } from "nextra-theme-docs";
 
 # CPU cache nima va u qanday ishlaydi?
 
-![Tizim arxitekturasi](/images/article/cpu-cache/1.jpeg)
+![Tizim arxitekturasi](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/cpu-cache/1.jpeg)
 
 So'nggi yillarda kompyuter protsessorlari ancha rivojlangan. Har yili tranzistorlar kichrayadi va o'zgarishlar Moore's qonuni keraksiz bo'ladigan nuqtaga yetadi.
 
@@ -42,7 +42,7 @@ Keyin memory cache protsessor ichidagi ma'lumotlarni oldinga va orqaga olib bora
 
 ## CPU Cache Memory darajalari: L1, L2 va L3
 
-![Tizim arxitekturasi](/images/article/cpu-cache/2.webp)
+![Tizim arxitekturasi](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/cpu-cache/2.webp)
 
 
 CPU Cache memory uchta "level" ga bo'lingan: L1, L2 va L3. Xotira ierarxiyasi yana tezlik va shuning uchun kesh hajmiga bog'liq.
@@ -139,8 +139,8 @@ Motherboardagi keshlar `AMD K6-2` va `AMD K6-III` protsessorlari tufayli uzoq va
 
 ### ARM mikroprotsessorlarida 
 
-![Tizim arxitekturasi](/images/article/cpu-cache/3.webp)
-![Tizim arxitekturasi](/images/article/cpu-cache/4.webp)
+![Tizim arxitekturasi](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/cpu-cache/3.webp)
+![Tizim arxitekturasi](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/cpu-cache/4.webp)
 
 
 Apple `M1` protsessorida yadro turiga qarab har bir yadro uchun `128` yoki `192` KiB instruction L1 keshi mavjud (latenc/single-thread performance), faqat noutbuk uchun emas, balki har qanday CPU tipidagi L1 keshi uchun juda katta, umumiy kesh esa Xotira hajmi juda katta emas (jami o'tkazish qobiliyati uchun muhimroq), noutbuk uchun va ancha kattaroq umumiy o'lchamlar (masalan, L3 yoki L4) IBMning asosiy kompyuterlarida mavjud.
@@ -162,11 +162,11 @@ cache line (xotira bloki) bilan birga keladigan samarali xotira manzili ( `MSB` 
 | tag        | index         | block offset |
 | ---------- |:-------------:| ------------:|
 
-index ma'lumotlarning qaysi keshga kiritilganligini tavsiflaydi. index uzunligi ![Tizim arxitekturasi](/images/article/cpu-cache/5.svg) `s` cache sets uchun bitlar .
+index ma'lumotlarning qaysi keshga kiritilganligini tavsiflaydi. index uzunligi ![Tizim arxitekturasi](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/cpu-cache/5.svg) `s` cache sets uchun bitlar .
 
 block offset cache rowdagi saqlangan ma'lumotlar blokida kerakli ma'lumotlarni belgilaydi. 
 
-Odatda effective address baytlarda bo'ladi, shuning uchun blokning offset uzunligi ![Tizim arxitekturasi](/images/article/cpu-cache/6.svg) bit, bu erda b - ma'lumotlar blokiga to'g'ri keladigan baytlar soni. tag addressning eng muhim bitlarini o'z ichiga oladi, ular joriy to'plamdagi barcha satrlarga nisbatan tekshiriladi (to'plam indeks bo'yicha olingan), ushbu to'plamda so'ralgan address mavjud yoki yo'qligini tekshirish. Agar shunday bo'lsa, keshga kirish sodir bo'ladi. Bitlardagi tag uzunligi quyidagicha:
+Odatda effective address baytlarda bo'ladi, shuning uchun blokning offset uzunligi ![Tizim arxitekturasi](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/cpu-cache/6.svg) bit, bu erda b - ma'lumotlar blokiga to'g'ri keladigan baytlar soni. tag addressning eng muhim bitlarini o'z ichiga oladi, ular joriy to'plamdagi barcha satrlarga nisbatan tekshiriladi (to'plam indeks bo'yicha olingan), ushbu to'plamda so'ralgan address mavjud yoki yo'qligini tekshirish. Agar shunday bo'lsa, keshga kirish sodir bo'ladi. Bitlardagi tag uzunligi quyidagicha:
 
 
 `tag_length = address_length - index_length - block_offset_length`
@@ -198,7 +198,7 @@ Cache miss - bu keshdagi ma'lumotlarni o'qish yoki yozish bo'yicha muvaffaqiyats
 Instruction cachedagi cache read miss yuborilganligi odatda eng katta kechikishga olib keladi, chunki protsessor yoki hech bo'lmaganda execution ishi instruction asosiy xotiradan olinmaguncha kutishi (to'xtab turishi) kerak. Ma'lumotlar keshidagi cache read miss odatda kichikroq kechikishni keltirib chiqaradi, chunki kesh o'qilishiga bog'liq bo'lmagan ko'rsatmalar berilishi mumkin va ma'lumotlar asosiy xotiradan qaytarilgunga qadar bajarishni davom ettiradi va bog'liq ko'rsatmalar executionni davom ettirishi mumkin. Ma'lumotlarga cache write miss odatda eng qisqa kechikishni keltirib chiqaradi, chunki yozishni navbatga qo'yish mumkin va keyingi ko'rsatmalarni bajarishda bir nechta cheklovlar mavjud; protsessor navbat to'lguncha davom etishi mumkin.
 
 Ixtisoslashuv va ko'p darajali keshlashni tasvirlash uchun bu erda AMD Athlon 64 protsessoridagi K8 yadrosining kesh ierarxiyasi keltirilgan
-![Tizim arxitekturasi](/images/article/cpu-cache/7.png)
+![Tizim arxitekturasi](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/cpu-cache/7.png)
 
 <Callout type="info" emoji="">
 Xato va kamchiliklar bo'lsa uzur so'rayman )

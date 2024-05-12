@@ -2,7 +2,7 @@ import { Callout } from "nextra-theme-docs";
 
 ## Linux fayl tizimi uchun keng qamrovli qo'llanma
 
-![Linux](/images/article/linux-fayl-tizimi/1.jpg)
+![Linux](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/linux-fayl-tizimi/1.jpg)
 
 ### Hamma narsa fayl - Falsafasi
 
@@ -24,7 +24,7 @@ Operatsion tizimda fayl tizimining ahamiyati shundan iboratki, u operatsion tizi
 
 Linuxda har xil fayl tizimlaridan foydalanish mumkin, ularning har biri o'ziga xos xususiyatlarga va ishlash xususiyatlariga ega. Ba'zi mashhur Linux fayl tizimlariga Ext2, Ext3 va Ext4 fayl tizimlari, shuningdek, yangi Btrfs va XFS fayl tizimlari kiradi. Fayl tizimini tanlash Linux tizimining ishlashi, ishonchliligi va mosligiga ta'sir qilishi mumkin, shuning uchun vazifa uchun to'g'ri fayl tizimini tanlash muhimdir.
 
-![Tizim arxitekturasi](/images/article/linux-fayl-tizimi/2.webp)
+![Tizim arxitekturasi](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/linux-fayl-tizimi/2.webp)
 
 ### Linux fayl tizimining umumiy ko'rinishi
 
@@ -36,7 +36,7 @@ Ext fayl tizimlariga qo'shimcha ravishda, Linuxda ishlatiladigan yana bir qancha
 
 So'nggi yillarda btrfs kabi yangi fayl tizimlarining rivojlanishi Linux fayl tizimining imkoniyatlari va unumdorligini yanada oshirdi. Linux fayl tizimi rivojlanishda va Linux hamjamiyatining o'zgaruvchan ehtiyojlariga moslashishda davom etmoqda va u Linux operatsion tizimining muhim tarkibiy qismi bo'lib qolmoqda.
 
-![Fayl sxemalar revolyutsiyasi](/images/article/linux-fayl-tizimi/3.jpg)
+![Fayl sxemalar revolyutsiyasi](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/linux-fayl-tizimi/3.jpg)
 
 #### Eng mashhurlaridan ba'zilari:
 
@@ -89,7 +89,7 @@ Linux fayl tizimining tuzilishi ierarxik bo'lib, root(ildiz) directorysi `/` tiz
 
 `/var` Ushbu directory jurnal fayllari va ma'lumotlar bazasi fayllari kabi o'zgaruvchan fayllarni o'z ichiga oladi. Ushbu directorydagi fayllar tizimdan foydalanishga qarab hajmi o'zgarishi mumkin, shuning uchun u `o'zgaruvchan` deb ataladi.
 
-![Inoda haqida](/images/article/linux-fayl-tizimi/4.png)
+![Inoda haqida](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/linux-fayl-tizimi/4.png)
 
 ##### Rasmda Linux fayl tizimi tasvirlangan
 
@@ -97,7 +97,7 @@ Ushbu directorylarning har biri muayyan maqsadga xizmat qiladi va tizimdagi fayl
 
 ## Inode tuzilishini tushunish
 
-![alt text](/images/article/linux-fayl-tizimi/5.jpg)
+![alt text](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/linux-fayl-tizimi/5.jpg)
 
 Index nodening qisqartmasi inode - Linux fayl tizimidagi fayl haqidagi ma'lumotlarni saqlash uchun ishlatiladigan ma'lumotlar tuzilmasi. Inode tuzilmalari har bir faylga xos boʻlib, fayl haqidagi maʼlumotlar, jumladan, uning egaligi, ruxsatlari, timestamplar(vaqt belgilari) va fayl maʼlumotlarining diskdagi joylashuvi haqidagi maʼlumotlarning markaziy ombori boʻlib xizmat qiladi.
 
@@ -115,7 +115,7 @@ Har bir inode yaratilganda unga noyob raqam (inode raqami) beriladi va bu raqam 
 Faylni tashkil etuvchi ma'lumotlar bloklariga pointerlar (direct blocklar, indirect blocklar, double indirect blocklar va boshqalar).
 Inode tuzilmalari Linux fayl tizimining muhim qismi bo'lib, fayl tizimining yaxlitligi va izchilligini ta'minlash uchun ishlatiladi. Har bir fayl haqidagi ma'lumotni markaziy joyda saqlash orqali inodelar fayl tizimining o'lchami va tuzilishi vaqt o'tishi bilan o'zgargan taqdirda ham fayllarga samarali kirish va boshqarishni ta'minlaydi. Linux fayl tizimidagi inodelarning rolini tushunish fayllar va kataloglarni boshqarish va fayl tizimining qanday ishlashini tushunish uchun muhimdir.
 
-![Block va pointerlar](/images/article/linux-fayl-tizimi/6.png)
+![Block va pointerlar](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/linux-fayl-tizimi/6.png)
 
 ##### Rasmda Inode pointer tasvirlangan
 
@@ -145,7 +145,7 @@ Superblok fayl tizimining muhim komponentidir va agar u buzilgan yoki yo'qolsa, 
 
 Xulosa qilib aytadigan bo'lsak, superblok Linux fayl tizimidagi muhim ma'lumotlar tuzilmasi bo'lib, fayl tizimining izchilligi va yaxlitligini saqlashda markaziy rol o'ynaydi. Superblokning rolini tushunish Linux fayl tizimini boshqarish va unga xizmat ko'rsatish hamda fayl tizimining qanday ishlashini tushunish uchun muhimdir.
 
-![Tizim fayl strukturasi](/images/article/linux-fayl-tizimi/7.jpg)
+![Tizim fayl strukturasi](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/linux-fayl-tizimi/7.jpg)
 
 ## Fayl tizimlarini mountlash va ummount
 
@@ -179,7 +179,7 @@ Linux fayl ruxsatnomalarida yana bir muhim tushuncha sticky bit hisoblanadi. Sti
 
 Linuxda fayl ruxsatlari ega, guruh va boshqalar uchun o'qish `r`, yozish `w` va bajarish `x` ruxsatlarini belgilovchi belgilar qatori bilan ifodalanadi. Misol uchun, `rwxrw-r--` ruxsat qatori egasi o'qish, yozish va bajarish uchun ruxsatlarga ega ekanligini, guruhda o'qish va yozish ruxsatnomalariga ega ekanligini va boshqalar faqat o'qish ruxsatiga ega ekanligini bildiradi.
 
-![Fayllardagi chmod haqida](/images/article/linux-fayl-tizimi/8.jpg)
+![Fayllardagi chmod haqida](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/linux-fayl-tizimi/8.jpg)
 
 Faylga egalik huquqi faylning foydalanuvchi va guruh egasi tomonidan belgilanadi. Fayl egasi uni toʻliq nazorat qiladi va uning ruxsatlarini oʻzgartirishi yoki egalik huquqini boshqa foydalanuvchi yoki guruhga oʻtkazishi mumkin.
 

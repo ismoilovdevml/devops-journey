@@ -4,7 +4,7 @@ import { Callout } from "nextra-theme-docs";
 
 > **kubeadm** yordamida **on-premise** serverlarda Kubernetes klasterini yaratish va sozlash bo'yicha to'liq qo'llanma.
 
-![k8s-cluster](/images/tutorials/k8s/cluster-setup/banner.png)
+![k8s-cluster](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/cluster-setup/banner.png)
 
 Zamonaviy IT infratuzilmasining dinamik landshaftida konteynerlashtirilgan applicationlarni tartibga solish va boshqarish masshtablilik(scalability), ishonchlilik(reliability) va deployment qulayligini ta'minlashning asosiy jihatiga aylandi. Kubernetes, open-source konteyner orkestrlari platformasi sanoat standarti sifatida paydo bo'lib, tashkilotlarga konteynerlarni boshqarish va orkestrlashni soddalashtirish imkonini beradi.
 
@@ -37,7 +37,7 @@ Umumiy hisobda bizga 4ta server, bitta k8s-master server va minimum uchta node s
 
 Quyida meni kubernetes cluster uchun tayyorlab olgan serverlarim ro'yxati. E'tibor berib qarasangiz ularning **Internel IP** manzili **10.28.0.0/24** network subnetda bu degani ushbu serverlar bir biri bilan **Internal IP**si orqali bo'glana oladi. Shuning uchun menga bitta k8s-master sererimda static IP manzil bor. k8s-master serverimga static IP berishimni sababi boshqa serverlar bilan aloqa qilish(masalan Load Balancer) va applicationlar domen ulab **NGINX ingress** bilan expose qilish uchun kerak.
 
-![k8s-cluster](/images/tutorials/k8s/cluster-setup/vm1.png)
+![k8s-cluster](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/cluster-setup/vm1.png)
 
 ## kubeadm bilan k8s cluster yaratish
 
@@ -53,17 +53,17 @@ curl -sSL https://raw.githubusercontent.com/ismoilovdevml/devops-tools/master/k8
 
 Script quyidagicha ishga tushishi kerak.
 
-![k8s-cluster](/images/tutorials/k8s/cluster-setup/k8s1.png)
+![k8s-cluster](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/cluster-setup/k8s1.png)
 
 Bash script o'z ishini muvaffaqiyatli yakunlagida quyidagicha ko'rinishi kerak.
 
-![k8s-cluster](/images/tutorials/k8s/cluster-setup/k8s3.png)
+![k8s-cluster](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/cluster-setup/k8s3.png)
 
 **2->** k8s-masterda bash script muvvaqiyatli ishini yakunlagida  k8s-node serverlarni ulash uchun **kubeadm join** buryruq generatsiya qilib beradi. E'tiborli bo'lib ushbu buyruqni nusxalab olamiz bu orqali kubernetes node sereverlarni k8s-masterga ulay olamiz.
 
 Buyruq rasmda ko'rsatilgan.
 
-![k8s-cluster](/images/tutorials/k8s/cluster-setup/k8s5.png)
+![k8s-cluster](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/cluster-setup/k8s5.png)
 
 <Callout type="info" emoji="">
 ```bash
@@ -80,11 +80,11 @@ curl -sSL https://raw.githubusercontent.com/ismoilovdevml/devops-tools/master/k8
 
 Bash script quyidagicha ishga tushishi kerak.
 
-![k8s-cluster](/images/tutorials/k8s/cluster-setup/k8s2.png)
+![k8s-cluster](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/cluster-setup/k8s2.png)
 
 Bash script o'z ishini muvaffaqiyatli yakunlaganida quyidagicha ko'rinishi kerak.
 
-![k8s-cluster](/images/tutorials/k8s/cluster-setup/k8s4.png)
+![k8s-cluster](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/cluster-setup/k8s4.png)
 
 **4->** Bash scrip k8s-master va barcha nodelarda muvvaqiyatli ishga tushganidan keyin k8s-masterda berilgan **kubeadm join** dan foydalani k8s-masterimizga k8s nodelarimizni qo'shib chiqishimiz kerak, ya'ni quyidagi bizga berilgan buyruqni node serverlarimizga **sudo** bilan ishga tushirishiniz kerak.
 
@@ -92,7 +92,7 @@ Bash script o'z ishini muvaffaqiyatli yakunlaganida quyidagicha ko'rinishi kerak
 ```bash
 sudo kubeadm join 10.128.0.45:6443 --token snydd0.hdwia5qbrc455aro --discovery-token-ca-cert-hash sha256:ac02bc09d36903d97ceff3e5437b5386dcc5bf25ed90c8ce03dee9ae80061672
 ```
-![k8s-cluster](/images/tutorials/k8s/cluster-setup/k8s6.png)
+![k8s-cluster](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/cluster-setup/k8s6.png)
 
 Barcha nodelarimizda shu buyruq mauvaqqiyatli bajarilganidan keyin uni tekshirib ko'ramiz.
 
@@ -101,7 +101,7 @@ Barcha nodelarimizda shu buyruq mauvaqqiyatli bajarilganidan keyin uni tekshirib
 ```bash
 kubectl get nodes
 ```
-![k8s-cluster](/images/tutorials/k8s/cluster-setup/k8s7.png)
+![k8s-cluster](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/cluster-setup/k8s7.png)
 
 Bu holatda ulangan nodelar ko'rsatiladi lekin **STATUS** `NotReady` bo'lib turibti.
 
@@ -121,14 +121,14 @@ Biz bu holatda **Flannel** ishlatamiz.
 kubectl apply -f https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml
 ```
 Flannelni muvaffaqiyatli ishga tushirib `kubectl get nodes` buyru'gi bilan tekshirganimizda barcha nodelarimiz **STATUS**si **Ready** bo'lib turganini ko'rishimiz mumkin.
-![k8s-cluster](/images/tutorials/k8s/cluster-setup/k8s8.png)
+![k8s-cluster](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/cluster-setup/k8s8.png)
 
 **2->** Kubernetes klasterimzda qancha podlarimiz ishlab turganini ko'rish uchun quyidagi buyruqdan foydalanamiz.
 
 ```bash
 kubectl get pods -A
 ```
-![k8s-cluster](/images/tutorials/k8s/cluster-setup/k8s9.png )
+![k8s-cluster](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/cluster-setup/k8s9.png )
 
 ### MetalLB
 
@@ -171,7 +171,7 @@ kubectl get ns
 # metallb-system namespace podlarini ko'rish
 kubectl get pods -n metallb-system
 ```
-![k8s-cluster](/images/tutorials/k8s/cluster-setup/k8s10.png )
+![k8s-cluster](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/cluster-setup/k8s10.png )
 
 **5->** MetalLB o'rnatganimizdan keyin **MetalLB Address Pool** sozlashimiz kerak.
 
@@ -223,7 +223,7 @@ spec:
 * **spec ->** Ushbu bo'lim resourcening kerakli holatini belgilaydi.
 * **addresses ->** **MetalLB LoadBalancer** turidagi servicelarga ajratishi mumkin bo'lgan bir qator IP manzillarni belgilaydi. Bunday holda, u `10.128.0.200` dan `10.128.0.220` gacha bo'lgan diapazondir. **LoadBalancer** turidagi service yaratilganda, **MetalLB** ushbu diapazondan servicega IP belgilaydi(assign).
 
-![k8s-cluster](/images/tutorials/k8s/cluster-setup/ip1.png)
+![k8s-cluster](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/cluster-setup/ip1.png)
 
 Rasmga e'tibor bersangiz k8s cluster serverlar internal IP si ko'rsatilgan va ular **10.28.0.0/24** network subnetda.
 
@@ -271,7 +271,7 @@ kubectl get svc -n ingress-nginx
 kubectl get pods -n ingress-nginx
 ```
 
-![k8s-cluster](/images/tutorials/k8s/cluster-setup/ip2.png)
+![k8s-cluster](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/cluster-setup/ip2.png)
 
 **EXTERNAL IP** sifatida MetalLB orqali bergan address pooldan **10.128.0.200** IPni oldi.
 
@@ -393,7 +393,7 @@ sudo systemctl status haproxy
 ```
 
 Ushbu arxitektura quyidagicha rasmda ko'rsatilganidek ishlaydi. NGINX Ingress k8s-master server ichida internal IPni olgan va shu bilan ishlaydi, tashqi kirib chiqish uchun esa HAProxy o'rnatib TCP modeda konfiguratsiya qildik, Ya'ni tashqi kirish chiqishlar HAProxy orqali o'tadi.
-![k8s-cluster](/images/tutorials/k8s/cluster-setup/k8s-draw.png)
+![k8s-cluster](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/cluster-setup/k8s-draw.png)
 
 ## Cert-Manager o'rnatish va sozlash
 
@@ -421,7 +421,7 @@ Longhorn o'rnatilganidan keyin servicelarni ko'rib chiqaylik.
 kubectl get svc -n longhorn-system
 ```
 
-![k8s-cluster](/images/tutorials/k8s/cluster-setup/longhorn.png)
+![k8s-cluster](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/cluster-setup/longhorn.png)
 
 Biz ushbu servicelardan `longhorn-frontend`ni expose qilamiz domen ulab.
 
@@ -473,7 +473,7 @@ konfiguratsiyamizni apply qilganimizdan keyin brauzerdan(Firefox tezroq) `https:
 
 Hozirda kubernetes clusterimiz ishlashga tayyor holga keldi va ishni boshlasak bo'ladi. Keling amaliyot uchun kubernetes clusterimizga kubernetes dashboard o'rnatib uni NGINX Ingress Controller orqali expose qilib Cert-Managerdan SSL/TLS sertifikat olib ishga tushiramiz.
 
-![k8s-cluster](/images/tutorials/k8s/cluster-setup/dashboard.png )
+![k8s-cluster](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/cluster-setup/dashboard.png )
 
 **1->** Kubernetes dashboard o'rnatish
 
@@ -579,13 +579,13 @@ Kodda ajratib ko'rsatilgan qatorlarga qarab qisqa tushuntirish. metadaga k8s-das
 
 
 Rasmda kubernetes-dashboard namescpasedagi servicelar va portlari ko'rsatilgan. kubernetes-dashboard servisi 443 portda ishlab turibti.
-![k8s-cluster](/images/tutorials/k8s/cluster-setup/dashboard2.png)
+![k8s-cluster](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/cluster-setup/dashboard2.png)
 
 Bu configuratsiya **HTTPS** yordamida Kubernetes dashboarnini xavfsiz ochish uchun NGINX annotationlari bilan ingress resourceni yaratadi. U hostni, **TLS** sozlamalarini va **SSL** redirectionni belgilaydi.
 
 DNS hostingdan domengizga k8s-master static IP manzilini qo'shib qo'yasiz. Ushbu misolda menda **xilol.uz** domeni bor va men **dashboard** deb subdomen qo'shyapman. Rasmda ahost namunasi ko'rsatilgan **0.0.0.0** o'rniga k8s-matser serveringiz static IP manzilini qo'shasiz.
 
-![k8s-cluster](/images/tutorials/k8s/cluster-setup/dns.png)
+![k8s-cluster](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/cluster-setup/dns.png)
 
 
 ```bash
@@ -594,10 +594,10 @@ kubectl apply -f dashboard-ingress.yaml
 
 Configuratsiyamizni apply qilib ishga tushirganimizdan keyin brauzerdan **dashboard.xilol.uz**ga kirganimzida **https** kirishi kerak va bizga Kubernetes Dashboard ochilib kirish oynasi ochilishi kerak.
 
-![k8s-cluster](/images/tutorials/k8s/cluster-setup/k8s11.png)
+![k8s-cluster](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/cluster-setup/k8s11.png)
 
-![k8s-cluster](/images/tutorials/k8s/cluster-setup/k8s12.png)
-![k8s-cluster](/images/tutorials/k8s/cluster-setup/k8s13.png)
+![k8s-cluster](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/cluster-setup/k8s12.png)
+![k8s-cluster](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/cluster-setup/k8s13.png)
 
 
 **6->** Kubernetes dashboardga kirish uchun token olamiz
@@ -608,7 +608,7 @@ kubectl -n kubernetes-dashboard create token admin-user
 
 TOKEN olganimizdan keyin Kubernetes Dashboardga kirishimiz mumkin.
 
-![k8s-cluster](/images/tutorials/k8s/cluster-setup/dashboard1.png)
+![k8s-cluster](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/cluster-setup/dashboard1.png)
 
 
 Nihoyat bizda ishlashga tayyor kubernetes klaster bor. Bu juda oson va qiyinchiliksiz bo'ldi desak ham bo'ladi. Ushbu amaliyotda **on-primese** serverlarda **kubeadm** bilan Kubernetes cluster yaratdik va Networkni sozladik. Biz on-primese serverlarda network solution uchun **Flannel**dan LB uchun **MetalLB**dan tashqi trafik uchun esa **NGINX Ingress Controller** va **HAProxy**dan foydalanib konfiguratsiya qildik. Applicationlarimiz uchun avtomatik bepul **SSL/TLS** sertifikatlar olish uchun **Cert-Manager** o'rnatib sozladik. Klasterimiz ishlashga tayyor bo'lganida esa amaliyot uchun Kubernetes Dashboard o'rnatib domen ulab SSL sertifikat olib ishlashga tayyor qildik.

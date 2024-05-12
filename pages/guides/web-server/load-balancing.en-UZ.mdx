@@ -2,11 +2,11 @@ import { Callout } from "nextra-theme-docs";
 
 # Load Balancing
 
-![load-balancing](/images/tutorials/web-server/load-balancing/banner1.png)
+![load-balancing](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/web-server/load-balancing/banner1.png)
 
 **Load Balancing**(yuklarni muvozanatlash) - bu tarmoq trafigini bir nechta serverlar bo'ylab taqsimlash jarayoni. Bu hech qanday server juda ko'p talabga ega emasligini ta'minlaydi. Ishni teng taqsimlash orqali load balancing(yukni muvozanatlash) applicationning javob berish qobiliyatini yaxshilaydi. Shuningdek, u foydalanuvchilar uchun applicationlar va veb-saytlar mavjudligini oshiradi. Zamonaviy applicationlar yuk balanslagichlarisiz ishlay olmaydi. Vaqt o'tishi bilan load balancerlar(yuk balanslagichlar) xavfsizlik va applicationlarni tezlashtirish kabi qo'shimcha imkoniyatlarni qo'shdilar
 
-![load-balancing](/images/tutorials/web-server/load-balancing/1.jpg)
+![load-balancing](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/web-server/load-balancing/1.jpg)
 
 ### Load Balancerlar
 
@@ -22,7 +22,7 @@ Load Balancing 1990-yillarda tarmoq bo'ylab trafikni tarqatuvchi apparat qurilma
 
 **ADC**lar uchta toifaga bo'linadi: hardware qurilmalari(**hardware appliance**), **virtual qurilmalar** (asosan, eski apparatdan olingan dasturiy ta'minot) va **software-native** load balancerlari. Hisoblash cloudga o'tayotganda, dasturiy ta'minot ADC'lari apparatga o'xshash vazifalarni bajaradi. Ular, shuningdek, qo'shimcha funksionallik va moslashuvchanlik bilan birga keladi. Ular tashkilotga clouddagi talabdan kelib chiqqan holda dastur xizmatlarini tez va xavfsiz tarzda kengaytirish imkonini beradi. Zamonaviy ADClar tashkilotlarga tarmoqqa asoslangan xizmatlarni birlashtirishga imkon beradi. Ushbu xizmatlarga **SSL/TLS** offload, keshlash(**caching**), siqish(**compression**), hujumni aniqlash(**intrusion detection**) va web application firewallari(**WAF**) kiradi. Bu yetkazib berish muddatini qisqartiradi va kattaroq hajmni yaratadi.
 
-![load-balancing](/images/tutorials/web-server/load-balancing/2.png)
+![load-balancing](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/web-server/load-balancing/2.png)
 
 ### Load Balancing va SSL
 
@@ -40,7 +40,7 @@ Load Balancing muhim xavfsizlik rolini o'ynaydi, chunki hisoblash doimo cloudga 
 
 Muayyan vaziyat uchun eng mos keladigan turli xil algoritmlardan foydalanadigan turli xil load balancing metodlari mavjud. Load Balancing Algoritmlar ikki turga bo'linadi bular Dynamic load balancing algoritmlar va Static load balancing algoritlardir.
 
-![load-balancing](/images/tutorials/web-server/load-balancing/load.jpg)
+![load-balancing](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/web-server/load-balancing/load.jpg)
 
 #### Dynamic Load Balancing algoritmlar
 
@@ -74,7 +74,7 @@ Load Balancing network traffic cop sifatida ishlashdan ko'proq narsani amalga os
 
 Yetti layeri Open System Interconnection (**OSI**) modelida network firewallari birdan uchinchi darajagacha (L1-Physical Wiring, L2-Data Link and L3-Network) bo'ladi. Shu bilan birga, load balancer to'rtinchidan yettigacha layerlar orasida amalga oshiriladi (L4-Transport, L5-Session, L6-Presentation and L7-Application).
 
-![load-balancing](/images/tutorials/web-server/load-balancing/osi.jpeg)
+![load-balancing](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/web-server/load-balancing/osi.jpeg)
 
 
 * **Layer 4 Load Balancer(L4) ->** OSI modelining transport layerida ishlaydi va ushbu layerda mavjud bo'lgan source va destination **IP** manzillari, port raqamlari va **TCP**, **UDP** yoki **SCTP** kabi protokollar kabi ma'lumotlar asosida load balancing qarorlarini qabul qiladi. Application-specific content tushunadigan Layer 7 load balancerlaridan farqli o'laroq, Layer 4 load balancerlari application payloadni tekshirmasdan tarmoq ma'lumotlari asosida trafik taqsimotiga e'tibor qaratadi. Layer 4 Load Balanceri tarmoq maʼlumotlariga asoslangan oddiy marshrutlash yetarli boʻlgan senariylar uchun samarali boʻlib, application-specific routing yoki kontentni tekshirishga(content inspection) hojat yoʻq. Bu transport layerining atributlariga e'tibor qaratgan holda tarmoq trafigini serverlar yoki resurslar bo'ylab samarali taqsimlashda samarali.
@@ -83,7 +83,7 @@ Yetti layeri Open System Interconnection (**OSI**) modelida network firewallari 
 
 * **GSLB ->** - Global Server Load Balancing L4 va L7 imkoniyatlarini turli geografik joylashuvlardagi serverlarga kengaytiradi. Global Server Load Balancing global kirishni maqsad qilgan yoki turli geografik joylarda foydalanuvchilarga xizmat ko'rsatishni maqsad qilgan tashkilotlar uchun juda muhimdir. U ishlashni optimallashtirishda, yuqori mavjudlikni(high availability) ta'minlashda va turli omillarga asoslangan trafikni eng mos serverga yo'naltirish orqali uzluksiz foydalanuvchi tajribasini ta'minlashda hal qiluvchi rol o'ynaydi.
 
-![load-balancing](/images/tutorials/web-server/load-balancing/gslb.png)
+![load-balancing](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/web-server/load-balancing/gslb.png)
 
 ### Software Load Balancerlar vs Hardware Load Balancerlar
 

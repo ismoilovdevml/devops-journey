@@ -2,7 +2,7 @@ import { Callout } from "nextra-theme-docs";
 
 # GCP Network sozlash
 
-![gcp-network-sozlash](/images/tutorials/cloud/gcp-network/banner.png)
+![gcp-network-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/cloud/gcp-network/banner.png)
 
 ## Kirish
 
@@ -10,60 +10,60 @@ Cloud computing sohasida uzluksiz aloqa, ma'lumotlar yaxlitligi va operatsion sa
 
 
 Biz bugungi amaliyotda quyidagi kichik network infratuzilmani amaliyotda ko'rib chiqamiz. Loyihamiz uchun GCP da network yaratib, subnet sozlaymiz va infrastruktura VM(Virtual Machine)larni internal(ichki) IP lar orqali bo'glaymiz. Infrastrukturada VMlar bir bir bilan **internal IP** lari bilan bo'glanib ishlashi sizning infrastrukturangizda xavfsizlikni oshiradi, harajatlarni kamaytiradi, perfermonceni oshiradi va konfiguratsiyani soddalashtiradi.
-![gcp-network-sozlash](/images/tutorials/cloud/gcp-network/vpc-architecture.png)
+![gcp-network-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/cloud/gcp-network/vpc-architecture.png)
 
 ## VPC Network yaratish
 
 Keling ishni VPC networkdan yaratishdan boshlaymiz, bundan oldin siz **GCP**'da project yaratib olgan bo'lishingiz kerak. Qidiruv bo'limidan **VPC networks** deb qidirib **VPC networks** bo'limiga o'tamiz
 
-![gcp-network-sozlash](/images/tutorials/cloud/gcp-network/gcp1.png)
+![gcp-network-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/cloud/gcp-network/gcp1.png)
 
 Sizda quyidagi oyna ochilishi kerak. **GCP**'da **default** network bo'ladi **CREATE VPC NETWORK** bosib yangi vpc network yaratib olamiz.
 
-![gcp-network-sozlash](/images/tutorials/cloud/gcp-network/gcp2.png)
+![gcp-network-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/cloud/gcp-network/gcp2.png)
 
 VPC Networkni quyidagicha sozlaymiz, nom va description yozamiz va **Subnets** qismidan **Subnet creation mode**ni **Custom** tanlab VPC Networkimiz uchun subnet yaratib olamiz 
-![gcp-network-sozlash](/images/tutorials/cloud/gcp-network/vpc1.png)
+![gcp-network-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/cloud/gcp-network/vpc1.png)
 
 Bu qismda esa Subnetga nom va description yozamiz. Regionni **us-central1** tanladik **IP stack type** esa **IPv4** tanlab **172.23.0.0/24** IP range beramiz qolgan sozlamalarni esa default qoldiramiz.
-![gcp-network-sozlash](/images/tutorials/cloud/gcp-network/vpc2.png)
+![gcp-network-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/cloud/gcp-network/vpc2.png)
 
 Bis qismda biz **Firewall rule**larni sozlashimiz kerak bo'ladi biz **Ingress** type orqali **k8s-network**imizdagi vmlar bir birni bilan bemalol bo'glashini, icmp, rdp 3389 port va ssh ulanish uchun 22 portni firewalldan ochib qo'yamiz.
-![gcp-network-sozlash](/images/tutorials/cloud/gcp-network/vpc3.png)
+![gcp-network-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/cloud/gcp-network/vpc3.png)
 Oxirgi bosqichda biz **Dinamic routing mode**ni **Regional** deb belgilaymiz ya'ni faqat belgilagan regionimizda ishlaydi(us-cenrtral1) agar siz **Global** qilib tanlasangiz boshqa regionlarda ham ishlatishingiz mumkin. Hammasini o'zimizga moslab belgilab chiqganimizdan keyin **CREATE** bosib VPC Networkimizni yaratib olamiz.
-![gcp-network-sozlash](/images/tutorials/cloud/gcp-network/vpc4.png)
+![gcp-network-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/cloud/gcp-network/vpc4.png)
 Okeeey biz muvaffaqiyatli **VPC Network** yaratib oladik, VPC Networklar ro'yxatidan ko'rishingiz mumkin.
-![gcp-network-sozlash](/images/tutorials/cloud/gcp-network/vpc5.png)
+![gcp-network-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/cloud/gcp-network/vpc5.png)
 
 ## GCP VM yaratish
 
 Yuqorida biz VPC Network va Subnet yaratib sozlab oldik, keling endi shu VPC network va subnetdan foydalanadigan 2ta VM yaratamiz va ularni internal IPlar orqali bo'glab ko'ramiz.
 
 GCP qidiruv qismidan **VM instances** deb qidirib shu bo'limga kiramiz. Agar sizda **Compute Engine API** yoqilmagan bo'lsa uni yoqib oling.
-![gcp-network-sozlash](/images/tutorials/cloud/gcp-network/vm.png)
+![gcp-network-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/cloud/gcp-network/vm.png)
 
 **VM instances** bo'limidan yangi 2ta VM instance yaratib olamiz **CREATE INSTANCE** bosib VM instance yartatish bo'limiga o'tamiz.
-![gcp-network-sozlash](/images/tutorials/cloud/gcp-network/vm1.png)
+![gcp-network-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/cloud/gcp-network/vm1.png)
 
 Bu qismda VM instancega nom beramiz va Region(`us-central1(lowa)`) va Zona(`us-central1-a`) tanlaymiz bu **VPC network** yaratganimizda belgilagan **Region** bilan bir xil bo'lishi kerak!
-![gcp-network-sozlash](/images/tutorials/cloud/gcp-network/vm2.png)
+![gcp-network-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/cloud/gcp-network/vm2.png)
 
 Bu qismda o'zimizga mos VM tanlaymiz(test uchun minimal vm tanladik)
-![gcp-network-sozlash](/images/tutorials/cloud/gcp-network/vm3.png)
+![gcp-network-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/cloud/gcp-network/vm3.png)
 
 **Boot disk** qismini **CHANGE** qilib default sozlamalarni o'zgartiramiz
-![gcp-network-sozlash](/images/tutorials/cloud/gcp-network/vm4.png)
+![gcp-network-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/cloud/gcp-network/vm4.png)
 **Boot disk** qismidan VM instance Operatsion Tizimini va Xotira turi va hajmini belgilaymiz, bu holatda **Ubuntu 20.04** va **50GB** presistent disk xotira
-![gcp-network-sozlash](/images/tutorials/cloud/gcp-network/vm5.png)
+![gcp-network-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/cloud/gcp-network/vm5.png)
 
 Bu qism o'zingizni hoshishingizga bo'gliq **Firewall** qismida biz **HTTP,HTTPS** va **Load Balancer Health Check** uchun firewallni ochib qo'yamiz va monitoring va logging uchun **Ops Agent**ni yoqib qo'yamiz.
-![gcp-network-sozlash](/images/tutorials/cloud/gcp-network/vm6.png)
+![gcp-network-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/cloud/gcp-network/vm6.png)
 
 **Advanced options**dan **Networking** qismiga o'tamiz.
-![gcp-network-sozlash](/images/tutorials/cloud/gcp-network/vm7.png)
+![gcp-network-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/cloud/gcp-network/vm7.png)
 
 Networking qismidan **Network Interface**ga yuqorida yaratib olgan VPC Networkimizni va subnetimizni tanlaymiz qolgan sozlamalarni default holda qoldirib **CREATE** bosib VM instance yaratib olamiz.
-![gcp-network-sozlash](/images/tutorials/cloud/gcp-network/vm8.png)
+![gcp-network-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/cloud/gcp-network/vm8.png)
 
 Yuqoridagidek konfiguratsiya bilan yana bitta **node2** nomli VM instance yaratib olamiz.
 
@@ -71,17 +71,17 @@ Okeeey biz 2ta Vm instance yaratib oldik **node1 va node2**. E'tibor bersangiz u
 * **node1-> 172.23.0.2**
 * **node2-> 172.23.0.3**
 
-![gcp-network-sozlash](/images/tutorials/cloud/gcp-network/vm9.png)
+![gcp-network-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/cloud/gcp-network/vm9.png)
 
 Okeey biz ushbu qismda Kirish qismida ko'rsatilgan network arxitekturani qurib tugatdik, endi faqat test qilish qoldi holos. Keling yaratib olgan 2ta VM instancemizni internal IPlari orqali biriga aloqa bor yoki yo'qligini tekshirib ko'ramiz.
 
 Ikkkala VM instancega ham SSH orqali ulanib olamiz.
 
 Keling birinchisida **ping** orqali tekshiramiz ikkita VM instance Internal IP'lari orqali bi biriga ping yuborib ko'ramiz. Okeey 2ta VM instance ham bir birini internal IPlari orqali ko'rdi va ikklasi o'rtasida aloqa bor.
-![gcp-network-sozlash](/images/tutorials/cloud/gcp-network/test1.png)
+![gcp-network-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/cloud/gcp-network/test1.png)
 
 Keling endi **telnet** orqali 22-port ya'ni ssh portiga Internal IPlar orqali 2ta VM intance o'rtasida bo'glanish bormi yoki yo'qligini tekshiramiz.
-![gcp-network-sozlash](/images/tutorials/cloud/gcp-network/test2.png)
+![gcp-network-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/cloud/gcp-network/test2.png)
 
 Okeey bizda barcha testlar muvaffaqiyatli bo'ldi **ping** bilan ham **telnet** bilan ham tekshirganimizda bir biri bilan Internal IP orqali bo'glana oladi.
 

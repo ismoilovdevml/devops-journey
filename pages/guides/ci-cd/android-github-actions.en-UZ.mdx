@@ -2,7 +2,7 @@ import { Callout } from "nextra-theme-docs";
 
 # Github Actions bilan Anroid CI/CD
 
-![android](/images/tutorials/ci-cd/android-cicd/banner.png)
+![android](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/android-cicd/banner.png)
 
 Mobil applicationlarni ishlab chiqaradigan katta jamoalarda ishlarni avtomatlashtirish uchun CI/CD pipelinelar ishlab chiqadilar. Bugun biz Android applicationlar uchun Github Actions bilan CI/CD yozamiz o'ylaymanki bu ko'pchilik mobil dasturchilar uchun qiziqarli va foydali bo'ladi. Bu amaliyotdagi CI/CD'da biz Android applicationlarda bir nechta testlarni o'tkazamiz kodni analiz qilamiz Android release qilamiz va oxirida Google Play Storega deploy qilamiz. Notificationlar uchun Githubni Discord bilan inetegratsiya qilamiz. ushbu qo'llanmada biz kod analiz uchun **SonarCloud**, Test uchun esa **JUnit** ishlatamiz.
 
@@ -18,7 +18,7 @@ Discord channel ochish va Discord webhook olib Githubdagi loyiha bilan integrats
 Discord Webhookni quyidagicha konfiguratsitya qilamiz. 
 
 **Which events would you like to trigger this webhook?** ga **Send me everything.** tanlaymiz.
-![android](/images/tutorials/ci-cd/android-cicd/webhook.png)
+![android](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/android-cicd/webhook.png)
 
 ## Android CI
 
@@ -58,10 +58,10 @@ jobs:
 ```
 Keling ushbu oddiy **Andorid CI** konfiguratsiyani yozib **main** branchga push qilamiz. Repositoriyamizga **android-ci.yml** konfiguratsiyamizni **main** branchga push qilganimizdan keyin repositoriyamizda **Actions** bo'limiga o'tib jarayonni kuzatishimiz mumkin.
 
-![android](/images/tutorials/ci-cd/android-cicd/actions1.png)
+![android](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/android-cicd/actions1.png)
 
 Okey bizda jarayon muvaffaqiyatli yakunlandi.
-![android](/images/tutorials/ci-cd/android-cicd/actions2.png)
+![android](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/android-cicd/actions2.png)
 
 Endi keling ushbu kichik **Andorid CI** tuzulishini qanday ishlashini ko'rib chiqamiz, undan keyin keyingi bosqichlarga o'tsak bo'ladi.
 
@@ -408,20 +408,20 @@ jobs:
 
 Ushbu Android CI'ni **main** branchga push qilamiz u avtomatik ishga tushadi va biz jarayoni repositoriyamiz **Actions** bo'limidan kuzatishimiz mumkin.
 
-![android](/images/tutorials/ci-cd/android-cicd/actions3.png)
+![android](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/android-cicd/actions3.png)
 
 Okeey bizda barcha **Anroid CI** bosqichlar muvaffaqiyatli o'z ishini tugatdi.
-![android](/images/tutorials/ci-cd/android-cicd/actions4.png)
+![android](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/android-cicd/actions4.png)
 **Artifacts** bo'limiga o'tsak bizda artifactga yuklagan artifactlarimizni ko'rishimiz mumkin.
-![android](/images/tutorials/ci-cd/android-cicd/actions5.png)
+![android](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/android-cicd/actions5.png)
 
 Keling **instrumentation_test_report** va **lint.html** artifactlarni yuklab olamiz bizga .zip arxivda yuklab olamiz bularni arxivdan chiqarib olib  **index.html** faylini brauzer orqali ochamiz, shunda biz reportlarni ko'rishimiz mumkin.
-![android](/images/tutorials/ci-cd/android-cicd/report3.png)
+![android](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/android-cicd/report3.png)
 
 **Perform Instrumentation Testing** reportlari.
-![android](/images/tutorials/ci-cd/android-cicd/report1.png)
+![android](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/android-cicd/report1.png)
 **Perform lint check** reportlari.
-![android](/images/tutorials/ci-cd/android-cicd/report2.png)
+![android](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/android-cicd/report2.png)
 
 ### Perform static code analysis
 
@@ -432,35 +432,35 @@ Ushbu bosqichda biz kodni sifatini aniqlash uchun static kod analizlardan foydal
 Biz ushbu loyiha uchun **SonarCloud**dan foydalanamiz. 
 
 **1-> [sonarcloud.io](https://sonarcloud.io/login)**'dan Github orqali ro'yxatdan o'tamiz.
-![android](/images/tutorials/ci-cd/android-cicd/sonarqube.png)
+![android](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/android-cicd/sonarqube.png)
 
 **2->** Github orqali ro'yxatdan o'tganimizdan keyin organizatsiya import qilamiz **-> Import an organization**
-![android](/images/tutorials/ci-cd/android-cicd/sonarqube1.png)
+![android](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/android-cicd/sonarqube1.png)
 
 **3-> Import an organization** bosganimzidan keyin SonarCloudni qaysi repositoriyalarga yoki barcha repositoriyalarga o'rnatishni so'raydi, siz hohalsangiz bitta repositoriyaga yoki barcha repositoriyalarni tanlab SonarCloudni o'rnatishingiz mumkin.
-![android](/images/tutorials/ci-cd/android-cicd/sonarcloud2.png)
+![android](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/android-cicd/sonarcloud2.png)
 
 **4->** Organizatsiya import qilinganidan keyin sizdan organizatsiya sozlash oynasi ochiladi siz organizatsiya nomini va unga keyini yozib kiritasiz va plan tanlaysiz bu ushbu amaliyot uchun free(bepul) planni tanlab ishlaymiz lekin free planda faqat public repositoriyalarda SonarCloudni ishlata olasiz. Agar siz SonarQubeni private repositoriyalar uchun ham ishlatmochi bo'lsangiz **SonarQube Community Edition**ni serveringizga o'rnatib olib ishlatishingiz mumkin.
-![android](/images/tutorials/ci-cd/android-cicd/sonarcloud3.png)
-![android](/images/tutorials/ci-cd/android-cicd/sonarcloud4.png)
+![android](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/android-cicd/sonarcloud3.png)
+![android](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/android-cicd/sonarcloud4.png)
 
 **5->** Bu qismda biz repositoriyamizni tanlaymiz va **Set Up** bosib keyingi SonarCloudni belgilangan repositoriya o'rnatamiz.
-![android](/images/tutorials/ci-cd/android-cicd/sonarcloud5.png)
+![android](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/android-cicd/sonarcloud5.png)
 
 **6->** Ushbu qismdan biz har safar Githubgagi loyihamiz kodlari o'zgarganda kod analiz ishlashini tanlaymiz.
 
-![android](/images/tutorials/ci-cd/android-cicd/sonarcloud6.png)
+![android](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/android-cicd/sonarcloud6.png)
 Va bizda quyidagi oyna ochiladi.
-![android](/images/tutorials/ci-cd/android-cicd/sonarcloud7.png)
+![android](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/android-cicd/sonarcloud7.png)
 
 Okeey hozir biz loyihamiz uchun SonarCloud sozlab oldik keling endi uni ishlashini test qilib sinab ko'ramiz. Github repositoriyamizda birorta o'zgartirish qilib **main** branchga push qilamiz va bizda **SonarCloud CI** ishlashi kerak.
 
 Github Actionsda ko'rganimizda bizda **SonarCloud Code Analysis** muvaffaqiyatli ishlaganini ko'rishimiz mumkin.
-![android](/images/tutorials/ci-cd/android-cicd/actions6.png)
+![android](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/android-cicd/actions6.png)
 
 Okeey Github Actionsda SonarCloud ishladi keling buni SonarCloud o'zida ham tekshirib ko'ramiz.
-![android](/images/tutorials/ci-cd/android-cicd/report4.png)
-![android](/images/tutorials/ci-cd/android-cicd/report5.png)
+![android](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/android-cicd/report4.png)
+![android](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/android-cicd/report5.png)
 
 
 Okeey hammasi zo'r biz **Android CI**ni shu yerda to'xtatamiz va keyingi bosqichga ya'ni **Android CD**'ga o'tamiz.
@@ -555,7 +555,7 @@ Actions secretsga seretlarni qo'shish uchun:
 
 **-> Github repositoriyamiz -> Settings -> Secrets and variables -> Actions -> New repository secret** 
 
-![android](/images/tutorials/ci-cd/android-cicd/secret.png)
+![android](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/android-cicd/secret.png)
 
 Bu bosqichda [r0adkll/sign-android-release@v1](https://github.com/r0adkll/sign-android-release) yordamida applicationimizni Play Storega chiqarish uchun imzolaymiz. **Build Tools Version: 30.0.2** belgilagan holda **app/build/outputs/apk/release** papkadagi applicationni imzolaymiz.
 
@@ -695,7 +695,7 @@ jobs:
 
  Mana bizdagi Discord Notificationlar.
 
- ![android](/images/tutorials/ci-cd/android-cicd/discord.png)
+ ![android](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/android-cicd/discord.png)
 
  ## Qo'shimcha
 

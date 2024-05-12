@@ -2,7 +2,7 @@ import { Callout } from "nextra-theme-docs";
 
 # Github Actions CI/CD
 
-![github](/images/tutorials/ci-cd/github-actions/banner.png)
+![github](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/github-actions/banner.png)
 
 [**Github Actions**](https://github.com/features/actions) bu Github bilan integratsiya qilinga Githubning **CI/CD** va avtomatlashtirish dasturi hisoblanadi. Github Actions orqali Githubdagi loyihalaringizni oson avtomatlashtirishingiz, CI/CD'lar yozish juda qulay, sodda, tez yoziladigan tez ishga tushadigan hisoblanadi.  Github Actions YAML sintaksisida yoziladi va repositoriya root directoriyasida **./github/workflows** jildida yoziladi. Githubning yana bir qulaylikalridan biri loyihalaringiz uchun mo'ljallangan **GHCR**(Github Container Registry)si hisoblanadi. Loyihalaringizni konteynerda ishga tushirsangiz bu sizga yaxshi qulaykik beradi, yani siz bepul Container Registry ishlatasiz bu juda qulay.
 
@@ -20,7 +20,7 @@ Amaliyotda ishlatilgan [**devops-journey-github-actions**](https://github.com/de
 
 Amaliyotni boshlasak ham bo'ladi. Loyiahmiz root directoriyasida  Github Actions uchun **.github/workflows** papka ochib **ci-cd.yml** nomli yaml konfiguratsiya faylini ochib olamiz.
 
-![github](/images/tutorials/ci-cd/github-actions/github.png)
+![github](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/github-actions/github.png)
 
 Loyihalar har xil bo'ladi yani bitta repositoriyada bitta loyiha bo'ladi va unda bitta Dockerfile bo'ladi lekin ba'zi loyihalar bor ular bitta repositoriyada bir nechta loyihalar joylashgan bo'ladi masalan .NET(dotnet) loyihalar. Ushbu amaliyotda biz ikkala holat uchun Github Actionsda CI/CD yozamiz.
 
@@ -151,13 +151,13 @@ Ushbu bosqichda applicationimizdagi Dockerfile orqali applicationimiz docker ima
 Keling actoinimizni ishga tushirib sinab ko'raylik shunchaki ushbu o'zgarishlarni ushbu configuratsiyamizni main branchga push qilamiz va Github repositoriyamizdan **Actions** bo'limiga o'tib ko'rishimiz mumkin.
 
 **Actions** bo'limidan Github Actionimiz ishlayotganini ko'rishimiz mumkin.
-![github](/images/tutorials/ci-cd/github-actions/github2.png)
-![github](/images/tutorials/ci-cd/github-actions/github3.png)
+![github](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/github-actions/github2.png)
+![github](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/github-actions/github3.png)
 Okeyyy bizda Github Actionimiz muvaffaqiyat o'z ishini yakunladi.
-![github](/images/tutorials/ci-cd/github-actions/github4.png)
+![github](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/github-actions/github4.png)
 
 Github Repositoriyamizdan **Packages** bo'limiga o'tsak build qilgan docker imageyimizni ko'rishimiz mumkin.
-![github](/images/tutorials/ci-cd/github-actions/github5.png)
+![github](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/github-actions/github5.png)
 
 ### Multi-container
 
@@ -228,10 +228,10 @@ Ushbu konfiguratsiyamizda **file** ga Dockerfaylarimizni ko'rsatamiz. Shunga o'x
 
 Keling Actionimizni ishga tushirib sinab ko'ramiz.
 
-![github](/images/tutorials/ci-cd/github-actions/github6.png)
+![github](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/github-actions/github6.png)
 
 Repositoriyamizdan **Pacakages** bo'limiga o'tsak ikkita containerni ko'rishimiz mumkin
-![github](/images/tutorials/ci-cd/github-actions/github7.png)
+![github](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/github-actions/github7.png)
 
 Hammasi zo'r Github Actionimiz muvaffaqiyat o'z ishini yakunladi endi CD serverga deploy qismini boshlasak bo'ladi
 
@@ -335,13 +335,13 @@ Github Actions serverimizga ssh bilan kira olish uchun server static IP manzili,
 
 **-> Repository -> Settings -> Secrets and variables -> Actions -> New repository secret**
 
-![k8s](/images/tutorials/ci-cd/k8s/gitops1.png)
+![k8s](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/k8s/gitops1.png)
 
 * **SERVER_IP->** Bunga serverimiz static IP manzilini yozamiz. `0.0.0.0` o'rniga static IP manzil yozing
 
-![github](/images/tutorials/ci-cd/github-actions/github8.png)
+![github](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/github-actions/github8.png)
 * **SERVER_USERNAME->** Ushbu secretga serverimiz usernameni yozishimiz kerak bo'ladi, server usernamesin bilish uchun `whoami` buyrug'idan foydalanishingiz mumkin.
-![github](/images/tutorials/ci-cd/github-actions/github9.png)
+![github](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/github-actions/github9.png)
 
 * **SSH_PRIVATE_KEY->** Bu secetga esa serverimizda ssh-key generatsiya qilib ssh private keyni qo'yamiz github actions ssh orqali serverimizga kira olishi uchun.
 
@@ -350,7 +350,7 @@ Github Actions serverimizga ssh bilan kira olish uchun server static IP manzili,
 ```bash
 ssh-keygen -f ~/.ssh/github_actions
 ```
-![github](/images/tutorials/ci-cd/github-actions/ssh.png)
+![github](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/github-actions/ssh.png)
 ushbu buyruq **~/.ssh** papkada `github_actions` nomli ssh-key generatsiya qiladi bunda ikita key bo'ladi `github_actions` bu private key va `gihub_actions.pub` bu public key hisoblanadi. Github Actionsda ishlatish uchun public keyimizni `authorized_keys`ga qo'shib qo'yishimiz kerak. Buning uchun quyidagi buyruqdan foydalanamiz.
 
 ```bash
@@ -362,10 +362,10 @@ Private keyni olish uchun.
 ```bash
 cat github_actions
 ```
-![github](/images/tutorials/ci-cd/github-actions/ssh1.png)
+![github](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/github-actions/ssh1.png)
 
 Private keyni joylashtiramiz.
-![github](/images/tutorials/ci-cd/github-actions/github10.png)
+![github](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/github-actions/github10.png)
 
 
 Serverga ssh-key generatsiya qilib Github Actions kira oladigan qilib sozlab olinganidan keyin Serverimizga Docker o'rnatib olishimiz kerak bo'ladi chunki applicationlarimiz Docker containerlarda ishlaydi. [**Linux serverlarga Docker o'rnatish**](https://devops-journey.uz/guides/konteyner/docker-ornatish) qo'llanmasidan foydalanib serveringizga Docker o'rnatib oling.
@@ -431,14 +431,14 @@ Ushbu buyruq esa berilgan CONTAINER_NAME va PORT bilan yuqorida pull qilib torti
 Menimcha hammaga tushunarli bo'ldi keling CD qismini ham qo'shgan holda Github Actionimizga ishga tushiramiz.
 
 Okeey bizda Github Actionimiz muvaffaqiyat ishga tushdi keling endi serverimizni tekshirib ko'ramiz.
-![github](/images/tutorials/ci-cd/github-actions/github11.png)
+![github](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/github-actions/github11.png)
 
 Serverimizga kirib **docker container ls** va **docker images** buyruqlarini ishga tushirib ko'rsak bizning applicationimiz berilgan nom, berilgan port va docker image bilan ishlab turibti.
-![github](/images/tutorials/ci-cd/github-actions/server.png)
+![github](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/github-actions/server.png)
 
 Biz application **3000** portda ishlashini Github Actionda yozib ketgandik keling serverimiz static IP manzili bilan **3000** portga kirib ko'ramiz.
 
-![github](/images/tutorials/ci-cd/github-actions/server1.png)
+![github](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/github-actions/server1.png)
 
 
 **Huuuhh Ferfectionn** mazzami silaga. Biz yozgan Github Actiomiz to'liq ishga tushdi Github repositoriyaga yangi commit tashlab sinab ko'rishingiz mumkin. 
@@ -544,20 +544,20 @@ Ushbu multi container ham yuqoridagi bitta containerlidek bir xil ishlaydi faqat
 Keling buni ishga tushirib sinab ko'ramiz.
 
 Github Actiomiz muvaffaqiyat ishga tushgan.
-![github](/images/tutorials/ci-cd/github-actions/github11.png)
+![github](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/github-actions/github11.png)
 
 Serverimizda ikkita containerimiz ishga tushganini tekshirib ko'ramiz.
 
-![github](/images/tutorials/ci-cd/github-actions/server2.png)
+![github](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/github-actions/server2.png)
 
 Okey yaxshi bizda ikkita container belgilangan portda belgilan nom bilan ishlab turibti. Ushbu **.NET 7** qilingan oddiy namuna loyiha edi, ya'ni bu loyihada oddiy namuna UI va API yozilgan bo'lib UI `4000` portda API esa `4001` portda ishga tushadi. Keling ushbu portlarga brauzer orqali kirib applicationlarimiz ishlab turganini tekshirib olamiz.
 
 Serverimiz IP manzili va 4000 portni yozib kirganimzida bizda namuna Blazor UI ochiladi. Bizni UI applicationimiz ishlab turibti
-![github](/images/tutorials/ci-cd/github-actions/server3.png)
+![github](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/github-actions/server3.png)
 
 
 API'ni ko'rish uchun 4001/swagger da bizni API'miz ochiladi.
-![github](/images/tutorials/ci-cd/github-actions/server4.png)
+![github](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/github-actions/server4.png)
 
 
 Huuuh multi containerli applicationllarni ham muvaffaqiyat ishga tushirdik va shu yerda biz Github Actions + GHCR amaliyotimiz muvaffaqiyatli tugatdik.

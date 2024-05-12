@@ -2,7 +2,7 @@ import { Callout } from "nextra-theme-docs";
 
 # WebAssembly WASM
 
-![WASM](/images/article/wasm/1.png)
+![WASM](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/wasm/1.png)
 
 
 ## Kirish
@@ -21,7 +21,7 @@ Wasm-ning asosiy afzalliklaridan biri uning JavaScript va boshqa veb-texnologiya
 
 2015-yilda e’lon qilingan va birinchi marta 2017-yil mart oyida chiqarilgan WebAssembly 2019-yil 5-dekabrda `World Wide Web Consortium` tavsiyasiga aylandi va 2021-yilda `ACM SIGPLAN` tomonidan Dasturlash tillari uchun dasturiy ta’minot mukofotini oldi. `World Wide Web Consortium (W3C)` standartni Mozilla, Microsoft, Google, Apple, Fastly, Intel va Red Hat hissalari bilan saqlab turadi.
 
-![WASM](/images/article/wasm/2.png)
+![WASM](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/wasm/2.png)
 
 ### Zamonaviy veb-ishlab chiqishda Wasmning ahamiyati
 
@@ -154,7 +154,7 @@ Wasm dasturining binary formati uchun asosiy standart VM tomonidan bajariladigan
 
 Asl standartda (MVP) foydalanilgan opcodelar soni 256 ta mumkin boʻlgan opcodedan 200 tadan ozroq edi. WebAssembly-ning keyingi versiyalari opcodelar sonini 200 dan biroz oshirdi. WebAssembly SIMD proposal (parallel ishlov berish uchun) 128-bitli SIMD uchun muqobil opcode prefiksini (0xfd) taqdim etadi. SIMD prefiksining birlashuvi, shuningdek, SIMD prefiksidan keyin amal qiladigan opcode SIMD opcodini hosil qiladi. SIMD opcodelari "minimum viable product" (MVP) SIMD uchun qo'shimcha 236 ta instructionlarni (jami 436 ta instructionlar uchun) olib keladi. Ushbu instructionlar, "yakunlangan operatsiya kodlari" Google-ning V8 (Google Chrome-da) va Mozilla Firefox-ning tegishli enginesida (lekin veb-brauzerlarning barqaror versiyalarida yoqilmagan) amalga oshiriladi.
 
-![WASM](/images/article/wasm/3.png)
+![WASM](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/wasm/3.png)
 
 ## Kod 
 
@@ -272,7 +272,7 @@ wasm-function[0]:
 
 Barcha butun son konstantalari boʻsh joyni tejaydigan, oʻzgaruvchan uzunlikdagi [`LEB128`](https://en.wikipedia.org/wiki/LEB128) kodlash yordamida kodlangan. WebAssembly matn formati S-expressionlari yordamida folded formatda ko'proq kanonik(canonicall) tarzda yozilgan. Instructionlar va expressionlar uchun bu format sof syntactic sugar bo'lib, chiziqli(linear) format bilan xatti-harakatlarida farq qilmaydi.
 
-![WASM](/images/article/wasm/4.png)
+![WASM](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/wasm/4.png)
 
 [`wasmdec`](https://wwwg.github.io/web-wasmdec/) - wasm modullari uchun onlayn dekompilyator.
 
@@ -280,7 +280,7 @@ Barcha butun son konstantalari boʻsh joyni tejaydigan, oʻzgaruvchan uzunlikdag
 
 WebAssembly ish jarayoni to'rtta asosiy bosqichdan iborat.
 
-![WASM](/images/article/wasm/5.png)
+![WASM](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/wasm/5.png)
 
 Kodni yozish: Ushbu bosqichda dasturchilar manba kodini C, C++ yoki Rust kabi yuqori darajadagi tillarda yozadilar. Ushbu tillar ko'pincha JavaScript bilan solishtirganda muayyan vazifalar yoki ishlash uchun muhim ilovalar uchun ko'proq mos keladi.
 
@@ -290,7 +290,7 @@ Loading va Decoding: Veb-sahifa yuklanganda, brauzer kompilyatsiya qilingan WebA
 
 Execution: Yakuniy bosqichda brauzerning WebAssembly runtime dekodlangan kodni sinov muhitida bajaradi. Bu muhit boshqa ishlaydigan skriptlardan va asosiy tizimdan ajratilgan bo'lib, xavfsizlik va barqarorlikni ta'minlaydi. WebAssembly runtime WASM instructionlarini native mashina kodiga tarjima qilish uchun Just-In-Time (JIT) kompilyatsiyasidan foydalanadi, bu esa kodning near-native darajada ishlashiga imkon beradi.
 
-![WASM](/images/article/wasm/6.jpg)
+![WASM](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/wasm/6.jpg)
 
 ## WebAssemblyning kelajakdagi istiqbollari
 

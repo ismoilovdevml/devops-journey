@@ -2,7 +2,7 @@ import { Callout } from "nextra-theme-docs";
 
 # Koddan Servergacha: Jenkins bilan Docker CI/CD va Discord bilan integratsiya
 
-![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/banner.png)
+![docker-ci-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/jenkins-docker/banner.png)
 
 
 ## Kirish
@@ -72,41 +72,41 @@ Applicationlarimiz kodlarini birorta **VCS**(**V**ersion **C**ontrol **S**ystem)
 
 Github profilingizga kirib **Settings** sozlamalar bo'limga kiring.
 
->![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/github1.png)
+>![docker-ci-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/jenkins-docker/github1.png)
 
 Keyin **Developer settings** bo'limga kiring.
 
->![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/github2.png)
+>![docker-ci-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/jenkins-docker/github2.png)
 
 **Personal access tokens** **->** **Tokens(classic)**
->![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/github3.png)
+>![docker-ci-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/jenkins-docker/github3.png)
 
 **->Generate new token(classic)**
->![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/github4.png)
+>![docker-ci-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/jenkins-docker/github4.png)
 
 **Personal access token**ga nom berib va ishlash mudatini belgilab admin accesslarni beramiz va **Generate token** bosib token generatsiya qilib olamiz.
->![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/github5.png)
+>![docker-ci-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/jenkins-docker/github5.png)
 
 Sizga Github Personal access token generatsiya qilib berganida uni nusxalab olib qo'yishingiz kerak bo'ladi. Bu Personal access tokenni Jenkinsda credentialsga qo'shib qo'yib Jenkins pipelineda ishlatamiz.
->![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/github6.png)
+>![docker-ci-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/jenkins-docker/github6.png)
 
 ### Gitlab uchun
 
 Gitlab profilingizga kirib **Pereferences** bo'limga kirib **Accsess Tokens**ga o'tamiz.
 
->![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/gitlab1.png)
+>![docker-ci-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/jenkins-docker/gitlab1.png)
 
->![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/gitlab2.png)
+>![docker-ci-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/jenkins-docker/gitlab2.png)
 
 **Accsess Tokens**ga kirganimizdan keyin Token nomi ishlash muddatini belgilab kerakli ruxsatlarni berib **Create personal accsess token** bosib Gitlab token generatsiya qilib olamiz.
 
->![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/gitlab3.png)
+>![docker-ci-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/jenkins-docker/gitlab3.png)
 
 O'zingiz ishlatdigan VCSdan access token generatsiya qilib olganingizdan keyin Serverimizda ishga tushirilgan Jenkinsga kirib credentialsga ushbu tokenlarni qo'shib qo'yamiz.
 
 **->** `Manage Jenkins` **->** `Credentials`
 
->![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/jenkins1.png)
+>![docker-ci-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/jenkins-docker/jenkins1.png)
 
 **Username->** Gitlab yoki Github username
 
@@ -125,40 +125,40 @@ Discordni Jenkins bilan integratsiya qilish uchun **Discord Notifier** plaginini
 
 **->** `Manage Jenkins` **->** `Plugins` **->** `Available plugins`
 
->![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/jenkins3.png)
+>![docker-ci-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/jenkins-docker/jenkins3.png)
 
 **Discord Notifier** plaginini o'rnatib jenkins restart bo'lganidan keyin Discord server ochib serverda channel ochib webhook yaratib olamiz.
 
 Discord kirib **Add a Server** bosib Server yaratib olamiz
 
->![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/discord1.png)
+>![docker-ci-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/jenkins-docker/discord1.png)
 
->![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/discord2.png)
+>![docker-ci-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/jenkins-docker/discord2.png)
 
->![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/discord3.png)
+>![docker-ci-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/jenkins-docker/discord3.png)
 
 Serverga nom berib **Create** bosamiz.
 
->![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/discord4.png)
+>![docker-ci-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/jenkins-docker/discord4.png)
 
 Discord Server yaratib olganimzidan keyin Serverimizda channel yaratib olamiz. **Create Channel**
 
->![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/discord6.png)
+>![docker-ci-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/jenkins-docker/discord6.png)
 
 Channel nomini yozamiz masalan **dev-jenkins** -> **Create Channel**
->![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/discord7.png)
+>![docker-ci-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/jenkins-docker/discord7.png)
 
 Channel ochib olganimzidan keyin **Integrations** bo'limga kirib **Webhooks**dan **Create Webhook** bosamiz
->![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/discord8.png)
+>![docker-ci-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/jenkins-docker/discord8.png)
 
 **Webhook** yaratib olganimizdan keyin uni nusxalab **Copy Webhook URL** olib qo'yamiz va Jenkins pipelineda ishlatish  uchun olib qo'yamiz.
->![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/discord9.png)
+>![docker-ci-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/jenkins-docker/discord9.png)
 
 Discordan olgan webhookni Jenkins credendialsga qo'shamiz.
 
 **->** `Manage Jenkins` **->** `Credentials`
 
->![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/jenkins4.png)
+>![docker-ci-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/jenkins-docker/jenkins4.png)
 
 ### Gitlab Github uchun
 
@@ -175,15 +175,15 @@ Hozirchi hammasi tayyor birinchi Jenkins CI pipelinemizni yozishga tayyormiz. Je
 
 **-> Creaet a job +**
 
->![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/job1.png)
+>![docker-ci-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/jenkins-docker/job1.png)
 
 **Enter an item name** ga loyihamiz nomini yozib **Pipeline**ni tanlab **OK** bosamiz
 
->![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/job2.png)
+>![docker-ci-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/jenkins-docker/job2.png)
 
 Keyingi qismda eng pastgi qatorga **Pipeline** qismiga quyidagi birinchi CI pipelinemizni joylashtiramiz **Save** qilamiz.
 
->![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/job3.png)
+>![docker-ci-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/jenkins-docker/job3.png)
 
 **Jenkins CI pipeline**
 
@@ -279,13 +279,13 @@ Qisqa qilib aytganda ushbu boshlang'ich sodda pipeline ishga tushganida biinchi 
 
 Keling pipelineni ishga tushiramiz. **-> Build Now**
 
-> ![netflix](/images/article/netflix/jenkins5.png)
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/jenkins5.png)
 
 SIzda quyidagi natijha bilan muvaffaqiyatli ishga tushishi va discordga notification yuborilishi kerak.
 
-> ![netflix](/images/tutorials/ci-cd/jenkins-docker/job4.png)
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/jenkins-docker/job4.png)
 
-> ![netflix](/images/tutorials/ci-cd/jenkins-docker/discord10.png)
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/jenkins-docker/discord10.png)
 
 ## Git repositoriyalar bilan ishlash (mono repo va multi repo)
 
@@ -475,13 +475,13 @@ Pipelinemizda Docker bilan ishlash uchun quyidagi plaginlarni o'rnatib olishimiz
 
 `Docker`, `Docker Common`, `Docker Pipeline`, `Docker API`, `docker-build-step`
 
-> ![netflix](/images/article/netflix/docker1.png)
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/docker1.png)
 
 Plaginlarni o'rnatib bo'lganingizdan keyin sozlab chiqish kerak. 
 
 **->** `Manage Jenkins` **->** `Tools` **->** `Docker installations`
 
-> ![netflix](/images/article/netflix/docker2.png)
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/docker2.png)
 
 <Callout type="info" emoji="">
 **ESLATMA->** Docker bilan ishlash uchun Jenkins o'rnatilgan serverda docker ham o'rnatilgan bo'lishi kerak!
@@ -494,23 +494,23 @@ Plaginlarni o'rnatib bo'lganingizdan keyin sozlab chiqish kerak.
 Amaliyotni ushbu qismida **Docker Registry** uchun **Dockerhub** ishlatamiz shuning uchun Dockerhubdan ro'yxatdan o'tgan bo'lishingiz  va Access token olgan bo'lishingiz kerak.
 Agar Ro'yxatdan o'tmagan bo'lsangiz ro'yxatdan o'tishingiz kerak
 
-> ![netflix](/images/article/netflix/docker3.png)
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/docker3.png)
 
 `Sign up` bosib ro'yxatdan o'tasiz 
 
-> ![netflix](/images/article/netflix/docker4-new.png)
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/docker4-new.png)
 
 Ro'yxatdan o'tib olganingizdan keyin **Email Verification** talab qilinadi. Email verifatsiya qilganingizdan keyin 
 
 **->** `Account Settings` **->** `Security` **->** bo'limga o'tib `Access Token` yaratib olamiz.
 
-> ![netflix](/images/article/netflix/docker5.png)
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/docker5.png)
 
-> ![netflix](/images/article/netflix/docker6.png)
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/docker6.png)
 
 Access Tokenga nom berib unga **Read,Write,Delete** permisonlarni beramiz **`Generate`** qilamiz.
 
-> ![netflix](/images/article/netflix/docker7.png)
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/docker7.png)
 
 Sizga access token generatsiya qilib berialdi va siz undan nusxa olib qo'yishingiz kerak, aks holda uni qaytib ololmaysiz. Sizga docker login qilish uchun namuna CLI command ham beriladi 
 
@@ -522,7 +522,7 @@ Jenkins pipelineda DockerHub Registrydan foydalanishimiz uchun Jenkins crdential
 **->** `Manage Jenkins` **->** `Credentials`-ga kirib  `Add credentials`ga o'tamiz.
 
 
-> ![netflix](/images/article/netflix/secret6.png)
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/secret6.png)
 
 **Username**ga DockerHub usernamengizni yozasiz **Password**ga esa yuqorida yaratib olgan access tokenimizni joylashtiramiz.
 
@@ -614,35 +614,35 @@ Docker Registry sifatida **GCR** ishlatish uchun Google Cloud **IAM**dan **Servi
 
 **-> Google Cloud -> IAM & Admin -> Service Accounts**
 
-![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/gcp1.png)
+![docker-ci-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/jenkins-docker/gcp1.png)
 
 **2 -> + CREATE SERVICE ACCOUNT** bosib service account yaratib olamiz.
 
-![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/gcp2.png)
+![docker-ci-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/jenkins-docker/gcp2.png)
 
 **3 -> Service account name**ga service accountimiz uchun nom yozamiz masalan **gcr. Service account description**ga esa description yozib **DONE** bosganimizdan keyin keyingi bosqichga o'tadi
-![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/gcp3.png)
+![docker-ci-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/jenkins-docker/gcp3.png)
 
 **4 -> Role**ga **Storage Admin** huquqini beramiz va **DONE** bosib yaratib olamiz.
-![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/gcp4.png)
+![docker-ci-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/jenkins-docker/gcp4.png)
 
 **5 ->** Service Account yaratib olganimizdan keyin Service Accountimizga(gcr) kirib **KEYS** qismidan **ADD KEY** bosib **JSON** formatda private key generatsiya qilib olamiz va uni yuklab olamiz.
 
 
 **-> KEYS -> ADD KEY -> JSON -> CREATE**
-![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/gcp5.png)
+![docker-ci-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/jenkins-docker/gcp5.png)
 
 **7->** Yuklab olgan Service account  private keyimizni Jenkins credentialsga qo'shib qo'yamiz.
 
 **->** `Manage Jenkins` **->** `Credentials`-ga kirib  `Add credentials`ga o'tamiz.
 
-![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/gcp6.png)
+![docker-ci-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/jenkins-docker/gcp6.png)
 
 **8->** Google Clouddan yuklab olgan service account private keyimizni ochib ko'rsak 2chi qatorida **project_id** ko'rsatilgan bo'ladi uni nusxalab olib uni ham Jenkins credentialsga qo'shib qo'yamiz.
 
 **->** `Manage Jenkins` **->** `Credentials`-ga kirib  `Add credentials`ga o'tamiz.
 
-![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/gcp7.png)
+![docker-ci-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/jenkins-docker/gcp7.png)
 
 **9->** Hamma kerakli keylarni Jenkins credentialsga qo'shagnimizdan keyin bizni GCR bilan ishlaydigan Jenkins pipelinemizda quyidagicha o'zgarishlar bo'ladi.
 
@@ -716,7 +716,7 @@ Loyihamizni serverimizda ishga tushirishimiz uchun Jenkins pipeline serverga kir
 
 **->** `Manage Jenkins` **->** `Plugins`
 
-> ![netflix](/images/article/netflix/ssh.png)
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/ssh.png)
 
 **SSH Agent** plagini Jenkinsga o'rnatganimizdan keyin Serverimizda ssh key generatsiya qilib Jenkins credentialsga qo'shib qo'yishimiz kerak.
 
@@ -729,7 +729,7 @@ Hozir esa serverimizga kirib ssh-key generatsiya qilib olamiz.
 ```bash
 ssh-keygen -f ~/.ssh/netflix
 ```
-> ![netflix](/images/article/netflix/ssh2.png)
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/ssh2.png)
 
 `ssh-keygen` buyrug'i tizimlar orasidagi xavfsiz aloqa uchun SSH (Secure Shell) kalit juftlarini yaratish uchun Unix-ga o'xshash operatsion tizimlarda qo'llaniladigan tooldir. `ssh-keygen`-ni ishga tushirganingizda, siz bir juft kalit yaratasiz: public key va private key. 
 
@@ -742,7 +742,7 @@ Buyruq bajarilgandan so'ng siz odatda ikkita faylni olasiz:
 * `netflix` Bu boshqa tizimlarga ulanishda oʻzingizni autentifikatsiya qilish uchun foydalaniladigan shaxsiy(private) kalit fayli.
 * `netflix.pub` Bu public kalit fayli. Siz ushbu faylni ushbu kalitdan foydalanishga ruxsat bermoqchi bo'lgan boshqa tizimlar/xizmatlar bilan baham ko'rishingiz mumkin.
 
-> ![netflix](/images/article/netflix/ssh1.png)
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/ssh1.png)
 
 ```bash
 cat netflix.pub >> authorized_keys
@@ -759,13 +759,13 @@ Ushbu buyruqlar ketma-ketligining maqsadi `netflix.pub` faylida saqlangan public
 cat ~/.ssh/netflix
 ```
 Ushbu buyruq netflix nomli ssh keyimizni private keyni ko'rsatadi biz undan nusxa olib qo'yamiz.
-> ![netflix](/images/article/netflix/ssh3.png)
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/ssh3.png)
 
 Serverda ssh-key generatsiya qilib oldik endi Jenkins credentialsga qo'shsak bo'ladi.
 
 **->** `Manage Jenkins` **->** `Credentials`
 
-> ![netflix](/images/article/netflix/ssh4.png)
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/ssh4.png)
 
 * `Kind ->` SSH Userame with private key 
 * `ID->` server-ssh(ssh keyni pipelineda xavfsiz quyidagi ID bilan ishlatamiz)
@@ -781,11 +781,11 @@ Jenkins pipeleni Serverga kira olishi uchun 2 ta Jenkins credentials yaratish ke
 
 **->** `Manage Jenkins` **->** `Credentials`
 
-> ![netflix](/images/article/netflix/secret7.png)
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/secret7.png)
 
 Bu qismda `Secret`ga serverimiz username'si yoziladi(whoami buyrug'i bilan bilib olishingiz mumkin)
 
-> ![netflix](/images/article/netflix/secret9.png)
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/secret9.png)
 
 Bu qismda esa `Secret`ga Serverimiz IP manzilini yozishimiz kerak.
 
@@ -1091,17 +1091,17 @@ Loyihani uch bosqichda **DEV, STAGE, PROD** bosqichli qilish uchun quyidagi usul
 
 **1->** Jenkinsda loyiha nomli folder ochib olamiz masalan devops-journey
 **-> Create a job -> Folder**
->![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/job1.png)
+>![docker-ci-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/jenkins-docker/job1.png)
 
 loyiha nomini yozamiz va **Folder**ni tanlab **OK** bosamiz.
->![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/job2.png)
+>![docker-ci-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/jenkins-docker/job2.png)
 
 Undan keyingi ochilgan oynada Folderga Description yozib yaratib olamiz
 
 Keyin bizda quyidagi oyna ochiladi
-![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/item1.png)
+![docker-ci-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/jenkins-docker/item1.png)
 
-![docker-ci-cd](/images/tutorials/ci-cd/jenkins-docker/item2.png)
+![docker-ci-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/jenkins-docker/item2.png)
 
 
 Endi **dev,sateg,prod** nomli joblar yaratib olamiz va shunga moslab configuratsiya qilib olamiz. Masalan **dev** jobda **dev** nomli branchdagi kodlarni olib uni build qilib dev serverda ishga tushiradi, qolgan stage va prod ham xuddi shunday ishlaydi.

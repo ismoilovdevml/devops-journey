@@ -2,7 +2,7 @@ import { Callout } from "nextra-theme-docs";
 
 # Kubernetes Arxitekturasi
 
-![k8s](/images/tutorials/k8s/architecture/1.jpg)
+![k8s](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/architecture/1.jpg)
 
 <Callout type="info" emoji="">
 **Mundarija**
@@ -33,13 +33,13 @@ import { Callout } from "nextra-theme-docs";
 
 Quyidagi Kubernetes arxitektura diagrammasi Kubernetes clusterining barcha komponentlarini va tashqi tizimlarning Kubernetes clusteriga qanday ulanishini ko'rsatadi.
 
-![k8s](/images/tutorials/k8s/architecture/3.png)
+![k8s](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/architecture/3.png)
 
 Kubernetes haqida tushunishingiz kerak bo'lgan birinchi va eng muhim narsa - bu `distributed system`(taqsimlangan tizim). Ya'ni, u tarmoq orqali turli serverlar bo'ylab tarqalgan bir nechta komponentlarga ega. Bu serverlar virtual mashinalar(vm virtual machine) yoki bare metal serverlar bo'lishi mumkin. Biz uni `Kubernetes Clusteri` deb ataymiz.
 
 Kubernetes clusteri control plane nodelari va worker nodelardan iborat.
 
-![k8s](/images/tutorials/k8s/architecture/4.png)
+![k8s](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/architecture/4.png)
 
 Quyidagi rasmda Kubernetes Container tashuvchi kema sifatida ko'rsatilgan. 
 
@@ -108,7 +108,7 @@ Birinchidan, har bir control plane komponentini va har bir komponent ortidagi mu
 
 `kube-api` serveri Kubernetes API-ni ochib(expose) beruvchi Kubernetes clasterining central hubidir. Oxirgi foydalanuvchilar va boshqa cluster komponentlari API serveri orqali cluster bilan gaplashadi. Juda kamdan-kam hollarda monitoring tizimlari va uchinchi tomon Servicelari cluster bilan o'zaro aloqa qilish uchun API serverlari bilan gaplashishi mumkin. Shunday qilib, siz clusterni boshqarish uchun `kubectl` dan foydalansangiz, backendda siz `HTTP REST API` orqali API serveri bilan bog'lanasiz. Biroq, scheduler(scheduler), controller va boshqalar kabi ichki cluster komponentlari `gRPC` yordamida API serveri bilan gaplashadi. API serveri va clusterdagi boshqa komponentlar o'rtasidagi aloqa clusterga ruxsatsiz kirishni oldini olish uchun `TLS` orqali amalga oshiriladi.
 
-![k8s](/images/tutorials/k8s/architecture/2.png)
+![k8s](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/architecture/2.png)
 
 Kubernetes `api-server`i quyidagilar uchun javobgardir
 
@@ -130,7 +130,7 @@ Kubernetes `api-server`i quyidagilar uchun javobgardir
 
 ### etcd
 
-![k8s](/images/tutorials/k8s/architecture/5.png)
+![k8s](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/architecture/5.png)
 Kubernetes distributed system bo'lib, uning distributed(taqsimlangan) tabiatini qo'llab-quvvatlaydigan `etcd` kabi samarali distributed databaselar bazasiga muhtoj. U ham backend Serviceini kashf qilish, ham ma'lumotlar bazasi sifatida ishlaydi. Siz uni Kubernetes clusterining miyasi deb atashingiz mumkin.
 
 [`etcd` open source](https://github.com/etcd-io/etcd) kuchli izchil, distributed key-value storedir. Xo'sh, bu nimani anglatadi?
@@ -154,7 +154,7 @@ Xulosa qilib aytganda, bu yerda siz etcd haqida bilishingiz kerak bo'lgan narsal
 * etcd gRPC yordamida key-value API-ni ochib beradi. Bundan tashqari, gRPC gatewayi barcha HTTP API chaqiruvlarini gRPC messagelariga tarjima qiladigan RESTful proksi-server hisoblanadi. Bu uni Kubernetes uchun ideal ma'lumotlar bazasiga aylantiradi.
 * etcd barcha objectlarni `/registry` directory keyi ostida  key-value formatida saqlaydi. Masalan, default namespacedagi Nginx nomli pod haqida ma'lumotni `/registry/pods/default/nginx` ostida topish mumkin.
 
-![k8s](/images/tutorials/k8s/architecture/6.png)
+![k8s](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/architecture/6.png)
 
 
 Bundan tashqari, etcd control planedagi yagona `Statefulset` komponentidir.
@@ -172,7 +172,7 @@ Bundan tashqari, etcd control planedagi yagona `Statefulset` komponentidir.
 
 kube-scheduler worker nodelarida Kubernetes podlarini rejalashtirish(scheduling) uchun javobgardir. Siz podni o'rnatganingizda, siz protsessor, xotira, affinity, nosozliklar(taints) yoki bardoshlik(tolerations), priority(ustuvorlik), persistent volume(PV) kabi pod talablarini belgilaysiz. Schedulerning asosiy vazifasi cretae so'rovini(requestini) aniqlash va talablarga javob beradigan pod uchun eng yaxshi nodeni tanlashdir.  Quyidagi rasmda schedulerni qanday ishlashining yuqori darajadagi umumiy ko'rinishi ko'rsatilgan.
 
-![k8s](/images/tutorials/k8s/architecture/7.png)
+![k8s](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/architecture/7.png)
 
 Kubernetes clusterida bir nechta worker nodelari bo'ladi. Xo'sh, qanday qilib scheduler barcha worker nodelardan nodeni tanlaydi?
 
@@ -197,7 +197,7 @@ Bu yerda scheduler qanday ishlaydi.
 
 * Schedulerda ulanadigan scheduling framework mavjud. Ya'ni, siz o'zingizning custom plugingizni scheduling workflowiga qo'shishingiz mumkin.
 
-![k8s](/images/tutorials/k8s/architecture/9.jpg)
+![k8s](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/architecture/9.jpg)
 
 <div style={{ display: 'flex', alignItems: 'center', lineHeight: '40px' }}>
   <img
@@ -210,7 +210,7 @@ Bu yerda scheduler qanday ishlaydi.
 
 ### Kube Controller Manager
 
-![k8s](/images/tutorials/k8s/architecture/8.png)
+![k8s](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/architecture/8.png)
 
 
 Controller nima? [Controllerlar](https://kubernetes.io/docs/concepts/architecture/controller/) infinite control sikllarini ishga tushiradigan dasturlardir. Ya'ni, u doimiy ishlaydi va ob'ektlarning actual va kerakli statetini kuzatadi. Actual va kerakli statetida farq bo'lsa, kubernetes resource/object kerakli statetida bo'lishini ta'minlaydi.
@@ -221,7 +221,7 @@ Aytaylik, siz deploymentni create qilmoqchisiz, manifest YAML faylida kerakli st
 
 Kube controller manageri barcha Kubernetes controllerlarini boshqaradigan komponentdir. Kubernetes  resources/objects kabi podlar, namespacelari, joblar,  replicasetlar tegishli controllerlar tomonidan boshqariladi. Shuningdek,kube scheduleri ham Kube controller manageri tomonidan boshqariladigan controller hisoblanadi.
 
-![k8s](/images/tutorials/k8s/architecture/10.png)
+![k8s](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/architecture/10.png)
 
 **Quyida muhim built-in Kubernetes controllerlarining ro'yxati keltirilgan.**
 
@@ -257,9 +257,9 @@ Shunday qilib, kubernetesning asosiy komponentlari mustaqil ishlashi mumkin va c
 
 Cloud controller integratsiyasi Kubernetes clusteriga misollar(nodelar uchun), Load Balancerlari(servicelar uchun) va Storage Volumelari(persistent volume uchun) kabi cloudli resurslarni taʼminlash imkonini beradi.
 
-![k8s](/images/tutorials/k8s/architecture/11.png)
+![k8s](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/architecture/11.png)
 
-![k8s](/images/tutorials/k8s/architecture/12.png)
+![k8s](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/architecture/12.png)
 
 Cloud Controller Manager cloudga xos komponentlarning (nodelar, Loadbalancerlar, storage va h.k.) kerakli stateni(holatini) taʼminlaydigan cloud platformasiga xos controllerlar toʻplamini oʻz ichiga oladi. Quyida cloud controller manageri tarkibiga kiruvchi uchta asosiy controllerlar keltirilgan.
 
@@ -269,7 +269,7 @@ Cloud Controller Manager cloudga xos komponentlarning (nodelar, Loadbalancerlar,
 
 **Service Controller** kubernetes servicelari uchun load balancerlarini(yuk blanslagich) deploy qilish, IP manzillarini belgilash va h.k. bilan shug'ullanadi.
 
-![k8s](/images/tutorials/k8s/architecture/13.png)
+![k8s](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/architecture/13.png)
 
 Quyida  cloud controller managerining ba'zi classic misollari keltirilgan.
 
@@ -323,7 +323,7 @@ U sog'lig'ini tekshirishda muvaffaqiyatsizlikka uchragan conrtainerlarni qayta i
 Kubelet conrtainerlarda muayyan buyruqlarni bajarishi mumkin, masalan, nosozliklarni tuzatish yoki dastur holatini(state) tekshirish uchun foydalaniladi.
 Qisqa qilib aytganda, kubelet conrtainerlarning har bir nodeda kutilganidek ishlashini ta'minlash, resurslarni boshqarish, salomatligini tekshirish va Kubernetes ishchi nodedagi conrtainerlarni boshqarish bilan bog'liq boshqa vazifalarni bajarish uchun javobgardir.
 
-![k8s](/images/tutorials/k8s/architecture/14.png)
+![k8s](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/architecture/14.png)
 
 <div style={{ display: 'flex', alignItems: 'center', lineHeight: '40px' }}>
   <img
@@ -358,13 +358,13 @@ kube-proxy service (ClusterIP) va tegishli pod IP va portlar (endpointlar) haqid
 3. **Userspace(eskirgan):** Ushbu rejimda kube-proxy Kubernetes masterini Serviuce va Endpoint obyektlarini qo'shish va o'chirish uchun kuzatib boradi. Har bir Service uchun u local nodeda portni (tasodifiy tanlangan) ochadi. Ushbu "proxy-port" ga har qanday ulanishlar Servicening backend podlaridan biriga proksilangan (shuningdek, tasodifiy tanlangan). Bu unchalik samarali emas, chunki trafik addon "hop" orqali o'tadi.
 4. **Kernelspace:** Bu rejim faqat Windows tizimlari uchun.
 
-![k8s](/images/tutorials/k8s/architecture/15.png)
+![k8s](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/architecture/15.png)
 
 Kube-proxy IPtables va IPVS rejimi o'rtasidagi ishlash farqini tushunishni istasangiz, [ushbu maqolani](https://www.tigera.io/blog/comparing-kube-proxy-modes-iptables-or-ipvs) o'qib chiqishingiz mumkin.
 
 Shuningdek, siz Kubernetes clusterini kube-proxysiz [Cilium](https://docs.cilium.io/en/v1.9/gettingstarted/kubeproxy-free/) bilan almashtirib ishga tushirishingiz mumkin.
 
-![k8s](/images/tutorials/k8s/architecture/16.png)
+![k8s](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/architecture/16.png)
 
 **kube-proxy funksiyalari**
 
@@ -401,11 +401,11 @@ Xo'sh, Kubernetes container runtimedan qanday foydalanadi?
 
 Kubelet bo'limida bilib olganimizdek, kubelet agenti containerning ishlash davrini(lifecycle) boshqarish uchun CRI API-lardan foydalangan holda container runtime bilan o'zaro ta'sir qilish uchun javobgardir. Shuningdek, u container runtimedan barcha container ma'lumotlarini oladi va uni boshqaruv tekisligiga beradi. Keling, CRI-O container runtime interfeysiga misol keltiraylik. Bu yerda container runtime kubernes bilan qanday ishlashi haqida yuqori darajadagi umumiy ma'lumot.
 
-![k8s](/images/tutorials/k8s/architecture/17.png)
+![k8s](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/architecture/17.png)
 
 API serveridan pod uchun yangi request(soo'rov) bo'lganda, kubelet Kubernetes Container Runtime Interface orqali kerakli containerlarni ishga tushirish uchun CRI-O demoni bilan gaplashadi. CRI-O containerlar/imagelar kutubxonasi(library) yordamida configratsiya qilingan container registridan kerakli container imageni tekshiradi va pull qilib tortib oladi. Keyin CRI-O container uchun OCI runtime spetsifikatsiyasini (JSON) yaratadi. Keyin CRI-O runtime spetsifikatsiyasiga muvofiq container jarayonini boshlash uchun OCI bilan mos runtimeni (runc) ishga tushiradi.
 
-![k8s](/images/tutorials/k8s/architecture/18.png)
+![k8s](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/architecture/18.png)
 
 Umumiy container runtimelari quyidagilarni o'z ichiga oladi:
 
@@ -416,7 +416,7 @@ Umumiy container runtimelari quyidagilarni o'z ichiga oladi:
 **CRI-O** OCI (Open Container Initiative) mos runtimelaridan foydalanishni ta'minlash uchun Kubernetes CRI dasturi. Bu faqat Kubernetes-ga e'tibor qaratgan container va Docker-ga yengil(lightweight) muqobildir. Container tarmog'i tarmoq interfeyslarini sozlaydigan va IP manzillari, marshrutlash qoidalari va DNS sozlamalari kabi tarmoq sozlamalarini qo'llaydigan CNI plaginlari bilan birgalikda ishlanadi.
 
 ## Kubernetes cluster addon komponentlari(addons)
-![k8s](/images/tutorials/k8s/architecture/19.png)
+![k8s](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/architecture/19.png)
 
 Kubernetes cluster addon komponentlari Kubernetes funksiyalarini kengaytiruvchi qo'shimcha xizmatlar va resurslardir. Ular odatda Kubernetes clusterida podlar va servicelar sifatida ishlaydi, lekin clusterdan tashqarida ham bo'lishi va kerak bo'lganda u bilan bog'lanishi mumkin. Ushbu addonlar Kubernetes imkoniyatlarini tarmoq, xavfsizlik, monitoring va boshqalar kabi sohalarda yaxshilaydi.
 

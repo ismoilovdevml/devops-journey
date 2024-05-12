@@ -3,7 +3,7 @@ import { Callout } from "nextra-theme-docs";
 
 # NGINX Load Balancing
 
-![nginx-lb](/images/tutorials/web-server/nginx-lb/main-banner.png)
+![nginx-lb](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/web-server/nginx-lb/main-banner.png)
 
 <Callout type="info" emoji="">
 **Eslatma:** Ushbu qo'llanmani o'qishdan oldin **[Load Balancing](https://devops-journey.uz/guides/web-server/load-balancing)** qo'llanmasini o'qib chiqishingizni maslahat beramiz.
@@ -29,7 +29,7 @@ import { Callout } from "nextra-theme-docs";
 
 ## NGINX bilan load balancing qilish
 
-![nginx-lb](/images/tutorials/web-server/nginx-lb/nginx-main.png)
+![nginx-lb](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/web-server/nginx-lb/nginx-main.png)
 
 Bizda quyidagi holat bor: [devops-journey.uz](https://devops-journey.uz/) platformasiga juda ko'p userlar ko'plab so'rovlar yubormoqda. Bizda atiga bitta server bor va clientlardan kelgan so'rovlar bosimini NGINX bilan load balancing qilishimiz kerak. Bu amaliyotni amalga oshirish uchun bizga 4ta server kerak bo'ladi.
 
@@ -57,7 +57,7 @@ Agar serverlar hammasi bir tarmoqda bo'lsa faqat **NGINX(Load Balancer)** server
 
 Biz vaziyatimizda [devops-journey.uz](https://devops-journey.uz/) saytini gorizontal kengaytirishimiz(horizontal scaling) va load balancing qilishimiz kerak.
 
-![nginx-lb](/images/tutorials/web-server/nginx-lb/scaling.png)
+![nginx-lb](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/web-server/nginx-lb/scaling.png)
 
 Kengaytirish(Scaling) ikki xil bo'ladi bu vertikal va gorizontal.
 
@@ -69,7 +69,7 @@ Biz gorizontal scalingni tanlaymiz va bizda bitta application serverimiz bor edi
 
 **Rasmda holat tasvirlangan.**
 
-![nginx-lb](/images/tutorials/web-server/nginx-lb/nginx-main.png)
+![nginx-lb](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/web-server/nginx-lb/nginx-main.png)
 
 1. NGINX serverimizni sozlab NGINX o'rnatib olamiz.
 
@@ -289,11 +289,11 @@ certbot orqali muvafaqqiyatli SSL sertifikat olganingizdan keyin brauzerdan appl
 
 `devops-jourey.uz`(bu yerda sizning ilovangiz domeni bo'ladi)ga brauzerda tashrif buyurganingizda sizda quyidagi oyna ochilishi kerak.
 
-![nginx-lb](/images/tutorials/web-server/nginx-lb/sonar-login.png)
+![nginx-lb](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/web-server/nginx-lb/sonar-login.png)
 
 Endi qiziq joyi boshlandi, esingizda bo'lsa biz 3ta serverga 3ta **SonarQube** o'rnatib hammasiga loginga `admin` parolga esa serverlarga qarab **node1, node2, node3** deb parol qo'yib sozlagan edik. Hozir domen orqali applicationimizga kiramiz sizda SonarQubega kirish oynasi ochiladi u yerdan **Login**ga admin yozamiz va parolga node1 yozamiz agar xato bo'lsa node2, node3 sabab NGINX qaysi serverga yo'naltirganini bilishimiz uchun. Maksimum 3ta urinish bilan to'gri parolni topasiz parol to'gri deydi va kirganida yana SonarQube kirish sahifasiga qaytaradi. Xo'sh buning sababi nima? Sababi shundaki NGINX configuratsiyamizga Load Balancing metodlarini kiritmadik bu holda NGINX default **Round Robin** metodidan foydalanib load balancing qiladi.
 
-![nginx-lb](/images/tutorials/web-server/nginx-lb/round-robin.png)
+![nginx-lb](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/web-server/nginx-lb/round-robin.png)
 
 Rasmda hozirgi holatimiz tasvirlangan yani birinchi so'rovda SonarQube kirish sahifasiga kirdik va to'gri login parol kiritib kirishni bosganimzida 2chi so'rov ketti va bu biz ulangan serverga emas balki boshqa serverga yo'naltirildi boshqa serverda esa boshqa login parol mavjud shuning uchun biz login qilib kira olmaymiz SonarQube tanlanganini sababi ham aslida shu edi Load Balancing qanday ishlashini ishlayotganini bilish uchun edi.
 
@@ -339,7 +339,7 @@ sudo systemctl reload nginx
 
 Brauzerdan applicationimizga domen orqali kiramiz va maximum 3ta urinish bilan parolni topib login qilib kira olamiz. Bu safar bu muvaffaqqiytali bo'ldi yana biz login qilib kira oldik. Endi boshqa kompyuterlardan kirib ko'ramiz ular boshqa serverlarga tushib qolishadi. Xo'sh bu qanday ishladi qanday qilib kira oldik va qanday ishlab turibti?
 
-![nginx-lb](/images/tutorials/web-server/nginx-lb/ip_hash.png)
+![nginx-lb](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/web-server/nginx-lb/ip_hash.png)
 
 Ushbu bizning holatimiz Rasmda tasvirlangan. **IP/URL Hash** load balancing Stateful Load Balancingga kiradi yani sessiyani saqlab bir marta ulanib olgan serveringiz keyingi so'rovlaringiz ham shu serverga yo'naltiriladi.
 
@@ -393,7 +393,7 @@ sudo systemctl reload nginx
 
 Ushbu holat rasmda tasvirlanganidek ishlaydi. Bu **Weighted Round Robin** load balancing metodida serverlar holatidan kelib chiqib so'rovlarni taqsimlaydi. Bunda `Sserver A` da resurlar ko'pligi va **weight** yuqoriligi sabab ko'proq so'rovlar yuboriladi `Server C` da esa resurslar kamligi va **weight** kichikligi sabab kamroq so'rovlar yuboriladi. Bu Load Balancing server resurlari bir xil bo'lmaganida qo'l keladi. 
 
-![nginx-lb](/images/tutorials/web-server/nginx-lb/weighted_round_robin.png)
+![nginx-lb](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/web-server/nginx-lb/weighted_round_robin.png)
 
 Bizni applicationimiz uchun Round Robin load balancing metodi to'gri kelmagani uchun ushbu configuratsiyani IP/URL Hash laod balancing metodida ham ishlata olamiz. Quyida **IP/URL Hash** Load Balancing metodida serverlarga **weight** berib load balancing qilish NGINX konfiguratsiyasi.
 
@@ -450,7 +450,7 @@ server {
 
 Ushbu configuratsiya bilan NGINXni ishga tushirsak quyidagi rasmdagidek ishlaydi.
 
-![nginx-lb](/images/tutorials/web-server/nginx-lb/least-connections.png)
+![nginx-lb](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/web-server/nginx-lb/least-connections.png)
 
 Endi bizda yana bir muammoli vaziyat paydo bo'ldi. 3ta application serverimiz bor lekin ular so'rovlarga har xil tezlikda javob beradi. Load Balancer esa barcha serverlarga so'rovlarni teng taqsimlayapti lekin ba'zi serverlar so'rovlarga sekin javob beryapti bu unga ko'proq yuk tushishiga olib keladi. Xo'sh buni vaziyatga qanday yechimk berishimiz mumkin? Bu vaziyatada biz **Least Time** load balancing metodidan foydalanamiz bu load balancing metod qaysi serverlar so'rovlarga tez javob bersa shu serverga ko'proq so'rovlar yuboradi sekin javob qayrtaradigan serverlarga esa kam so'rov yuboradi. 
 
@@ -493,7 +493,7 @@ sudo systemctl reload nginx
 
 Ushbu holat quyidagi rasmda tasvirlangan.
 
-![nginx-lb](/images/tutorials/web-server/nginx-lb/least_time.png)
+![nginx-lb](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/web-server/nginx-lb/least_time.png)
 
 
 Ushbu mavzuda biz NGINX'da HTTP Load balancing configuratsiya qilishni va loyihamizga serverlarimiz holatiga qarab load balancing metodlarini qo'llashni ko'rib chiqdik. Buni hammasi NGINX Open Sourceda ishlaydi. Qolgan Health Check va advanced load balancing uchun NGINX Plus yoki qo'shimcha dasturlar kerak bo'ladi. Keyingi qismlarda **TCP/UDP** Load balancingni ko'rib chiqamiz.

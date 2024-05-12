@@ -2,7 +2,7 @@ import { Callout } from "nextra-theme-docs";
 
 # Kubernetes Monitoring
 
-![k8s-monitoring](/images/tutorials/k8s/k8s-monitoring/banner.png)
+![k8s-monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/k8s-monitoring/banner.png)
 
 
 Ushbu amaliyotda biz Kubernetes clusterni monitoring qilishni ko'rib chiqamiz. Kubernetes monitoring qilishda **Prometheus** va **Grafana** ishlatamiz. Prometheus va Grafana haqida ma'lumot.
@@ -32,7 +32,7 @@ Ushbu qo'llanmani yaxshi tushinish uchun quyidagi qo'llanmalarni ko'rib chiqish 
 
 **Rasmda Kubernetes [Prometheus arxitekturasi](https://prometheus.io/docs/introduction/overview/)**
 
-![k8s-monitoring](/images/tutorials/k8s/k8s-monitoring/architecture.png)
+![k8s-monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/k8s-monitoring/architecture.png)
 
 Kubernetes Prometheus stackidagi komponentlar:
 
@@ -65,7 +65,7 @@ kubectl get pods -n monitoring
 kubectl get svc -n monitoring
 ```
 
-![k8s-monitoring](/images/tutorials/k8s/k8s-monitoring/monitoring1.png)
+![k8s-monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/k8s-monitoring/monitoring1.png)
 
 Okey hammasi yaxshi biz hozir Prometheusni o'rnatib oldik.
 
@@ -115,7 +115,7 @@ nano grafana-ingress.yaml
 ```
 
 **5->** monitoing namespaceda grafana serviceni ko'rsak u 80 portda ishlab turibti.
-![k8s-monitoring](/images/tutorials/k8s/k8s-monitoring/grafana.png)
+![k8s-monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/k8s-monitoring/grafana.png)
 
 Ya'ni grafana service monitoring namespaceda 80 portda ishlaydi.
 
@@ -160,7 +160,7 @@ Grafana bu metrikalarni vizualizatsiya qilib beradigan tool hisoblanadi. Grafana
 
 **1->** Yuqorida Grafana o'rnatib domenga ulab expose qilgandik endi shu domen orqali grafana kiramiz bizda birinchi admin bo'lib login qilish oynasi ochilishi kerak.
 
-![k8s-monitoring](/images/tutorials/k8s/k8s-monitoring/grafana1.png)
+![k8s-monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/k8s-monitoring/grafana1.png)
 
 * **Email or username->** admin
 * **Password->** admin passwordni olish uchun quyidagi buyruqdan foydalansiz
@@ -172,11 +172,11 @@ kubectl get secret --namespace monitoring grafana -o jsonpath="{.data.admin-pass
 
 **2->** Grafanga login qilib kirib olganimizdan keyin **Data Source** sozlab olishimiz kerak yani Prometheusni ulab olishimiz kerak. Login qilib kirganimizdan keyin ochilgan **Home** pagedan **DATA SOURCES** bo'limga o'tamiz.
 
-![k8s-monitoring](/images/tutorials/k8s/k8s-monitoring/grafana2.png)
+![k8s-monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/k8s-monitoring/grafana2.png)
 
 Data Sourceda Prometheusni tanlaymiz sizda quyidagi oyna ochiladi.
 
-![k8s-monitoring](/images/tutorials/k8s/k8s-monitoring/grafana3.png)
+![k8s-monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/k8s-monitoring/grafana3.png)
 
 **Connection** bo'limdan Prometheus server URLga quyidagi URLNI beramiz.
 
@@ -186,10 +186,10 @@ http://prometheus-server.monitoring.svc.cluster.local/
 
 va **Save & test** bosib ulab olamiz hammasi to'gri bo'lsa muvaffaqiyatli ulanishi kerak.
 
-![k8s-monitoring](/images/tutorials/k8s/k8s-monitoring/monitoring2.png)
+![k8s-monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/k8s-monitoring/monitoring2.png)
 
 **3->** Grafanaga Dashboard ulash uchun, Grafana boshqaruv paneliga qayting. To'rt kvadratdan iborat `Dashboard` ikonkasini tanlang va ` + Import`-ni tanlang.
-![monitoring](/images/article/monitoring/17.png)
+![monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/monitoring/17.png)
 **4->** Ushbu oynada Dashboard import qilamiz JSON model orqali yoki Grafana Dashboard ID orqali biz ID orqali import qilamiz. Biz [github.com/dotdc/grafana-dashboards-kubernetes](https://github.com/dotdc/grafana-dashboards-kubernetes) Kubernetes Dashboardlar to'plamini tanlagandik unda Dashboardlar ID raqamlari belgilangan ushbu dashboardlarni ID orqali import qilamiz. Masalan biz `k8s-views-global.json	15757` ni tanlaymiz va import qilamiz.
 
 | Dashboard                       | ID    |
@@ -203,15 +203,15 @@ va **Save & test** bosib ulab olamiz hammasi to'gri bo'lsa muvaffaqiyatli ulanis
 | k8s-views-nodes.json            | 15759 |
 | k8s-views-pods.json             | 15760 |
 
-![k8s-monitoring](/images/tutorials/k8s/k8s-monitoring/monitoring3.png)
+![k8s-monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/k8s-monitoring/monitoring3.png)
 
 Undan keyingi oynada Data Sourcega Prometheusni belgilab **Import** qilamiz.
 
-![k8s-monitoring](/images/tutorials/k8s/k8s-monitoring/grafana5.png)
+![k8s-monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/k8s-monitoring/grafana5.png)
 
 Bizda Grafana metrikalarni vizualizatsiya qilib ko'rsatishi  kerak.
 
-![k8s-monitoring](/images/tutorials/k8s/k8s-monitoring/grafana6.png)
+![k8s-monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/k8s-monitoring/grafana6.png)
 
 Okey yaxshi biz hammasini muvaffaqiyatli uddaladik endi qolgan dashboardlarni ham import qilib ulab chiqamiz.
 
@@ -267,7 +267,7 @@ Ushbu JSON kodni nusxalab dashboardni import qilishingiz mumkin: [https://raw.gi
 
 NGINX ingress Controllerni monitoring qilish bo'yicha [rasmiy qo'llanma.](https://github.com/kubernetes/ingress-nginx/blob/main/docs/user-guide/monitoring.md)
 
-![k8s-monitoring](/images/tutorials/k8s/k8s-monitoring/grafana7.png)
+![k8s-monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/k8s-monitoring/grafana7.png)
 
 ## Qo'shimcha
 <Callout type="info" emoji="">

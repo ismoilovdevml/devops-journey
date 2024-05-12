@@ -2,7 +2,7 @@ import { Callout } from "nextra-theme-docs";
 
 # Kubespray yordamida production uchun Kubernetes Cluster sozlash
 
-![kubespray](/images/tutorials/k8s/kubespray/banner.png)
+![kubespray](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/kubespray/banner.png)
 
 ## Kirish
 
@@ -39,15 +39,15 @@ Kubernetes klaster sozlash uchun birinchi navbatda Kubernetes klaster uchun Netw
 
 Ushbu amaliyotda biz **172.23.0.15/24** IP range(diapazon)li subentdan foydalandik va biz Google Cloud Serverlaridan foydalandik. Serverlar Internal IP'lariga e'tibor berib qarang ular hammasi **172.23.0.0/24** subnetda va ular bir bir bilan local tarmoq orqali bo'glanaib ishlay oladi. Siz Cloud ishlatasizmi yoki on-premises buni ahamiyati yo'q, bu yerda e'tibor berish kerak bo'lgan narsa bu Subnet local tarmoq hisoblanadi.
 
-![kubespray](/images/tutorials/k8s/kubespray/server.png)
+![kubespray](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/kubespray/server.png)
 
 Agar siz **Microsoft Azure** yoki **Google Cloud** ishlatadigan bo'lsangiz platformamizda **Azure** va **GCP**'da Network sozlash qo'llanmalarimizni ko'rib chiqishingiz mumkin.
 
 **->** [**Azure Network sozlash**](https://devops-journey.uz/guides/cloud/azure-network-sozlash)
-![azure-network-sozlash](/images/tutorials/cloud/azure-network/architecture.png)
+![azure-network-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/cloud/azure-network/architecture.png)
 
 **->** [**GCP Network sozlash**](https://devops-journey.uz/guides/cloud/gcp-network-sozlash)
-![gcp-network-sozlash](/images/tutorials/cloud/gcp-network/vpc-architecture.png)
+![gcp-network-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/cloud/gcp-network/vpc-architecture.png)
 
 ## Ansible server sozlash
 
@@ -105,7 +105,7 @@ Kubesprayni zipdan chiqarib olamiz va papka nomini kubespray'ga o'zgartiramiz.
 sudo unzip v2.24.1.zip
 mv kubespray-2.24.1/ ./kubespray
 ```
-![kubespray](/images/tutorials/k8s/kubespray/ansible1.png)
+![kubespray](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/kubespray/ansible1.png)
 
 Kubespray ansible playbookni ishga tushirish uchun ansible-serverimiz boshqa serverlarga **internal IP**lari orqali **root** userga **ssh** orqali ulana olishi kerak, shuning uchun **ansible-server**da ssh-key generatsiya qilib uni **public** keyini boshqa serverlarda **root** userga kirib **authorized_keys**ga qo'shib qo'yishimiz va **ansible-server**dan turib ssh ulanishni tekshirib ko'rishimiz kerak.
 
@@ -115,7 +115,7 @@ ansible-serverimizda root userga kirib  ssh key generatsiya qilamiz.
 sudo su
 ssh-keygen
 ```
-![kubespray](/images/tutorials/k8s/kubespray/ssh.png)
+![kubespray](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/kubespray/ssh.png)
 
 ssh papkaga kirib **id_rsa.pub** public keyni cat bilan chiqarib olib uni buferga nusxalab olamiz va boshqa serverlarimizda root userdan kirib authorized_keys'ga qo'shib qo'yamiz.
 
@@ -160,7 +160,7 @@ cd $KUBESPRAYDIR
 pip install --upgrade pip
 pip install -U -r requirements.txt
 ```
-![kubespray](/images/tutorials/k8s/kubespray/ansible2.png)
+![kubespray](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/kubespray/ansible2.png)
 
 Kubespray uchun kerakli paketlarni o'rnatib olganimizdan keyin `/kubespray/inventory/sample` papkadan o'zimizga klaster sozlab olamiz. Biz bu yerda `mycluster` nomli papkaga sample papkadagi kerakli fayllarni ko'chiramiz.
 
@@ -186,14 +186,14 @@ Calicodan flannela o'zgartirish uchun `k8s-cluster.yml` faylidan o'zgartiramiz.
 ```bash
 nano inventory/mycluster/group_vars/k8s_cluster/k8s-cluster.yml
 ```
-![kubespray](/images/tutorials/k8s/kubespray/kubespray1.png)
+![kubespray](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/kubespray/kubespray1.png)
 
 keyin `addons.yml` konfiguratsiya faylidan **helm** o'rnatishni yoqib qo'yamiz. `addons.yml` konfiguratsiya faylidan kerakli Kubernetes addonslarni sozlab olsangiz bo'ladi.
 
 ```bash
 nano inventory/mycluster/group_vars/k8s_cluster/addons.yml
 ```
-![kubespray](/images/tutorials/k8s/kubespray/kubespray2.png)
+![kubespray](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/kubespray/kubespray2.png)
 
 Okeyy bizda hammasi tayyor Kubesprayni ishga tushirsak bo'ladi
 
@@ -218,7 +218,7 @@ kubectl get pods -A
 
 Okey biz Kubespray yordamida muvaffaqiyatli Kubernetes klasterimiz yaratib oldik, endi keyingi bosqichga **Kubernetes Network sozlash** bo'limiga o'tsak bo'ladi.
 
-![kubespray](/images/tutorials/k8s/kubespray/k8s.png)
+![kubespray](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/kubespray/k8s.png)
 ## Kubernetes Network sozlash
 
 Kubespray yordamida Kubernetes klaster yaratib olganimizdan keyin Kubernetes klasterimiz tarmog'ini sozlab olishimiz kerak bo'ladi.
@@ -264,7 +264,7 @@ kubectl get ns
 # metallb-system namespace podlarini ko'rish
 kubectl get pods -n metallb-system
 ```
-![k8s-cluster](/images/tutorials/k8s/cluster-setup/k8s10.png )
+![k8s-cluster](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/cluster-setup/k8s10.png )
 
 **5->** MetalLB o'rnatganimizdan keyin **MetalLB Address Pool** sozlashimiz kerak.
 
@@ -316,7 +316,7 @@ spec:
 * **spec ->** Ushbu bo'lim resourcening kerakli holatini belgilaydi.
 * **addresses ->** **MetalLB LoadBalancer** turidagi servicelarga ajratishi mumkin bo'lgan bir qator IP manzillarni belgilaydi. Bunday holda, u `172.23.0.20` dan `172.23.0.40` gacha bo'lgan diapazondir. **LoadBalancer** turidagi service yaratilganda, **MetalLB** ushbu diapazondan servicega IP belgilaydi(assign).
 
-![kubespray](/images/tutorials/k8s/kubespray/server2.png)
+![kubespray](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/kubespray/server2.png)
 
 Rasmga e'tibor bersangiz k8s cluster serverlar internal IP si ko'rsatilgan va ular **172.23.0.0/24** network subnetda.
 
@@ -364,7 +364,7 @@ kubectl get svc -n ingress-nginx
 kubectl get pods -n ingress-nginx
 ```
 
-![kubespray](/images/tutorials/k8s/kubespray/k8s2.png)
+![kubespray](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/kubespray/k8s2.png)
 
 **EXTERNAL IP** sifatida MetalLB orqali bergan address pooldan **172.23.0.20** IPni oldi.
 
@@ -486,7 +486,7 @@ sudo systemctl status haproxy
 ```
 
 Ushbu arxitektura quyidagicha rasmda ko'rsatilganidek ishlaydi. NGINX Ingress k8s-master server ichida internal IPni olgan va shu bilan ishlaydi, tashqi kirib chiqish uchun esa HAProxy o'rnatib TCP modeda konfiguratsiya qildik, ya'ni tashqi kirish chiqishlar HAProxy orqali o'tadi.
-![kubespray](/images/tutorials/k8s/kubespray/k8s-draw.png)
+![kubespray](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/kubespray/k8s-draw.png)
 
 ## Cert-Manager o'rnatish va sozlash
 
@@ -514,7 +514,7 @@ Longhorn o'rnatilganidan keyin servicelarni ko'rib chiqaylik.
 kubectl get svc -n longhorn-system
 ```
 
-![kubespray](/images/tutorials/k8s/kubespray/k8s3.png)
+![kubespray](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/kubespray/k8s3.png)
 
 Biz ushbu servicelardan `longhorn-frontend`ni expose qilamiz domen ulab.
 
@@ -566,7 +566,7 @@ konfiguratsiyamizni apply qilganimizdan keyin brauzerdan(Firefox tezroq) `https:
 
 Hozirda kubernetes clusterimiz ishlashga tayyor holga keldi va ishni boshlasak bo'ladi. Keling amaliyot uchun kubernetes clusterimizga kubernetes dashboard o'rnatib uni NGINX Ingress Controller orqali expose qilib Cert-Managerdan SSL/TLS sertifikat olib ishga tushiramiz.
 
-![k8s-cluster](/images/tutorials/k8s/cluster-setup/dashboard.png )
+![k8s-cluster](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/cluster-setup/dashboard.png )
 
 **1->** Kubernetes dashboard o'rnatish
 
@@ -675,13 +675,13 @@ Rasmda kubernetes-dashboard namescpasedagi servicelar va portlari ko'rsatilgan. 
 ```bash
 kubectl get svc -n kubernetes-dashboard
 ```
-![kubespray](/images/tutorials/k8s/kubespray/k8s4.png)
+![kubespray](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/kubespray/k8s4.png)
 
 Bu configuratsiya **HTTPS** yordamida Kubernetes dashboarnini xavfsiz ochish uchun NGINX annotationlari bilan ingress resourceni yaratadi. U hostni, **TLS** sozlamalarini va **SSL** redirectionni belgilaydi.
 
 DNS hostingdan domengizga k8s-master static IP manzilini qo'shib qo'yasiz. Ushbu misolda menda **xilol.uz** domeni bor va men **dashboard** deb subdomen qo'shyapman. Rasmda ahost namunasi ko'rsatilgan **0.0.0.0** o'rniga k8s-matser serveringiz static IP manzilini qo'shasiz.
 
-![k8s-cluster](/images/tutorials/k8s/cluster-setup/dns.png)
+![k8s-cluster](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/cluster-setup/dns.png)
 
 
 ```bash
@@ -690,10 +690,10 @@ kubectl apply -f dashboard-ingress.yaml
 
 Configuratsiyamizni apply qilib ishga tushirganimizdan keyin brauzerdan **dashboard.xilol.uz**ga kirganimzida **https** kirishi kerak va bizga Kubernetes Dashboard ochilib kirish oynasi ochilishi kerak.
 
-![k8s-cluster](/images/tutorials/k8s/cluster-setup/k8s11.png)
+![k8s-cluster](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/cluster-setup/k8s11.png)
 
-![k8s-cluster](/images/tutorials/k8s/cluster-setup/k8s12.png)
-![k8s-cluster](/images/tutorials/k8s/cluster-setup/k8s13.png)
+![k8s-cluster](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/cluster-setup/k8s12.png)
+![k8s-cluster](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/cluster-setup/k8s13.png)
 
 
 **6->** Kubernetes dashboardga kirish uchun token olamiz
@@ -704,7 +704,7 @@ kubectl -n kubernetes-dashboard create token admin-user
 
 TOKEN olganimizdan keyin Kubernetes Dashboardga kirishimiz mumkin.
 
-![k8s-cluster](/images/tutorials/k8s/cluster-setup/dashboard1.png)
+![k8s-cluster](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/cluster-setup/dashboard1.png)
 
 ## Kubernetes Monitoring
 

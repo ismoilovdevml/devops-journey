@@ -2,7 +2,7 @@ import { Callout } from "nextra-theme-docs";
 
 # Patroni va HAProxy yordamida Highly Available PostgreSQL clusterini yaratish
 
-![postgres-cluster](/images/tutorials/database/postgres-cluster/banner.png)
+![postgres-cluster](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgres-cluster/banner.png)
 
 ## Kirish
 
@@ -39,12 +39,12 @@ Ushbu Ansible playbookni qo'llab quvvatlaydigan serverlar
 
 Ushbu amaliyotda quyidagi rasmdagi arxitekturani quramiz. Bizda bitta **etcd** va bitta **load-balancer** serverimiz bo'ladi. Ikkita postgres **replica** va bitta **master**imiz bo'ladi.
 
-![postgres-cluster](/images/tutorials/database/postgres-cluster/architecture.png)
+![postgres-cluster](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgres-cluster/architecture.png)
 
 
 Quyidagi rasmda esa network arxitekturamiz.
 
-![postgres-cluster](/images/tutorials/database/postgres-cluster/network-architecture.png)
+![postgres-cluster](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgres-cluster/network-architecture.png)
 
 Bizda Postgresql clusterimiz uchun **db-network**kimiz bor uni ichida esa **db-subnet** nomli **172.20.0.0/16** IP diapozonli subnetimiz bor. Barcha serverlarimiz bir biriga internal IP bilan bo'glanib ishlaydi, bitta load-balancer serverimizda static(public) IP address bo'ladi holos. Agar siz Azure ishlatsangiz [Azureda Network sozlash](https://devops-journey.uz/guides/cloud/azure-network-sozlash) amaliyotidan quyidagi networkni qurib olishingiz mumkin.
 
@@ -70,7 +70,7 @@ Ushbu amaliyotda birinchi qiladigan ishimiz bu network sozlashdir keling ishni n
 
 Siz quyidagidek network sozlab olishingiz kerak bo'ladi barcha serverlar bitta networkda bitta subnetda bo'lishi va bir bir bilan internal IP bilan bog'lanib ishlashi kerak faqat load-balancer serverimizda static(public) IP address bo'ladi ya'ni tashqaridan ulana olish uchun. Ushnu network arxitektura PostgreSQL clusterimizni kengaytirishda ham ko'p qulaylik beradi.
 
-![postgres-cluster](/images/tutorials/database/postgres-cluster/network-architecture.png)
+![postgres-cluster](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgres-cluster/network-architecture.png)
 
 Ushbu network arxitekturani on-primise va cloudda ham sozlashingiz mumkin. Agar siz **Microsoft Azure** ishlatsangiz [Azure Network sozlash](https://devops-journey.uz/guides/cloud/azure-network-sozlash) qo'llanmasidan quyidagi networkni sozlab olishingiz mumkin.
 
@@ -143,21 +143,21 @@ cd postgresql_cluster/
 | node3          | 170.20.0.8     |
 
 
-![postgres-cluster](/images/tutorials/database/postgres-cluster/inventory.png)
+![postgres-cluster](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgres-cluster/inventory.png)
 
 **3->** `postgresql_cluster/vars/system.yml` konfiguratsiya faylidan timezonani belgilaymiz.
 
-![postgres-cluster](/images/tutorials/database/postgres-cluster/timezone.png)
+![postgres-cluster](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgres-cluster/timezone.png)
 
 **4->** `postgresql_cluster/vars/main.yml` konfiguratsiya faylidan postgres pgbouncer parollarnini belgilaymiz.
 
-![postgres-cluster](/images/tutorials/database/postgres-cluster/password.png)
+![postgres-cluster](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgres-cluster/password.png)
 
-![postgres-cluster](/images/tutorials/database/postgres-cluster/pgbouncer1.png)
+![postgres-cluster](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgres-cluster/pgbouncer1.png)
 
 **5->** Barchasini o'zimizga moslab sozlab olganimizdan keyin barcha serverlarga ulanish bor yoki yo'qligini tekshiramiz.
 
-![postgres-cluster](/images/tutorials/database/postgres-cluster/ping.png)
+![postgres-cluster](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgres-cluster/ping.png)
 
 **6->** Yuqoridagidek barcha serverlarga ansible serverimiz muvaffaqiyatli ulana olaganidan keyin **deploy_pgcluster.yml** orqali **TimescaleDB** bilan  postgres clusterni yaratishni boshlaymiz. Bu serverlar holati va internet tezligi qarab vaqt oladi.
 
@@ -169,23 +169,23 @@ ansible-playbook deploy_pgcluster.yml -e "enable_timescale=true"
 
 **7->** Jarayon muvaffaqiyatli tugaganida quyidagicha ko'rinishda bo'ladi.
 
-![postgres-cluster](/images/tutorials/database/postgres-cluster/ansible1.png)
-![postgres-cluster](/images/tutorials/database/postgres-cluster/ansible2.png)
+![postgres-cluster](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgres-cluster/ansible1.png)
+![postgres-cluster](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgres-cluster/ansible2.png)
 
 Okey bizda hammasi muvaffaqiyatli yakunlandi keling endi etcd, patroni va pgbouncer statusini va konfiguratsiyalarini ko'rib chiqamiz.
 
 etcd serverimizda etcd muvaffaqiyatli o'rnatilib konfiguratsiya qilingan va holati aktiv ishlamoqda.
-![postgres-cluster](/images/tutorials/database/postgres-cluster/ansible3.png)
+![postgres-cluster](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgres-cluster/ansible3.png)
 
-![postgres-cluster](/images/tutorials/database/postgres-cluster/etcd.png)
+![postgres-cluster](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgres-cluster/etcd.png)
 
 birorta node1,node2,node3 serverlarimizga kirib patroni orqali Postgresql clusterimiz statusini ko'ramiz.
 
-![postgres-cluster](/images/tutorials/database/postgres-cluster/patroni.png)
+![postgres-cluster](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgres-cluster/patroni.png)
 
 Patroni statusini tekshiramiz.
 
-![postgres-cluster](/images/tutorials/database/postgres-cluster/patroni2.png)
+![postgres-cluster](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgres-cluster/patroni2.png)
 
 Patroni konfiguratsiya(node3).
 
@@ -365,7 +365,7 @@ Okey bizda patroni muvaffaqiyatli ishga tushirilib production uchun konfiguratsi
 
 **PGBouncer** statusini tekshiramiz.
 
-![postgres-cluster](/images/tutorials/database/postgres-cluster/pgbouncer.png)
+![postgres-cluster](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgres-cluster/pgbouncer.png)
 
 `/etc/pgbouncer/pgbouncer.ini` konfiguratsiya
 
@@ -536,9 +536,9 @@ psql -h 172.214.40.99 -p 5000 -U postgres;
 ```
 
 postgres parol `postgresql_cluster/vars/main.yml` konfiguratsiya faylida belgilagan `admin-parol-qvcnwepOYUI45Wds` parolimizdir.
-![postgres-cluster](/images/tutorials/database/postgres-cluster/password.png)
+![postgres-cluster](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgres-cluster/password.png)
 
-![postgres-cluster](/images/tutorials/database/postgres-cluster/pg.png)
+![postgres-cluster](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgres-cluster/pg.png)
 
 
 Okey bizda hmmasi zo'r hamma ish bitti biz hammasini muvaffaqiyatli yakunladik.
@@ -556,17 +556,17 @@ Testlardan muvaffaqiyatli o'tganidan keyin yangi node qo'shishni ko'rib chiqamiz
 patronictl -c /etc/patroni/patroni.yml list
 ```
 
-![postgres-cluster](/images/tutorials/database/postgres-cluster/patroni.png)
+![postgres-cluster](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgres-cluster/patroni.png)
 
 **pgnode03** serverimizni o'chirgandagi status.
 
-![postgres-cluster](/images/tutorials/database/postgres-cluster/patroni3.png)
+![postgres-cluster](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgres-cluster/patroni3.png)
 
 **pgnode03** sevverimizni qayta yoqamiz postgres clusterga avtomatik muamosiz ulanishi kerak buni o'zingiz tekshirib olasiz.
 
 Keling endi **pgnode01** Leader serverni o'chiramiz postgres clustermiz avtomatik Leader tanlashi kerak.
 
-![postgres-cluster](/images/tutorials/database/postgres-cluster/patroni4.png)
+![postgres-cluster](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgres-cluster/patroni4.png)
 
 Ko'rib turganimizdek postgres clusterimizda oldin **pgnode01** Leader edi u server o'chganidan keyin **pgnode03** ga Leaderlik berildi bizda hech qanday uzulish kuzatilmasligi kerak. Qolgan qo'shimcha testlarni o'zinmgiz o'tkizib olasiz.
 

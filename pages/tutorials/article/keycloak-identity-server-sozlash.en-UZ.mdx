@@ -2,7 +2,7 @@ import { Callout } from "nextra-theme-docs";
 
 # Keycloak bilan Identity Server sozlash
 
-![keycloak-sozlash](/images/article/keycloak-server/banner.png)
+![keycloak-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/keycloak-server/banner.png)
 
 ## Kirish
 
@@ -207,7 +207,7 @@ sudo systemctl status keycloak
 
 http://0.0.0.0:8080/auth/
 
-![keycloak-sozlash](/images/article/keycloak-server/keycloak.png)
+![keycloak-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/keycloak-server/keycloak.png)
 
 Keycloak hech qanday birinchi Administrator user bilan kelmaydi shuning uchun biz uni o'zimiz yaratib olishimiz kerak. Biz hozir localhost:8080 qilib kirmaganimiz uchun UI orqali admni user yarata olmaymiz shuning uchun `add-user-keycloak.sh` scripti orqali admin user yarataib olamiz.
 
@@ -222,11 +222,11 @@ Keycloak admin user yaratib olganimzidan keyin avtomatik **master** realm bilan 
 sudo systemctl restart keycloak
 ```
 
-![keycloak-sozlash](/images/article/keycloak-server/keycloak2.png)
+![keycloak-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/keycloak-server/keycloak2.png)
 
 Okey bizda **Administration Console** ochildi va kirganimizda quyidagi oyna ochilishi kerak
 
-![keycloak-sozlash](/images/article/keycloak-server/keycloak3.png)
+![keycloak-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/keycloak-server/keycloak3.png)
 
 Bizda muammo chiqdi yani biz http bilan kiryapmiz keycloak esa SSL https talab qilyapti. Buning uchun keycloakga domen ulab nginx orqali reverse proxy qilib expose qilishimiz mumkin yoki Kyecloakdan SSL verificationni o'chirib qo'yishimiz kerak. Keling keycloakdan SSL verificationni o'chirib qo'yamiz.
 
@@ -249,11 +249,11 @@ sudo systemctl restart keycloak
 
 Keycloakga brauzerdan qayta kirib **Administration Console**ga kirganimzida bizda quyidagi login qilib kirish uchun oyna ochiladi.
 
-![keycloak-sozlash](/images/article/keycloak-server/keycloak4.png)
+![keycloak-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/keycloak-server/keycloak4.png)
 
 Login qilib kiramiz birinchi oyna.
 
-![keycloak-sozlash](/images/article/keycloak-server/keycloak5.png)
+![keycloak-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/keycloak-server/keycloak5.png)
 
 Okey bizda hammasi ishlayapti biz muvaffaqiyatli keycloak 15.0.0 o'rnatdik va dastlablki sozlashni yakunladik.
 

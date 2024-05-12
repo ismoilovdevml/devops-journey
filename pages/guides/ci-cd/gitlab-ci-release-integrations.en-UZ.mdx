@@ -2,7 +2,7 @@ import { Callout } from "nextra-theme-docs";
 
 # Gitlab CI | Releaselar va Integrationlar
 
-![gitlab-ci](/images/tutorials/ci-cd/gitlabci-release-integrations/banner.png)
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlabci-release-integrations/banner.png)
 
 Tashkilotlarda loyiha kodlarni samarali saqlash va boshqarish asosiy vazifalardan biri hisoblanadi. Bugungi amaliyotimizda biz loyiha kodlarini qanday qilib versiyalash va roolback(ortga qaytish)ni yo'lga qo'yamiz. Jamoa bilan ishlash uchun bir nechta integratsiyalarni ko'rib chiqamiz, bu amaliyotda asosan notification integrationlarni ko'rib chiqamiz.
 
@@ -10,7 +10,7 @@ Tashkilotlarda loyiha kodlarni samarali saqlash va boshqarish asosiy vazifalarda
 
 Loyihalarni versiyalash va rollback qilish uchun biz **Gitlab Release**lardan foydalanamiz. Loyiha kodlarini samarali boshqarishning bir nechta usullari bor, barcha tashkilotlarning o'z kod saqlash srategiyalari bor, keling bu amalaiyotda bir loyiha kodlarini samarali manage qilishning bir usulini ko'rib chiqamiz.
 
-![gitlab-ci](/images/tutorials/ci-cd/gitlabci-release-integrations/git-architecture.png)
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlabci-release-integrations/git-architecture.png)
 
 Rasmdagi loyiha kodlarini samarali saqlash va boshqarish qarashini ko'rib chiqamiz:
 
@@ -29,14 +29,14 @@ Ushbu amaliyotda biz [gitlab.com/ismoilovdev/devops-journey](https://gitlab.com/
 </Callout>
 Keling birinchi navbatda branchlar ochib chiqamiz.
 
-![gitlab-ci](/images/tutorials/ci-cd/gitlabci-release-integrations/gitlab1.png)
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlabci-release-integrations/gitlab1.png)
 
-![gitlab-ci](/images/tutorials/ci-cd/gitlabci-release-integrations/gitlab2.png)
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlabci-release-integrations/gitlab2.png)
 
 Rasmda ko'rsatilganidek **dev** va **stage** branchlar ochib olamiz **main** branchimiz esa prod chiqadigan branchimiz bo'ladi.
 
 Loyihamiz branchlar ro'yxati, bu yerda main branch default branch hisoblanadi. 
-![gitlab-ci](/images/tutorials/ci-cd/gitlabci-release-integrations/gitlab3.png)
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlabci-release-integrations/gitlab3.png)
 
 
 ## Gitlab CI
@@ -92,21 +92,21 @@ release_job:
 
 Keling loyihamizda **.gitlab-ci.yml** konfigiga shu **Gitlab CI** konfiguratsiyani qo'shib **main** branchga push qilamiz va bizda loyihamiz **main** branchiga o'tganimizda Gitlab CI pipeline ishlayotganini ko'rishimiz mumkin.
 
-![gitlab-ci](/images/tutorials/ci-cd/gitlabci-release-integrations/ci.png)
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlabci-release-integrations/ci.png)
 
 Repositoriyamizdan **-> Build -> Pipelines**ga o'tib jarayonni kuzatishimiz mumkin.
-![gitlab-ci](/images/tutorials/ci-cd/gitlabci-release-integrations/ci1.png)
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlabci-release-integrations/ci1.png)
 
-![gitlab-ci](/images/tutorials/ci-cd/gitlabci-release-integrations/ci4.png)
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlabci-release-integrations/ci4.png)
 
 Okeyyy bizda Gitlab Ci pipelinemiz muvaffiqiyatli ishga tushdi, keling loyihani versiyalab reliz chiqarganini ko'rib chiqamiz.
-![gitlab-ci](/images/tutorials/ci-cd/gitlabci-release-integrations/ci5.png)
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlabci-release-integrations/ci5.png)
 
 Repositoriyamizga o'tib **Release** bo'limiga o'tamiz.
-![gitlab-ci](/images/tutorials/ci-cd/gitlabci-release-integrations/gitlab5.png)
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlabci-release-integrations/gitlab5.png)
 
 **Release**ga kirganimizda loyihamizda bitta **v0.1** tag bilan reliz chiqganini ko'rishimiz mumkin.
-![gitlab-ci](/images/tutorials/ci-cd/gitlabci-release-integrations/gitlab6.png)
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlabci-release-integrations/gitlab6.png)
 
 Okeyy keling endi bu Gitlab CI pipelineni va vazifalarini ko'rib chiqamiz.
 
@@ -175,64 +175,64 @@ Tashkilotda loyihalarni samarali boshqarish va jamoa bilan ishlashni yaxshilash 
 Keling birinchi o'rinda **Discord** sozlab olamiz.
 Discord kirib **Add a Server** bosib Server yaratib olamiz
 
->![gitlab-ci](/images/tutorials/ci-cd/jenkins-docker/discord1.png)
+>![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/jenkins-docker/discord1.png)
 
->![gitlab-ci](/images/tutorials/ci-cd/jenkins-docker/discord2.png)
+>![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/jenkins-docker/discord2.png)
 
->![gitlab-ci](/images/tutorials/ci-cd/jenkins-docker/discord3.png)
+>![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/jenkins-docker/discord3.png)
 
 Serverga nom berib **Create** bosamiz.
 
->![gitlab-ci](/images/tutorials/ci-cd/jenkins-docker/discord4.png)
+>![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/jenkins-docker/discord4.png)
 
 Discord Server yaratib olganimzidan keyin Serverimizda channel yaratib olamiz. **Create Channel**
 
->![gitlab-ci](/images/tutorials/ci-cd/jenkins-docker/discord6.png)
+>![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/jenkins-docker/discord6.png)
 
 Channel nomini yozamiz masalan **merge-requests** -> **Create Channel**
-> ![gitlab-ci](/images/tutorials/ci-cd/gitlabci-release-integrations/discord.png)
+> ![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlabci-release-integrations/discord.png)
 
 Channel ochib olganimzidan keyin **Integrations** bo'limga kirib **Webhooks**dan **Create Webhook** bosamiz
-> ![gitlab-ci](/images/tutorials/ci-cd/gitlabci-release-integrations/discord2.png)
+> ![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlabci-release-integrations/discord2.png)
 
 **Webhook** yaratib olganimizdan keyin uni nusxalab **Copy Webhook URL** olib qo'yamiz va Gitlab **Discord Notification**da ishlatish  uchun olib qo'yamiz.
-> ![gitlab-ci](/images/tutorials/ci-cd/gitlabci-release-integrations/discord3.png)
+> ![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlabci-release-integrations/discord3.png)
 
 
 Discord Server ochib channellar ochib olganimizdan keyin Gitlabda Repositoriyamizga o'tamiz va 
 
 **-> Settings -> Integrations -> Discord Notifications** bo'limiga o'tamiz.
 
-![gitlab-ci](/images/tutorials/ci-cd/gitlabci-release-integrations/gitlab7.png)
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlabci-release-integrations/gitlab7.png)
  
 Integrations bo'limidan **Discord Notifications** bo'limiga o'tamiz va **Configure** bosib konfiguratsiya bo'limiga o'tamiz.
-![gitlab-ci](/images/tutorials/ci-cd/gitlabci-release-integrations/discord4.png)
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlabci-release-integrations/discord4.png)
 
 Bu qismda Discord serverimizda yaratib olgan **Webhook**ni qo'shib qo'yamiz.
-![gitlab-ci](/images/tutorials/ci-cd/gitlabci-release-integrations/discord5.png)
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlabci-release-integrations/discord5.png)
 
 **Trigger** qismidan o'zimizga keraklisini sozlab olamiz. Bu holda yaxshi amaliyot bu har bir event uchun alohida Discord channel ochib uni webhookini Triggerga qo'shib chiqish kerak, Masalan Discord Serverda Merge Requests, Issue, Deployment status kabi Discord channellar ochib olinadi va quyidagi Trigger bo'limida kerakli joylarga kerakli Discord channel webhook urllari qo'yib chiqiladi, shunda har bir event alohida Discord channelga keladi va ularni kuzatib manage qilish osonroq bo'ladi.
-![gitlab-ci](/images/tutorials/ci-cd/gitlabci-release-integrations/discord7.png)
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlabci-release-integrations/discord7.png)
 
 Bu qismda qaysi branchlar uchun notification kelishini belgilaymiz bu holda **All branches**. Konfiguratsiyani to'grilab chiqganimizdan keyin **Test settings** bosib konfiguratsiya ishlashini tekshirib olamiz.
-![gitlab-ci](/images/tutorials/ci-cd/gitlabci-release-integrations/discord6.png)
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlabci-release-integrations/discord6.png)
 
 Konfiguratsiyamiz to'gri bo'lsa bizga Discord channelimizga quyidagicha test Notification keladi.
-![gitlab-ci](/images/tutorials/ci-cd/gitlabci-release-integrations/discord8.png)
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlabci-release-integrations/discord8.png)
 
 Keling endi **main** branchdagi kodga o'zgartirish kiritib commit qilamiz, bu holda yani Release chiqishi va Discordga Notification kelishi kerak.
 
-![gitlab-ci](/images/tutorials/ci-cd/gitlabci-release-integrations/discord9.png)
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlabci-release-integrations/discord9.png)
 
 Okeyy biz Repositoriyamizni muvaffiqiyatli ravishda Discord bilan integratsiya qildik. 
 
 
 Email bilan integratsiya ham oddiy, o'zingizga moslab konfiguratsiya qilasiz va kimlarni emailiga notification yuborish kerakligi belgilanadi.
 
-![gitlab-ci](/images/tutorials/ci-cd/gitlabci-release-integrations/email.png)
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlabci-release-integrations/email.png)
 
 Emailga quyidagicha notification keladi.
-![gitlab-ci](/images/tutorials/ci-cd/gitlabci-release-integrations/email1.png)
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlabci-release-integrations/email1.png)
 
 
 ## Qo'shimcha

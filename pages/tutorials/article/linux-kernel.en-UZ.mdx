@@ -38,7 +38,7 @@ va boshqalar
 
 Oddiy operatsion tizim arxitekturasida (quyidagi rasmga tasvirlangan) operatsion tizim kerneli bir nechta ilovalar bilan xavfsiz va to'gri tarzda hardwarega kirish va almashish uchun javobgardir.
 
-![Tizim arxitekturasi](/images/article/os-kernel/1.png)
+![Tizim arxitekturasi](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/os-kernel/1.png)
 
 Kernel odatda "System Calls(Tizim qo'ng'iroqlari)" deb ataladigan ilovalar chiqaradigan API to'plamini taklif qiladi. Ushbu API'lar oddiy kutubxona API'laridan farq qiladi, chunki ular execution mode, user modedan kernel modega o'tish chegarasi hisoblanadi. Application(ilova) mosligini ta'minlash uchun system calllari kamdan-kam hollarda o'zgartiriladi. Linux, ayniqsa, buni amalga oshiradi (kerak bo'lganda o'zgarishi mumkin bo'lgan kernel API-laridan farqli o'laroq). Kernel kodining o'zi kernel kodida va qurilma drayverlari kodida logical(mantiqiy) ravishda ajratilishi mumkin. Asosiy kernel kodi umumiy bo'lsa, qurilma drayverlari kodi muayyan qurilmalarga kirish uchun javobgardir. Kernel yadrosi(core) yana bir nechta logical subsystem tizimlarga bo'linishi mumkin (masalan, fayllarga kirish, tarmoqqa ulanish, jarayonni boshqarish va boshqalar).
 
@@ -52,7 +52,7 @@ Bu sizning uyingiz uchun barcha boshqaruv elementlari - chiroqlar, harorat, qulf
 
 Monolit krernel - bu kernelning turli quyi tizimlari(subsystem) o'rtasida kirish himoyasi mavjud bo'lmagan va umumiy funksiyalarni turli subsystemlar o'rtasida bevosita chaqirish mumkin bo'lgan kerneldir.
 
-![Tizim arxitekturasi](/images/article/os-kernel/2.png)
+![Tizim arxitekturasi](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/os-kernel/2.png)
 
 Biroq, ko'pgina monolit kernellar subsytemlar o'rtasida, ayniqsa kernel coresi va qurilma drayverlari o'rtasida logical separation(mantiqiy ajratish)ni ta'minlaydi, ular bitta subsystem yoki qurilma drayverlari tomonidan taklif qilinadigan servicelarga kirish uchun ishlatilishi kerak bo'lgan nisbatan qat'iy API-larga ega (lekin o'rnatilgan bo'lishi shart emas).
 
@@ -66,7 +66,7 @@ Buni uyingizda yorug'lik, harorat va qulflar uchun turli xil boshqaruv panellari
 
 Mikro-kernel kernelning katta qismlari bir-biridan himoyalangan, odatda user spaceda xizmat ko'rsatadigan kerneldir. Kernelning muhim qismlari hozir foydalanuvchi rejimida(user mod) ishlayotganligi sababli, kernel rejimida(kernel mode) ishlaydigan qolgan kod sezilarli darajada kichikroq, shuning uchun mikro kernel atamasi ishlatiladi.
 
-![Tizim arxitekturasi](/images/article/os-kernel/3.png)
+![Tizim arxitekturasi](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/os-kernel/3.png)
 
 Mikro-kernel arxitekturasida kernel turli xil ishlaydigan jarayonlar o'rtasida xabar o'tishiga imkon beradigan yetarli kodni o'z ichiga oladi.
 Amalda bu kernelda scheduler(rejalashtiruvchi )va IPC mexanizmini, shuningdek ilovalar va servicelar o'rtasida himoyani o'rnatish uchun asosiy xotira boshqaruvini amalga oshirishni anglatadi. Ushbu arxitekturaning afzalliklaridan biri shundaki, servicelar izolyatsiya qilingan va shuning uchun bitta servicedagi xatolar boshqa servicelarga ta'sir qilmaydi. Shunday qilib, agar service ishlamay qolsa, biz butun tizimga ta'sir qilmasdan uni qayta ishga tushirishimiz mumkin.
@@ -110,7 +110,7 @@ Ham user space, ham kernel space bir xil virtual address spacega ega, ammo ular 
 
 User va kernel space o'rtasidagi bu bo'linish user-space processidagi xato yoki xavfsizlik buzilishi tizimni buzmasligi yoki kernelni buzmasligini ta'minlashga yordam beradi. Kernel butun tizim ustidan to'liq nazoratga ega, shuning uchun uni noto'g'ri user-space processlaridan himoya qilish juda muhimdir.
 
-![Tizim arxitekturasi](/images/article/os-kernel/4.png)
+![Tizim arxitekturasi](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/os-kernel/4.png)
 
 
 ### Execution contexts
@@ -184,7 +184,7 @@ Portativ kernelning mashhur namunalaridan biri bu Linux kerneli bo'lib, u asosiy
 
 ### Asymmetric MultiProcessing (ASMP)
 
-![Tizim arxitekturasi](/images/article/os-kernel/15.gif)
+![Tizim arxitekturasi](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/os-kernel/15.gif)
 
 Asymmetric MultiProcessing (ASMP) bu kernel tomonidan bir nechta protsessorlarni (corelarni) qo'llab-quvvatlash usuli bo'lib, bu yerda protsessor kernelga ajratilgan va boshqa barcha protsessorlar user space dasturlarini boshqaradi. Ushbu yondashuvning ojizligi shundaki, kernel o'tkazuvchanligi (masalan, system call, interrupt handling va h.k.) protsessorlar soniga mos kelmaydi va shuning uchun odatiy processlar tez-tez system callardan foydalanadi. Yondashuvning kengaytirilishi juda aniq tizimlar (masalan, ilmiy ilovalar) bilan cheklangan.
 
@@ -197,17 +197,17 @@ Misol uchun, bitta protsessor operatsion tizimni ishga tushirishga bag'ishlangan
 ASMP ko'p protsessorli tizimlarning oldingi kunlarida ko'proq qo'llanilgan, ammo bugungi tizimlar load balancingni yaxshilanganligi va barcha mavjud qayta ishlash quvvatlaridan yaxshiroq foydalanish tufayli odatda SMP ni afzal ko'radi. Biroq, ASMP mantiqiy bo'lgan ba'zi maxsus stsenariylar mavjud bo'lishi mumkin, masalan, aniq vazifalar uchun kafolatlangan qayta ishlash resurslari kerak bo'lgan real vaqt tizimlarida.
 
 
-![Tizim arxitekturasi](/images/article/os-kernel/5.png)
+![Tizim arxitekturasi](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/os-kernel/5.png)
 
 ### Symmetric MultiProcessing (SMP)
 
-![Tizim arxitekturasi](/images/article/os-kernel/16.png)
+![Tizim arxitekturasi](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/os-kernel/16.png)
 
 ASMP dan farqli o'laroq, SMP rejimida kerel user processlari kabi mavjud protsessorlarning har qandayida ishlashi mumkin. Ushbu yondashuvni amalga oshirish qiyinroq, chunki u kernelda poyga sharoitlarini yaratadi, agar ikkita process bir xil memory locationga kiradigan kernel funksiyalarini ishga tushirsa.
 
 SMP-ni qo'llab-quvvatlash uchun kernel faqat bitta protsessor muhim bo'limni bajarishini kafolatlash uchun sinxronizatsiya primitivlarini (masalan, spin locks) amalga oshirishi kerak.
 
-![Tizim arxitekturasi](/images/article/os-kernel/1.png)
+![Tizim arxitekturasi](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/os-kernel/1.png)
 
 Symmetric MultiProcessing (SMP)- bu kompyuter tizimidagi ikki yoki undan ortiq bir xil protsessorlar xotirani va I/O(input/output) bus yoki data pathni almashadigan qayta ishlash konfiguratsiyasining bir turi. Har bir protsessor resurslardan teng foydalanish huquqiga ega va ushbu vazifa uchun ma'lumotlar xotirada qayerda joylashganidan qat'i nazar, istalgan vazifani(task) bajarishi mumkin.
 
@@ -215,10 +215,10 @@ Buni restoran oshxonasidagi oshpazlar jamoasi kabi tasavvur qiling. Barcha oshpa
 
 SMP - bu bir vaqtning o'zida bir nechta foydalanuvchilarga veb-saytga xizmat ko'rsatish yoki grafiklarni ko'rsatish kabi kichikroq vazifalarga osongina bo'linadigan og'ir processing loadlarini yoki vazifalarni bajaradigan tizimlarning ishlashini yaxshilash usullaridan biridir. Bu ko'plab zamonaviy kompyuterlar, serverlardan consumer desktop va noutbuklar uchun, ayniqsa, multi-core(ko'p yadroli(core)) protsessorlarga ega bo'lganlar uchun odatiy sozlash.
 
-![Tizim arxitekturasi](/images/article/os-kernel/6.png)
+![Tizim arxitekturasi](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/os-kernel/6.png)
 
 
-![Tizim arxitekturasi](/images/article/os-kernel/18.jpg)
+![Tizim arxitekturasi](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/os-kernel/18.jpg)
 
 ### CPU Scalability
 
@@ -257,7 +257,7 @@ Shunday qilib, siz Internetni ko'rib chiqyapsizmi, hujjat yozyapsizmi yoki Linux
 
 ### Linux development model
 
-![Tizim arxitekturasi](/images/article/os-kernel/19.png)
+![Tizim arxitekturasi](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/os-kernel/19.png)
 
 Linux operatsion tizimi ko'pincha "Linux kernel development model" deb ataladigan ishlab chiqish modeliga amal qiladi. Bu open source loyihadir, ya'ni manba(source) kodi ommaga ochiq(public) va har kim unga hissa qo'shishi(contribute qilishi) mumkin. Biroq, bu jarayonni boshqaradigan ba'zi asosiy tamoyillar va rollar mavjud:
 
@@ -275,7 +275,7 @@ GPL Litsenziyasi: Linux kerneli GNU General Public License (GPL) ostida chiqaril
 
 Open Source va hamkorlikdagi rivojlanish modeli Linuxni kichik embedded qurilmalardan tortib yirik superkompyuterlargacha bo'lgan hamma narsada qo'llanilishiga olib keldi. Turli xil contributorlar va foydalanuvchilar uni doimiy ravishda rivojlantirish va takomillashtirishga yordam beradi.
 
-![Tizim arxitekturasi](/images/article/os-kernel/20.png)
+![Tizim arxitekturasi](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/os-kernel/20.png)
 
 ### Maintainer hierarchy
 
@@ -294,7 +294,7 @@ Ushbu ierarxiya Linux loyihasining keng ko'lamini boshqarishga yordam beradi, ha
 
 ## Linux manba kodining tartibi
 
-![Tizim arxitekturasi](/images/article/os-kernel/7.png)
+![Tizim arxitekturasi](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/os-kernel/7.png)
 
 Linux kernelining manba kodi har bir kernelning turli qismlarini o'z ichiga olgan ma'lum bir directory structureda tashkil etilgan. Bu yerda tartibning yuqori darajadagi umumiy ko'rinishi:
 
@@ -345,10 +345,10 @@ Linux kernelining manba kodi har bir kernelning turli qismlarini o'z ichiga olga
 
 #### Linux kerneli arxitekturasi
 
-![Tizim arxitekturasi](/images/article/os-kernel/8.png)
+![Tizim arxitekturasi](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/os-kernel/8.png)
 
 
-![Tizim arxitekturasi](/images/article/os-kernel/21.png)
+![Tizim arxitekturasi](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/os-kernel/21.png)
 
 ### arch
 
@@ -434,7 +434,7 @@ cgroup - bu processlarni ierarxik tarzda tashkil qilish va tizim resurslarini ie
 
 ### Memory management
 
-![Tizim arxitekturasi](/images/article/os-kernel/22.png)
+![Tizim arxitekturasi](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/os-kernel/22.png)
 
 Memory management deganda operatsion tizimda kompyuter xotirasi resurslarini tashkil qilish va boshqarish jarayoni tushuniladi. Bu xotirani dasturlarga ajratish, xotiraning qaysi qismlari ishlatilayotganligini kuzatish va kerak bo‘lmaganda xotirani ajratishni(allocating memory) o‘z ichiga oladi. Memory management dasturlarning muammosiz bajarilishini ta'minlash va ishdan chiqish yoki tizim sekinlashishi kabi xotira bilan bog'liq muammolarni oldini olish uchun mavjud xotiradan samarali va xavfsiz foydalanishni ta'minlaydi.
 
@@ -497,15 +497,15 @@ Block I/O managementi ma'lumotlarni samarali saqlash va qidirishda muhim rol o'y
 
 Linux Block I/O subsystemi qurilmalardan ma'lumotlarni o'qish va yozish bilan shug'ullanadi: blockli I/O requestlarini yaratish, blockli I/O requestlarini o'zgartirish (masalan, dasturiy ta'minot RAID yoki LVM uchun), so'rovlarni birlashtirish(merge request) va tartiblash(sorting) va ularni scheduling qilish qurilma drayverlarini blokirovka qilish uchun turli xil I/O schedulerlari.
 
-![Tizim arxitekturasi](/images/article/os-kernel/9.png)
+![Tizim arxitekturasi](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/os-kernel/9.png)
 
 ### Virtual Filesystem Switch
 
-![Tizim arxitekturasi](/images/article/os-kernel/23.jpg)
+![Tizim arxitekturasi](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/os-kernel/23.jpg)
 
 Virtual Filesystem Switch (VFS) Linux kernelidagi software layer bo'lib, u turli fayl tizimlari bilan o'zaro ishlash uchun yagona interfeysni ta'minlaydi. U abstraction layer vazifasini bajarib, applicationlar va kernelga turli fayl tizimlari bilan izchil ishlash imkonini beradi.
 
-![Tizim arxitekturasi](/images/article/os-kernel/24.png)
+![Tizim arxitekturasi](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/os-kernel/24.png)
 
 Oddiy qilib aytganda, VFS ni turli tillar orasidagi tarjimon yoki vositachi bilan solishtirish mumkin:
 
@@ -536,7 +536,7 @@ Linux Virtual Filesystem Switch fayl tizimi drayverlarini takrorlashni kamaytiri
 * `file` - ochilgan faylning xususiyatlarini tavsiflaydi (masalan, fayl ko'rsatkichi)
 * `superblock` - formatlangan fayl tizimining xususiyatlarini tavsiflaydi (masalan, bloklar soni, blok hajmi, diskdagi root directorining joylashuvi, shifrlash va boshqalar).
 
-![Tizim arxitekturasi](/images/article/os-kernel/10.png)
+![Tizim arxitekturasi](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/os-kernel/10.png)
 
 Linux VFS shuningdek, quyidagilarni o'z ichiga olgan murakkab keshlash mexanizmini amalga oshiradi:
 
@@ -560,7 +560,7 @@ Linux VFS shuningdek, quyidagilarni o'z ichiga olgan murakkab keshlash mexanizmi
 
 ### Networking stack
 
-![Tizim arxitekturasi](/images/article/os-kernel/11.png)
+![Tizim arxitekturasi](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/os-kernel/11.png)
 
 Networking stack - bu tarmoq orqali qurilmalar o'rtasida aloqa o'rnatishga imkon beruvchi dasturiy ta'minot protokollari va komponentlar to'plami. U ma'lumotlarni jo'natish va qabul qilish jarayonini tashkil qiladi, axborotni samarali uzatish va qabul qilishni ta'minlaydi.
 
@@ -587,7 +587,7 @@ Application Layeri muayyan tarmoq applicationlarining bir-biri bilan aloqa qilis
 
 Amaliy ma'noda, networking stacki qurilmalarga tarmoqlar orqali ulanish va bir-biri bilan muloqot qilish imkonini beradi. U qurilmalar oʻrtasida maʼlumotlar uzatishni boshqarish, maʼlumotlar yaxlitligi va ishonchli yetkazib berishni taʼminlash orqali internetni koʻrish, fayllarni almashish, video oqim va onlayn oʻyinlar kabi faoliyatni osonlashtiradi.
 
-![Tizim arxitekturasi](/images/article/os-kernel/12.png)
+![Tizim arxitekturasi](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/os-kernel/12.png)
 
 ## Linux Security Modules
 
@@ -605,13 +605,13 @@ Mana bir nechta diqqatga sazovor misollar:
 
 #### Security Enhanced Linux (SELinux)
 
-![Tizim arxitekturasi](/images/article/os-kernel/13.jpg)
+![Tizim arxitekturasi](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/os-kernel/13.jpg)
 
 SELinux keng qoʻllaniladigan security extensioni boʻlib, mandatory access control (MAC) policelarini amalga oshiradi. U processlarga, fayllarga va tarmoq resurslariga tayinlangan security labellariga asoslangan fine-grained access controlini amalga oshiradi.
 
 #### AppArmor
 
-![Tizim arxitekturasi](/images/article/os-kernel/14.png)
+![Tizim arxitekturasi](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/os-kernel/14.png)
 
 AppArmor - bu  application-leveldagi xavfsizlikka qaratilgan yana bir mashhur security extension. U LSM dan individual applicationlar uchun xavfsizlik profillarini aniqlash va joriy qilish, ularning resurslarga kirishini cheklash va xavfsizlikning mumkin bo'lgan zaifliklarining ta'sirini kamaytirish uchun foydalanadi.
 

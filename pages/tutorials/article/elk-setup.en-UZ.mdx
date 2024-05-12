@@ -2,7 +2,7 @@ import { Callout } from "nextra-theme-docs";
 
 # ELK Stack Cluster o'rnatish va sozlash
 
-![elk-setup](public/images/article/elk-setup/banner.png)
+![elk-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-setup/banner.png)
 
 Oldingi [**ELK Stackga kirish**](https://devops-journey.uz/tutorials/article/elk-stack) mavzusida biz ELK nimaga ishlatilishi uning arxitekturasi va componentlari, qanday ishlashini ko'rib chiqgan edik. Bugungi amaliyotimizda biz **ELK stack Cluster** sozlashni ko'rib chiqamiz.
 <Callout type="info" emoji="">
@@ -17,7 +17,7 @@ Ushbu amaliyotda biz kichik ELK stack cluster o'rnatib sozlaymiz. ELK stack uchu
 
 Bugungi amaliyotda rasmda ko'rsatilgan ELK clusterni o'rnatib sozlaymiz.
 
-![elk-setup](public/images/article/elk-setup/architecture.png)
+![elk-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-setup/architecture.png)
 ## Ishni boshlash
 
 Ushbu amaliyotni amalga oshirish uchun bizga quyidagi minimum server talablaridagi server kerak bo'ladi.
@@ -32,7 +32,7 @@ Ushbu amaliyotni amalga oshirish uchun bizga quyidagi minimum server talablarida
 |  logstash   | Ubuntu 20.04  | 16GB           | 2vCPU,1 core  | 50GB         | 10.128.0.11 |
 |  app-server | Ubuntu 20.04  | 16GB           | 2vCPU,1 core  | 50GB         | 10.128.0.12 |
 
-![elk-setup](public/images/article/elk-setup/vm.png)
+![elk-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-setup/vm.png)
 </Callout>
 
 ## Elasticsearch o'rnatish
@@ -116,14 +116,14 @@ Elasticsearchni ishga tushiramiz va statusini ko'ramiz.
 sudo systemctl start elasticsearch.service
 sudo systemctl status elasticsearch.service
 ```
-![elk-setup](public/images/article/elk-setup/systemd.png)
+![elk-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-setup/systemd.png)
 
 Keling resurs ishlatilishini ko'ramiz.
 
 ```bash
 htop
 ```
-![elk-setup](public/images/article/elk-setup/htop.png)
+![elk-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-setup/htop.png)
 
 hahaaa resurs RAM usage 8.53GB ))
 
@@ -133,7 +133,7 @@ hahaaa resurs RAM usage 8.53GB ))
 curl -X GET "10.128.0.9:9200"
 ```
 
-![elk-setup](public/images/article/elk-setup/curl.png)
+![elk-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-setup/curl.png)
 Sizda yuqoridagidek natija chiqsa Elasticsearch ishlamoqda.
 
 ## Kibana o'rnatish
@@ -185,7 +185,7 @@ Kibanani ishga tushiramiz va statusini ko'ramiz.
 sudo systemctl start kibana.service
 sudo systemctl status kibana.service
 ```
-![elk-setup](public/images/article/elk-setup/systemd1.png)
+![elk-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-setup/systemd1.png)
 
 **3->** Kibananini o'rnatib olganimizdan keyin tashqaridan brauzer orqali kirish uchun `/etc/kibana/kibana.yml`ni konfiguratsiya qilishimiz kerak va Elasticsearchga ulana olishi uchun `elasticsearch.hosts`ga elasticsearch hostni belgilashimiz kerak.
 
@@ -212,10 +212,10 @@ sudo systemctl restart kibana.service
 
 **4->** Kibana default `:5601` portda ishlaydi brauzerdan server IP adresi va `:5601` portga kirsak bizda Kibana dashboard ochilishi kerak.
 
-![elk-setup](public/images/article/elk-setup/kibana.png)
+![elk-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-setup/kibana.png)
 
 Kibana dashboard statusini `:5601/status` pageda ko'rish mumkin.
-![elk-setup](public/images/article/elk-setup/kibana-status.png)
+![elk-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-setup/kibana-status.png)
 
 ## Logstash o'rnatish
 
@@ -249,7 +249,7 @@ Logstashni o'rnatib bo'lganingizdan keyin sozlashga o'tishingiz mumkin. Logstash
 
 Logstashni ma'lumotlarni bir tomondan qabul qiladigan, u yoki bu tarzda qayta ishlab belgilangan joyga jo'natadigan pipeline deb tassavur qilsangiz bo'ladi. Logstash asosiy elementlari ikkita `input` va `output` qo'shimcha `filter`. `input` plaginlari manbadan ma'lumotlarni oladi, `filter` plaginlarini uni qayta ishlaydi va `output` plaginlari esa ma'lumotlarni belgilangan joyga yuboradi.
 
-![elk-setup](public/images/article/elk-setup/logstash.png)
+![elk-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-setup/logstash.png)
 
 **2->** `02-beats-input.conf` nomli Filebeat inputni o'rnatadigan konfiguratsiya faylini yaratib olamiz.
 
@@ -519,25 +519,25 @@ Agar sizning natijangiz 0 jami hitsni ko'rsatsa, Elasticsearch siz qidirgan inde
 
 Kibana serveringiz IP manzili `:5601` portiga brauzer orqali kirganingizda sizda Kibananing asosiy sahifasi ochilishi kerak.
 
-![elk-setup](public/images/article/elk-setup/kibana3.png)
+![elk-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-setup/kibana3.png)
 
 Kibana Dashboardan chap tomondagi bo'limga o'tib **Discover** bo'limiga o'tsak bizda **"filebeat-*"** ochilishi kerak.
 
-![elk-setup](public/images/article/elk-setup/kibana1.png)
+![elk-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-setup/kibana1.png)
 
-![elk-setup](public/images/article/elk-setup/kibana2.png)
+![elk-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-setup/kibana2.png)
 
 **Dashboard** bo'limga o'tib Filebeat system module uchun dashboardlarni qdirib ularni ko'rib chiqishimiz mumkin.
 
-![elk-setup](public/images/article/elk-setup/syslog.png)
+![elk-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-setup/syslog.png)
 
 Ushbu Dashboardlardan syslogni analiz qilishingiz mumkin.
 
 **[Filebeat System] Syslog dashboard ECS**
-![elk-setup](public/images/article/elk-setup/syslog1.png)
+![elk-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-setup/syslog1.png)
 
 **[[Filebeat System] SSH login attempts ECS**
-![elk-setup](public/images/article/elk-setup/syslog2.png)
+![elk-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-setup/syslog2.png)
 
 Biz hozir ELK stack bilan  `app-server`(10.128.0.12) serverimizga Filebeat o'rnatib system moduledan foydalanib serverimiz loglarini analiz qilishni ko'rib chiqdik. Lekin app-serverimizni to'liq analiz qilishimiz va monitoring qilishimiz uchun asosiy **Beats**larni o'rnatamiz. Betaslarni analiz va monitoing qilmoqchi bo'lgan serverlarimizga o'rnatamiz.
 
@@ -606,22 +606,22 @@ sudo service metricbeat status
 
 **5->** Kibana Dashboardga o'tib Metricbeat dashboardlarini qidirib modullari bo'yicha ko'rib chishishimiz mumkin.
 
-![elk-setup](public/images/article/elk-setup/metric-kibana.png)
-![elk-setup](public/images/article/elk-setup/metric-kibana2.png)
+![elk-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-setup/metric-kibana.png)
+![elk-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-setup/metric-kibana2.png)
 
 system module uchun Kibana Dashboardlar
 
 **[Metricbeat System] Overview ECS**
-![elk-setup](public/images/article/elk-setup/metric-dashboard.png)
+![elk-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-setup/metric-dashboard.png)
 
 **[[Metricbeat System] Host overview ECS**
-![elk-setup](public/images/article/elk-setup/metric-dashboard2.png)
+![elk-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-setup/metric-dashboard2.png)
 
 **Observability** bo'limga kirib ham ko'rishimiz mumkin
-![elk-setup](public/images/article/elk-setup/obs.png)
+![elk-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-setup/obs.png)
 
-![elk-setup](public/images/article/elk-setup/obs1.png)
-![elk-setup](public/images/article/elk-setup/obs2.png)
+![elk-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-setup/obs1.png)
+![elk-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-setup/obs2.png)
 
 
 ## Auditbeat o'rnatish va sozlash
@@ -669,10 +669,10 @@ sudo service auditbeat status
 
 **5->** Kibana Dashboardga o'tib Auditbeat dashboardlarini ko'rib chishishimiz mumkin.
 
-![elk-setup](public/images/article/elk-setup/auditbeat1.png)
+![elk-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-setup/auditbeat1.png)
 
 **[Auditbeat Auditd] Overview ECS**
-![elk-setup](public/images/article/elk-setup/auditbeat.png)
+![elk-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-setup/auditbeat.png)
 
 
 ## Packetbeat o'rnatish va sozlash
@@ -744,9 +744,9 @@ sudo service packetbeat status
 
 **6->** Kibana Dashboardga o'tib Packetbeat dashboardlarini ko'rib chishishimiz mumkin.
 
-![elk-setup](public/images/article/elk-setup/packetbeat-dash.png)
+![elk-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-setup/packetbeat-dash.png)
 
 **[Packetbeat] Overview ECS**
-![elk-setup](public/images/article/elk-setup/packetbeat-dash1.png)
+![elk-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-setup/packetbeat-dash1.png)
 **[Packetbeat] Flows ECS**
-![elk-setup](public/images/article/elk-setup/packetbeat-dash2.png)
+![elk-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-setup/packetbeat-dash2.png)

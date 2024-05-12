@@ -2,7 +2,7 @@ import { Callout } from "nextra-theme-docs";
 
 # Kubernetesga Cert-Manager o'rnatish va sozlash
 
-![cert-manager](/images/tutorials/k8s/cert-manager/banner.png)
+![cert-manager](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/cert-manager/banner.png)
 
 ## Kirish
 
@@ -50,12 +50,12 @@ helm install \
   --create-namespace \
   --version v1.13.3 \
 ```
-![cert-manager](/images/tutorials/k8s/cert-manager/cert1.png)
+![cert-manager](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/cert-manager/cert1.png)
 **3->** Statusni tekshiramiz.
 ```bash
 kubectl get all -n cert-manager
 ```
-![cert-manager](/images/tutorials/k8s/cert-manager/cert2.png)
+![cert-manager](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/cert-manager/cert2.png)
 
 **4->** Cert-Managerni o'rnatib olganimizdan keyin **cluster issuer** yaratib sozlab olishimiz kerak. Buning uchun certmanager papka ochib `clusterissuer.yaml` fayl ochib konfiguratsiya yozamiz.
 
@@ -94,13 +94,13 @@ kubectl apply -f clusterissuer.yaml
 kubectl get secret -n cert-manager
 ```
 
-![cert-manager](/images/tutorials/k8s/cert-manager/cert3.png)
+![cert-manager](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/cert-manager/cert3.png)
 
 ## Amaliyot
 
 Kubernetes clusterimizga Cert-Manager o'rnatib clusterissuer solzab olganimizdan keyin uni sinab ko'rish uchun amaliyot qilamiz. Amaliyot uchun **kubeview** nomli loyihani tanladik. **kubeview** kubernetes clusterni vizaulatsiya qilish dasturidir ushbu amaliyotda kubernetes clusterimizga kubeview o'rnatamiz Cert-Manager orqali sertifikat olib NGINX Ingress Controller orqali expose qilamiz.
 
-![cert-manager](/images/tutorials/k8s/cert-manager/kubeview.png)
+![cert-manager](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/cert-manager/kubeview.png)
 
 **1->** Kubernetes clusterimizga helm orqali kubeview o'rnatamiz.
 
@@ -115,11 +115,11 @@ helm install kubeview kubeview/kubeview --namespace kubeview --create-namespace
 ```bash
 kubectl get all -n kubeview
 ```
-![cert-manager](/images/tutorials/k8s/cert-manager/cert4.png)
+![cert-manager](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/cert-manager/cert4.png)
 
 **3->** DNS hostimizdan domenimizga kubernetes clusterimiz static IP'sini berib domen qo'shib olamiz ushbu misolda **kubeview.xilol.uz**
 Rasmda ahost misoli ko'rsatilgan **xilol.uz** mavjud va **DNS Xosting** bo'limidan **kubeview** subdomen qo'shyapmiz. **0.0.0.0** o'rniga k8s-matser serveringiz static IP manzilini qo'shamiz.
-![cert-manager](/images/tutorials/k8s/cert-manager/dns.png)
+![cert-manager](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/cert-manager/dns.png)
 
 **4->** ClusterIssuerdan va NGINX Ingress Controllerdan foydalanib expose qilamiz. `kubeview` nomli papka ochib `kubeview-ingress.yaml` fayl ochib configuratsiya qilamiz.
 
@@ -166,11 +166,11 @@ kubectl apply -f kubeview-ingress.yaml
 
 Konfiguratsiyamizni ishga tushirib biroz vaqt o'tganidan keyin **kubeview.xilo.uz** domeniga brauzer orqali kirganimizdan  u **https** bilan ochilishi va **SSL** sertifikati bo'lishi kerak.
 
-![cert-manager](/images/tutorials/k8s/cert-manager/cert5.png)
+![cert-manager](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/cert-manager/cert5.png)
 
 Sertifikatni tekshirib ko'rishimiz mumkin.
 
-![cert-manager](/images/tutorials/k8s/cert-manager/cert6.png)
+![cert-manager](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/cert-manager/cert6.png)
 
 Nihoyat biz Kubernetes clusterimizga muvaffaqiyatli Cert-Manager o'rnatdik va ishlashga tayyor qilib sozladik va amaliyot ham qildik.
 

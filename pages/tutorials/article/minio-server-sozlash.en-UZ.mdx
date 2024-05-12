@@ -2,7 +2,7 @@ import { Callout } from "nextra-theme-docs";
 
 # Minio bilan Object Storage Server sozlash
 
-![minio-server-sozlash](/images/article/minio-server/banner.png)
+![minio-server-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/minio-server/banner.png)
 
 ## Kirish
 
@@ -163,7 +163,7 @@ Server o'chib yonganda Minio service avtomatik ishga tushmnaydi shuning uchun av
 sudo systemctl enable minio.service
 ```
 
-![minio-server-sozlash](/images/article/minio-server/minio1.png)
+![minio-server-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/minio-server/minio1.png)
 
 ```txt
 Feb 15 12:45:27 devops minio[19390]: MinIO Object Storage Server
@@ -182,15 +182,15 @@ Quyida applicationlar bo'glanishi uchun S3 API va Console ko'rsatilgan. Applicat
 
 **6->** Minio Console boshqaruv paneliga kirish uchun o'zingizga qulay brauzerdan serveringiz public IPsi va `9001` portga kirsangiz sizda Minio Console ochilishi kerak.
 
-![minio-server-sozlash](/images/article/minio-server/minio2.png)
-![minio-server-sozlash](/images/article/minio-server/mino3.png)
+![minio-server-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/minio-server/minio2.png)
+![minio-server-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/minio-server/mino3.png)
 
 Okey biz Minioni muvaffaqiyatli o'rnatib oldik keling birorta bucket ochib fayl yuklab ko'ramiz. Bucket ochayotganimizda **Versioning**ni yoqib qo'yish maslahat beriladi.
 
-![minio-server-sozlash](/images/article/minio-server/minio4.png)
+![minio-server-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/minio-server/minio4.png)
 
 Qo'shimcha sozlashlarni bucket Settingidan sozlab olasiz. Bucketni private yoki public qilish va qo'shimcha sozlamalarni o'z ichiga oladi.
-![minio-server-sozlash](/images/article/minio-server/minio6.png)
+![minio-server-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/minio-server/minio6.png)
 
 ### Minioga domen ulash.
 
@@ -241,7 +241,7 @@ sudo ln -s /etc/nginx/sites-available/minio-api.xilol.uz /etc/nginx/sites-enable
 
 DNS domen hostimizdan domenimizga subdomen qo'shib serverimiz static public IPsini bo'glaymiz. Rasmda Ahostdan namuna. `0.0.0.0 `o'rniga serveringiz static IP manzilini yozing.
 
-![minio-server-sozlash](/images/article/minio-server/ahost.png)
+![minio-server-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/minio-server/ahost.png)
 
 **5->** DNS dan domenni ulaganimzidan keyin cerbot orqali **Let's Encrypt** SSL sertifikat olamiz.
 
@@ -250,26 +250,26 @@ sudo certbot --nginx -d minio-api.xilol.uz
 ```
 
 Siz buni quyidagicha amalga oshirasiz **teshmat@gmail.com** o'rniga ishlaydigan o'zingizning emailingizni yozing.
-![minio-server-sozlash](/images/article/minio-server/server.png)
-![minio-server-sozlash](/images/article/minio-server/server1.png)
+![minio-server-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/minio-server/server.png)
+![minio-server-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/minio-server/server1.png)
 
 **6->** Okey hammasi yaxshi keling endi Minio S3 API ni test qilib ishlatib ko'ramiz. Buning uchun Minio Console UIdan birorta bucket ochib uni public qilamiz va birorta rasm yuklaymiz bucketimizga uni URL manzilini olib birorta brauzerdan kirib ko'rsak shu rasmni berilgan domen va path orqali ochishi kerak.
 
 Keling **storage** nomli bucket yaratib olib uni public qilamiz.
 
-![minio-server-sozlash](/images/article/minio-server/minio4.png)
+![minio-server-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/minio-server/minio4.png)
 
 Bucketimiz settingidan **Access Policy**ni **public** qilib qo'yamiz bu shunchaki test uchun.
 
-![minio-server-sozlash](/images/article/minio-server/minio7.png)
+![minio-server-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/minio-server/minio7.png)
 
 Endi esa bucketimizga kirib birorta rasm yuklaymiz.
 
-![minio-server-sozlash](/images/article/minio-server/minio8.png)
+![minio-server-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/minio-server/minio8.png)
 
 Okey men **storage** nomli backuetimga **bmw-m4.jpg** nomli rasm faylni yukladim  menda bu file URL **/storage/bmw-m4.jpg** bo'ladi. Bu holda Minio S3 API miz domenini ham bo'glaganimzida quyidagi URL bo'ladi [minio-api.xilol.uz/storage/bmw-m4.jpg](https://minio-api.xilol.uz/storage/bmw-m4.jpg). Okey keling shu URLga birorta brauzer orqali kiraylik.
 
-![minio-server-sozlash](/images/article/minio-server/image.png)
+![minio-server-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/minio-server/image.png)
 
 Okeey hammasi zo'r biz Minio S3 API ga muvaffaqiyatli domen ulab uni test ham qilib ko'rdik.
 
@@ -309,7 +309,7 @@ sudo certbot --nginx -d minio-ui.xilol.uz
 
 Hammasini yakunlaganimizdan keyin [minio-ui.xilol.uz](https://minio-ui.xilol.uz/) domeniga brauzerdan kirganimizda `https` bilan Minio Console UI ochilishi kerak. SSL sertifikat olib Chrome brauzerdan kirsa SSLni sezishi biroz vaqt oladi ya'ni SSL yo'q deb turadi. Firefox ancha tezkor ishlaydi.
 
-![minio-server-sozlash](/images/article/minio-server/server2.png)
+![minio-server-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/minio-server/server2.png)
 
 Uhh nihoyat biz barchasini muvaffaqiyat yakunladik. Biz minioni binary holatda o'rnatdik va SystemD orqali bosghqarish uchun service konfiguratsiya qilidik  va Minio qo'shimcha sozlamalar uchun konfig yaratib  minio fayllarni saqlash joyini **/mnt/data**ga bog'ladik. Minio S3 API va Minio Console UIga Nginx konfiguratsiya qilib domen ulab cerbot orqali SSL sertifikat olib ishga tushirdik.
 

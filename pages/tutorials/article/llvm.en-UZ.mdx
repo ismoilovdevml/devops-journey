@@ -2,7 +2,7 @@ import { Callout } from "nextra-theme-docs";
 
 # LLVM Arxitekturasi
 
-![Tizim arxitekturasi](/images/article/llvm/1.png)
+![Tizim arxitekturasi](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/llvm/1.png)
 
 
 <Callout type="info" emoji="">
@@ -14,7 +14,7 @@ LLVM — kompilyator va toolchain texnologiyalari boʻlib, har qanday dasturlash
 LLVM C++ tilida yozilgan va compile-time, link-time, run-time va idle-time optimallashtirish uchun mo'ljallangan.
 Dastlab C va C++ uchun tatbiq etilgan LLVMning language-agnostic dizayni oʻshandan beri turli xil frontendlarni yaratdi: LLVM dan foydalanadigan (yoki bevosita LLVM dan foydalanmaydigan, lekin kompilyatsiya qilingan dasturlarni LLVM IR sifatida yarata oladigan) kompilyatorli tillar ActionScript, Ada, C#, Common Lisp, PicoLisp, Crystal, CUDA, D, Delphi, Dylan, Forth, Fortran, Free Basic, Free Pascal, Graphical G, Halide, Haskell, Java bytecode, Julia, Kotlin, Lua, Objective-C, OpenCL, PostgreSQL SQL va PLpgSQL, Ruby, Rust, Scala, Swift, XC, Xojo va Zig.
 
-![Tizim arxitekturasi](/images/article/llvm/2.jpeg)
+![Tizim arxitekturasi](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/llvm/2.jpeg)
 
 ## Tarixi
 
@@ -44,15 +44,15 @@ LLVM JIT kompilyatori runtimeda dasturdan keraksiz statik tarmoqlarni optimallas
 
 #### 1. An'anaviy two-pass kompilyator
 
-![Tizim arxitekturasi](/images/article/llvm/3.png)
+![Tizim arxitekturasi](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/llvm/3.png)
 
 #### 2. LLVM GCC 4
 
-![Tizim arxitekturasi](/images/article/llvm/4.png)
+![Tizim arxitekturasi](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/llvm/4.png)
 
 #### 3.LLVM Optimizer 
 
-![Tizim arxitekturasi](/images/article/llvm/5.png)
+![Tizim arxitekturasi](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/llvm/5.png)
 
 
 ## Front end
@@ -65,9 +65,9 @@ LLVM ga bo'lgan keng qiziqish turli tillar uchun yangi frontendlarni ishlab chiq
 
 Utrecht Haskell kompilyatori LLVM uchun kod yaratishi mumkin. Generator rivojlanishning dastlabki bosqichida bo'lsa-da, ko'p hollarda u C kod generatoriga qaraganda samaraliroq bo'lgan. LLVM-dan foydalangan holda Glasgow Haskell Compiler (GHC) backend mavjud bo'lib, u GHC yoki C kodini yaratish orqali kompilyatsiya qilish va undan keyin kompilyatsiya qilish orqali mahalliy kodga nisbatan kompilyatsiya qilingan kodni 30% ga tezlashtiradi.
 
-![Tizim arxitekturasi](/images/article/llvm/6.png)
+![Tizim arxitekturasi](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/llvm/6.png)
 
-![Tizim arxitekturasi](/images/article/llvm/7.png)
+![Tizim arxitekturasi](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/llvm/7.png)
 
 ## Intermediate Representation - IR
 
@@ -88,9 +88,9 @@ entry:
 
 Amaldagi ko'plab turli konventsiyalar va turli maqsadlar tomonidan taqdim etilgan xususiyatlar LLVM haqiqatan ham maqsadli mustaqil IR ishlab chiqara olmasligini va ba'zi belgilangan qoidalarni buzmasdan uni qayta yo'naltira olmasligini anglatadi. Texnik Hujjatlarda aniq aytib o'tilganidan tashqari target dependence misollarini 2011 yilda onlayn distribution uchun mo'ljallangan LLVM IR ning to'liq target-independent varianti bo'lgan "wordcode" bo'yicha taklifda topish mumkin. LLVM loyihasi shuningdek, Dialect nomli plagin arxitekturasidan foydalangan holda qayta foydalanish mumkin va kengaytiriladigan kompilyator infratuzilmasini yaratishga yordam beruvchi `MLIR` nomli intermediate representationning yana bir turini taqdim etadi. Bu optimallashtirish jarayonida dastur strukturasi haqida yuqori darajadagi ma'lumotlardan, shu jumladan polyhedral kompilyatsiyadan foydalanish imkonini beradi.
 
-![Tizim arxitekturasi](/images/article/llvm/8.png)
+![Tizim arxitekturasi](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/llvm/8.png)
 
-![Tizim arxitekturasi](/images/article/llvm/9.png)
+![Tizim arxitekturasi](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/llvm/9.png)
 
 ## Backend
 
@@ -104,7 +104,7 @@ LLVM machine code (MC) kichik loyihasi matnli shakllar va mashina kodi o'rtasida
 
 Ilgari, LLVM assemblerni mashina kodiga tarjima qilish uchun tizim assembleriga yoki toolchaini tomonidan taqdim etilganiga tayangan. LLVM MC ning integratsiyalashgan assembleri IA-32, x86-64, ARM va ARM64 kabi ko'pgina LLVM maqsadlarini qo'llab-quvvatlaydi. Ba'zi maqsadlar uchun, jumladan, turli MIPS instructionlar to'plamlari uchun, integratsiyalashgan assembly yordami foydalanish mumkin, lekin hali ham beta bosqichida.
 
-![Tizim arxitekturasi](/images/article/llvm/10.png)
+![Tizim arxitekturasi](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/llvm/10.png)
 
 
 ## Linker - Bo'glovchi
@@ -124,13 +124,13 @@ Bu ko'p burchakli model yordamida cache-localityni optimallashtirish to'plamini,
 
 Polyhedral model (polytope metodi deb ham ataladi) juda ko'p sonli operatsiyalarni bajaradigan dasturlar uchun matematik framework bo'lib, aniq sanab o'tish uchun juda katta, shuning uchun ixcham tasvirni talab qiladi. Ichki sikl dasturlari odatiy, ammo yagona misol emas va modelning eng keng tarqalgan qo'llanilishi dasturni optimallashtirishda loop nest optimallashtirish uchundir.
 
-![Tizim arxitekturasi](/images/article/llvm/11.png)
+![Tizim arxitekturasi](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/llvm/11.png)
 
 ## Debugger
 
 LLDB Debugger (LLDB) LLVM loyihasining debugger komponentidir. U qayta foydalanish mumkin bo'lgan komponentlar to'plami sifatida yaratilgan bo'lib, ular LLVM ning Clang expression parse va LLVM disassembleri kabi mavjud kutubxonalaridan keng foydalanadi. LLDB Illinois universiteti/NCSA open-source litsenziyasi ostidagi bepul va open-source dasturiy ta'minot bo'lib, BSD uslubidagi ruxsat beruvchi dasturiy ta'minot litsenziyasiga kiradi. LLDB C, Objective-C va C++ tillarida yozilgan dasturlarni debuggingni qo'llab-quvvatlaydi. Swift hamjamiyati tilni qo'llab-quvvatlaydigan versiyani qo'llab-quvvatlaydi.U macOS, Linux, FreeBSD, NetBSD va Windowsda ishlashi maʼlum va i386, x86-64 va ARM instructionlar toʻplamini qoʻllab-quvvatlaydi. LLDB Xcode 5 va undan keyingi versiyalar uchun standart debuggerdir. Android Studio debug uchun LLDB dan ham foydalanadi. LLDB boshqa IDE-lardan, jumladan Visual Studio Code, C++ Builder, Eclipse, va CLion-dan foydalanish mumkin.
 
-![Tizim arxitekturasi](/images/article/llvm/12.png)
+![Tizim arxitekturasi](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/llvm/12.png)
 
 ## C standart kutubxonasi
 

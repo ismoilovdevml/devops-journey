@@ -2,7 +2,7 @@ import { Callout } from "nextra-theme-docs";
 
 # Serverlarni monitoring qilish yoxud Grafana/Prometheus Stack
 
-![monitoring](/images/article/monitoring/banner.png)
+![monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/monitoring/banner.png)
 
 
 Aksariyat sysadminlar o'z serverlari qanday ishlashi haqida to'liq ma'lumotga ega bo'lishni xohlashadi. Server protsessorlari, xotirasi va I/O statistikasining ko'rinishi ularga muammolarni yuzaga kelishidan oldin aniqlash va ajratishga yordam beradi. Prometheus client nodelaridan foydali statistik ma'lumotlarni yig'ish uchun robust node monitoringi yechimini taklif etadi. Grafana vizualizatsiya yechimi bilan birgalikda Prometheus foydalanuvchilarga serverning asosiy statistikasini vizual kuzatish imkonini beradi.
@@ -192,11 +192,11 @@ sudo systemctl status prometheus
 ```
 **7->** Prometheus veb-interfeysi va dashboardga `http://ip_address:9090` orqali kiring. `ip_address` ni monitoring serverining IP manzili bilan almashtiring. Prometheus standart konfiguratsiya faylidan foydalanganligi sababli, u hali ko'p ma'lumotlarni ko'rsatmaydi.
 
-![monitoring](/images/article/monitoring/2.png)
+![monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/monitoring/2.png)
 
 **8->** Standart `prometheus.yml` fayli local hostni o'chirish uchun direktivani o'z ichiga oladi. Barcha `Target`larni ro'yxatga olish uchun `Status` va `Targets`-ni bosing. Prometheus local Prometheus serviceni yagona target sifatida ko'rsatishi kerak.
 
-![monitoring](/images/article/monitoring/3.png)
+![monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/monitoring/3.png)
 
 
 ## Node Exporter-ni o'ratish va sozlash
@@ -281,7 +281,7 @@ sudo systemctl status node_exporter
 
 **11->** Client nodedagi `9100` portiga kirish uchun veb-brauzerdan foydalaning, masalan, http://ip_addres:9100. `Node Exporter` deb nomlangan sahifa `Metrics`ni o'qish havolasi bilan birga ko'rsatiladi. Metricalar havolasini bosing va statistik ma'lumotlar yig'ilayotganini tasdiqlang. Turli statistik ma'lumotlarning batafsil tushun tirishlari uchun [Node Exporter texnik hujjatlariga](https://prometheus.io/docs/guides/node-exporter/) qarang.
 
-![monitoring](/images/article/monitoring/4.png)
+![monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/monitoring/4.png)
 
 ## Client Nodelarini kuzatish uchun Prometheusni sozlash.
 
@@ -330,7 +330,7 @@ sudo systemctl restart prometheus
 
 **4->** Veb-brauzerdan foydalanib, monitoring serveridagi `9090` portdagi Prometheus veb-portaliga qayta kiring. `Status` va keyin `Targets`ni tanlang. remote_collector job uchun ikkinchi havola ko'rsatiladi, bu clientning 9100 portiga olib keladi. Statistikani ko'rib chiqish uchun havolani bosing.
 
-![monitoring](/images/article/monitoring/5.png)
+![monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/monitoring/5.png)
 
 ## Grafana serverini qanday o'rnatish va sozlash
 
@@ -394,24 +394,24 @@ Grafana va Prometheusni integratsiya qilish uchun quyidagi amallarni bajaring:
 **1->** Veb-brauzerdan foydalanib, monitoring serverining 3000 portiga kiring. Misol uchun, http://172.168.1.46:3000 kiriting, `172.168.1.46`-ni o'zingizning haqiqiy IP manzilingiz bilan almashtiring. Grafana kirish sahifasini ko'rsatadi. Foydalanuvchi(username) nomiga `admin` parolga esa `admin` ni kiriting. Agar xavfsizroq parol so'ralsa, parolni xavfsizroq qiymatga o'zgartiring.
 
 
-![monitoring](/images/article/monitoring/6.png)
+![monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/monitoring/6.png)
 
 **2->** Parolni muvaffaqiyatli o'zgartirgandan so'ng, Grafana `Grafana Dashboard`ni ko'rsatadi.
-![monitoring](/images/article/monitoring/7.png)prometheus.yml
+![monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/monitoring/7.png)prometheus.yml
 
 **3->** Prometheusni `data source` sifatida qoʻshish uchun `Configuration` deb yozilgan tishli belgini bosing, soʻng `Data Sources`-ni tanlang.
-![monitoring](/images/article/monitoring/8.png)
+![monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/monitoring/8.png)
 **4->** Keyingi ekranda `Add data source` tugmasini bosing.
-![monitoring](/images/article/monitoring/9.png)
+![monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/monitoring/9.png)
 **5->** Data source sifatida Prometheusni tanlang.
-![monitoring](/images/article/monitoring/9.png)
+![monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/monitoring/9.png)
 **6->** Local Prometheus manbasi uchun, ushbu qo'llanmada tasvirlanganidek, URL manzilini `http://localhost:9090` ga o'rnating. Boshqa sozlamalarning aksariyati standart qiymatlarda qolishi mumkin. Biroq, bu erda standart bo'lmagan `Timeout` qiymati qo'shilishi mumkin.
-![monitoring](/images/article/monitoring/11.png)
+![monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/monitoring/11.png)
 **7->** Sozlamalardan qoniqsangiz, ekranning pastki qismidagi `Save & test` tugmasini bosing.
-![monitoring](/images/article/monitoring/12.png)
+![monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/monitoring/12.png)
 
 **8->** Agar barcha sozlamalar to'g'ri bo'lsa, Grafana `Data source is working` xabarni ko'rsatadi.
-![monitoring](/images/article/monitoring/13.png)
+![monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/monitoring/13.png)
 
 ## Grafana Dashboardni import qilish 
 prometheus.yml
@@ -424,28 +424,28 @@ Maxsus dashboardni yaratish uchun to'rtta kvadratga o'xshash dashboard tugmasini
 </Callout>
 
 **1->** [Grafana Dashboard Library](https://grafana.com/grafana/dashboards/)ga tashrif buyuring. Qidiruv so'zi sifatida `Node exporter`ni kiriting.
-![monitoring](/images/article/monitoring/14.png)
+![monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/monitoring/14.png)
 
 **2->** `Node Exporter Full`-ni tanlang.
-![monitoring](/images/article/monitoring/14.png)
+![monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/monitoring/14.png)
 **3->** ID raqamini yozib qo'ying yoki `Copy ID to clipboard` tugmani ishlating. Ushbu dashbaordning identifikatori hozirda `1860`.
-![monitoring](/images/article/monitoring/16.png)
+![monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/monitoring/16.png)
 **4->** Grafana boshqaruv paneliga qayting. To'rt kvadratdan iborat `Dashboard` ikonkasini tanlang va ` + Import`-ni tanlang.
-![monitoring](/images/article/monitoring/17.png)
+![monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/monitoring/17.png)
 **5->** `Import via grafana.com` maydoniga oldingi bosqichdagi ID `1860` ni kiriting. Keyin `Load` tugmasini tanlang.
-![monitoring](/images/article/monitoring/18.png)
+![monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/monitoring/18.png)
 **6->** Keyingi ekranda import ma'lumotlarini tasdiqlang. Data source sifatida `Prometheusn`i tanlang va `Import` tugmasini bosing.
 
-![monitoring](/images/article/monitoring/19.png)
+![monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/monitoring/19.png)
 
 **7->** `Node Exporter Full` dashbaordi darhol ishga tushadi. U client nodening performance metrikalari va holatini, jumladan Xotira, RAM va CPU tafsilotlarini ko'rsatadi. Ekranning yuqori qismidagi bir nechta ochiladigan menyular foydalanuvchilarga kuzatish uchun hostni va kuzatish uchun vaqt oralig'ini tanlash imkonini beradi.
 
-![monitoring](/images/article/monitoring/20.png)
+![monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/monitoring/20.png)
 
 Quyidagi rasmda [Node Exporter Dashboard EN 20201010-StarsL.cn](https://grafana.com/grafana/dashboards/11074-node-exporter-for-prometheus-dashboard-en-v20201010/) dashboardni ko'p serverlarni kuzatish uchun.
 
-![monitoring](/images/article/monitoring/21.png)
-![monitoring](/images/article/monitoring/22.png)
+![monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/monitoring/21.png)
+![monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/monitoring/22.png)
 
 ## Xulosa
 

@@ -2,7 +2,7 @@ import { Callout } from "nextra-theme-docs";
 
 # Github Actions bilan Flutter CI/CD
 
-![flutter-ci-cd](/images/tutorials/ci-cd/flutter-cicd/banner.png)
+![flutter-ci-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/flutter-cicd/banner.png)
 
 CI/CD ni ko'p hollarda Docker yoki web ilovalar uchun yozilganini ko'p ko'rganmiz lekin mobil dasturlar uchun yozilganini kam ko'rganmiz. Bugun biz Flutterda yozilgan dasturlarga **Flutter CI/CD yozamiz**. Bu juda qiziq bo'ladi va biz Discord bilan integratsiya qilamiz yani gitga push qilganimizda pull requestlarni merge qilganimizda yoki pull requestlar kelsa va CI/CD action fail yoki succses bo'lganida discordga notification yuborib turadigan qilib sozlaymiz. Keling ishni Discord bila integratsiya qilishdan boshlaymiz.
 
@@ -65,12 +65,12 @@ jobs:
 
 Ushbu konfiguratsiyalarni qo'shib **main** branchga push qilganimizda avtomatik Github Actionimiz ishga tushishi kerak buni  repositoriyamiz **Actions** bo'limidan ko'rishimiz mumkin.
 
-![flutter-ci-cd](/images/tutorials/ci-cd/flutter-cicd/actions1.png)
-![flutter-ci-cd](/images/tutorials/ci-cd/flutter-cicd/actions2.png)
-![flutter-ci-cd](/images/tutorials/ci-cd/flutter-cicd/actions3.png)
+![flutter-ci-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/flutter-cicd/actions1.png)
+![flutter-ci-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/flutter-cicd/actions2.png)
+![flutter-ci-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/flutter-cicd/actions3.png)
 
 Bizda hammasi muvaffaqiyatli build bo'ldi.
-![flutter-ci-cd](/images/tutorials/ci-cd/flutter-cicd/actions4.png)
+![flutter-ci-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/flutter-cicd/actions4.png)
 
 Keling endi ushbu YAML konfiguratsiyamizni bo'laklarga bo'lib o'rganib chiqamiz.
 
@@ -220,23 +220,23 @@ Repositoriyaga kirib Settings bo'limiga o'tib **-> Secrets and variables -> Acti
 
 **-> Repository -> Settings -> Secrets and variables -> Actions -> New repository secret**
 
-![k8s](/images/tutorials/ci-cd/k8s/gitops1.png)
+![k8s](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/k8s/gitops1.png)
 
-![flutter-ci-cd](/images/tutorials/ci-cd/flutter-cicd/secret.png)
+![flutter-ci-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/flutter-cicd/secret.png)
 
 Github Secretsga `PERSONAL_TOKEN` tokenimizni qo'shib qo'yganimizdan keyin **release.yml** konfiguratsiyani **main** branchga push qilamiz. Github Repositoriyamizda **Actions** bo'limiga o'tib Github Actionsni kuzatib borishimiz mumkin.
 
-![flutter-ci-cd](/images/tutorials/ci-cd/flutter-cicd/actions5.png)
-![flutter-ci-cd](/images/tutorials/ci-cd/flutter-cicd/actions6.png)
+![flutter-ci-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/flutter-cicd/actions5.png)
+![flutter-ci-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/flutter-cicd/actions6.png)
 
 Hamma bosqichlat muvaffaqiyat tugaganida.
-![flutter-ci-cd](/images/tutorials/ci-cd/flutter-cicd/actions7.png)
+![flutter-ci-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/flutter-cicd/actions7.png)
 
 Barcha bosqichlar muvaffaqiyat tugaganidan keyin Github Repositoriyamizda **Release** bo'limda **v1.0.1** versiyali release chiqgan bo'lishi kerak.
-![flutter-ci-cd](/images/tutorials/ci-cd/flutter-cicd/actions8.png)
+![flutter-ci-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/flutter-cicd/actions8.png)
 
 **Release**ga kirganimizda source kodlar va Android release **.apk** formatda applicationni olamiz.
-![flutter-ci-cd](/images/tutorials/ci-cd/flutter-cicd/actions9.png)
+![flutter-ci-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/flutter-cicd/actions9.png)
 
 Okeyy ushbu Github Actions CI/CD'miz ham muvaffaqiyat ishladi keling endi ushbu YAML konfiguratsiyani o'rganib chiqamiz.
 
@@ -332,16 +332,16 @@ Flutter loyihamizni yanada yaxshilash uchun kod scanerlash, kod analizlarni **CI
 
 **-> Security -> Code scanning -> Configure scanning tool** o'tamiz.
 
-![flutter-ci-cd](/images/tutorials/ci-cd/flutter-cicd/scanning1.png)
+![flutter-ci-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/flutter-cicd/scanning1.png)
 
 **2->** **Code scanning**  bo'limidan **other tools**dan **Explore workflows** bosib actionslar ro'yxatiga kiramiz.
-![flutter-ci-cd](/images/tutorials/ci-cd/flutter-cicd/scanning2.png)
+![flutter-ci-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/flutter-cicd/scanning2.png)
 
 **3->** Bu qisdan **scorecard** deb qidirib **OSSF Scorecard**dan **Configure** bosib konfiguratsiya qo'yish bo'limiga o'tamiz.
-![flutter-ci-cd](/images/tutorials/ci-cd/flutter-cicd/scanning3.png)
+![flutter-ci-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/flutter-cicd/scanning3.png)
 
 **4->** Ushbu qismdan default YAML konfiguratsiyani o'chirib tashlab quyidagi configuratsiyani joylashtirishimiz kerak.
-![flutter-ci-cd](/images/tutorials/ci-cd/flutter-cicd/scanning4.png)
+![flutter-ci-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/flutter-cicd/scanning4.png)
 
 default konfiguratsiya o'rniga quyidagi konfiguratsiyani qo'yamiz.
 ```bash
@@ -392,14 +392,14 @@ jobs:
 
 konfiguratsiyani o'zgartirganimizdan keyin **Commit changes**'ni bosib main branchga commit qilamiz.
 
-![flutter-ci-cd](/images/tutorials/ci-cd/flutter-cicd/scanning5.png)
+![flutter-ci-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/flutter-cicd/scanning5.png)
 
 **5->** Scorecardni konfiguratsiya qilib Github Repositoriyamiz **Actions** bo'limidan jarayonni kuzatib borishimiz mumkin.
 
-![flutter-ci-cd](/images/tutorials/ci-cd/flutter-cicd/scorecard1.png)
+![flutter-ci-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/flutter-cicd/scorecard1.png)
 Okeyyy hammasi muvaffaqiyat ishga tushgan endi Security alertlarni ko'rish uchun Github Repositoriyamizdan **Security -> Code scanning** bo'limiga o'tib ko'rishimiz mumkin.
 
-![flutter-ci-cd](/images/tutorials/ci-cd/flutter-cicd/scorecard2.png)
+![flutter-ci-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/flutter-cicd/scorecard2.png)
 
 Biz bu yerda loyihamizning Security alertlarini ko'rishimiz mumkin.
 
@@ -556,17 +556,17 @@ Ushbu bosqichda Andorid appimizni Play Storega chiqarish uchun Keystore sozlaymi
 
 > Siz Play Store akkount ochib olishingiz kerak bo'ladi va ilovangiz uchun kerakli key kalitlarni olib **Actions Secrets**ga joylashtirib qo'yasiz
 
-![flutter-ci-cd](/images/tutorials/ci-cd/flutter-cicd/secret1.png)
+![flutter-ci-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/flutter-cicd/secret1.png)
 
 O'zgarishlarni saqlab to'liq YAML konfiguratsityani Githubga push qilganimizdan keyin **Actions** bo'limiga o'tib manual qo'lda ishga tushirishimiz kerak bo'ladi.
 
 **-> Github Repositoriya -> Actions -> All workflows** da **Deploy To Play Store** deb bizni Actionimiz chiqib turadi.
-![flutter-ci-cd](/images/tutorials/ci-cd/flutter-cicd/play-store1.png)
+![flutter-ci-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/flutter-cicd/play-store1.png)
 
 **Deploy To Play Store** bosib kirganimizda quyidagi oyna ochiladi undan biz **Run worfklow** bosamiz va **beta** yoki **production** tanlab **Run worfklow** bosib Github Actionimizni ishga tushiramiz.
-![flutter-ci-cd](/images/tutorials/ci-cd/flutter-cicd/play-store2.png)
+![flutter-ci-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/flutter-cicd/play-store2.png)
 Okeeey bizda jarayon muvaffaqiyat tugadi.
-![flutter-ci-cd](/images/tutorials/ci-cd/flutter-cicd/play-store4.png)
+![flutter-ci-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/flutter-cicd/play-store4.png)
 
 ## Qo'shimcha
 

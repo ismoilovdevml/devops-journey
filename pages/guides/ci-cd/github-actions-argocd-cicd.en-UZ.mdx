@@ -2,7 +2,7 @@ import { Callout } from "nextra-theme-docs";
 
 # Kubernetes CI/CD | GitHub Actions + Argo CD | GitOps
 
-![k8s](/images/tutorials/ci-cd/k8s/banner.png)
+![k8s](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/k8s/banner.png)
 
 ## Kirish
 
@@ -47,7 +47,7 @@ Keling birinchisiga GHCR GitHub Conatiner Registry bilan ishlaydigan GitHub Acti
 
 GitHub Actions uchun loyihamiz root directoriyasida **.github** ichida **workflows** va **gitops.yml** fayl ochamiz:
 
-![k8s](/images/tutorials/ci-cd/k8s/gitops.png)
+![k8s](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/k8s/gitops.png)
 
 GitHub Actions uchun environment qilib olganimizdan keyin `gitops.yml` ga yamlda GitHub Actions yozamiz.
 
@@ -120,11 +120,11 @@ GitHub personal accsess token olish uchun quyidagi qo'llanmadan foydalanishingiz
 
 **-> Repository -> Settings -> Secrets and variables -> Actions -> New repository secret**
 
-![k8s](/images/tutorials/ci-cd/k8s/gitops1.png)
+![k8s](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/k8s/gitops1.png)
 
 **2->** GitHubdagi Personal Access Tokenimizni joylashtiramiz
 
-![k8s](/images/tutorials/ci-cd/k8s/gitops2.png)
+![k8s](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/k8s/gitops2.png)
 
 ```yaml
 jobs:
@@ -163,9 +163,9 @@ Ushbu bosqich repositoriyadagi Dockerfile orqali Docker image build qilib uni Gi
 Keling GitHub Actionsni ishga tushiramiz. Buning uchun personal access tokenni GitHub secretsga qo'shib yaml konfiguratsiyamizni GitHub'ga push qilamiz va u avtomatik ishga tushishi kerak.
 
 Repositoriyamizda **Actions** bo'limiga o'tsak bizni GitHub Actionimiz ishlab turganini chiqishi kerak.
-![k8s](/images/tutorials/ci-cd/k8s/gitops3.png)
-![k8s](/images/tutorials/ci-cd/k8s/gitops4.png)
-![k8s](/images/tutorials/ci-cd/k8s/gitops5.png)
+![k8s](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/k8s/gitops3.png)
+![k8s](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/k8s/gitops4.png)
+![k8s](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/k8s/gitops5.png)
 
 Okey! Hammasi yaxshi ishladi. Endi esa keyingi bosqichga o'tsak bo'ladi, ya'ni manifests repositoriyadagi image urlni yangilab qo'yish. GitHubda yana bitta [**manifests-k8s**](https://github.com/devops-journey-uz/manifests-k8s) nomli repositoriya ochib olamiz unga Kubernetes yaml konfiguratsiyalarimizni yozamiz.
 
@@ -273,16 +273,16 @@ Ushbu GitHub Action'imiz uchun bir nechta secretlar va envrironmentlar qo'shdik 
 
 * **MANIFEST_REPO_URL->** Bu manifest repositoriyamiz url manzili hisoblanadi. Quyidagicha GitHub Actions secret qo'shamiz. Bizda [github.com/devops-journey-uz/manifests-k8s](https://github.com/devops-journey-uz/manifests-k8s) repositoriyamiz bor secretga esa `devops-journeyuz/manifests-k8s` deb qo'shamiz yani `{owner}/{repo}` ko'rinishida.
 
-![k8s](/images/tutorials/ci-cd/k8s/gitops6.png)
+![k8s](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/k8s/gitops6.png)
 
 * **MANIFEST_PATH->** Bu esa manifests repositoriyamizda applicationimiz konfiguratsiyalari qaysi papkada turgani bildiradi. manifests-k8s repositoriyamizda devops-journey papkasida configlarimiz joylashgan
 
-![k8s](/images/tutorials/ci-cd/k8s/gitops7.png)
+![k8s](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/k8s/gitops7.png)
 
 * **GIT_EMAIL->** Biz bunga GitHub emailimizni yozamiz. Buning sababi GitHub manifests repositoriyaga commit tashlash uchun foydalanadi.
-![k8s](/images/tutorials/ci-cd/k8s/gitops8.png)
+![k8s](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/k8s/gitops8.png)
 * **GIT_USERNAME->** Bunga esa GitHub username'yimizni yozamiz.
-![k8s](/images/tutorials/ci-cd/k8s/gitops9.png)
+![k8s](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/k8s/gitops9.png)
 
 Keling endi GitHub Action'imizdagi manifestni yangilash qismini ko'rib chiqamiz.
 
@@ -317,11 +317,11 @@ Ushbu konfiguratsiya `build_and_push` bosqichi o'z ishini yakunlaganidan keyin b
 
 Keling GitHub Action'imizni ishga tushiramiz.
 
-![k8s](/images/tutorials/ci-cd/k8s/gitops10.png)
+![k8s](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/k8s/gitops10.png)
 
 Ikki bosqich ham muvaffaqiyatli bo'lishi kerak va manifests repositoriyamizni tekshirganimizda yangi docker image urlni qo'yib commit qilgan bo'lishi kerak.
 
-![k8s](/images/tutorials/ci-cd/k8s/gitops11.png)
+![k8s](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/k8s/gitops11.png)
 
 
 Okeeeyy! Bizda hammasi yaxshi, hammasini uddaladik. Biz GHCR GitHub Container Registrydan foydalanish uchun GitHub Action yozib muvaffaqiyatli ishga tushirdik. Endi boshqa Container registrylar uchun ham naumunalar yozamiz.
@@ -538,30 +538,30 @@ spec:
 Okeeey! Kubernetes sozlab olganimizdan keyin ArgoCD bilan ishlashni boshlasak bo'ladi. Birinchi navbatda ArgoCDga kirib Settings bo'limiga o'tib manifests-k8s repositoriyamizni qo'shib ulab olishimiz kerak.
 
 **-> ArgoCD -> Settings -> Repositories -> CONNECT REPO**
-![k8s](/images/tutorials/ci-cd/k8s/argo.png)
+![k8s](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/k8s/argo.png)
 
 **CONNECT REPO**ni bosib manifests-k8s repositoriyamizni ulab olamiz. Connection metodni **HTTPS** qilib `Username`ga GitHub username va Passwordga personal access tokenimizni yozamiz va repositoriyamizni ulab olamiz.
 
-![k8s](/images/tutorials/ci-cd/k8s/argo1.png)
+![k8s](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/k8s/argo1.png)
 
 **CONNECT** bosganimizdan keyin hammasi to'gri bo'lsa muvaffaqiyatli ulanishi kerak.
 
-![k8s](/images/tutorials/ci-cd/k8s/argo2.png)
+![k8s](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/k8s/argo2.png)
 
 Repositoiyamizni ArgoCDga qo'shib ulab olganimizdan keyin ArgoCD da application yaratib olamiz
 
 **-> Applications -> CREATE APPLICATION** bosib application yaratish bo'limiga o'tamiz.
-![k8s](/images/tutorials/ci-cd/k8s/argo3.png)
+![k8s](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/k8s/argo3.png)
 
 Applicationga nom beramiz, bizni holatda **devops-journey** Repository urlga repositoriyamiz ulr manizlini ko'rsatamiz **Path**ga esa devops-journey uchun yozgan configlarimiz papkasini yo'lini ko'rsatamiz, bu holda **./devops-journey** va namespacega ochib olgan namespaceni ya'ni **prod** namespaceni ko'rsatamiz va **CREATE** qilib yaratib olamiz.
-![k8s](/images/tutorials/ci-cd/k8s/argo4.png)
-![k8s](/images/tutorials/ci-cd/k8s/argo5.png)
+![k8s](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/k8s/argo4.png)
+![k8s](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/k8s/argo5.png)
 
 Application yaratib olganimizdan keyin unga kiramiz bu holda Sync holatda bo'ladi va biz bergan Kubernetes service.yaml va deployment.yaml orqali Kuberenetesga deploy qiladi.
-![k8s](/images/tutorials/ci-cd/k8s/argo6.png)
+![k8s](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/k8s/argo6.png)
 
 Bu holda to'liq ishga tushgani
-![k8s](/images/tutorials/ci-cd/k8s/argo7.png)
+![k8s](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/k8s/argo7.png)
 
 
 Okeey hammasi yaxshi, keling Kubernetesda prod namespaceni tekshirib ko'ramiz.
@@ -571,7 +571,7 @@ kubectl get pods -n prod
 kubectl get services -n prod
 ```
 
-![k8s](/images/tutorials/ci-cd/k8s/k8s.png)
+![k8s](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/k8s/k8s.png)
 
 Bizda uchta pod va devops-journey-service servisi 3000 portda ishlab turibti keling applicationimizni NGINX Ingress Controller orqali expose qilib domen ulab Cert-Manager bilan SSL sertifikat olib domen ulab chiqarib yuboramiz.
 
@@ -619,7 +619,7 @@ kubectl apply -f ingress.yaml
 
 Keling endi hammasi ishlayotganini bilish uchun [**k8s.devops-journey.uz**](https://k8s.devops-journey.uz/) domeniga brauzer orqali kiramiz.
 
-![k8s](/images/tutorials/ci-cd/k8s/k8s1.png)
+![k8s](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/k8s/k8s1.png)
 
 **Ohhooo Mazzami silaga mazzami...**
 
@@ -628,11 +628,11 @@ Okey **hammasi yaxshi, hammasi meni nazoratim ostida :)**. Hammasini muvaffaqiya
 Buning uchun [**manifests-k8s**](https://github.com/devops-journey-uz/manifests-k8s) repositoriyamiz **Settings -> Webhooks** bo'limga o'tib webhook qo'shamiz.
 
 **-> Settings -> Webhooks -> Add webhook**
-![k8s](/images/tutorials/ci-cd/k8s/argo8.png)
+![k8s](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/k8s/argo8.png)
 
 ArgoCD url manzili oxiriga **/api/webhook** qo'shib Connection typega **application/json** tanlab qo'yamiz va **Just the push event** tanlab **Add Webhook** bosib webhook ulab olamiz.
 
-![k8s](/images/tutorials/ci-cd/k8s/argo9.png)
+![k8s](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/k8s/argo9.png)
 
 
 Deyarli hamma ishni tugatdik. Keling butun **CI/CD**ni tekshirib ko'ramiz.
@@ -640,19 +640,19 @@ Deyarli hamma ishni tugatdik. Keling butun **CI/CD**ni tekshirib ko'ramiz.
 [**devops-journey-k8s**](https://github.com/devops-journey-uz/devops-journey-k8s) repositoriyamizga o'zgartirish kiritamiz va buyo'giga o'zi avtomatik ishga tushib Kubernetesga deploy bo'lishi kerak. Platformamiz boshida chiqib turgan **GitOpsni birga o'rganamiz** matnini **GitOpsni birga o'rganamiz | K8s** ga o'zgartiramiz va commit qilamiz va avtomatik Kubernetesga deploy bo'lishi kerak. Qani keettik sinaymiz.
 
 Men o'zgartirish qilib push qildim endi kuzatamiz:
-![k8s](/images/tutorials/ci-cd/k8s/gitops12.png)
+![k8s](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/k8s/gitops12.png)
 
 GitHub Actionimiz yaxshi muvaffaqiyatli ishladi:
-![k8s](/images/tutorials/ci-cd/k8s/gitops13.png)
+![k8s](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/k8s/gitops13.png)
 manifests-k8s repositoriyamizga o'zgarishlar kelib tushgan.
-![k8s](/images/tutorials/ci-cd/k8s/gitops14.png)
+![k8s](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/k8s/gitops14.png)
 
 ArgoCD webhook orqali avtomatik ishga tushdi va hammasi muvaffaqiyatli bo'ldi.
-![k8s](/images/tutorials/ci-cd/k8s/gitops15.png)
+![k8s](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/k8s/gitops15.png)
 
 
 [**k8s.devops-journey.uz**](https://k8s.devops-journey.uz/)ga kirib ko'rganimzida biz **GitOpsni birga o'rganamiz | K8s**ni ko'ramiz.
-![k8s](/images/tutorials/ci-cd/k8s/k8s2.png)
+![k8s](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/k8s/k8s2.png)
 
 **Huuuhh! Va nihoyat bizda hammasi muvaffaqiyatli ishga tushdi.**
 

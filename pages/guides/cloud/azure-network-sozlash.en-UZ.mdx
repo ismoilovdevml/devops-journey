@@ -2,7 +2,7 @@ import { Callout } from "nextra-theme-docs";
 
 # Azure Network sozlash
 
-![azure-network-sozlash](/images/tutorials/cloud/azure-network/banner.png)
+![azure-network-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/cloud/azure-network/banner.png)
 
 ## Kirish
 
@@ -25,7 +25,7 @@ Bugungi amaliyotimizda Azure cloudda Virtual network yaratib unda subnet yaratam
 
 Ushbu amaliyotda quyidagi rasmndagi arxitekturani quramiz.
 
-![azure-network-sozlash](/images/tutorials/cloud/azure-network/architecture.png)
+![azure-network-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/cloud/azure-network/architecture.png)
 
 Bu amaliyotda **k8s-network** nomli virtual network yaratib olamiz unda **k8s-subnet** nomli subnet yaratib olamiz IP range **172.20.0.0/16** qilib belgilaymiz. Ushbu virtual networkdan foydalanib ikkita virtual machine(vm) yaratib olamiz va ularni internal IP lar bilan bo'glab bir bir bilan aloqasini tekshirib ko'ramiz. 
 
@@ -33,31 +33,31 @@ Bu amaliyotda **k8s-network** nomli virtual network yaratib olamiz unda **k8s-su
 
 Birinchi bo'lib ishni Azure Virtual Network yaratishdan boshlaymiz. Buning uchun [portal.azure.com](https://portal.azure.com/#home) kirib search qismidan virtual network deb qidirib kiramiz.
 
-![azure-network-sozlash](/images/tutorials/cloud/azure-network/azure1.png)
+![azure-network-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/cloud/azure-network/azure1.png)
 
 **Virtual networks**ga kirib `Create` bosamiz.
-![azure-network-sozlash](/images/tutorials/cloud/azure-network/azure2.png)
+![azure-network-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/cloud/azure-network/azure2.png)
 
 Bizda Virtual network yaratish bo'limining `Bacics` qismi ochiladi. Bu qismda **Subscribtion** tanlaymiz va bitta yangi `k8s-cluster` nomli **Resource group** yaratib olamiz. `Virtual network name`ga `k8s-network` deb nom beramiz va keyingi `IP addresses` qismiga o'tamiz.
-![azure-network-sozlash](/images/tutorials/cloud/azure-network/azure3.png)
+![azure-network-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/cloud/azure-network/azure3.png)
 
 Ushbu qismda IPv4 range beramiz va subnet yaratib olamiz. Azure cloudda `default` subnetda bo'ladi bunda `10.0.0.0/16` IP range bo'ladi. Keling biz boshqa IP range yaratib `default` subnetni o'chirib o'zimiz subnet ochib olamiz.
-![azure-network-sozlash](/images/tutorials/cloud/azure-network/azure4.png)
+![azure-network-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/cloud/azure-network/azure4.png)
 
 Biz `172.20.0.0/16` IPv4 range kirtamiz va `defaul` subnetni o'chirib tashlaymiz. 
-![azure-network-sozlash](/images/tutorials/cloud/azure-network/azure5.png)
+![azure-network-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/cloud/azure-network/azure5.png)
 Yangi subnet qo'shish uchun `+ Add a subnet` bosamiz bizda subnet qo'shish oynasi ochiladi
-![azure-network-sozlash](/images/tutorials/cloud/azure-network/azure6.png)
+![azure-network-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/cloud/azure-network/azure6.png)
 Ushbu oynada **subnet**imiz nomini yozamiz va IPv4 address rangeni kiritamiz va **Add** qilib qo'shib olamiz.
 Subnet qo'shganimizdan keyin quyidagicha ko'rinadi va biz `Review + create` qilib Virtual Network va Subnet yaratib olamiz.
-![azure-network-sozlash](/images/tutorials/cloud/azure-network/azure7.png)
+![azure-network-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/cloud/azure-network/azure7.png)
 `Review + create` oynasi quyidagicha ochiladi biz `Create` bosib yaratib olamiz.
-![azure-network-sozlash](/images/tutorials/cloud/azure-network/azure8.png)
+![azure-network-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/cloud/azure-network/azure8.png)
 
 Yaratish jarayonim muvaffaqiyatli yakunlangada quyidagi oyna ochiladi va `Go to sesource` bosib ko'rishimiz mumkin.
-![azure-network-sozlash](/images/tutorials/cloud/azure-network/azure9.png)
+![azure-network-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/cloud/azure-network/azure9.png)
 
-![azure-network-sozlash](/images/tutorials/cloud/azure-network/azure10.png)
+![azure-network-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/cloud/azure-network/azure10.png)
 
 Okey biz muvaffaqiyatli Virtual network va subnet yaratib oldik endi keyingi bosqichlarga o'tsak bo'ladi.
 
@@ -67,35 +67,35 @@ Yuqorida biz muvaffaqiyatli  Resource group, virtual network va subnet yaratib o
 
 Buning uchun [portal.azure.com](https://portal.azure.com/#home) kirib search qismidan virtual machine deb qidirib kiramiz.
 
-![azure-network-sozlash](/images/tutorials/cloud/azure-network/azure-vm1.png)
+![azure-network-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/cloud/azure-network/azure-vm1.png)
 
 `Virtual machines` bo'limga kirib **+ Create** bosib `Azure virtual machine`ni tanlab virtual machine yaratish qismiga o'tamiz.
-![azure-network-sozlash](/images/tutorials/cloud/azure-network/azure-vm2.png)
+![azure-network-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/cloud/azure-network/azure-vm2.png)
 
 Bizda Virtual Machine yaratishning **Basics** qismi ochiladi. Ushbu qismdan `Resource group`ni yaratib olgan **k8s-cluster** nomli resource groupimizni belgilab qo'yamiz. **Virtual machine name:** ga vm nom beramiz va kerakli portlarni firewalldan ochib `Networking` qsimiga o'tamiz.
-![azure-network-sozlash](/images/tutorials/cloud/azure-network/azure-vm3.png)
-![azure-network-sozlash](/images/tutorials/cloud/azure-network/azure-vm4.png)
+![azure-network-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/cloud/azure-network/azure-vm3.png)
+![azure-network-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/cloud/azure-network/azure-vm4.png)
 
 `Networking` qismida`Virtual network` qismida yaratib olgan **k8s-network** nomli virtual networkimizni belgilaymiz va `Subnet`ga esa **k8s-subnet**ni belgilaymiz va `Review + create` bosib oxirgi bosqichga o'tamiz.
-![azure-network-sozlash](/images/tutorials/cloud/azure-network/azure-vm5.png)
+![azure-network-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/cloud/azure-network/azure-vm5.png)
 
 `Review + create` qsimida quyidagicha ochilishi kerak. `Create` bosib Azure VM yaratib olamiz.
-![azure-network-sozlash](/images/tutorials/cloud/azure-network/azure-vm6.png)
+![azure-network-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/cloud/azure-network/azure-vm6.png)
 Networking qismi 
-![azure-network-sozlash](/images/tutorials/cloud/azure-network/azure-vm7.png)
+![azure-network-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/cloud/azure-network/azure-vm7.png)
 
 Virtual Machine yaratish jarayonida Azure serverga ssh orqali kirish uchun secret **.pem** key beradi keyni yuklab olamiz.
 
-![azure-network-sozlash](/images/tutorials/cloud/azure-network/key.png)
+![azure-network-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/cloud/azure-network/key.png)
 
 Jarayon muvaffaqiyatli yakunlanganda bizda quyidagi oyna ochiladi.
-![azure-network-sozlash](/images/tutorials/cloud/azure-network/azure-vm8.png)
+![azure-network-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/cloud/azure-network/azure-vm8.png)
 
 Yaratib olgan virtual machinemiz sahifasiga kirganimzida quyidagi oyna ochiladi.
-![azure-network-sozlash](/images/tutorials/cloud/azure-network/azure-vm9.png)
+![azure-network-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/cloud/azure-network/azure-vm9.png)
 
 Ushbu oynadan **Connect** bo'limiga o'tsak serverimiz static(public) IP addresi va Internal(ichki) IP manzili berilgan bo'ladi.
-![azure-network-sozlash](/images/tutorials/cloud/azure-network/azure-vm10.png)
+![azure-network-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/cloud/azure-network/azure-vm10.png)
 
 Azure VM yaratayotganida bizga ssh orqali bog'lanish uchun **.pem** secret key bergandi biz uni yuklab olgandik. Shu **.pem** keyga kerakli accsesslarni berib serverimiz publib IPsi orqali ulanib ko'ramiz.
 
@@ -103,14 +103,14 @@ Azure VM yaratayotganida bizga ssh orqali bog'lanish uchun **.pem** secret key b
 sudo chmod 600 k8s-master_key.pem
 ssh -i k8s-master_key.pem azureuser@74.235.111.10
 ```
-![azure-network-sozlash](/images/tutorials/cloud/azure-network/vm.png)
-![azure-network-sozlash](/images/tutorials/cloud/azure-network/vm2.png)
+![azure-network-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/cloud/azure-network/vm.png)
+![azure-network-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/cloud/azure-network/vm2.png)
 
 Okey hammasi yaxshi berilgan key orqali VMga ssh bilan ulana oldik. Keling yana bitta VM yaratib olamiz bu jarayon yuqoridagidek bir xil bo'ladi faqat VM nomi boshqa bo'ladi masalan **k8s-worker1**. VM yaratishda network va subnetni o'zimiz yaratib olgan **k8s-network** va **k8s-subnet** belgilab yaratib olamiz.
 
 Ikkinchi VMni ham muvaffaqiyatli yaratib olganimizdan keyin ikkita VM ham bitta network va bitta subnetda bo'lgani uchun internal IPlar orqali bog'lana olishi kerak. 
 
-![azure-network-sozlash](/images/tutorials/cloud/azure-network/vm3.png)
+![azure-network-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/cloud/azure-network/vm3.png)
 
 Hozir bizda ikkita VM bor bular k8s-master va k8s-worker1.
 
@@ -122,12 +122,12 @@ Hozir bizda ikkita VM bor bular k8s-master va k8s-worker1.
 Ko'rib turganingizdek Static IP lar har xil lekin Internal IP bir xil tartibda. Keling ikkala VM'ga ham ssh orqali kirib ikkita VM'ni internal IP orqali bog'lanishini tekshirib ko'ramiz.
 
 Keling birinchisiga **172.20.0.4** internal IPga ega **k8s-master** serverimizdan **172.20.0.5** interl IP'li **k8s-worker1** serverimiz aloqasini tekshirib ko'ramiz. Birinchisiga ping yuborib ko'ramiz, ikkinchisida 22 ssh portga ulanib ko'ramiz, uchinchisida telnet bilan ham tekshirib ko'ramiz.
-![azure-network-sozlash](/images/tutorials/cloud/azure-network/vm4.png)
+![azure-network-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/cloud/azure-network/vm4.png)
 
 Ko'rib turganingizdek hamma testlar yaxshi o'tdi va k8s-worker1 serverimizga internal IP orqali bemalol bog'lana olamiz lekin tashqaridan bog'lanib bo'lmaydi :)
 
 Keling endi **k8s-worker1** serverdan **k8s-master** serverga aloqani tekshirib ko'ramiz.
-![azure-network-sozlash](/images/tutorials/cloud/azure-network/vm5.png)
+![azure-network-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/cloud/azure-network/vm5.png)
 
 Okey hammasi zo'r hammasi ishladi. Ushbu amaliyotda biz Azureda network yaratish va sozlashni kichik amaliyotni yakunladik bu boshqa amaliyotlarga asos bo'ladi. Bu amaliyot nimaga kerak degan savolga kichik bir misol keltirmoqchiman: Aytaylik sizda bitta database server va bitta application server bor applicationingiz qanday database serverga ulanadi static public IP bilanmi? Applicationda xatolik yoki ochiq joylari bo'lsa hohlagan odam database serverga berilgan secretlar orqali bemalol ulana oladi, agar siz ushbu amaliyotdagidek virtual network va subnet sozlab ikkala serveringizni ham Internal IP bilan bo'glasangiz boshqalar database connection topganida ham Internal IP orqali kira olmaydi, faqat shu networkdagi serverlar ulana oladi holos. 
 

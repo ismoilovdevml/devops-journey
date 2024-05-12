@@ -21,7 +21,14 @@ const config = {
     ignoreBuildErrors: true,
   },
   images: {
-    domains: ['devops-journey.uz'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'raw.githubusercontent.com',
+        port: '',
+        pathname: '/devops-journey-uz/**',
+      },
+    ],
   },
 };
 
