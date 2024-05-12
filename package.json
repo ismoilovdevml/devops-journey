@@ -3,9 +3,9 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "NODE_OPTIONS=--require=elastic-apm-node/start-next.js next dev",
     "build": "next build",
-    "start": "next start",
+    "start": "NODE_OPTIONS=--require=elastic-apm-node/start-next.js next start",
     "lint": "next lint"
   },
   "dependencies": {
@@ -20,6 +20,7 @@
     "aptos": "^1.20.0",
     "clsx": "^1.2.1",
     "core-js": "^3.33.2",
+    "elastic-apm-node": "^4.5.3",
     "ethers": "^5.7.2",
     "formidable": "^2.1.2",
     "hls.js": "^1.4.12",
