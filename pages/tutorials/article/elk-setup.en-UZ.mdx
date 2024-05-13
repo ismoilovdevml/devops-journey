@@ -13,7 +13,7 @@ Oldingi [**ELK Stackga kirish**](https://devops-journey.uz/tutorials/article/elk
 
 ## Arxitektura
 
-Ushbu amaliyotda biz kichik ELK stack cluster o'rnatib sozlaymiz. ELK stack uchun minimum 3-ta server va ELK stack bilan ishlash uchun bitta app server kerak bo'ladi. Clusterdagi barcha serverlar bitta subnetda bo'lishi kerak bo'ladi chunki ELK componentlar bir bir bilan Internal IPlar bilan bo'glanib ishlaydi. ELK stack componentari uchun 3-ta alohida serverda sozlanadi **Elasticsearch, Kibana va Logstash**. Boshqa serverlarga **Beats**lar o'ratiladi, ba'zi beatslar loglarni logstashga yuboradi va logstash ular ustida ishlab uni elasticsearchga yuboradi, elasticsearchdan esa Kibana UI Dashboard orqali vizualizatsiya qilib monitoring va analiz qilamiz. Ba'zi beatlar va Integrationlar esa to'gridan-to'gri malumotlarni elasticsearchga yuboradi.  
+Ushbu amaliyotda biz kichik ELK stack cluster o'rnatib sozlaymiz. ELK stack uchun minimum 3-ta server va ELK stack bilan ishlash uchun bitta app-server(application server) kerak bo'ladi. Clusterdagi barcha serverlar bitta subnetda bo'lishi kerak bo'ladi chunki ELK componentlar bir bir bilan Internal IPlar bilan bo'glanib ishlaydi. ELK stack componentari uchun 3-ta alohida serverda sozlanadi **Elasticsearch, Kibana va Logstash**. Boshqa serverlarga **Beats**lar o'ratiladi, ba'zi beatslar loglarni logstashga yuboradi va logstash ular ustida ishlab uni elasticsearchga yuboradi, elasticsearchdan esa Kibana UI Dashboard orqali vizualizatsiya qilib monitoring va analiz qilamiz. Ba'zi beatlar va Integrationlar esa to'gridan-to'gri malumotlarni elasticsearchga yuboradi.  
 
 Bugungi amaliyotda rasmda ko'rsatilgan ELK clusterni o'rnatib sozlaymiz.
 
@@ -193,7 +193,7 @@ sudo systemctl status kibana.service
 sudo nano /etc/kibana/kibana.yml
 ```
 
-```bash {2,7,9}
+```bash {2,7,9} filename="/etc/kibana/kibana.yml"
 # Kibana is served by a back end server. This setting specifies the port to use.
 server.port: 5601
 
@@ -256,7 +256,7 @@ Logstashni ma'lumotlarni bir tomondan qabul qiladigan, u yoki bu tarzda qayta is
 ```bash
 sudo nano /etc/logstash/conf.d/02-beats-input.conf
 ```
-Quyidagi konfiguratsiyani kiriting. Bu konfiguratsiya input konfiguratsiya hisoblanadi va `beats` TCP `5044` portida kirishni bildiradi.
+Quyidagi konfiguratsiyani kiriting. Bu konfiguratsiya input konfiguratsiya hisoblanadi va `beats` TCP `5044` portga kirishni bildiradi.
 ```bash filename="/etc/logstash/conf.d/02-beats-input.conf"
 input {
   beats {
@@ -271,7 +271,7 @@ input {
 sudo nano /etc/logstash/conf.d/30-elasticsearch-output.conf
 ```
 
-```conf /10.128.0.9:9200/
+```conf /10.128.0.9:9200/ filename="/etc/logstash/conf.d/30-elasticsearch-output.conf"
 output {
   if [@metadata][pipeline] {
 	elasticsearch {
@@ -352,7 +352,7 @@ echo "deb [signed-by=/usr/share/keyrings/elasticsearch-keyring.gpg] https://arti
 **4->** Filebeatni o'rnatib olamiz.
 
 ```bash
-sudo apt-get update && sudo apt-get install filebeat
+sudo apt-get update && sudo apt-get install filebeat -y
 ```
 
 **2->** Filebeat Logstashga ulanishi uchun `filebeat.yml` ni sozlab olamiz.
@@ -469,7 +469,7 @@ sudo systemctl status filebeat
 
 Agar siz Elastic Stack-ni to'g'ri sozlagan bo'lsangiz, Filebeat tizim logi va avtorizatsiya loglarini Logstash-ga jo'natishni boshlaydi, keyin esa bu ma'lumotlarni Elasticsearch-ga yuklaydi.
 
-Elasticsearch haqiqatan ham ushbu ma'lumotlarni olayotganligini tekshirish uchun Filebeat indeksini ushbu buyruq bilan so'rang:
+Elasticsearch haqiqatan ham ushbu ma'lumotlarni olayotganligini tekshirish uchun Filebeat indeksini ushbu buyruq bilan tekshirishingiz mumkin.
 
 ```bash
 curl -XGET 'http://10.128.0.9:9200/filebeat-*/_search?pretty'
@@ -527,7 +527,7 @@ Kibana Dashboardan chap tomondagi bo'limga o'tib **Discover** bo'limiga o'tsak b
 
 ![elk-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-setup/kibana2.png)
 
-**Dashboard** bo'limga o'tib Filebeat system module uchun dashboardlarni qdirib ularni ko'rib chiqishimiz mumkin.
+**Dashboard** bo'limga o'tib Filebeat system module uchun dashboardlarni qidirib ularni ko'rib chiqishimiz mumkin.
 
 ![elk-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-setup/syslog.png)
 
@@ -539,7 +539,7 @@ Ushbu Dashboardlardan syslogni analiz qilishingiz mumkin.
 **[[Filebeat System] SSH login attempts ECS**
 ![elk-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-setup/syslog2.png)
 
-Biz hozir ELK stack bilan  `app-server`(10.128.0.12) serverimizga Filebeat o'rnatib system moduledan foydalanib serverimiz loglarini analiz qilishni ko'rib chiqdik. Lekin app-serverimizni to'liq analiz qilishimiz va monitoring qilishimiz uchun asosiy **Beats**larni o'rnatamiz. Betaslarni analiz va monitoing qilmoqchi bo'lgan serverlarimizga o'rnatamiz.
+Biz hozir ELK stack bilan  `app-server`(10.128.0.12) serverimizga Filebeat o'rnatib system moduledan foydalanib serverimiz loglarini analiz qilishni ko'rib chiqdik. Lekin app-serverimizni to'liq analiz qilishimiz va monitoring qilishimiz uchun asosiy **Beats**larni o'rnatamiz. Beatslarni analiz va monitoing qilmoqchi bo'lgan serverlarimizga o'rnatamiz.
 
 Biz quyidagi Beatslarni o'rnatamiz va sozlaymiz.
 
@@ -553,7 +553,7 @@ Biz quyidagi Beatslarni o'rnatamiz va sozlaymiz.
 
 **Metricbeat** - bu operatsion tizim va serverda ishlaydigan servicelardan metrikalarni vaqti-vaqti bilan yig'ish uchun serverlaringizga o'rnatishingiz mumkin bo'lgan yengil data shipper(lightweight shipper). Metricbeat CPUdan foydalanish, RAMan foydalanish, disk I/O, tarmoq trafigi va boshqalarni o'z ichiga olgan turli xil metrikalarni to'playdi. Metricbeat-ning asosiy afzalliklaridan biri bu uning yengil ishlashidadir. U yengil bo'lgani uchun serverlaringizga katta yuklamalarsiz metrikalarni to'plashi mumkin. Operatsion tizimdan metrikalarni yig'ishdan tashqari, Metricbeat Apache, MySQL, PostgreSQL, Nginx, Docker va Kubernetes kabi turli servicelar va applicationlardan metrikalarni to'plash imkonini beruvchi modullarga ega. Ushbu modullar bitta interfeysdan butun stackingizning ishlashini kuzatishni osonlashtiradi.
 
-* Monitoring qilmqochi bo'lgan serverlarga Metricbeat o'rnating
+* Monitoring qilmoqchi bo'lgan serverlarga Metricbeat o'rnating
 * Yig'moqchi bo'lgan metrikalarni belgilang
 * Metrikalarni Elasticsearchga yuboring
 * Kibanada vizualizatsiya qiling
@@ -571,7 +571,7 @@ sudo dpkg -i metricbeat-7.17.20-amd64.deb
 sudo nano /etc/metricbeat/metricbeat.yml
 ```
 
-```bash {3,7}
+```bash {3,7} filename="/etc/metricbeat/metricbeat.yml"
 # =================================== Kibana ===================================
 setup.kibana:
   host: "10.128.0.10:5601"
@@ -602,16 +602,17 @@ sudo metricbeat setup -e
 **4->** Metricbeatni ishga tushiramiz
 
 ```bash
-sudo service metricbeat start
+sudo systemctl start logstash
+sudo systemctl enable logstash
 ```
 
 Statusini ko'ramiz
 
 ```bash
-sudo service metricbeat status
+sudo systemctl status logstash
 ```
 
-**5->** Kibana Dashboardga o'tib Metricbeat dashboardlarini qidirib modullari bo'yicha ko'rib chishishimiz mumkin.
+**5->** Kibana Dashboardga o'tib Metricbeat dashboardlarini qidirib modullari bo'yicha ko'rib chiqishimiz mumkin.
 
 ![elk-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-setup/metric-kibana.png)
 ![elk-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-setup/metric-kibana2.png)
@@ -635,7 +636,7 @@ system module uchun Kibana Dashboardlar
 
 **Auditbeat** Elastik stackdagi yana bir lightweight shipper bo'lib, tizim auditi ma'lumotlarini yig'ish va kuzatish uchun mo'ljallangan. Bu, ayniqsa, xavfsizlik monitoringi va muvofiqlik maqsadlarida foydalidir.
 
-Auditbeat ishlayotgan operatsion tizimga qarab, Linux audit tizimidan yoki Windows vevent loglaridan ma'lumotlarni to'playdi. U file access,process execution, user authentication, va system-leveldagi boshqa activitilar kabi keng ko'lamli eventlarni yozib olishi mumkin.
+Auditbeat ishlayotgan operatsion tizimga qarab, Linux audit tizimidan yoki Windows event loglaridan ma'lumotlarni to'playdi. U file access,process execution, user authentication, va system-leveldagi boshqa activitilar kabi keng ko'lamli eventlarni yozib olishi mumkin.
 
 **1->** Biz analiz va monitoring qilmoqchi bo'lgan sereverlarimizga **Auditbeat** o'rnatib olamiz.
 
@@ -650,7 +651,7 @@ sudo dpkg -i auditbeat-7.17.21-amd64.deb
 sudo nano /etc/auditbeat/auditbeat.yml 
 ```
 
-```bash {3,7}
+```bash {3,7} filename="/etc/auditbeat/auditbeat.yml "
 # =================================== Kibana ===================================
 setup.kibana:
   host: "10.128.0.10:5601"
@@ -669,13 +670,14 @@ sudo auditbeat setup -e
 **4->** Auditbeatni ishga tushiramiz
 
 ```bash
-sudo service auditbeat start
+sudo systemctl start auditbeat
+sudo systemctl enable auditbeat
 ```
 
 Statusini ko'ramiz
 
 ```bash
-sudo service auditbeat status
+sudo systemctl status auditbeat
 ```
 
 **5->** Kibana Dashboardga o'tib Auditbeat dashboardlarini ko'rib chiqishimiz mumkin.
@@ -708,7 +710,7 @@ sudo dpkg -i packetbeat-7.17.21-amd64.deb
 sudo nano /etc/packetbeat/packetbeat.yml 
 ```
 
-```bash {3,7}
+```bash {3,7} filename="/etc/packetbeat/packetbeat.yml "
 # =================================== Kibana ===================================
 setup.kibana:
   host: "10.128.0.10:5601"
@@ -744,16 +746,17 @@ sudo packetbeat setup -e
 **5->** Packetbeatni ishga tushiramiz
 
 ```bash
-sudo service packetbeat start
+sudo systemctl start packetbeat
+sudo systemctl enable packetbeat
 ```
 
 Statusini ko'ramiz
 
 ```bash
-sudo service packetbeat status
+sudo systemctl status packetbeat
 ```
 
-**6->** Kibana Dashboardga o'tib Packetbeat dashboardlarini ko'rib chishishimiz mumkin.
+**6->** Kibana Dashboardga o'tib Packetbeat dashboardlarini ko'rib chiqishimiz mumkin.
 
 ![elk-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-setup/packetbeat-dash.png)
 
