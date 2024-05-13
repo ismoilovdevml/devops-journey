@@ -1,19 +1,3 @@
-// var apm = require('elastic-apm-node').start({
-
-//   // Override the service name from package.json
-//   // Allowed characters: a-z, A-Z, 0-9, -, _, and space
-//   serviceName: '',
-  
-//   // Use if APM Server requires a secret token
-//   secretToken: '',
-  
-//   // Set the custom APM Server URL (default: http://localhost:8200)
-//   serverUrl: 'http://10.128.0.12:8200',
-  
-//   // Set the service environment
-//   environment: 'production'
-//   })
-
 const withNextra = require('nextra')({
   theme: 'nextra-theme-docs',
   themeConfig: './theme.config.tsx',

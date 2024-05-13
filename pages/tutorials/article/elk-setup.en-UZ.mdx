@@ -551,6 +551,13 @@ Biz quyidagi Beatslarni o'rnatamiz va sozlaymiz.
 
 ## Metricbeat o'rnatish va sozlash
 
+**Metricbeat** - bu operatsion tizim va serverda ishlaydigan servicelardan metrikalarni vaqti-vaqti bilan yig'ish uchun serverlaringizga o'rnatishingiz mumkin bo'lgan yengil data shipper(lightweight shipper). Metricbeat CPUdan foydalanish, RAMan foydalanish, disk I/O, tarmoq trafigi va boshqalarni o'z ichiga olgan turli xil metrikalarni to'playdi. Metricbeat-ning asosiy afzalliklaridan biri bu uning yengil ishlashidadir. U yengil bo'lgani uchun serverlaringizga katta yuklamalarsiz metrikalarni to'plashi mumkin. Operatsion tizimdan metrikalarni yig'ishdan tashqari, Metricbeat Apache, MySQL, PostgreSQL, Nginx, Docker va Kubernetes kabi turli servicelar va applicationlardan metrikalarni to'plash imkonini beruvchi modullarga ega. Ushbu modullar bitta interfeysdan butun stackingizning ishlashini kuzatishni osonlashtiradi.
+
+* Monitoring qilmqochi bo'lgan serverlarga Metricbeat o'rnating
+* Yig'moqchi bo'lgan metrikalarni belgilang
+* Metrikalarni Elasticsearchga yuboring
+* Kibanada vizualizatsiya qiling
+
 **1->** Biz analiz va monitoring qilmoqchi bo'lgan sereverlarimizga **Metricbeat** o'rnatib olamiz.
 
 ```bash
@@ -626,6 +633,10 @@ system module uchun Kibana Dashboardlar
 
 ## Auditbeat o'rnatish va sozlash
 
+**Auditbeat** Elastik stackdagi yana bir lightweight shipper bo'lib, tizim auditi ma'lumotlarini yig'ish va kuzatish uchun mo'ljallangan. Bu, ayniqsa, xavfsizlik monitoringi va muvofiqlik maqsadlarida foydalidir.
+
+Auditbeat ishlayotgan operatsion tizimga qarab, Linux audit tizimidan yoki Windows vevent loglaridan ma'lumotlarni to'playdi. U file access,process execution, user authentication, va system-leveldagi boshqa activitilar kabi keng ko'lamli eventlarni yozib olishi mumkin.
+
 **1->** Biz analiz va monitoring qilmoqchi bo'lgan sereverlarimizga **Auditbeat** o'rnatib olamiz.
 
 ```bash
@@ -655,7 +666,7 @@ output.elasticsearch:
 sudo auditbeat setup -e
 ```
 
-**4->** Metricbeatni ishga tushiramiz
+**4->** Auditbeatni ishga tushiramiz
 
 ```bash
 sudo service auditbeat start
@@ -667,7 +678,7 @@ Statusini ko'ramiz
 sudo service auditbeat status
 ```
 
-**5->** Kibana Dashboardga o'tib Auditbeat dashboardlarini ko'rib chishishimiz mumkin.
+**5->** Kibana Dashboardga o'tib Auditbeat dashboardlarini ko'rib chiqishimiz mumkin.
 
 ![elk-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-setup/auditbeat1.png)
 
@@ -750,3 +761,27 @@ sudo service packetbeat status
 ![elk-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-setup/packetbeat-dash1.png)
 **[Packetbeat] Flows ECS**
 ![elk-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-setup/packetbeat-dash2.png)
+
+ ## Qo'shimcha
+
+<Callout type="info" emoji="">
+
+Qo'shimcha Resurslar
+ * [**ELK Stackga kirish**](https://devops-journey.uz/tutorials/article/elk-stack)
+ * [**Installing the Elastic Stack**](https://www.elastic.co/guide/en/elastic-stack/current/installing-elastic-stack.html)
+ * [**Serverlarni monitoring qilish yoxud Grafana, Prometheus, Node Exporter o'rnatish va sozlash**](https://devops-journey.uz/tutorials/article/gnp-monitoring)
+ * [**PostgreSQL Monitoring**](https://devops-journey.uz/guides/database/postgres-monitoring)
+
+Qo'llanma uchun foydalanilgan resurslar
+ * [**How To Install Elasticsearch, Logstash, and Kibana (Elastic Stack) on Ubuntu 20.04**](https://www.digitalocean.com/community/tutorials/how-to-install-elasticsearch-logstash-and-kibana-elastic-stack-on-ubuntu-20-04)
+
+**Sana:** 2024.05.13(2024-yil 13-may)
+
+**Oxirgi yangilanish:** 2024.05.13(2024-yil 13-may)
+
+**Muallif: Otabek Ismoilov**
+
+| [Telegram](https://t.me/Otabek_Ismoilov) | [GitHub](https://github.com/ismoilovdevml) | [LinkedIn](https://www.linkedin.com/in/otabek-ismoilov-8625b0222/) |
+| - | - | - |
+
+</Callout>
