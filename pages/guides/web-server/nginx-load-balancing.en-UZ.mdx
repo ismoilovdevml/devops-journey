@@ -125,9 +125,6 @@ nano docker.sh
 ```bash filename="docker.sh"
 #!/bin/bash
  
-# Get the current username
-CURRENT_USERNAME=$(whoami)
- 
 # Update and upgrade system packages
 sudo apt update && sudo apt upgrade -y
 # Install additional utilities
@@ -150,9 +147,9 @@ sudo apt-get update
 sudo apt-get -y install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin docker-compose
  
 # Adjust Docker socket permissions
-sudo usermod -aG docker $CURRENT_USERNAME
+sudo usermod -aG docker $USER
 sudo chmod 666 /var/run/docker.sock
-sudo chown $CURRENT_USERNAME:docker /var/run/docker.sock
+sudo chown $USER:docker /var/run/docker.sock
  
 # Restart and enable Docker service
 sudo systemctl daemon-reload

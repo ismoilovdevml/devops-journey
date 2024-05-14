@@ -60,9 +60,9 @@ rootsiz ishlashga urinayotganda xatoliklarni qabul qilyapsizmi?
 Docker foydalanuvchilari guruhi mavjud, lekin foydalanuvchilarni o'z ichiga olmaydi, shuning uchun siz Docker buyruqlarini bajarish uchun sudo-dan foydalanishingiz kerak. Imtiyozli bo'lmagan foydalanuvchilarga Docker buyruqlarini va boshqa ixtiyoriy konfiguratsiya bosqichlarini bajarishga ruxsat berish uchun quyidagilarni bajarishingiz kerak.
 
 ```bash
-CURRENT_USERNAME=$(whoami)
+sudo usermod -aG docker $USER
 sudo chmod 666 /var/run/docker.sock
-sudo chown $CURRENT_USERNAME:docker /var/run/docker.sock
+sudo chown $USER:docker /var/run/docker.sock
 docker info
 ```
 </Callout>
