@@ -3,3 +3,36 @@ import { Callout } from "nextra-theme-docs";
 # APM Server Sozlash
 
 ![elk-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/apm-server/banner.png)
+
+**A**pplication **P**erformance **M**onitoring (**APM**)  zamonaviy dasturiy ta'minotni ishlab chiqish va IT operatsiyalarining hal qiluvchi jihati hisoblanadi. APM dasturiy ta'minot ilovalarining ishlashi, mavjudligi(availability) va user experienceni kuzatish va boshqarish uchun toollar va amaliyotlardan foydalanishni o'z ichiga oladi. U applicationlarning qanday ishlashini ko'rish imkonini beradi, ishlash muammolari, qiyinchiliklar va anomaliyalarni aniqlash va hal qilishga yordam beradi. APM'ning maqsadi optimal ishlash va ishonchlilikni saqlab qolish orqali applicationlarning foydalanuvchi kutganlari va biznes talablariga javob berishini ta'minlashdan iborat.
+
+APM bir nechta maqsadlar qo'llaniladi.
+
+* **Performance Monitoring->** Applicationlarning ishlash metrikalarini(metrics), jumladan response timelari, o'tkazish qobiliyati(throughput) va resurslardan foydalanishni doimiy ravishda kuzatib boradi. Bu samaradorlikning pasayishini aniqlashga va applicationlarning samarali ishlashini ta'minlashga yordam beradi.
+
+* **Error Tracking->** Applicationlardagi xatolar(error) va exceptionlarni aniqlaydi va logga yozadi, ildiz sabablari haqida tushuncha beradi va tezkor hal qilish imkonini beradi.
+
+* **User Experience Monitoring->** Sahifani yuklash vaqtlari(page load time), tranzaksiya vaqtlari va foydalanuvchilarning o'zaro ta'siri kabi metrikalarni kuzatish orqali end-user experienceni nazorat qiladi. Bu foydalanuvchilar dasturning ishlashini qanday qabul qilishini tushunishga yordam beradi.
+
+* **Transaction Tracing->** Foydalanuvchi interfeysidan(user interface) tortib to backend servicelari va ma'lumotlar bazalarigacha bo'lgan applicationlar stackidagi tranzaktsiyalar yo'lini kuzatib boradi. Bu kechikishlar yoki nosozliklar sodir bo'lgan joyni aniqlashga yordam beradi.
+
+* **Infrastructure Monitoring->** Serverlar, ma'lumotlar bazalari, tarmoqlar va cloud servislarini o'z ichiga olgan applicationlarni qo'llab-quvvatlovchi asosiy infratuzilmani kuzatadi. Bu infratuzilma komponentlarining yaxshi ishlashini va dastur bilan bog'liq muammolarni keltirib chiqarmasligini ta'minlaydi.
+
+* **Analytics and Reporting->** Vaqt o'tishi bilan applicationlarning ishlash tendentsiyalari bo'yicha batafsil hisobotlar va tahlillarni taqdim etadi, bu jamoalarga ongli qarorlar qabul qilishda va kelajakdagi relizlarni yaxshilashda yordam beradi.
+
+## APM Componentlari
+
+APM keng qamrovli monitoring yechimini ta'minlash uchun birgalikda ishlaydigan bir nechta komponentlardan iborat.
+
+* **APM Server->** Turli agentlardan ishlash ma'lumotlarini to'playdigan va qayta ishlaydigan markaziy komponent. U ma'lumotlarni jamlaydi, saqlaydi va ma'lumotlarni so'rash va vizualizatsiya qilish uchun interfeyslarni taqdim etadi.
+
+* **APM Agentlar->** Application serverlarida yoki applicationlar ichida o'rnatilgan lightweight software modullar. Ushbu agentlar performance datalarni to'playdi va ularni APM serveriga yuboradi. Turli xil agentlar turli dasturlash tillari va environmentlar, jumladan **Java, Node.js, Python(Django, Flask), Ruby on Rails, Rack, Go, .NET, PHP** va boshqalar uchun mavjud.
+
+* **Data Collectorlar->** Logllar, tracelar va metrikalar kabi turli manbalardan ma'lumotlarni to'playdigan maxsus toollar. Ular application layerdan ham, infrastructure layeridan ham ma'lumotlarni to'plashlari mumkin.
+
+* **User Interface (UI)->** Foydalanuvchilarga ishlash ma'lumotlarini tasavvur qilish, ogohlantirishlarni(alert) o'rnatish va tendentsiyalarni tahlil qilish imkonini beruvchi boshqaruv paneli yoki veb-interfeys. Ushbu interfeys amaliy tushunchalarni taqdim etish va muammolarni bartaraf etishni osonlashtirish uchun juda muhimdir.
+
+* **Alerting va Notification System->** Foydalanuvchilarni ishlash muammolari yoki anomaliyalar haqida xabardor qiladigan sozlanishi mumkin bo'lgan ogohlantirishlar. Bu jamoalarning yuzaga kelishi mumkin bo'lgan muammolarga tezda javob berishini ta'minlaydi.
+
+
+## Ishni boshlash
