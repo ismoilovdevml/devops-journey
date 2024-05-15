@@ -255,3 +255,52 @@ export elastic_apm.service_name="php-service"
 ```
 Qo'shimcha uchun [PHP applicationlarga APM Agent qo'shish bo'yicha rasmiy qo'llanma](https://www.elastic.co/guide/en/apm/agent/php/current/intro.html)
 
+## Django
+
+Bu qismda biz Python Django loyihalarga APM agent qo'shishni ko'rib chiqamiz.
+
+**1->** Djnago loyihamizga pip orqali [`elastic-apm`](https://pypi.org/project/elastic-apm/) paketini o'rnatib olamiz.
+
+```bash
+pip install elastic-apm
+```
+
+**2->** `settings.py` faylimizga quyidagi konfiguratsiyalarni qo'shib chiqamiz.
+
+```py {4,12-21,32}
+# INSTALLED_APPS ga qo'shamiz
+INSTALLED_APPS = [
+    "django.contrib.admin",
+    'elasticapm.contrib.django',
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+]
+
+# ELASTIC_APM config qilamiz
+ELASTIC_APM = {
+'SERVICE_NAME': 'python-service',
+
+# 'SECRET_TOKEN': '',
+
+'SERVER_URL': 'http://35.238.168.75:8200',
+
+'ENVIRONMENT': 'production',
+}
+
+# MIDDLEWARE ga qo'shamiz
+MIDDLEWARE = [
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    'elasticapm.contrib.django.middleware.TracingMiddleware',
+]
+```
+
+Qo'shimcha uchun [Python django applicationlarga APM Agent qo'shish bo'yicha rasmiy qo'llanma](https://www.elastic.co/guide/en/apm/agent/python/current/django-support.html)
