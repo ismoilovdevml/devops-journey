@@ -94,3 +94,128 @@ Statusini tekshiramiz.
 ```bash
 sudo systemctl status apm-server
 ```
+
+**4->** Kibanadan **Integrations** bo'limga o'tsak bizda **Elastic APM** chiqishi kerak.
+
+![apm-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/apm-server/integration.png)
+
+Elastic APM'ga o'tib **Check APM Server Status** bosganimizda **You have correctly setup APM Server** chiqsa demak bizni APM Serverni to'gri o'rnatib sozladik.
+![apm-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/apm-server/integration2.png)
+
+APM Serverni o'rnatib Elasticsearchga ulab olganimzidan keyin AMP agentlarni qo'shib chiqishimiz kerak bo'ladi. Application qaysi dasturlash tilida yozilgani qarab APM agent qo'shish o'ziga xos bo'ladi.
+
+
+## Node.js
+
+Bu qismda biz Node.js loyihalarga APM agent qo'shishni ko'rib chiqamiz.
+
+**1->** Node.js loyihamizga [`elastic-apm-node`](https://www.npmjs.com/package/elastic-apm-node) Node.js APM agent paketini qo'shib olamiz.
+
+```bash
+#npm bilan
+npm install --save elastic-apm-node
+
+#pnpm bilan
+pnpm install --save elastic-apm-node
+```
+
+**2->** `package.json` konfiguratsiyaga quyidagi o'zgarishlarni kiritamiz. Namuna Next.js
+
+```js {2,4}
+  "scripts": {
+    "dev": "NODE_OPTIONS=--require=elastic-apm-node/start-next.js next dev",
+    "build": "next build",
+    "start": "NODE_OPTIONS=--require=elastic-apm-node/start-next.js next start",
+    "lint": "next lint"
+  },
+```
+
+**3->** `elastic-apm-node.js` nomli fayl ochib olamiz APM Server manzili kiritamiz.
+
+```js
+module.exports = {
+    serverUrl: 'http://10.128.0.12:8200' 
+  }
+```
+
+Boshqa Node.js fremworklarda ham ishlatish uchun [quyidagi rasmiy qo'llanmani](https://www.elastic.co/guide/en/apm/agent/nodejs/current/set-up.html) ko'rib chiqishingiz mumkin.
+
+## .NET
+
+Bu qismda biz .NET loyihalarga APM agent qo'shishni ko'rib chiqamiz.
+
+**1->** **Entity Framework Core** bilan **ASP.NET Core** application uchun [`Elastic.Apm.NetCoreAll`](https://www.nuget.org/packages/Elastic.Apm.NetCoreAll) paketini ishlatishingiz mumkin.
+
+Minimalizm uchun faqat **ASP.NET Core** monitoring uchun [`Elastic.Apm.AspNetCore`](https://www.nuget.org/packages/Elastic.Apm.AspNetCore) paketini ishlatishingiz mumkin.
+
+Faqat **Entity Framework Core** monitoring uchun [`Elastic.Apm.EntityFrameworkCore`](https://www.nuget.org/packages/Elastic.Apm.EntityFrameworkCore) aketini ishlatishingiz mumkin.
+
+**1->** .NET loyihamiz `.csproj` fayliga `Elastic.Apm.NetCoreAll` paketini qo'shib qo'yamiz.
+
+```cs {12}
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.13" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+    <PackageReference Include="Elastic.Apm.NetCoreAll" Version="1.27.0" />
+  </ItemGroup>
+
+</Project>
+```
+
+**2->** .NET loyiahmiz `Program.cs` fayliga quyidagi kodlarni qo'shamiz.
+
+```cs {1,23}
+using Elastic.Apm.NetCoreAll;
+var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container.
+builder.Services.AddControllers();
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+app.UseAuthorization();
+
+app.MapControllers();
+
+app.UseAllElasticApm(builder.Configuration);
+
+app.Run();
+```
+
+**4->** .NET loyihamiz `appsettings.json` konfiguratsiya fayliga APM Serverga ulanishni qo'shamiz. Ushbu konfiguratsiyada APM Server manzili, Environment(developement, staging, production) va service nomi yoziladi.
+
+```json {9-14}
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "AllowedHosts": "*",
+  "ElasticApm": {
+    "SecretToken": "",
+    "ServerUrls": "http://10.128.0.12:8200",
+    "ServiceName": "github-actions-api", 
+    "Environment": "development"
+    }
+}
+```
