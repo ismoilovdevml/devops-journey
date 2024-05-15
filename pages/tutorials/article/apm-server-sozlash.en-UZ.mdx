@@ -144,7 +144,7 @@ Boshqa Node.js fremworklarda ham ishlatish uchun [quyidagi rasmiy qo'llanmani](h
 
 Bu qismda biz .NET loyihalarga APM agent qo'shishni ko'rib chiqamiz.
 
-**1->** **Entity Framework Core** bilan **ASP.NET Core** application uchun [`Elastic.Apm.NetCoreAll`](https://www.nuget.org/packages/Elastic.Apm.NetCoreAll) paketini ishlatishingiz mumkin.
+**Entity Framework Core** bilan **ASP.NET Core** application uchun [`Elastic.Apm.NetCoreAll`](https://www.nuget.org/packages/Elastic.Apm.NetCoreAll) paketini ishlatishingiz mumkin.
 
 Minimalizm uchun faqat **ASP.NET Core** monitoring uchun [`Elastic.Apm.AspNetCore`](https://www.nuget.org/packages/Elastic.Apm.AspNetCore) paketini ishlatishingiz mumkin.
 
@@ -219,3 +219,39 @@ app.Run();
     }
 }
 ```
+Qo'shimcha uchun [.NET applicationlarga APM Agent qo'shish bo'yicha rasmiy qo'llanma](https://www.elastic.co/guide/en/apm/agent/dotnet/current/setup.html)
+## PHP
+
+Bu qismda biz PHP loyihalarga APM agent qo'shishni ko'rib chiqamiz.
+
+Serverimizga [`apm-agent-php`](https://github.com/elastic/apm-agent-php/releases)ni o'rnatib olamiz.
+
+**1->** Debian based serverlar uchun apm-php-agentni o'rntamiz.
+
+```bash
+sudo wget https://github.com/elastic/apm-agent-php/releases/download/v1.13.0/apm-agent-php_1.13.0_amd64.deb 
+sudo dpkg -i apm-agent-php_1.13.0_amd64.deb
+```
+Redhat based serverlar uchun
+
+```bash
+sudo wget https://github.com/elastic/apm-agent-php/releases/download/v1.13.0/apm-agent-php-1.13.0-1.x86_64.rpm
+sudo rpm -ivh apm-agent-php-1.13.0-1.x86_64.rpm
+```
+
+**2->** PHP loyihamizga APM Agent ulashning bir usuli bu `php.ini` fayliga quyidagi konfiguratsiyani qo'shishdir.
+
+```bash
+elastic_apm.server_url=http://10.128.0.12:8200
+elastic_apm.service_name="php-service"
+```
+Yoki loyiha `.env` fayliga qo'shish
+
+Yana bir usuli bu `export` orqali qo'shish
+
+```bash
+export elastic_apm.server_url=http://10.128.0.12:8200
+export elastic_apm.service_name="php-service"
+```
+Qo'shimcha uchun [PHP applicationlarga APM Agent qo'shish bo'yicha rasmiy qo'llanma](https://www.elastic.co/guide/en/apm/agent/php/current/intro.html)
+
