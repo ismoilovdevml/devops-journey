@@ -2,7 +2,13 @@ import { Callout } from "nextra-theme-docs";
 
 # APM Server Sozlash
 
-![elk-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/apm-server/banner.png)
+![apm-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/apm-server/banner.png)
+
+<Callout type="info" emoji="">
+**Diqqat!** 
+* Ushbu amaliyotni boshlash uchun [**ELK Stackga kirish**](https://devops-journey.uz/tutorials/article/elk-stack) va  [**ELK Stack Cluster o'rnatish va sozlash**](https://devops-journey.uz/tutorials/article/elk-setup) qo'llanmasini o'qib chiqgan bo'lishingiz kerak bo'ladi!
+* Sizda ELK stack bo'lishi kerak!
+</Callout>
 
 **A**pplication **P**erformance **M**onitoring (**APM**)  zamonaviy dasturiy ta'minotni ishlab chiqish va IT operatsiyalarining hal qiluvchi jihati hisoblanadi. APM dasturiy ta'minot ilovalarining ishlashi, mavjudligi(availability) va user experienceni kuzatish va boshqarish uchun toollar va amaliyotlardan foydalanishni o'z ichiga oladi. U applicationlarning qanday ishlashini ko'rish imkonini beradi, ishlash muammolari, qiyinchiliklar va anomaliyalarni aniqlash va hal qilishga yordam beradi. APM'ning maqsadi optimal ishlash va ishonchlilikni saqlab qolish orqali applicationlarning foydalanuvchi kutganlari va biznes talablariga javob berishini ta'minlashdan iborat.
 
@@ -36,3 +42,55 @@ APM keng qamrovli monitoring yechimini ta'minlash uchun birgalikda ishlaydigan b
 
 
 ## Ishni boshlash
+
+Ushbu amaliyotda biz APM server o'rnatib sozlaymiz va **Java, Node.js, Python(Django, Flask), Ruby on Rails, Rack, Go, .NET, PHP** environmentlarda APM agentni o'rnatib sozlashni ko'rib chiqamiz.
+
+APM ishlashi quyidagi rasmda tasvirlangan. Biz serverimizga APM Server o'rnatamiz va uni Elasticsearcha yo'naltiramiz. APM agentlarni esa har bir applicationimizga qo'shib chiqamiz. Applicationlarimiz ichidagi APM agent APM Serverga ma'lumotlarni yuborib turadi. APM Server esa uni ishlab Elasticsearchga yuboradi, Elasticsearchdan biz Kibana APM UI orqali uni vizualizatsiya qilib ko'rishimiz mumkin.
+
+![apm-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/apm-server/apm-architecture.png)
+
+## APM Server o'natish va solzash
+
+Keling [**ELK Stack Cluster o'rnatish va sozlash**](https://devops-journey.uz/tutorials/article/elk-setup) qo'llanmasidagi app-server(`10.128.0.12`) ga APM Server o'rnatamiz.
+
+**1->** APM Server o'rnatamiz.
+
+```bash
+curl -L -O https://artifacts.elastic.co/downloads/apm-server/apm-server-7.17.20-amd64.deb
+sudo dpkg -i apm-server-7.17.20-amd64.deb
+```
+
+**2->** APM Server `apm-server.yml` konfiguratsiya faylidan Elasticsearchga ulanishni kiritamiz va APM Serverga tashqaridan ulanishni yoqamiz.
+
+```bash
+sudo nano /etc/apm-server/apm-server.yml
+```
+
+```bash {5,13} filename="/etc/apm-server/apm-server.yml"
+################################ APM Server ################################
+
+apm-server:
+  # Defines the host and port the server is listening on. Use "unix:/path/to.sock" to listen on a unix domain socket.
+  host: "0.0.0.0:8200"
+
+#-------------------------- Elasticsearch output --------------------------
+output.elasticsearch:
+  # Array of hosts to connect to.
+  # Scheme and port can be left out and will be set to the default (`http` and `9200`).
+  # In case you specify and additional path, the scheme is required: `http://localhost:9200/path`.
+  # IPv6 addresses should always be defined as: `https://[2001:db8::1]:9200`.
+  hosts: ["10.128.0.9:9200"]
+```
+
+**3->** APM Sererni ishga tushiramiz.
+
+```bash
+sudo systemctl start apm-server
+sudo systemctl enable apm-server
+```
+
+Statusini tekshiramiz.
+
+```bash
+sudo systemctl status apm-server
+```
