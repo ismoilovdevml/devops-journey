@@ -427,6 +427,15 @@ Debian based uchun. Debian va Ubuntu uchun maxsus HAProxy versiylarini o'rnatish
 ```bash
 sudo apt install haproxy -y
 ```
+
+Ubuntu 20.04 uchun HAProxy 2.8 LTS
+
+```bash
+sudo apt-get install --no-install-recommends software-properties-common
+sudo add-apt-repository ppa:vbernat/haproxy-2.8
+sudo apt-get install haproxy=2.8.\*
+```
+
 Fedora uchun
 
 ```bash
