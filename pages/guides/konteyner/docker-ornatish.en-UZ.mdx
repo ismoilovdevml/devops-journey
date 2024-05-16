@@ -4,7 +4,7 @@ import { Callout } from "nextra-theme-docs";
 
 ![docker o'rnatish](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-ornatish.png)
 
-## Debian serverlar uchun docker o'rnatish
+## Ubuntu serverlar uchun docker o'rnatish
 
 Docker Engine-ni yangi host machinega birinchi marta o'rnatishdan oldin Docker repozitoriysini sozlashingiz kerak. Shundan so'ng siz Docker-ni repositorydan o'rnatishingiz va yangilashingiz mumkin.
 
@@ -19,14 +19,14 @@ Docker Engine-ni yangi host machinega birinchi marta o'rnatishdan oldin Docker r
 
 ```bash
 sudo install -m 0755 -d /etc/apt/keyrings
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-sudo chmod a+r /etc/apt/keyrings/docker.gpg
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
 ```
 **3->** Repositoriyani sozlash uchun quyidagi buyruqdan foydalaning:
 
 ```bash
 echo \
-  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
   $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
   sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 ```
@@ -66,6 +66,62 @@ sudo chown $USER:docker /var/run/docker.sock
 docker info
 ```
 </Callout>
+
+## Debian serverlarga docker o'rnatish.
+
+Docker Engine-ni yangi host machinega birinchi marta o'rnatishdan oldin Docker repozitoriysini sozlashingiz kerak. Shundan so'ng siz Docker-ni repositorydan o'rnatishingiz va yangilashingiz mumkin.
+
+<Callout type="info" emoji="">
+**Talablar**
+**OS talablari**
+
+**Docker Engine**-ni o'rnatish uchun sizga ushbu **Debian** versiyalaridan birining **64 bitli** versiyasi kerak bo'ladi:
+
+* **CentOS 7**
+* **Debian Bookworm 12 (stable)**
+* **Debian Bullseye 11 (oldstable)**
+
+**Debian** uchun **Docker Engine** `x86_64`(yoki `amd64`), `armhf`, `arm64` va `ppc64le` (`ppc64el`) arxitekturalari bilan mos keladi.
+</Callout>
+
+
+**1->** Repozitoriyani sozlash. `apt` paketi indeksini yangilang va aptga HTTPS orqali repositoriyadan foydalanishga ruxsat berish uchun paketlarni o'rnating:
+
+```bash
+ sudo apt-get update
+ sudo apt-get install ca-certificates curl gnupg -y
+ ```
+
+**2->** Dockerning rasmiy **GPG** kalitini qo'shing:
+
+```bash
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+```
+**3->** Repositoriyani sozlash uchun quyidagi buyruqdan foydalaning:
+
+```bash
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian \
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt-get update
+```
+
+**4->** `apt` paketi indeksini yangilang:
+
+```bash
+sudo apt-get update
+```
+
+**5->** Docker Engine, containerd va Docker Compose-ni o'rnating.
+
+Eng so'nggi versiyani(latest) o'rnatish uchun quyidagilarni bajaring:
+
+```bash
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin docker-compose -y
+```
 
 ## CentOS-ga Docker Engine o'rnatish
 CentOS-da Docker Engine bilan ishlashni boshlash uchun talab shartlarga javob berganingizga ishonch hosil qiling va keyin o'rnatish bosqichlarini bajaring.
@@ -163,7 +219,7 @@ sudo rm -rf /var/lib/containerd
 
 **Sana:** 2023.11.19(2023-yil 19-noyabr)
 
-**Oxirgi yangilanish:** 2024.01.10(2024-yil 10-yanvar)
+**Oxirgi yangilanish:** 2024.05.16(2024-yil 16-may)
 
 **Muallif: Otabek Ismoilov**
 
