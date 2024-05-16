@@ -11,6 +11,12 @@
     "description": "Linux serverlarga Docker o'rnatish",
     "href": "/guides/konteyner/docker-ornatish"
   },
+  "harbor-setup": {
+    "title": "Harbor CR",
+    "icon": "▶️",
+    "description": "Container Registry sozlash",
+    "href": "/guides/konteyner/harbor-setup"
+  },
   "docker-registry": {
     "title": "Docker Registry",
     "icon": "▶️",

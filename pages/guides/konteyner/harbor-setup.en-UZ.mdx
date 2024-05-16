@@ -1,0 +1,45 @@
+import { Callout } from "nextra-theme-docs";
+
+# Harbor Container Registry o'rnatish va sozlash
+
+![harbor](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/harbor-setup/banner.png)
+
+[**Harbor**](https://goharbor.io/) container image registryni self-hosting uchun [**open-source**](https://github.com/goharbor/harbor) yechimni taklif qiladi. Bu **C**loud **N**ative **C**omputing **F**oundation (**CNCF**) doirasidagi loyiha. Harbor access polisi va rollari, zaifliklarni(vulnerability) skanerlash va image signing kabi xususiyatlar bilan xavfsizlik va muvofiqlikni o'z dizayni markaziga qo'yadi.
+
+Minimal konfiguratsiya bilan Harbor Docker command-line interface (CLI) va **kubectl** kabi toolar bilan birlashadi. Docker CLI-dan siz imagelarni xavfsiz push qilish va pull qilib  olish uchun Harbor registryga kirishingiz mumkin. Kubernetes toollari ham sizning Harbor registringiz bilan ishonchli tarzda autentifikatsiya qilishi va registryda saqlangan imagelardan konteynerlarni to'g'ridan-to'g'ri joylashtirish imkonini beradi.
+
+
+## Ishni boshlash
+Ushbu amaliyotda biz Harborni VM serverga o'rnatamiz, agar hohlasangiz Kubernetesga ham o'rnatishingiz mumkin.
+Amaliyotni amalga oshirish uchun bizga quyidagi minimum server talablaridagi server kerak bo'ladi.
+
+<Callout type="info" emoji="">
+**Minimum Server talabi**
+
+| Host        | OS            | RAM            | CPU           | Xotira       | Static IP   |
+| ----------- | ------------- | -------------- | ------------- |------------- | ----------- |
+|  harbor     | Ubuntu 20.04  | 8GB            | 4vCPU,2 core  | 100GB        | Ha kerak    |
+
+</Callout>
+
+## DNS sozlash
+
+Harbor container registryni o'rnatishimiz uchun bizgda domen kerak bo'ladi. DNS hostingizdan domenga Harbor ishlab turgan server static IP manzilini qo'shishingiz kerak bo'ladi.
+
+Quyida [**ahost.uz**](https://www.ahost.uz/) DNS hostiga namuna ko'rsatilgan.
+
+Kerakli domen sozlamalariga kirib **DNS xosting** bo'limga o'ting sizda quyidagi oyna ochilishi kerak.
+
+![harbor](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/harbor-setup/dns.png)
+
+Bu yerdan siz domen o'ziga yoki subdomenga Harbor server static IP maznilini ko'rsatishingiz kerak bo'ladi. Bizda [**helm.uz**](https://helm.uz) domenimiz bor keling unga **harbor** subdomen qo'shamiz.
+
+* **Name->** subdomen nomi
+* **Type->** A
+* **TTL->** 14440
+* **RDATA->** harbor server Static IP manzili
+
+![harbor](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/harbor-setup/dns2.png)
+
+## Docker o'rnatish.
+
