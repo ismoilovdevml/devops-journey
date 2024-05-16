@@ -39,10 +39,12 @@ quyidagi arxitekturalar bo'yicha:
 Apt Repositorydan foydalanib PostgreSQL-ni o'rnatish:
 
 ```bash
-sudo sh -c 'echo "deb https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
-wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
-sudo apt-get update
-sudo apt-get -y install postgresql
+sudo apt install curl ca-certificates
+sudo install -d /usr/share/postgresql-common/pgdg
+sudo curl -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc --fail https://www.postgresql.org/media/keys/ACCC4CF8.asc
+sudo sh -c 'echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+sudo apt update
+sudo apt -y install postgresql
 ```
 
 ## Debian serverlarga Postgres o'rnatish
@@ -64,10 +66,12 @@ quyidagi arxitekturalar bo'yicha:
 Postgresqlni Debianga o'rnatish quyidagicha:
 
 ```bash
-sudo sh -c 'echo "deb https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
-wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
-sudo apt-get update
-sudo apt-get -y install postgresql
+sudo apt install curl ca-certificates
+sudo install -d /usr/share/postgresql-common/pgdg
+sudo curl -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc --fail https://www.postgresql.org/media/keys/ACCC4CF8.asc
+sudo sh -c 'echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+sudo apt update
+sudo apt -y install postgresql
 ```
 
 ## Redhat oilasiga mansub linux serverlar
@@ -135,6 +139,15 @@ sudo systemctl start postgresql-16
 
 ```bash
 sudo dnf install -y https://download.postgresql.org/pub/repos/yum/reporpms/F-39-x86_64/pgdg-fedora-repo-latest.noarch.rpm
+sudo dnf install -y postgresql16-server
+sudo /usr/pgsql-16/bin/postgresql-16-setup initdb
+sudo systemctl enable postgresql-16
+sudo systemctl start postgresql-16
+```
+**Fedora 40(x86_64)**
+
+```bash
+sudo dnf install -y https://download.postgresql.org/pub/repos/yum/reporpms/F-40-x86_64/pgdg-fedora-repo-latest.noarch.rpm
 sudo dnf install -y postgresql16-server
 sudo /usr/pgsql-16/bin/postgresql-16-setup initdb
 sudo systemctl enable postgresql-16
@@ -389,7 +402,7 @@ E'tibor bering birinchi marta postgres user bilan kirganimizda terminal `postgre
 
 **Sana:** 2023.08.17(2023-yil 17-avgust)
 
-**Oxirgi yangilanish:** 2024.02.08(2024-yil 8-fevral)
+**Oxirgi yangilanish:** 2024.05.16(2024-yil 16-may)
 
 **Muallif: Otabek Ismoilov**
 
