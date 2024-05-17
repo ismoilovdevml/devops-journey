@@ -43,3 +43,119 @@ Bu yerdan siz domen o'ziga yoki subdomenga Harbor server static IP maznilini ko'
 
 ## Docker o'rnatish.
 
+Harborni ishga tushirish uchun serverimizga Docker va Docker Compose o'rnatib olishimiz kerak bo'ladi. Dokcer va Docker Compose o'rnatish bo'yicha [**Linux serverlarga Docker o'rnatish**](https://devops-journey.uz/guides/konteyner/docker-ornatish) qo'llanmasi orqali o'rnatib olishingiz mumkin.
+
+Ubuntu serverlarga Docker va Docker Compose o'rnatish.
+
+**1->** Repozitoriyani sozlash. `apt` paketi indeksini yangilang va aptga HTTPS orqali repositoriyadan foydalanishga ruxsat berish uchun paketlarni o'rnating:
+
+```bash
+ sudo apt-get update
+ sudo apt-get install ca-certificates curl gnupg -y
+ ```
+
+**2->** Dockerning rasmiy **GPG** kalitini qo'shing:
+
+```bash
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+```
+**3->** Repositoriyani sozlash uchun quyidagi buyruqdan foydalaning:
+
+```bash
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+```
+
+**4->** `apt` paketi indeksini yangilang
+
+```bash
+sudo apt-get update
+```
+
+**5->** Docker Engine, containerd va Docker Compose-ni o'rnatamiz.
+
+Eng so'nggi versiyani(latest) o'rnatish uchun quyidagilarni bajaring.
+
+```bash
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin docker-compose -y
+```
+
+**6->** Dockerni ishga tushiramiz, statusini ko'ramiz va server o'chib yonganida avtomatik ishga tushishini yoqamiz.
+
+```bash
+sudo ssystemctl enable docker
+sudo systemctl enable docker
+sudo systemctl status docker
+```
+
+## SSL Sertifikat olish
+
+**SSL**dan foydalanish port serveriga va undan keladigan trafikni himoya qilish imkonini beradi. Harborda o'zining proxysi mavjud bo'lib Nginx o'rnatib sozlashga shart emas.
+
+Web server HTTPS requestlarini qabul qilishidan oldin ishonchli sertifikat markazi tomonidan imzolangan public-key sertifikatiga ega bo'lishi kerak. **Let's Encrypt** - bu vakolatlarning eng keng tarqalganlaridan biri. U asosiy **SSL/TLS** sertifikatlarini tegishli veb-saytlarga tarqatuvchi bepul avtomatlashtirilgan xizmatni boshqaradi. Let's Encrypt sertifikat berish jarayonini sinovga javob berish usuli orqali avtomatlashtirish uchun Automatic Certificate Management Environment (ACME) protokolidan foydalanadi. [**Let's Encrypt**](https://letsencrypt.org/how-it-works/) rasmiy saytida domenni tekshirish haqida batafsilroq texnik ma'lumotlarni taqdim teilgan.
+
+**Certbot** HTTPS-ni yoqish orqali veb-xavfsizlikni yaxshilash maqsadida **Electronic Frontier Foundation (EFF)** tomonidan ishlab chiqilgan. U ko'pgina operatsion tizimlar, shuningdek, Apache va NGINX kabi eng mashhur veb-server dasturlari bilan mos keladi. Certbot sertifikatni so'rash, ACME bo'yicha barcha talablarni bajarish, sertifikatni o'rnatish va veb-serverni sozlash uchun **Let's Encrypt** bilan bog'lanish uchun javobgardir. Shuningdek, u sertifikatni yangilash jarayonini avtomatik ravishda boshqarishi mumkin. Qo'shimcha ma'lumot uchun Certbot veb-saytidagi [**About Certbot**](https://certbot.eff.org/pages/about) sahifasini ko'rib chiqishingiz mumkin.
+
+**1->** Serverimizga **certbot** o'rnatib olamiz.
+
+```bash
+sudo apt update
+sudo apt install certbot
+```
+
+**2->** domenimiz uchun SSL sertifikat olamiz, bunihc uchun domenimiz DNS hostga serverimiz static IP manzili bog'langan bo'lishi kerak.
+
+```bash
+sudo certbot certonly --standalone -d harbor.helm.uz
+```
+Sizda rasmdagidek natija chiqishi kerak.
+![harbor](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/harbor-setup/ssl2.png)
+
+[**harbor.helm.uz**]() domenimiz uchun SSL sertifikat quiyidagi papkada joylashganini ko'rsatadi.
+
+```bash
+Certificate: /etc/letsencrypt/live/harbor.helm.uz/fullchain.pem
+Key:  /etc/letsencrypt/live/harbor.helm.uz/privkey.pem
+```
+
+## Harbor o'rnatish
+
+Harbor [relizlar sahifasidan](https://github.com/goharbor/harbor/releases/latest) eng so'nggi(latest) Harbor installerini bilan paketini yuklab oling . Siz onlayn yoki oflayn installerini tanlashingiz mumkin.
+
+**1->** Ushbu u script orqali buni osonlashtirishimiz mumkin. Bu script Harbor releaselarda latest offline installerini yuklab oladi.
+
+
+```bash
+curl -s https://api.github.com/repos/goharbor/harbor/releases/latest \
+| grep "browser_download_url.*harbor-offline-installer.*.tgz\"" \
+| tail -n 1 \
+| cut -d : -f 2,3 \
+| tr -d \" \
+| wget -O harbor-offline-installer.tgz -qi -
+```
+
+Yoki sizga biror versiya kerak bo'lsa release sahifasidan offline installerni yuklab olaszi.
+
+```bash /v2.10.2/
+sudo wget https://github.com/goharbor/harbor/releases/download/v2.10.2/harbor-offline-installer-v2.10.2.tgz
+```
+
+Harbor installerini o'rnatishdan keyin ham saqlab qo'yishingiz kerak, chunki u keyinchalik konfiguratsiya o'zgarishlarini amalga oshirish uchun skriptlarni o'z ichiga oladi.
+**2->** Yuklab olgan latest offline harbor isntallerni arxivdan chiqarib olamiz.
+
+```bash
+tar xzvf harbor-offline-installer.tgz
+```
+
+**3->** `harbor` papakga kirib `harbor.yml.tmpl` namuna konfiguratsiya faylini `harbor.yml` o'zgartiramiz, bu bizning asosiy Harbor konfiguratsiya faylimiz bo'ladi.
+
+```bash
+cd harbor
+cp harbor.yml.tmpl harbor.yml
+```
+
+**4->** 
