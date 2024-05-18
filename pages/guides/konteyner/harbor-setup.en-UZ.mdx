@@ -94,7 +94,7 @@ sudo systemctl status docker
 
 ## SSL Sertifikat olish
 
-**SSL**dan foydalanish port serveriga va undan keladigan trafikni himoya qilish imkonini beradi. Harborda o'zining proxysi mavjud bo'lib Nginx o'rnatib sozlashga shart emas.
+**SSL**dan foydalanish port serveriga va undan keladigan trafikni himoya qilish imkonini beradi. Harborda o'zida Nginx mavjud bo'lib Nginx o'rnatib sozlamaymiz.
 
 Web server HTTPS requestlarini qabul qilishidan oldin ishonchli sertifikat markazi tomonidan imzolangan public-key sertifikatiga ega bo'lishi kerak. **Let's Encrypt** - bu vakolatlarning eng keng tarqalganlaridan biri. U asosiy **SSL/TLS** sertifikatlarini tegishli veb-saytlarga tarqatuvchi bepul avtomatlashtirilgan xizmatni boshqaradi. Let's Encrypt sertifikat berish jarayonini sinovga javob berish usuli orqali avtomatlashtirish uchun Automatic Certificate Management Environment (ACME) protokolidan foydalanadi. [**Let's Encrypt**](https://letsencrypt.org/how-it-works/) rasmiy saytida domenni tekshirish haqida batafsilroq texnik ma'lumotlarni taqdim teilgan.
 
@@ -158,4 +158,71 @@ cd harbor
 cp harbor.yml.tmpl harbor.yml
 ```
 
-**4->** 
+**4->** Asosiy `harbor.yml` konfiguratsiyani o'zizmizga moslab konfiguratsiya qilib olamiz.
+
+ushbu konfiguratsiyada `hostname:`ga domenimiz yozamiz va SSL sertifikatimiz va keyini pathini beramiz.
+```bash {1,13-14}
+hostname: harbor.helm.uz
+
+# http related config
+http:
+  # port for http, default is 80. If https enabled, this port will redirect to https port
+  port: 80
+
+# https related config
+https:
+  # https port for harbor, default is 443
+  port: 443
+  # The path of cert and key files for nginx
+  certificate: /etc/letsencrypt/live/harbor.helm.uz/fullchain.pem
+  private_key: /etc/letsencrypt/live/harbor.helm.uz/privkey.pem
+  # enable strong ssl ciphers (default: false)
+  # strong_ssl_ciphers: false
+```
+Bu qismda Harbor uchun birinchi kirish admin parolini o'zgartirasiz. Xavfsizlik uchun default parolni o'zgartiring va parol generatsiya qilib qo'ying.
+```bash {4}
+# The initial password of Harbor admin
+# It only works in first time to install harbor
+# Remember Change the admin password from UI after launching Harbor.
+harbor_admin_password: Harbor12345
+```
+Bu qismda Harbor DB konfiguratsiya qilamiz DB parolini xavfsiz uchun o'zgartiring.
+
+```bash {4}
+# Harbor DB configuration
+database:
+  # The password for the root user of Harbor DB. Change this before any production use.
+  password: root123
+  # The maximum number of connections in the idle connection pool. If it <=0, no idle connections are retained.
+  max_idle_conns: 100
+  # The maximum number of open connections to the database. If it <= 0, then there is no limit on the number of open connections.
+  # Note: the default number of connections is 1024 for postgres of harbor.
+  max_open_conns: 900
+  # The maximum amount of time a connection may be reused. Expired connections may be closed lazily before reuse. If it <= 0, connections are not closed due to a connection's age.
+  # The value is a duration string. A duration string is a possibly signed sequence of decimal numbers, each with optional fraction and a unit suffix, such as "300ms", "-1.5h" or "2h45m". V>
+  conn_max_lifetime: 5m
+  # The maximum amount of time a connection may be idle. Expired connections may be closed lazily before reuse. If it <= 0, connections are not closed due to a connection's idle time.
+  # The value is a duration string. A duration string is a possibly signed sequence of decimal numbers, each with optional fraction and a unit suffix, such as "300ms", "-1.5h" or "2h45m". V>
+  conn_max_idle_time: 0
+
+# The default data volume
+data_volume: /data
+```
+
+**5->** Konfiguratsiyani o'zingizga moslab olganingizdan keyin `install.sh` bash scriptni ishga tushirish orqali Harborni o'rnatamiz.
+
+```bash
+sudo ./install.sh
+```
+Harbor muvaffaqiyatli o'rnatilsa rasmdagidek natija chiqishi kerak.
+![harbor](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/harbor-setup/start.png)
+
+## Harbor bilan ishlash
+
+Harborni muvaffaqiyatli o'rnatib ishga tushirganimizdan keyin, Harbor domenimizga brauzer orqali kiramiz, sizda quyidagicha oyna ochilishi kerak.
+
+![harbor](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/harbor-setup/dashboard.png)
+
+Birinchi krishingzida `admin` user bilan kirasiz default parol esa `harbor.yml` konfiguratsiyadagi parolimiz.
+
+![harbor](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/harbor-setup/harbor2.png)
