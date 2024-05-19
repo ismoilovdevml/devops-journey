@@ -1,0 +1,35 @@
+import { Callout } from "nextra-theme-docs";
+
+# Linux xavfsizligi bo'yicha bosqichma-bosqich qo'llanma
+
+![apm-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/linux-security/banner.png)
+
+Linux serverlarining xavfsizligini ta'minlash system administratorlari va IT mutaxassislari uchun muhim vazifadir. Kibertahdidlar tobora murakkablashib borayotganligi sababli, maxfiy ma'lumotlarni himoya qilish va server muhitlarining yaxlitligini saqlash uchun mustahkam xavfsizlik choralarini ko'rish zarur. Ushbu qo'llanma Linux serverlarini himoya qilish bo'yicha eng yaxshi amaliyotlar va muhim texnikalar haqida to'liq ma'lumot berishga qaratilgan.
+
+Linux keng qo'llaniladigan va open-source operatsion tizim bo'lib, xavfsizlikni kuchaytirish uchun ishlatilishi mumkin bo'lgan ko'plab toollar va konfiguratsiyalarni taklif etadi. Biroq, Linuxni mashhur tanlovga aylantiradigan moslashuvchanlik va quvvat ham xavfsiz tizimni saqlashda qiyinchiliklar tug'diradi. Ushbu qo'llanma server xavfsizligining asosiy sohalarini, jumladan SSH xavfsizligi, tarmoq konfiguratsiyasi, vaqtni sinxronlashtirish, kernel hardening, root foydalanuvchisini boshqarish va boshqalar o'z ichiga oladi.
+
+<Callout type="info" emoji="">
+**Diqqat!** 
+* Ushbu qo'llanman asosan Debian based serverlar uchun, lekin ushnu qo'lanmadagi tavsiyalarni barcha linux distribituvlarida qo'lashingiz mumkin.
+</Callout>
+
+
+## Barcha paketlarning latest(so'ngi) versiyasini o'rnating.
+
+Serveringiz barcha o'rnatilgan paketlarning latest versiyalari bilan ishlayotganini ta'minlash tizimingizni himoya qilishning birinchi muhim qadamidir. Dasturiy ta'minot yangilanishlari ko'pincha tajovuzkorlar tomonidan ishlatilishi mumkin bo'lgan zaifliklar uchun patchlarni o'z ichiga oladi. Eskirgan dasturiy ta'minotni ishga tushirish ushbu zaifliklardan foydalanish xavfini oshiradi. Yangilanishlar nosozliklar yoki boshqa beqarorlik muammolariga olib kelishi mumkin bo'lgan xatolar uchun tuzatishlarni ham o'z ichiga oladi. Dasturiy ta'minotni yangilab turish sizga eng so'nggi xususiyatlar va yaxshilanishlardan foydalanishingizni ta'minlaydi.
+
+
+```bash
+sudo apt update
+```
+Ushbu buyruq paketlar indeksini yangilaydi, bu mavjud paketlar va ularning versiyalari recordlarini o'z ichiga olgan ma'lumotlar bazasi. Ushbu buyruqni ishga tushirish orqali siz paket menejerida mavjud yangilanishlar haqida eng so'nggi ma'lumotlarga ega ekanligiga ishonch hosil qilasiz.
+
+```bash
+sudo apt upgrade
+```
+Ushbu buyruq barcha o'rnatilgan paketlarni latest(eng so'nggi) versiyalarga yangilaydi. U paketlar indeksida ko'rsatilgan paketlarning yangi versiyalarini yuklab oladi va o'rnatadi. Bu sizning barcha xavfsizlik patchlari qo'llanilgan latest dasturiy ta'minotni ishga tushirishingizni ta'minlaydi.
+
+```bash
+sudo apt autoremove
+```
+Bu buyruq boshqa paketlar uchun bog'liqlikni(dependenci) qondirish uchun avtomatik ravishda o'rnatilgan va endi kerak bo'lmagan paketlarni olib tashlaydi. Tizimingizda keraksiz paketlarni saqlash xavfsizlikka xavf tug'dirishi va qimmatli disk maydonini iste'mol qilishi mumkin.
