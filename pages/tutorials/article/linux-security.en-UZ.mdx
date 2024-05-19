@@ -2,7 +2,7 @@ import { Callout } from "nextra-theme-docs";
 
 # Linux xavfsizligi bo'yicha bosqichma-bosqich qo'llanma
 
-![apm-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/linux-security/banner.png)
+![linux-security](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/linux-security/banner.png)
 
 Linux serverlarining xavfsizligini ta'minlash system administratorlari va IT mutaxassislari uchun muhim vazifadir. Kibertahdidlar tobora murakkablashib borayotganligi sababli, maxfiy ma'lumotlarni himoya qilish va server muhitlarining yaxlitligini saqlash uchun mustahkam xavfsizlik choralarini ko'rish zarur. Ushbu qo'llanma Linux serverlarini himoya qilish bo'yicha eng yaxshi amaliyotlar va muhim texnikalar haqida to'liq ma'lumot berishga qaratilgan.
 
@@ -112,4 +112,129 @@ Serverning ICMP echo requestlariga (pinglarga) javob berishini oldini oladi. Pin
 ```bash
 sudo sysctl -p
 ```
-Kernelning mustahkamlanishi tizimni umumiy tarmoq hujumlariga nisbatan chidamliroq qilib sozlash orqali serveringizning xavfsizlik holatini yaxshilaydi. Ushbu sozlamalar **IP spoofing, ICMP-based attacks, SYN flood attacks**lari va ruxsatsiz marshrutni(unauthorized routing) o'zgartirish kabi xavflarni kamaytirishga yordam beradi. Ushbu konfiguratsiyalarni qo'llash orqali siz serveringizning xavfsizlik tizimiga muhim himoya qatlamini qo'shasiz
+![linux-security](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/linux-security/kernel.png)
+
+Kernelning mustahkamlanishi tizimni umumiy tarmoq hujumlariga nisbatan chidamliroq qilib sozlash orqali serveringizning xavfsizlik holatini yaxshilaydi. Ushbu sozlamalar **IP spoofing, ICMP-based attacks, SYN flood attacks**lari va ruxsatsiz marshrutni(unauthorized routing) o'zgartirish kabi xavflarni kamaytirishga yordam beradi. Ushbu konfiguratsiyalarni qo'llash orqali siz serveringizning xavfsizlik tizimiga muhim himoya qatlamini qo'shasiz.
+
+##  SSH portini o'zgartiring
+
+Standart SSH portini o'zgartirish serveringiz xavfsizligini oshirishning oddiy, ammo samarali usulidir. SSH-ni nostandart portga ko'chirish orqali siz avtomatik hujumlar va standart SSH portiga (22) qaratilgan portlarni skanerlash xavfini kamaytirishingiz mumkin. Ko'pgina avtomatlashtirilgan skriptlar va botlar standart portdagi ochiq SSH portlarini qidiradi (22). Portni o'zgartirish ushbu avtomatlashtirilgan hujumlar sizning SSH xizmatingizni topish ehtimolini kamaytiradi. Noma'lumlik orqali xavfsizlik sizning yagona himoyangiz bo'lmasa-da, u tajovuzkorlarga SSH xizmatingizni topishni biroz qiyinlashtirib, qo'shimcha himoya qatlamini qo'shishi mumkin. Portni o'zgartirish orqali siz log fayllaringizga ruxsatsiz kirish urinishlarini(unauthorized access attempt) kamroq ko'rasiz, bu esa haqiqiy tahdidlarni aniqlashni osonlashtiradi.
+
+SSH portini o'zgartirish uchun SSH daemon configuration faylini o'zgartirishimiz kerak bo'ladi.
+
+```bash
+sudo nano /etc/ssh/sshd_config
+```
+
+Port raqamini ko'rsatadigan qatorni toping va portni o'zgartiring masalan 9876
+
+```bash filename="/etc/ssh/sshd_config"
+Port 9876
+```
+Bu satr SSH demoni tinglaydigan port raqamini belgilaydi. Ushbu qiymatni o'zgartirish orqali siz SSH xizmatini boshqa portdagi ulanishlarni tinglashga yo'naltirasiz.
+
+O'zgarishlarni saqlab chiqganingizdan keyin, yangi konfiguratsiyalarni qo'llash uchun SSH serviceni restart berish kerak bo'ladi.
+
+```bash
+sudo ssystemctl restart ssh
+```
+
+Endi siz serverga ssh orqali quyidagicha kirishingiz mumkin.
+
+```bash
+ssh -p 9876 myuser@server_ip
+```
+
+## User yaratish va Root Loginni o'chirish
+
+Yangi foydalanuvchi yaratish va **root** login bilan tizimga kirishni o'chirib qo'yish ruxsatsiz kirish xavfini kamaytirish orqali serveringiz xavfsizligini oshiradi. Ma'muriy vazifalar uchun **root** bo'lmagan foydalanuvchidan foydalanish orqali siz potentsial xavfsizlik buzilishlarining ta'sirini kamaytirishingiz mumkin. To'g'ridan-to'g'ri rootga kirish juda imtiyozli va agar buzilgan bo'lsa, tizimni umumiy boshqarishga olib kelishi mumkin. rootga kirishni cheklash xavfni kamaytiradi. Muayyan foydalanuvchilar tomonidan amalga oshirilgan harakatlar logga kiritilishi va tekshirilishi mumkin, bu o'zgarishlarni kuzatish va zararli faoliyatni aniqlashni osonlashtiradi.
+
+Keling yangi user yaratib olamiz, masalan **mansur**.
+
+```bash
+sudo adduser mansur
+```
+![linux-security](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/linux-security/user.png)
+
+home directory va default konfiguratsiya fayllari bilan tizimga yangi user qo'shadi.
+
+Ma'muriy imtiyozlarni(administrative privileges) berish uchun yangi foydalanuvchini `sudo` groupga qo'shamiz.
+
+```bash
+sudo usermod -aG sudo mansur
+```
+
+SSH konfiguratsiyasi yangi user uchun ulanishga ruxsat berishni yoqamiz.
+
+```bash
+sudo nano /etc/ssh/sshd_config
+```
+Konfiguratsiyadan `AllowUsers`ni qidiring agar bo'lmasa qo'shing va userni kiriting.
+
+```bash filename="/etc/sshd_config"
+AllowUsers mansur
+```
+root orqali ulanishni o'chiramiz. konfiguratsiyadan `PermitRootLogin` yopib uni o'chirib qo'yamiz.
+```bash
+PermitRootLogin no
+```
+SSH orqali rootga kirishni o'chirib qo'yadi.
+
+Yangi konfiguratsiyani ishga tushirish uchun SSH servicega restart beramiz.
+
+```bash
+sudo systemctl restart ssh
+```
+
+## Password Authenticationni o'chirib SSH Public Key Authenticationni yoqamiz.
+
+Parolni autentifikatsiya qilishni o'chirib qo'yish va SSH key-based autentifikatsiyani yoqish serveringiz xavfsizligini sezilarli darajada oshiradi. SSH kalitlari parollarga qaraganda ancha xavfsizroq va shafqatsiz kuch hujumlarining oldini olishga yordam beradi.
+
+O'zingizning local kompyuteringizda ssh key yaratib oling.
+
+```bash
+ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
+```
+Sizga  `~/.ssh/` papkasida ikkita key yaratiladi, bular `id_rsa` private key va `id_rsa.pub` public key.
+
+`id_rsa.pub` public keyni server `~/.ssh/authorized_keys`ga qo'shib qo'yish kerak bo'ladi.
+
+Local kompyuterimizdagi `id_rsa.pub` key ni cat orqali chiqarib nusxa olamiz.
+
+```bash
+cat ~/.ssh/id_rsa.pub
+
+```
+
+Serverga kirib esa uhsbu buyruqni kiritamiz.
+
+```bash
+cat >> ~/.ssh/authorized_keys <<EOF
+bu yerga local kompyuterimizdan olgan id_rsa.pub ssh-keyimizni joylashtiramiz
+EOF
+```
+
+Serverimizda Password Authenticationni o'chiramiz.
+
+```bash
+sudo nano /etc/ssh/sshd_config
+```
+
+Konfiguratsiyaga quyidagi o'zgarishlarni kiritamiz.
+
+* Password Authenticationi o'chirish uchun
+```bash
+PasswordAuthentication no
+```
+* Public Key Authenticationni yoqish uchun
+```bash
+PubkeyAuthentication yes
+```
+
+O'zgarishlarni saqlab SSH servicega restart beramiz.
+
+```bash
+sudo systemctl restart ssh
+```
+
+Bu konfiguratsiyalardan keyin serverga faqat `authorized_keys`da public keylari qo'shilgan userlarigina kira oladi xolos. Parolni autentifikatsiya qilishni o'chirib qo'yish va SSH kalitiga asoslangan autentifikatsiyani yoqish serveringiz xavfsizligini sezilarli darajada yaxshilaydi. SSH kalitlarini qo'pol kuch ishlatish deyarli mumkin emas va serveringizga kirishning xavfsiz, qulay usulini ta'minlaydi.
