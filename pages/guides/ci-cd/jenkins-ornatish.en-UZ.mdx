@@ -56,11 +56,11 @@ java -version
 ```bash
 sudo wget -O /usr/share/keyrings/jenkins-keyring.asc \
   https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
-echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] \
+echo "deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc]" \
   https://pkg.jenkins.io/debian-stable binary/ | sudo tee \
   /etc/apt/sources.list.d/jenkins.list > /dev/null
 sudo apt-get update
-sudo apt-get install jenkins -y
+sudo apt-get install jenkins
 ```
 
 **3-> Haftalik Release(ixtiyoriy)**
@@ -70,11 +70,11 @@ Foydalanuvchilar va plaginlarni ishlab chiquvchilarga xatolarni tuzatish va xusu
 ```bash
 sudo wget -O /usr/share/keyrings/jenkins-keyring.asc \
   https://pkg.jenkins.io/debian/jenkins.io-2023.key
-echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] \
+echo "deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc]" \
   https://pkg.jenkins.io/debian binary/ | sudo tee \
   /etc/apt/sources.list.d/jenkins.list > /dev/null
 sudo apt-get update
-sudo apt-get install jenkins -y
+sudo apt-get install jenkins
 ```
 
 
@@ -230,7 +230,7 @@ Qo'shimcha Resurslar
 
 **Sana:** 2023.11.19(2023-yil 19-noyabr)
 
-**Oxirgi yangilanish:** 2024.01.09(2024-yil 9-yanvar)
+**Oxirgi yangilanish:** 2024.05.19(2024-yil 19-may)
 
 **Muallif: Otabek Ismoilov**
 
