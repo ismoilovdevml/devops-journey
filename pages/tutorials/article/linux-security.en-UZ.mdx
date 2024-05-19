@@ -10,13 +10,13 @@ Linux keng qo'llaniladigan va open-source operatsion tizim bo'lib, xavfsizlikni 
 
 <Callout type="info" emoji="">
 **Diqqat!** 
-* Ushbu qo'llanman asosan Debian based serverlar uchun, lekin ushnu qo'lanmadagi tavsiyalarni barcha linux distribituvlarida qo'lashingiz mumkin.
+* Ushbu qo'llanman asosan Debian based serverlar uchun, lekin ushbu qo'lanmadagi tavsiyalarni barcha linux distribituvlarida qo'lashingiz mumkin.
 </Callout>
 
 
 ## Barcha paketlarning latest(so'ngi) versiyasini o'rnating.
 
-Serveringiz barcha o'rnatilgan paketlarning latest versiyalari bilan ishlayotganini ta'minlash tizimingizni himoya qilishning birinchi muhim qadamidir. Dasturiy ta'minot yangilanishlari ko'pincha tajovuzkorlar tomonidan ishlatilishi mumkin bo'lgan zaifliklar uchun patchlarni o'z ichiga oladi. Eskirgan dasturiy ta'minotni ishga tushirish ushbu zaifliklardan foydalanish xavfini oshiradi. Yangilanishlar nosozliklar yoki boshqa beqarorlik muammolariga olib kelishi mumkin bo'lgan xatolar uchun tuzatishlarni ham o'z ichiga oladi. Dasturiy ta'minotni yangilab turish sizga eng so'nggi xususiyatlar va yaxshilanishlardan foydalanishingizni ta'minlaydi.
+Serveringiz barcha o'rnatilgan paketlarning **latest** versiyalari bilan ishlayotganini ta'minlash tizimingizni himoya qilishning birinchi muhim qadamidir. Dasturiy ta'minot yangilanishlari ko'pincha tajovuzkorlar tomonidan ishlatilishi mumkin bo'lgan zaifliklar uchun patchlarni o'z ichiga oladi. Eskirgan dasturiy ta'minotni ishga tushirish ushbu zaifliklardan foydalanish xavfini oshiradi. Yangilanishlar nosozliklar yoki boshqa beqarorlik muammolariga olib kelishi mumkin bo'lgan xatolar uchun tuzatishlarni ham o'z ichiga oladi. Dasturiy ta'minotni yangilab turish sizga eng so'nggi xususiyatlar va yaxshilanishlardan foydalanishingizni ta'minlaydi.
 
 
 ```bash
@@ -34,7 +34,7 @@ sudo apt autoremove
 ```
 Bu buyruq boshqa paketlar uchun bog'liqlikni(dependenci) qondirish uchun avtomatik ravishda o'rnatilgan va endi kerak bo'lmagan paketlarni olib tashlaydi. Tizimingizda keraksiz paketlarni saqlash xavfsizlikka xavf tug'dirishi va qimmatli disk maydonini iste'mol qilishi mumkin.
 
-Sererni yangilab olganimizdan keyin vaqtni aniq qilib sozlashimiz kerak, bu juda muhim hisoblanadi.
+Serverni yangilab olganimizdan keyin vaqtni aniq qilib sozlashimiz kerak, bu juda muhim hisoblanadi.
 
 Serverimizda Time Zonani belgilaymiz, masalan Asia/Tashkent
 
@@ -66,7 +66,7 @@ Kernelni mustahkamlash xavfsizlik va hujumlarga chidamliligini oshirish uchun ma
 * **ICMP Redirectlariga e'tibor bermaslik->** Tajovuzkorlarning aloqani to'xtatish yoki o'zgartirish uchun ishlatilishi mumkin bo'lgan tarmoq trafigini qayta yo'naltirishini oldini oladi.
 * **Directed Pinglarni e'tiborsiz qoldirsh->** ICMP-based attackalar xavfini kamaytiradi.
 
-Buning uchun `sysctl.conf` konfiguratsiya faylini nano yoki vim matn muharrida ochib olamiz.
+Buning uchun `sysctl.conf` konfiguratsiya faylini nano yoki vim matn muharririda ochib olamiz.
 
 ```bash
 sudo nano /etc/sysctl.conf
@@ -127,7 +127,7 @@ net.ipv4.icmp_echo_ignore_all = 1
 ```
 Serverning ICMP echo requestlariga (pinglarga) javob berishini oldini oladi. Ping requestlariga javob bermaslik orqali ICMP-based attackalar xavfini kamaytiradi, shu bilan serverni tarmoqda kamroq ko'rinadigan qiladi.
 
-`sysctl` konfiguratsiyaga o'zgartishlarni kritganimizdan keyin o'zgarishlarni apply ishga tushiramiz.
+`sysctl` konfiguratsiyaga o'zgartishlarni kiritganimizdan keyin o'zgarishlarni apply qilib ishga tushiramiz.
 
 ```bash
 sudo sysctl -p
@@ -146,7 +146,7 @@ SSH portini o'zgartirish uchun SSH daemon configuration faylini o'zgartirishimiz
 sudo nano /etc/ssh/sshd_config
 ```
 
-Port raqamini ko'rsatadigan qatorni toping va portni o'zgartiring masalan 9876
+Port raqamini ko'rsatadigan qatorni toping va portni o'zgartiring masalan `9876`
 
 ```bash filename="/etc/ssh/sshd_config"
 Port 9876
@@ -194,7 +194,7 @@ Konfiguratsiyadan `AllowUsers`ni qidiring agar bo'lmasa qo'shing va userni kirit
 ```bash filename="/etc/sshd_config"
 AllowUsers mansur
 ```
-root orqali ulanishni o'chiramiz. konfiguratsiyadan `PermitRootLogin` yopib uni o'chirib qo'yamiz.
+root orqali ulanishni o'chiramiz. konfiguratsiyadan `PermitRootLogin` topib uni o'chirib qo'yamiz.
 ```bash
 PermitRootLogin no
 ```
@@ -223,10 +223,9 @@ Local kompyuterimizdagi `id_rsa.pub` key ni cat orqali chiqarib nusxa olamiz.
 
 ```bash
 cat ~/.ssh/id_rsa.pub
-
 ```
 
-Serverga kirib esa uhsbu buyruqni kiritamiz.
+Serverga kirib esa ushbu buyruqni kiritamiz.
 
 ```bash
 cat >> ~/.ssh/authorized_keys <<EOF
@@ -257,7 +256,7 @@ O'zgarishlarni saqlab SSH servicega restart beramiz.
 sudo systemctl restart ssh
 ```
 
-Bu konfiguratsiyalardan keyin serverga faqat `authorized_keys`da public keylari qo'shilgan userlarigina kira oladi xolos. Parolni autentifikatsiya qilishni o'chirib qo'yish va SSH kalitiga asoslangan autentifikatsiyani yoqish serveringiz xavfsizligini sezilarli darajada yaxshilaydi. SSH kalitlarini qo'pol kuch ishlatish deyarli mumkin emas va serveringizga kirishning xavfsiz, qulay usulini ta'minlaydi.
+Bu konfiguratsiyalardan keyin serverga faqat `authorized_keys`da public keylari qo'shilgan userlarigina kira oladi xolos. Parolni autentifikatsiya qilishni o'chirib qo'yish va SSH key-based autentifikatsiyani yoqish serveringiz xavfsizligini sezilarli darajada yaxshilaydi. SSH kalitlarini qo'pol kuch ishlatish deyarli mumkin emas va serveringizga kirishning xavfsiz, qulay usulini ta'minlaydi.
 
 ## Firewall sozlash
 
@@ -275,7 +274,7 @@ UFW Firewallni yoqamiz.
 sudo ufw enable
 ```
 
-UFW ni ishga tushirganimzida barcha portlar yopilgan bo'ladi. Birinchi navbatda SSH orqali serverga kirish uchun SSH portini ochamiz, yuqorida biz ssh portini default 22 dan 9876ga o'zgartirgan edik.
+UFW ni ishga tushirganimizda barcha portlar yopilgan bo'ladi. Birinchi navbatda SSH orqali serverga kirish uchun SSH portini ochamiz, yuqorida biz ssh portini default 22 dan 9876ga o'zgartirgan edik.
 
 ```bash
 sudo ufw allow 9876/tcp
@@ -307,9 +306,7 @@ sudo ufw status
 
 Buzilishlarga qarshi himoya va audit tizimlarini joriy etish serveringizni ruxsatsiz kirish va potentsial xavfsizlik buzilishidan kuzatish va himoya qilish uchun zarurdir. Ushbu toollar shubhali harakatlarni aniqlashga, hujumlarning oldini olishga yordam beradi va serveringizning xavfsizlik holati haqida tushuncha beradi.
 
-Real-time  rejimida ruxsatsiz kirish urinishlari va zararli harakatlarni kuzatib boring va aniqlang,potentsial xavfsizlik buzilishlarining oldini olish uchun shubhali harakatlarni avtomatik ravishda bloklash yoki yumshatish.
-
-**Fail2ban** tizimga kirishga muvaffaqiyatsiz urinishlar va boshqa shubhali harakatlar uchun jurnal fayllarini skanerlaydi, so'ngra IP manzillarni buzishni taqiqlaydi.
+**Fail2ban** tizimga kirishga muvaffaqiyatsiz urinishlar va boshqa shubhali harakatlar uchun log fayllarini skanerlaydi, so'ngra IP manzillarni buzishni taqiqlaydi.
 
 Fail2banni o'rnatib olamiz.
 
@@ -322,7 +319,7 @@ Konfiguratsiya yaratib olamiz.
 sudo cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local
 ```
 
-Jail konfiguratsiya qilib olamiz.Fail2ban-ga SSH, Apache va boshqalar kabi maxsus xizmatlarni kuzatish va himoya qilish imkonini beradi
+Jail konfiguratsiya qilib olamiz. Fail2ban-ga SSH, Apache va boshqalar kabi maxsus xizmatlarni kuzatish va himoya qilish imkonini beradi
 
 ```bash
 sudo nano /etc/fail2ban/jail.local
@@ -339,7 +336,7 @@ bantime = 3600
 ```
 ushbu konfiguratsiya SSH kirish urinishlarini kuzatib boradi va 1 soat davomida 3 ta muvaffaqiyatsiz urinishdan keyin IP manzillarini bloklaydi.
 
-Fail2banni ishga tushirib yoqmaiz.
+Fail2banni ishga tushirib yoqamiz.
 
 ```bash
 sudo systemctl start fail2ban
@@ -369,5 +366,26 @@ Hisobotlarni ushbu faylda ham topsihingiz mumkin.
 /var/log/lynis-report.dat
 ```
 
-## Qo'shimcha maslahatlar.
+## Qo'shimcha maslahatlar
 
+* **Offisial dasturlarni o'rnating** Serveringizga har doim Offisial bo'lgan dasturlarni o'rnating, bu sizga serveringizda har xil malwarelar viruslar va atacklar bo'lishini oldini oladi.
+
+* **Oddiy parollardan foydalanmang** Hozirgi kunda hech qachon oddiy parollardan foydalanmang, har doim parollarni generatsiya qilib murakkab parollar qo'ying.
+
+* **Default portlarni o'zgartiring**  Barcha dasturlarda o'zining default porti mavjuda, xavfsizlikni oshirish uchun default portlarni o'zgartiring, masalan databaza(PostgreSQL, MySQL, MongoDB) portlarini o'zgartiring.
+
+<Callout type="info" emoji="">
+
+Qo'shimcha Resurslar
+ * [**Step-by-step guide to Linux security for beginners**](https://seinecle.github.io/linux-security-tutorials/generated-html/step-by-step-guide-en.html)
+
+**Sana:** 2024.05.19(2024-yil 19-may)
+
+**Oxirgi yangilanish:** 2024.05.19(2024-yil 19-may)
+
+**Muallif: Otabek Ismoilov**
+
+| [Telegram](https://t.me/Otabek_Ismoilov) | [GitHub](https://github.com/ismoilovdevml) | [LinkedIn](https://www.linkedin.com/in/otabek-ismoilov-8625b0222/) |
+| - | - | - |
+
+</Callout>
