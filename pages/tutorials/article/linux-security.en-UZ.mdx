@@ -34,6 +34,26 @@ sudo apt autoremove
 ```
 Bu buyruq boshqa paketlar uchun bog'liqlikni(dependenci) qondirish uchun avtomatik ravishda o'rnatilgan va endi kerak bo'lmagan paketlarni olib tashlaydi. Tizimingizda keraksiz paketlarni saqlash xavfsizlikka xavf tug'dirishi va qimmatli disk maydonini iste'mol qilishi mumkin.
 
+Sererni yangilab olganimizdan keyin vaqtni aniq qilib sozlashimiz kerak, bu juda muhim hisoblanadi.
+
+Serverimizda Time Zonani belgilaymiz, masalan Asia/Tashkent
+
+```bash
+sudo timedatectl set-timezone Asia/Tashkent
+```
+NTP (Network Time Protocol)ni o'rnatib sozlab olamiz.
+
+```bash
+sudo apt install ntp -y
+sudo systemctl enable ntp
+sudo systemctl start ntp
+```
+
+NTP statusini ko'ramiz.
+```bash
+sudo systemctl status ntp
+```
+
 ## Kernelni mustahkamlash (Harden the Kernel)
 
 Kernelni mustahkamlash xavfsizlik va hujumlarga chidamliligini oshirish uchun ma'lum tizim parametrlarini sozlashni o'z ichiga oladi. Ushbu sozlamalar tizimning turli turdagi tarmoq hujumlaridan va boshqa zararli harakatlardan himoya qilish qobiliyatini oshiradi.
@@ -238,3 +258,116 @@ sudo systemctl restart ssh
 ```
 
 Bu konfiguratsiyalardan keyin serverga faqat `authorized_keys`da public keylari qo'shilgan userlarigina kira oladi xolos. Parolni autentifikatsiya qilishni o'chirib qo'yish va SSH kalitiga asoslangan autentifikatsiyani yoqish serveringiz xavfsizligini sezilarli darajada yaxshilaydi. SSH kalitlarini qo'pol kuch ishlatish deyarli mumkin emas va serveringizga kirishning xavfsiz, qulay usulini ta'minlaydi.
+
+## Firewall sozlash
+
+Firewall o'rnatish serveringizni himoya qilishda muhim qadamdir. Firewall oldindan belgilangan xavfsizlik qoidalari asosida kiruvchi va chiquvchi trafikni boshqarishga yordam beradi va shu bilan serveringiz va potentsial tahdidlar o'rtasida to'siq yaratadi. Firewall bilan serveringizga faqat kerakli trafikni kirishiga ruxsat berish orqali xavflarni kamaytiring va shu bilan tarmoqqa asoslangan turli hujumlardan himoya qiling.
+Keling oddiy lekin samarali firewall **UFW** dan foydalanamiz.
+
+UFW'ni serverimizga o'rnatib olamiz.
+
+```bash
+sudo apt install ufw
+```
+UFW Firewallni yoqamiz.
+
+```bash
+sudo ufw enable
+```
+
+UFW ni ishga tushirganimzida barcha portlar yopilgan bo'ladi. Birinchi navbatda SSH orqali serverga kirish uchun SSH portini ochamiz, yuqorida biz ssh portini default 22 dan 9876ga o'zgartirgan edik.
+
+```bash
+sudo ufw allow 9876/tcp
+```
+
+Web Server uchun HTTP va HTTPS trafikga ruxsat beramiz.
+
+```bash
+sudo ufw allow http
+sudo ufw allow https
+```
+
+Keraksiz servicelar yoki portlarni yopamiz. Masalan, ruxsat etilganlardan tashqari barcha kiruvchi trafikni rad etish uchun.
+
+```bash
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+```
+
+By default barcha kiruvchi trafikni(incoming) bloklaydi, aniq ruxsat etilganlardan tashqari va ishonchli manbalarga kirishni cheklash orqali xavfsizlikni kuchaytiradi
+
+
+UFW statusini ko'rishimiz mumkin.
+
+```bash
+sudo ufw status
+```
+## Anti-Intrusion Defense va Audit tizimlardan foydalanish
+
+Buzilishlarga qarshi himoya va audit tizimlarini joriy etish serveringizni ruxsatsiz kirish va potentsial xavfsizlik buzilishidan kuzatish va himoya qilish uchun zarurdir. Ushbu toollar shubhali harakatlarni aniqlashga, hujumlarning oldini olishga yordam beradi va serveringizning xavfsizlik holati haqida tushuncha beradi.
+
+Real-time  rejimida ruxsatsiz kirish urinishlari va zararli harakatlarni kuzatib boring va aniqlang,potentsial xavfsizlik buzilishlarining oldini olish uchun shubhali harakatlarni avtomatik ravishda bloklash yoki yumshatish.
+
+**Fail2ban** tizimga kirishga muvaffaqiyatsiz urinishlar va boshqa shubhali harakatlar uchun jurnal fayllarini skanerlaydi, so'ngra IP manzillarni buzishni taqiqlaydi.
+
+Fail2banni o'rnatib olamiz.
+
+```bash
+sudo apt install fail2ban
+```
+Konfiguratsiya yaratib olamiz.
+
+```bash
+sudo cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local
+```
+
+Jail konfiguratsiya qilib olamiz.Fail2ban-ga SSH, Apache va boshqalar kabi maxsus xizmatlarni kuzatish va himoya qilish imkonini beradi
+
+```bash
+sudo nano /etc/fail2ban/jail.local
+```
+SSH uchun konfiguratsiyaga misol
+
+```bash filename="/etc/fail2ban/jail.local"
+[sshd]
+enabled = true
+port = 9876
+logpath = /var/log/auth.log
+maxretry = 3
+bantime = 3600
+```
+ushbu konfiguratsiya SSH kirish urinishlarini kuzatib boradi va 1 soat davomida 3 ta muvaffaqiyatsiz urinishdan keyin IP manzillarini bloklaydi.
+
+Fail2banni ishga tushirib yoqmaiz.
+
+```bash
+sudo systemctl start fail2ban
+sudo systemctl enable fail2ban
+```
+Fail2ban serveringizni doimiy ravishda kuzatib borishini va ruxsatsiz kirish urinishlaridan himoya qilishini ta'minlaydi.
+
+
+**Lynis** - tizimingizning xavfsizlik holatini chuqur tahlil qiladigan xavfsizlikni tekshirish tool hisoblanadi.
+
+Lynisni sereverimizga o'rnatib olamiz.
+
+```bash
+sudo apt install lynis
+```
+
+Lynis orqali tizimni tekshiruvdan o'tkizamiz.
+
+```bash
+sudo lynis audit system
+```
+Serveringizning keng qamrovli xavfsizlik auditini boshlaydi va serveringiz xavfsizligini yaxshilash bo'yicha batafsil ma'lumot va tavsiyalar beradi.
+
+Hisobotlarni ushbu faylda ham topsihingiz mumkin.
+
+```bash
+/var/log/lynis-report.dat
+```
+
+## Qo'shimcha maslahatlar.
+
