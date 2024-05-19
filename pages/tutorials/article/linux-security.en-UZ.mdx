@@ -33,3 +33,83 @@ Ushbu buyruq barcha o'rnatilgan paketlarni latest(eng so'nggi) versiyalarga yang
 sudo apt autoremove
 ```
 Bu buyruq boshqa paketlar uchun bog'liqlikni(dependenci) qondirish uchun avtomatik ravishda o'rnatilgan va endi kerak bo'lmagan paketlarni olib tashlaydi. Tizimingizda keraksiz paketlarni saqlash xavfsizlikka xavf tug'dirishi va qimmatli disk maydonini iste'mol qilishi mumkin.
+
+## Kernelni mustahkamlash (Harden the Kernel)
+
+Kernelni mustahkamlash xavfsizlik va hujumlarga chidamliligini oshirish uchun ma'lum tizim parametrlarini sozlashni o'z ichiga oladi. Ushbu sozlamalar tizimning turli turdagi tarmoq hujumlaridan va boshqa zararli harakatlardan himoya qilish qobiliyatini oshiradi.
+
+* **IP-spoofingni oldini olish->** O'zini ishonchli IP manzil sifatida ko'rsatuvchi tajovuzkorlardan himoya qiladi.
+* **ICMP Broadcastlariga e'tibor bermaslik(ignore)->** Serverning translyatsiya pinglariga javob berishini oldini oladi, bu esa **smurf attack**lari xavfini kamaytiradi.
+* **Source Routingni o'chirib qo'yish->** Tajovuzkorlarga turli xil hujumlar uchun ishlatilishi mumkin bo'lgan tarmoq paketlari uchun boshqa marshrutni belgilashni oldini oladi.
+* **SYN Cookie-fayllarini yoqish->** Serverni to'ldirishi mumkin bo'lgan  **SYN flood** hujumlarini yumshatadi.
+* **Shubhali paketlarni qayd etish->** Shubhali tarmoq faoliyatini aniqlash va ularga javob berishga yordam beradi.
+* **ICMP Redirectlariga e'tibor bermaslik->** Tajovuzkorlarning aloqani to'xtatish yoki o'zgartirish uchun ishlatilishi mumkin bo'lgan tarmoq trafigini qayta yo'naltirishini oldini oladi.
+* **Directed Pinglarni e'tiborsiz qoldirsh->** ICMP-based attackalar xavfini kamaytiradi.
+
+Buning uchun `sysctl.conf` konfiguratsiya faylini nano yoki vim matn muharrida ochib olamiz.
+
+```bash
+sudo nano /etc/sysctl.conf
+```
+
+IP Spoofing Protectionni yoqamiz.
+
+```bash filename="/etc/sysctl.conf"
+net.ipv4.conf.all.rp_filter = 1
+net.ipv4.conf.default.rp_filter = 1
+```
+Source IP manzilini tekshirish orqali kiruvchi paketlar qonuniy manbalardan ekanligini ta'minlaydi. Paketning source IP manzili kutilgan interfeysga mos kelishini ta'minlash orqali **IP spoofing** hujumlarining oldini olishga yordam beradi.
+
+ICMP Broadcast Requestlarni ignore qilamiz.
+
+```bash filename="/etc/sysctl.conf"
+net.ipv4.icmp_echo_ignore_broadcasts = 1
+```
+Serverning translyatsiya manziliga yuborilgan ping so'rovlariga javob berishini oldini oladi. Ttajovuzkor ko'p sonli  ICMP echo requestlarini translyatsiya manziliga yuboradigan, tarmoqdagi barcha qurilmalarning javob berishiga va serverni bosib olishiga olib keladigan **Smurf** hujumlarini yumshatadi.
+
+Source Packet Routingni o'chirib qo'yamiz.
+
+```bash filename="/etc/sysctl.conf"
+net.ipv4.conf.all.accept_source_route = 0
+net.ipv4.conf.default.accept_source_route = 0
+```
+Paketlar uchun marshrutlash yo'llarini belgilash imkoniyatini o'chiradi. Tajovuzkorlarga paketlarni ushlash yoki manipulyatsiya qilish uchun o'z tizimlari orqali qayta yo'naltirish uchun manba marshrutlashdan foydalanishni oldini oladi.
+
+TCP SYN Cookieni yoqamiz.
+
+```bash filename="/etc/sysctl.conf"
+net.ipv4.tcp_syncookies = 1
+``` 
+**SYN flood** attackalaridan himoya qiladi. SYN paketlarini qayta ishlash va tekshirish mexanizmi bo'lgan **SYN cookie**-fayllarini ishga tushiradi va shu bilan serverni soxta ulanish so'rovlari bilan to'lib ketishining oldini oladi.
+
+Log Martians (Suspicious Packets)
+
+```bash filename="/etc/sysctl.conf"
+net.ipv4.conf.all.log_martians = 1
+net.ipv4.conf.default.log_martians = 1
+```
+Shubhali yoki imkonsiz manba manzillari bo'lgan paketlarni logga yozish imkonini beradi. Ushbu hodisalarni(event) qayd qilish orqali potentsial hujumlar yoki noto'g'ri konfiguratsiyalarni aniqlash va ularga javob berishga yordam beradi.
+
+ ICMP Redirectlarni ignore qilamiz.
+
+```bash filename="/etc/sysctl.conf"
+net.ipv4.conf.all.accept_redirects = 0
+net.ipv4.conf.default.accept_redirects = 0
+net.ipv6.conf.all.accept_redirects = 0
+net.ipv6.conf.default.accept_redirects = 0
+```
+ICMP redirect messagelarini qabul qilishni o'chiradi. Tarmoq trafigini ushlab turish yoki o'zgartirish uchun ishlatilishi mumkin bo'lgan routing tableni o'zgartirish uchun tajovuzkorlarning ICMP yo'naltirishlaridan foydalanishini oldini oladi.
+
+Directed Pinglarni ignore qilamiz.
+
+```bash filename="/etc/sysctl.conf"
+net.ipv4.icmp_echo_ignore_all = 1
+```
+Serverning ICMP echo requestlariga (pinglarga) javob berishini oldini oladi. Ping requestlariga javob bermaslik orqali ICMP-based attackalar xavfini kamaytiradi, shu bilan serverni tarmoqda kamroq ko'rinadigan qiladi.
+
+`sysctl` konfiguratsiyaga o'zgartishlarni kritganimizdan keyin o'zgarishlarni apply ishga tushiramiz.
+
+```bash
+sudo sysctl -p
+```
+Kernelning mustahkamlanishi tizimni umumiy tarmoq hujumlariga nisbatan chidamliroq qilib sozlash orqali serveringizning xavfsizlik holatini yaxshilaydi. Ushbu sozlamalar **IP spoofing, ICMP-based attacks, SYN flood attacks**lari va ruxsatsiz marshrutni(unauthorized routing) o'zgartirish kabi xavflarni kamaytirishga yordam beradi. Ushbu konfiguratsiyalarni qo'llash orqali siz serveringizning xavfsizlik tizimiga muhim himoya qatlamini qo'shasiz
