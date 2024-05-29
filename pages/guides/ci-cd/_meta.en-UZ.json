@@ -29,6 +29,12 @@
     "description": "Gitlab CI bilan Docker CI/CD",
     "href": "/guides/ci-cd/start-gitlabci"
   },
+  "gitlab-server": {
+    "title": "Gitlab Server sozlash",
+    "icon": "▶️",
+    "description": "Gitlab o'rnatish",
+    "href": "/guides/ci-cd/gitlab-server"
+  },
   "gitlab-ci-release-integrations": {
     "title": "Gitlab CI Release && Integrations",
     "icon": "▶️",
