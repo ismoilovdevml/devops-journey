@@ -2,7 +2,7 @@ import { Callout } from "nextra-theme-docs";
 
 # Gitlab Server o'rnatish va sozlash
 
-![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/banner.png)
+![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/banner.png)
 
 Zamonaviy rivojlanish landshaftida samarali manba kodni boshqarish va continuous integration/continuous deployment(CI/CD) pipelinelari barcha o'lchamdagi dasturiy ta'minot loyihalari uchun muhim ahamiyatga ega. GitLab, open-source DevOps platformasi, CI/CD va loyiha boshqaruvi funksiyalarini yagona ilovaga muammosiz birlashtirgan kuchli tool sifatida ajralib turadi. Kichik startapda yoki yirik korxonada ishlayapsizmi, GitLab serverini o'rnatish jamoangizning unumdorligini va hamkorligini sezilarli darajada oshirishi mumkin.
 
@@ -55,7 +55,7 @@ Bu yerdan siz domen o'ziga yoki subdomenga Gitlab server static IP maznilini ko'
 * **TTL->** 14440
 * **RDATA->** gitlab server Static IP manzili
 
-![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/dns.png)
+![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/dns.png)
 
 
 ## Gitlab o'rnatish
@@ -83,9 +83,9 @@ sudo apt-get install -y postfix
 ```
 **Postfix**-ni o'rnatish vaqtida konfiguratsiya ekrani paydo bo'lishi mumkin. **"Internet Site"** ni tanlang va Enter tugmasini bosing. "System mail name" uchun serveringizning tashqi DNS-dan foydalaning va Enter tugmasini bosing. Agar qo'shimcha ekranlar paydo bo'lsa, standart sozlamalarni qabul qilish uchun Enter tugmasini bosing.
 
-![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab1.png)
+![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab1.png)
 
-![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab2.png)
+![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab2.png)
 
 **4->** Gitlab CE o'rnatamiz
 
@@ -94,10 +94,10 @@ curl -s https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script
 sudo EXTERNAL_URL="https://gitlab.helm.uz" apt-get install gitlab-ce
 ```
 Bu buyruqni ishga tushirganimizdan keyin gitlab o'rnatilishi boshlanadi va biroz vaqt oladi. Gitlab muvaffaqiyatli o'rnatilganda sizda quyidagi natija chiqishi kerak.
-![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab.png)
+![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab.png)
 
 Bundan yuqorida esa sizga note(qayd) yozilgan bo'ladi Gitlabga admin bo'lib kirish uchgun `root` user va paroli yozilgan faylni ko'rstadi(`/etc/gitlab/initial_root_password`).
-![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab3.png)
+![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab3.png)
 
 **5->** Belgilagan domenimiz orqali brauzerdan kiramiz biznig holatda **gitlab.helm.uz**. Brauzerda quyidagi Gitlab login qilish page ochilishi kerak. Biz yuqorida ko'rastilgandek `root` user bilan kiramiz parolni esa `/etc/gitlab/initial_root_password` falidan olamiz.
 
@@ -107,15 +107,15 @@ parolni olamiz.
 sudo cat /etc/gitlab/initial_root_password
 ```
 Admin login parolni yozib kiramiz.
-![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab-ce.png)
+![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab-ce.png)
 
 Bizda quyidagi **Welcome to Gitlab** page ochiladi.
 
-![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab-ce1.png)
+![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab-ce1.png)
 
 Admin panel orqali info olishimiz mumkin. **gitlab.helm.uz/admin**
 
-![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab-ce2.png)
+![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab-ce2.png)
 
 ### GitLab EE o'rnatamiz
 
@@ -129,10 +129,10 @@ sudo EXTERNAL_URL="https://git.helm.uz" apt-get install gitlab-ee
 ```
 
 Gitlab muvaffaqiyatli o'rnatilganda sizda quyidagi natija chiqishi kerak.
-![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab-ee.png)
+![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab-ee.png)
 
 Bundan yuqorida esa sizga note(qayd) yozilgan bo'ladi Gitlabga admin bo'lib kirish uchgun `root` user va paroli yozilgan faylni ko'rstadi(`/etc/gitlab/initial_root_password`).
-![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab3.png)
+![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab3.png)
 
 **5->** Belgilagan domenimiz orqali brauzerdan kiramiz biznig holatda **gitlab.helm.uz**. Brauzerda quyidagi Gitlab login qilish page ochilishi kerak. Biz yuqorida ko'rastilgandek `root` user bilan kiramiz parolni esa `/etc/gitlab/initial_root_password` falidan olamiz.
 
@@ -142,12 +142,91 @@ parolni olamiz.
 sudo cat /etc/gitlab/initial_root_password
 ```
 Admin login parolni yozib kiramiz.
-![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab-ee1.png)
+![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab-ee1.png)
 
 Bizda quyidagi **Welcome to Gitlab** page ochiladi.
 
-![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab-welcome.png)
+![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab-welcome.png)
 
-Admin panel orqali info olishimiz mumkin. **gitlab.helm.uz/admin**
+Admin panel orqali info olishimiz mumkin. **git.helm.uz/admin**
 
-![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab-ee2.png)
+![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab-ee2.png)
+
+## Gitlab server sozlash
+
+Yuqorida biz **Gitlab CE** va **Gitlab EE** o'rntaish bosqichlarini ko'rib chiqdik siz o'zingizga to'gri kelganini o'rnatasiz. Bu qismda biz Gitlabda dastlabki sozlashlarni ko'rib chiqamiz. Bu qismda men Gitlab EE dan foydalanib sozashni ko'rsatganman, Gitlab CE da ham deyarli bir xil.
+
+**1->** Birinchi navbatda Admin user login parolini o'zgartiamiz.
+Profilga o'tib **Edit profile**ga o'tib va **Account** bo'limga kiramiz
+![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/admin1.png)
+Bu yerdan biz `root` usernameni olib tashlab o'zimizning admin userimizni yozamiz. `Update username` bosib userneyimizni yangilab olamiz.
+![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/admin2.png)
+**Password** bo'limga o'tib esa parolimizni yangilab olamiz. 
+![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/admin3.png)
+**Save password** bosganimizda sahifa yangilanib login pagega o'tishi kerak va biz o'zimizning yangi admin userimiz va parolimiz bilan kiramiz.
+![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/admin4.png)
+
+**2->** Ochiq ro'yxatdan o'tishni yopish. E'tibor bergan bo'lsangiz Gitlabga kirish sahifasida **Register now** havolasi bor, yani biron bir kishi ro'yxatdan o'tib sizning Gitlab serveringizdan foydalana oladi, keling buni o'chirib qo'yamiz va userlarni o'zimiz yaratamiz. Bu hohishis sozlash hisoblanadi.
+
+![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab4.png)
+
+Buni sozlash uchun **Admin area**ga o'tamiz.
+![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/ad1.png)
+**General** sozlamalar bo'limga o'tamiz va **Sign-up restrictions** qismini topamiz
+![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/ad2.png)
+
+**Sign-up restrictions**ni rasmda ko'rsatilgandek qilib o'chirib qo'yasiz.
+![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab5.png)
+
+**3->** SSL sertifikatni yangilashni yoqamiz.
+
+```bash
+sudo nano /etc/gitlab/gitlab.rb
+```
+
+Shu qatorlarni izohdan chiqaramiz.
+
+```bash {10-14}
+# Let's Encrypt integration
+################################################################################
+# letsencrypt['enable'] = nil
+# letsencrypt['contact_emails'] = [] # This should be an array of email addresses to add as contacts
+# letsencrypt['group'] = 'root'
+# letsencrypt['key_size'] = 2048
+# letsencrypt['owner'] = 'root'
+# letsencrypt['wwwroot'] = '/var/opt/gitlab/nginx/www'
+# See http://docs.gitlab.com/omnibus/settings/ssl.html#automatic-renewal for more on these sesttings
+letsencrypt['auto_renew'] = true
+letsencrypt['auto_renew_hour'] = "12"
+letsencrypt['auto_renew_minute'] = "30" # Should be a number or cron expression, if specified.
+letsencrypt['auto_renew_day_of_month'] = "*/7"
+letsencrypt['auto_renew_log_directory'] = '/var/log/gitlab/lets-encrypt'
+#letsencrypt['alt_names'] = []
+```
+Gitlabni qayta ishga tushiramiz.
+```bash
+sudo gitlab-ctl reconfigure
+```
+
+**4->** Gitlabda loyihlar repositoriyalarni oson boshqarish uchun guruhlash mumkin. Keling biz gitlabda **DevOps** nomli group ochamiz va DevOpsga tegishli barcha repositoriyalarni shu guruhda saqlaylik.
+
+![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab6.png)
+
+Guruh yaratib olganimizdan keyin shu guruh ichida birorta repositoritya yaratmiz misol uchun devops-journey loyihasini joylashtiramiz.
+
+![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab7.png)
+Repositoriya sozlaganimzidan keyin local kompyuterimizga git accountimizni ulab loyihani push qilamiz.
+![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab9.png)
+
+## Gitlab Runner sozlash
+
+Runnerlar **CI/CD** pipelinelarida belgilangan ishlarni bajarishi mumkin bo'lgan yengil, kengaytiriladigan agentlardir. Ular har qanday mashinaga, virtual mashinaga yoki konteynerga o'rnatilishi mumkin va ular applicationgizni build qilish, testdan o'tkazish va deploy qilish kabi vazifalarni bajaradi. Runnerlarning ikkita asosiy turi mavjud:
+
+* **Shared Runnerlar**  CI/CD tizimidagi barcha loyihalar uchun mavjud.
+* **Specific Runner** Muayyan loyiha yoki loyihalar guruhiga bag'ishlangan.
+
+Keling shared runner yaratamiz, buning uchun Gitlab admin arega o'tib **->CI/CD -> Runners** o'tamiz
+
+![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/runner.png)
+![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/runner1.png)
+![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/runner2.png)
