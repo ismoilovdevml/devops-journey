@@ -228,5 +228,190 @@ Runnerlar **CI/CD** pipelinelarida belgilangan ishlarni bajarishi mumkin bo'lgan
 Keling shared runner yaratamiz, buning uchun Gitlab admin arega o'tib **->CI/CD -> Runners** o'tamiz
 
 ![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/runner.png)
+
+Runners bo'limidan New instance runner bosib runner yararish bo'limiga o'tamiz. Bu qismda shared runnerga tag berib rasmdagidek qilib sozlaymiz.
 ![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/runner1.png)
+
+Bu qsimda esa serverimizga runner o'rnatib gitlabimizga ulaymiz.
 ![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/runner2.png)
+
+Serverimizga gitlab runner o'rnatamiz. **How do I install GitLab Runner?** bossak bizga runner o'rnatish buyruqlarini ko'rsatishi kerak
+
+```bash
+# Download the binary for your system
+sudo curl -L --output /usr/local/bin/gitlab-runner https://gitlab-runner-downloads.s3.amazonaws.com/latest/binaries/gitlab-runner-linux-amd64
+
+# Give it permission to execute
+sudo chmod +x /usr/local/bin/gitlab-runner
+
+# Create a GitLab Runner user
+sudo useradd --comment 'GitLab Runner' --create-home gitlab-runner --shell /bin/bash
+
+# Install and run as a service
+sudo gitlab-runner install --user=gitlab-runner --working-directory=/home/gitlab-runner
+sudo gitlab-runner start
+```
+
+Serverimizga gitlab runner o'rnatganimizdan keyin docker ham o'rnatishimiz kerak bo'ladi chunki biz docker container ichida build qilishini ko'rsatganmiz. [**Linux serverlarga Docker o'rnatish**](https://devops-journey.uz/guides/konteyner/docker-ornatish) qo'llanmasidan serveringizda docker o'rnatib olishingiz mumkin.
+
+
+Serverimizga gitlab runner va docker o'rnatib olganimizdan keyin uni gitlabga ulashimiz va ishga tushirishimiz kerak bo'ladi. Bunda Gitlab orqali runner qo'yashotganimzida gitlab o'zi token yaratib beradi qo'shish uchun shu tokendan foydalanib qo'shib olamiz.
+
+```bash
+gitlab-runner register  --url https://git.helm.uz  --token glrt-sDCeQ4SKg2Dk2LntYGjm
+```
+![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/runner4.png)
+
+<Callout type="info" emoji="">
+Enter a name for the runner. This is stored only in the local config.toml file:
+
+**[gitlab-ee]:** `runner1`
+
+Enter an executor: kubernetes, docker-autoscaler, instance, ssh, virtualbox, docker, docker-windows, docker+machine, custom, shell, parallels:
+
+`docker`
+
+Enter the default Docker image (for example, ruby:2.7):
+
+`ubuntu:latest`
+</Callout>
+
+Runnerni ishga tushiramiz.
+
+```bash
+sudo gitlab-runner run
+```
+Runnerni serverda ishga tushirganimizdan keyin Gitlabdan **View runner** bosganimizda runnerimiz ishlab turganini ko'rsatishi kerak.
+
+![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/runner3.png)
+
+Runnerni servrga o'rnatib gitlab ulaganimizdan keyin runner o'zini serverda sozlab olishimiz kerak bo'ladi. `config.toml` faylini quyidagicha konfiguratsiya qilamiz.
+
+```bash
+sudo nano /etc/gitlab-runner/config.toml
+```
+
+```bash
+concurrent = 1
+check_interval = 0
+shutdown_timeout = 0
+
+[session_server]
+  session_timeout = 1800
+
+[[runners]]
+  name = "runner1"
+  url = "https://git.helm.uz/"
+  token = "glrt-sDCeQ4SKg2Dk2LntYGjm"
+  executor = "docker"
+  [runners.custom_build_dir]
+  [runners.cache]
+    [runners.cache.s3]
+    [runners.cache.gcs]
+  [runners.docker]
+    tls_verify = false
+    image = "ubuntu:latest"
+    privileged = true
+    disable_entrypoint_overwrite = false
+    oom_kill_disable = false
+    disable_cache = false
+    volumes = ["/cache"]
+    shm_size = 0
+```
+
+Gitlab runner serverdagi dockerdan foydalanishi uchun uchun unga accses beramiz.
+
+```bash
+sudo usermod -aG docker gitlab-runne
+```
+Gitlab runnerga restart beramiz.
+
+```bash
+sudo gitlab-runner restart
+```
+
+## CI/CD
+
+Nihoyat biz bugunni qo'llanmaning oxirgi bosichiga yetib keldik. Yuqorida biz serverimizga Gitlab o'rnatdik dastlabli sozlashnarni amalga oshirdik gitlan-runner or'natib runnerlar qo'shdik. Bu bosqichda biz hammasidan foydalangan holda Gitlab CI yordamida devops-journey loyihasiga CI yozamiz.
+
+
+Gitlab CI'ning o'zi katta bir mavzu hisoblanadi shuning uchun buni bu qo'llanmada batafsil yoritilmaydi. Batafsil [**Gitlab CI bilan CI/CD**](https://devops-journey.uz/guides/ci-cd/start-gitlabci)
+
+Yuqorida biz **DevOps** nomli group ochib ichida devops-journey loyihasi uchun repositoriya yaratib loyihamizni o'zimizning gitlab serverimizga joylashtirgandik. Keling shu repositoriyaga Gitlab CI yozamiz.
+
+
+Loyiha uchun Gitlab CI quyidagicha, biz uni `.gitlab-ci.yml` faylida yozamiz.
+
+
+```bash
+stages:
+  - build
+ 
+variables:
+  NODE_VERSION: "20.x"
+ 
+cache:
+  key: "$CI_COMMIT_REF_SLUG"
+  paths:
+    - node_modules/
+ 
+before_script:
+  - |
+      apt-get update -qy
+      apt-get install -y curl
+      curl -sL https://deb.nodesource.com/setup_20.x | bash -
+      apt-get install -y nodejs
+      npm install -g pnpm
+ 
+build:
+  stage: build
+  image: node:20
+  script:
+    - pnpm install
+    - pnpm next build
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+```
+
+Ushbu Gitlab CI haqida qisqacha aytadigan bo'lsak bu CI faqat bitta build bosqichdan iborat va **main** branchga o'zgarish bo'lganida avtomatik ishga tushadi va Nodejs 20 va pnpm o'rnatadi keyin esa loyihani build qiladi. Loyiha builq ilish uchun gitlab-runnerlardan foydalanadi.
+
+`.gitlab-ci.yml` konfiguratsiya fayl ochib yuqoridagi gitlab ci pipelineni  kiritamiz va **main** branchga push qilamiz va bizda **CI pipeline** ishga tusha boshlaydi.
+
+Buni ko'rish uchun repositorioyamizdan **Pipeline** bo'limiga o'tamiz.
+![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/jobs.png)
+Bizda quyidagi oyna ochilishi kerak bu muvaffaqiyatli ishga tuhsgan CI job.
+![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/jobs1.png)
+
+Ustiga bosib kirib ko'rishimiz mumkin.
+![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/jobs2.png)
+
+
+Agar siz qo'llanmani shu qismigacha muvaffaqiyatli yetib kelgan bo'lsangiz tabriklaymiz siz muvaffaqiyatli Gitlab serveringizni sozlab birinchi CI/CD pipelineni muvaffaqiyatli ishjga tushirdingiz.
+
+
+ ## Qo'shimcha
+
+<Callout type="info" emoji="">
+
+Qo'shimcha Resurslar
+ * [**Gitlab CI | Releaselar va Integrationlar**](https://devops-journey.uz/guides/ci-cd/gitlab-ci-release-integrations)
+ * [**Github Actions bilan Flutter CI/CD**](https://devops-journey.uz/guides/ci-cd/flutter-github-action)
+ * [**Github Actions CI/CD**](https://devops-journey.uz/guides/ci-cd/github-actions-ci-cd)
+ * [**Linux Serverlarga Jenkins o'rnatish**](https://devops-journey.uz/guides/ci-cd/jenkins-ornatish)
+ * [**Koddan Servergacha: Jenkins bilan Docker CI/CD va Discord bilan integratsiya**](https://devops-journey.uz/guides/ci-cd/jenkins-docker-ci-cd)
+ * [**Kubernetes CI/CD | GitHub Actions + Argo CD | GitOps**](https://devops-journey.uz/guides/ci-cd/github-actions-argocd-cicd)
+
+Qo'llanma uchun foydalanilgan resurslar
+ * [**How To Install and Configure GitLab on Ubuntu**](https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-gitlab-on-ubuntu)
+ * [**Install self-managed GitLab**](https://about.gitlab.com/install/#ubuntu)
+
+**Sana:** 2024.06.13(2024-yil 13-iyun)
+
+**Oxirgi yangilanish:** 2024.06.13(2024-yil 13-iyun)
+
+**Muallif: Otabek Ismoilov**
+
+| [Telegram](https://t.me/Otabek_Ismoilov) | [GitHub](https://github.com/ismoilovdevml) | [LinkedIn](https://www.linkedin.com/in/otabek-ismoilov-8625b0222/) |
+| - | - | - |
+
+</Callout>
