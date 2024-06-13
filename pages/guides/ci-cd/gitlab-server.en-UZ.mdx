@@ -75,3 +75,44 @@ sudo apt update && sudo apt upgrade -y
 ```bash
 sudo apt-get install -y curl openssh-server ca-certificates tzdata perl
 ```
+
+**3->** Notificationlarni yuborish uchun **Postfix** (yoki **Sendmail**)ni o'rnatamiz.
+
+```bash
+sudo apt-get install -y postfix
+```
+**Postfix**-ni o'rnatish vaqtida konfiguratsiya ekrani paydo bo'lishi mumkin. **"Internet Site"** ni tanlang va Enter tugmasini bosing. "System mail name" uchun serveringizning tashqi DNS-dan foydalaning va Enter tugmasini bosing. Agar qo'shimcha ekranlar paydo bo'lsa, standart sozlamalarni qabul qilish uchun Enter tugmasini bosing.
+
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab1.png)
+
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab2.png)
+
+**4->** Gitlab CE o'rnatamiz
+
+```bash
+curl -s https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.deb.sh | sudo bash
+sudo EXTERNAL_URL="https://gitlab.helm.uz" apt-get install gitlab-ce
+```
+Bu buyruqni ishga tushirganimizdan keyin gitlab o'rnatilshi boshlanadi va biroz vaqt oladi. Gitlab muvaffaqiyatli o'rnatilganda sizda quyidagi natija chiqishi kerak.
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab.png)
+
+Bundan yuqorida esa sizga note(qayd) yozilgan bo'ladi Gitlabga admin bo'lib kirish uchgun `root` user va paroli yozilgan faylni ko'rstadi(`/etc/gitlab/initial_root_password`).
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab3.png)
+
+**5->** Belgilagan domenimiz orqali brauzerdan kiramiz biznig holatda **gitlab.helm.uz**. Brauzerda quyidagi Gitlab login qilish page ochilishi kerak. Biz yuqorida ko'rastilgandek `root` user bilan kiramiz parolni esa `/etc/gitlab/initial_root_password` falidan olamiz.
+
+parolni olamiz.
+
+```bash
+sudo cat /etc/gitlab/initial_root_password
+```
+Admin login parolni yozib kiramiz.
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab-ce.png)
+
+Bizda quyidagi **Welcome to Gitlab** page ochiladi.
+
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab-ce1.png)
+
+Admin panel orqali info olishimiz mumkin. **gitlab.helm.uz/admin**
+
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab-ce2.png)
