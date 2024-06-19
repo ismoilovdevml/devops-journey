@@ -34,3 +34,38 @@ Masalan
 kubectl describe pod config-service
 ```
 Bu yerda `config-service` pod nomidir. Keling, har xil turdagi pod xatolarini qanday tuzatish va debug qilishni batafsil ko'rib chiqaylik.
+
+
+![k8s](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/trubeleshoot-k8s/image1.png)
+
+## Pod xatolarining turlari
+Types of Pod Errors
+
+Pod nosozliklarini tuzatishga kirishdan oldin, har xil turdagi Pod xatolarini tushunish kerak.
+### Container & Image Errorlar
+Ushbu xato holatlarining barchasi kubernetes container package & Kubernetes image packagening bir qismidir
+
+Quyida xato tavsiflari bilan rasmiy(official) Kubernetes pod xatolar ro'yxati keltirilgan.
+
+<Callout type="info" emoji="">
+| Pod Xato Turi             | Xato Tavsifi                                             |
+|:--------------------------|:---------------------------------------------------------|
+| `ErrImagePull`            | Kubernetes manifestda ko'rsatilgan imageni pull qilib ololmasa. |
+| `ErrImagePullBackOff`     | Konteyner pull qilib bo'lmadi, kubelet imageni pull qilishdan voz kechmoqda |
+| `ErrInvalidImageName`     | Notog'ri image nomi ko'rsatilgan. |
+| `ErrImageInspect`         | Image tekshirib bo'lmadi. |
+| `ErrImageNeverPull`       | Node-da kerakli image mavjud emas va PullPolicy NeverPullImage sifatida sozlangan. |
+| `ErrRegistryUnavailable`  | Registry serveriga ulanishda HTTP xatosi yuz berdi. |
+| `ErrContainerNotFound`    | Ko'rsatilgan konteyner mavjud emas yoki kubelet tomonidan boshqarilmaydi, deklaratsiya qilingan pod ichida. |
+| `ErrRunInitContainer`     | Konteyner boshlang'ich ishga tushirish muvaffaqiyatsiz bo'ldi. |
+| `ErrRunContainer`         | Podning konteynerlari noto'g'ri sozlash tufayli muvaffaqiyatli ishga tushmaydi. |
+| `ErrKillContainer`        | Podning hech bir konteyneri muvaffaqiyatli o'chirilmadi. |
+| `ErrCrashLoopBackOff`     | Konteyner to'xtadi. Kubelet uni qayta ishga tushirishga urinmaydi. |
+| `ErrVerifyNonRoot`        | Konteyner yoki image ildiz (root) huquqlari bilan ishga tushirishga urindi. |
+| `ErrCreatePodSandbox`     | Pod sandbox yaratish muvaffaqiyatsiz bo'ldi. |
+| `ErrConfigPodSandbox`     | Pod sandbox konfiguratsiyasi olinmadi. |
+| `ErrKillPodSandbox`       | Pod sandbox muvaffaqiyatli to'xtatilmadi. |
+| `ErrSetupNetwork`         | Tarmoqni boshlash muvaffaqiyatsiz bo'ldi. |
+| `ErrTeardownNetwork`      | Tarmoqni buzish muvaffaqiyatsiz bo'ldi. |
+
+</Callout>
