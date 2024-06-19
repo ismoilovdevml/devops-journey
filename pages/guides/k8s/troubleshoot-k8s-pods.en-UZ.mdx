@@ -1,0 +1,36 @@
+import { Callout } from "nextra-theme-docs";
+
+# Kubernetes podlari bilan bog'liq muammolarni qanday hal qilish mumkin?
+
+![k8s](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/trubeleshoot-k8s/banner.png)
+
+
+Ushbu blogda siz kubernetes podlari bilan bog'liq muammolarni bartaraf etish va podalar ichidagi konteynerlar bilan bog'liq muammolarni bartaraf etishni o'rganasiz. Agar siz Kubernetes ko'nikmalariga ega bo'lgan devops muhandisi bo'lishga harakat qilmoqchi bo'lsangiz, pod troubleshootingni tushunish juda muhimdir.
+
+Aksariyat hollarda siz pod eventini tavsiflash orqali pod xatosi tafsilotlarini olishingiz mumkin. Xato xabari bilan siz pod ishdan chiqishining sababini aniqlashingiz va uni tuzatishingiz mumkin.
+
+## Pod xatolarini qanday tuzatish mumkin?
+
+Podlardagi muammolarni bartaraf etishning birinchi bosqichi pod statusini olishdir.
+
+```bash
+kubectl get pods
+# namespace bo'lsa
+kubectl get pods -n my-namespace
+```
+Agar muammolar bo'lsa quyidagi chiqish holat ostidagi xato holatlarini ko'rsatadi.
+
+```bash
+NAME                            READY   STATUS                       RESTARTS   AGE
+config-service                  0/1     CreateContainerConfigError   0          20s
+image-service-fdf74c785-9znfd   0/1     InvalidImageName             0          30s
+secret-pod                      0/1     ContainerCreating            0          15s
+```
+
+Endi siz xato turini bilganingizdan so'ng, keyingi qadam alohida podmi tavsiflash(describe) va pod xatosiga sabab bo'lgan sababni aniqlash uchun eventlarni ko'rib chiqishdir.
+
+Masalan
+```bash
+kubectl describe pod config-service
+```
+Bu yerda `config-service` pod nomidir. Keling, har xil turdagi pod xatolarini qanday tuzatish va debug qilishni batafsil ko'rib chiqaylik.

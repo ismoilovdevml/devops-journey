@@ -46,5 +46,11 @@
     "icon": "▶️",
     "description": "Prometheus, Grafana",
     "href": "/guides/k8s/kubernetes-monitoring"
+  },
+  "troubleshoot-k8s-pods": {
+    "title": "Troubleshoot Kubernetes Pods",
+    "icon": "▶️",
+    "description": "Boshlang'ichlar uchun",
+    "href": "/guides/k8s/troubleshoot-k8s-pods"
   }
 }
