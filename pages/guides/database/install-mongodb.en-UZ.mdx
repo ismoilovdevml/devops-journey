@@ -27,31 +27,31 @@ MongoDB o'rnatish jarayoni juda oddiy. Avval rasmiy MongoDB paketini qo'shing va
 Standart Ubuntu repositoriyasi bilan ta'minlangan `mongodb` to'plami rasmiy paket emas va ko'pincha yangilanmaydi. Boshqa ilovalar bilan to'g'ri ishlamasligi mumkin. Ushbu bo'limdagi ko'rsatmalar rasmiy MongoDB paketini qanday o'rnatishni ko'rsatadi. Norasmiy `mongodb `to'plami o'rnatilganligini tekshirish uchun `which mongodb` buyrug'ini bajaring. Agar Ubuntu ilovaga yo'lni ko'rsatsa, uni `apt` yordamida o'chirib tashlang.
 </Callout>
 
-1. `gnupg` va `curl` utilitasini o'rnating.
+**1->** `gnupg` va `curl` utilitasini o'rnating.
 
 ```bash /gnupg/ /curl/
 sudo apt-get install gnupg curl
 ```
-2. Public MongoDB GPG imzo kalitini(signing key) import qiling. Kalit muvaffaqiyatli import qilinganligini tekshiring.
+**2->** Public MongoDB GPG imzo kalitini(signing key) import qiling. Kalit muvaffaqiyatli import qilinganligini tekshiring.
 
 ```bash //
-curl -fsSL https://pgp.mongodb.com/server-7.0.asc | \
+curl -fsSL https://www.mongodb.org/static/pgp/server-7.0.asc | \
    sudo gpg -o /usr/share/keyrings/mongodb-server-7.0.gpg \
    --dearmor
 ```
 
-3. Ubuntu paketlari ro'yxatiga rasmiy MongoDB repositoriyasi haqida ma'lumot qo'shing.
+**3->** Ubuntu paketlari ro'yxatiga rasmiy MongoDB repositoriyasi haqida ma'lumot qo'shing.
 
 ```bash
 echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/7.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-7.0.list
 ```
 
-4. `apt` yordamida paketlar ro'yxatini yangilang.
+**4->** `apt` yordamida paketlar ro'yxatini yangilang.
 
 ```bash
 sudo apt-get update
 ```
-5. MongoDB-ning so'nggi(latest) versiyasini o'rnating.
+**5->** MongoDB-ning so'nggi(latest) versiyasini o'rnating.
 
 ```bash /mongodb-org/
 sudo apt-get install -y mongodb-org
@@ -67,7 +67,7 @@ sudo apt-get install -y mongodb-org=7.0.3 mongodb-org-database=7.0.3 mongodb-org
 `7.0.3` versiya o'rniga o'zingizga kerakli versiyani tanlab o'rnatib olishingiz mumkin
 </Callout>
 
-6. **Ixyiyoriy** Joriy konfiguratsiya bilan `apt-get` buyrug'i har doim yangi versiya mavjud bo'lganda MongoDB ni yangilaydi. Avtomatik yangilanishlarning oldini olish uchun quyidagi buyruqlarni bajaring.
+**6->** **Ixyiyoriy** Joriy konfiguratsiya bilan `apt-get` buyrug'i har doim yangi versiya mavjud bo'lganda MongoDB ni yangilaydi. Avtomatik yangilanishlarning oldini olish uchun quyidagi buyruqlarni bajaring.
 
 ```bash
 echo "mongodb-org hold" | sudo dpkg --set-selections
@@ -82,23 +82,23 @@ echo "mongodb-org-tools hold" | sudo dpkg --set-selections
 
 MongoDB vazifasi odatda `systemctl` vositalari yordamida boshqariladi. MongoDB-ni ishga tushirish va yoqish uchun quyidagi amallarni bajaring.
 
-1. `systemctl` demonini qayta yuklang.
+**1->** `systemctl` demonini qayta yuklang.
 
 ```bash
 sudo systemctl daemon-reload
 ```
-2. `systemctl start` yordamida process ishga tushiring.
+**2->** `systemctl start` yordamida process ishga tushiring.
 
 ```bash /mongod/
 sudo systemctl start mongod
 ```
-3. MongoDB servisi holatini bilish uchun `systemctl status` dan foydalaning.
+**3->** MongoDB servisi holatini bilish uchun `systemctl status` dan foydalaning.
 
 ```bash
 sudo systemctl status mongod
 ```
 
-4. Ubuntu-ni tizimni yuklash vaqtida MongoDB-ni avtomatik ishga tushirishni sozlash uchun quyidagi buyruqni kiriting.
+**4->** Ubuntu-ni tizimni yuklash vaqtida MongoDB-ni avtomatik ishga tushirishni sozlash uchun quyidagi buyruqni kiriting.
 
 ```bash
 sudo systemctl enable mongod
@@ -108,14 +108,14 @@ sudo systemctl enable mongod
 Created symlink /etc/systemd/system/multi-user.target.wants/mongod.service → /lib/systemd/system/mongod.service.
 ```
 
-5. Ixtiyoriy, agar kerak bo'lsa, quyidagi buyruqlar yordamida MongoDB-ni to'xtatib va qayta ishga tushiring.
+**5->** Ixtiyoriy, agar kerak bo'lsa, quyidagi buyruqlar yordamida MongoDB-ni to'xtatib va qayta ishga tushiring.
 
 ```bash
 sudo systemctl stop mongod
 sudo systemctl restart mongod
 ```
 
-6. MongoDB to'g'ri ishlayotganini tasdiqlash uchun shelga kirish uchun `mongosh`-ni kiriting. Autentifikatsiya hali yoqilmaganligi sababli parol talab qilinmaydi.
+**6->** MongoDB to'g'ri ishlayotganini tasdiqlash uchun shelga kirish uchun `mongosh`-ni kiriting. Autentifikatsiya hali yoqilmaganligi sababli parol talab qilinmaydi.
 
 <Callout type="info" emoji="">
 **Eslatma:**
@@ -143,12 +143,12 @@ MongoDB uchun dastur sozlamalari `/etc/mongod.conf` faylida saqlanadi. Ushbu qiy
 
 Autentifikatsiyani yoqish uchun administrator yarating va keyin asosiy konfiguratsiya faylida autentifikatsiya sozlamasini sozlang. Ma'lumotlar bazasini himoya qilish uchun quyidagi amallarni bajaring.
 
-1. MongoDB shelga kiring.
+**1->** MongoDB shelga kiring.
 
 ```bash
 mongosh
 ```
-2. Administrator ma'lumotlar bazasiga o'ting.
+**2->** Administrator ma'lumotlar bazasiga o'ting.
 
 ```bash
 use admin
@@ -156,56 +156,56 @@ use admin
 ```txt filename="Natija"
 switched to db admin
 ```
-3. Administrator yaratish uchun `db.createUser` buyrug'idan foydalaning. Foydalanuvchi uchun foydalanuvchi nomini `user` va `pwd` uchun parolni kiriting. Yaxshiroq xavfsizlik uchun `pwd` maydonining qiymati sifatida `passwordPrompt()` buyrug'idan foydalaning. Bu MongoDB ga parolni so'rashni aytadi. Administratorga ikkita rol bering, `userAdminAnyDatabase` va `readWriteAnyDatabase`. MongoDB sheldagi buyruqni quyidagi tarzda kiriting va `userAdmin` o'rniga haqiqiy administrator nomini almashtiring.
+**3->** Administrator yaratish uchun `db.createUser` buyrug'idan foydalaning. Foydalanuvchi uchun foydalanuvchi nomini `user` va `pwd` uchun parolni kiriting. Yaxshiroq xavfsizlik uchun `pwd` maydonining qiymati sifatida `passwordPrompt()` buyrug'idan foydalaning. Bu MongoDB ga parolni so'rashni aytadi. Administratorga ikkita rol bering, `mongoadminAnyDatabase` va `readWriteAnyDatabase`. MongoDB sheldagi buyruqni quyidagi tarzda kiriting va `mongoadmin` o'rniga haqiqiy administrator nomini almashtiring.
 
 
 ```json {3}
 db.createUser(
     {
-        user: "userAdmin",
+        user: "mongoadmin",
         pwd: passwordPrompt(),
         roles: [
-            { role: "userAdminAnyDatabase", db: "admin" },
+            { role: "mongoadminAnyDatabase", db: "admin" },
             { role: "readWriteAnyDatabase", db: "admin" }
         ]
     }
 )
 ```
 
-4. Buyruqni kiritgandan so'ng, MongoDB admin parolni so'raydi. So'ralganda parolni kiriting. Agar parol qabul qilinsa, MongoDB `ok` deb qaytaradi.
+**4->** Buyruqni kiritgandan so'ng, MongoDB admin parolni so'raydi. So'ralganda parolni kiriting. Agar parol qabul qilinsa, MongoDB `ok` deb qaytaradi.
 
 ```txt filename="Natija"
 Enter password
 ********{ ok: 1 }
 ```
-5. mongod instanceni o'chirish uchun `db.adminCommand` buyrug'idan foydalaning.
+**5->** mongod instanceni o'chirish uchun `db.adminCommand` buyrug'idan foydalaning.
 
 ```json
 db.adminCommand( { shutdown: 1 } )
 ```
-6. Shelldan chiqing
+**6->** Shelldan chiqing
 
 ```bash
 exit
 ```
-7. Konfiguratsiya sozlamalarini qo'shish uchun `/etc/mongod.conf` konfiguratsiya faylini tahrirlang.
+**7->** Konfiguratsiya sozlamalarini qo'shish uchun `/etc/mongod.conf` konfiguratsiya faylini tahrirlang.
 
 ```bash
 sudo nano /etc/mongod.conf
 ```
 
-8. `security:` qatorini izohdan olib tashlang: va `authorization: enabled` qatorini qo'shing. Faylni saqlang va yoping.
+**8->** `security:` qatorini izohdan olib tashlang: va `authorization: enabled` qatorini qo'shing. Faylni saqlang va yoping.
 
 ```conf filename="/etc/mongod.conf" /security:/ /authorization:/ /enabled/
 security:
     authorization: enabled
 ```
-9. Restart MongoDB
+**9->** Restart MongoDB
 
 ```bash
 sudo systemctl restart mongod
 ```
-10. MongoDB-ga kirish uchun keyingi barcha urinishlar foydalanuvchi va autentifikatsiya ma'lumotlar bazasi nomini ko'rsatishi kerak. `userAdmin` o'rniga administrator hisobi nomini almashtiring va so'ralganda administrator parolini kiriting. MongoDB shellga kirish uchun quyidagi buyruqdan foydalaning.
+**10->** MongoDB-ga kirish uchun keyingi barcha urinishlar foydalanuvchi va autentifikatsiya ma'lumotlar bazasi nomini ko'rsatishi kerak. `mongoadmin` o'rniga administrator hisobi nomini almashtiring va so'ralganda administrator parolini kiriting. MongoDB shellga kirish uchun quyidagi buyruqdan foydalaning.
 
 <Callout type="info" emoji="">
 **Sinov**
@@ -223,24 +223,25 @@ show dbs
 Autentifikatsiya bilan tizimga kirish uchun, avvalo, `exit` buyruqni ishga tushirish orqali Mongo Shell-dan chiqing. Keyin quyidagi sintaksisdan foydalanib, admin user  yordamida tizimga kiring.
 
 ```bash
-mongosh  "mongodb://userAdmin@127.0.0.1:27017"
+mongosh  "mongodb://mongoadmin@127.0.0.1:27017"
 ```
-</Callout>
 
 ```bash
-mongosh --authenticationDatabase "admin" -u "userAdmin" -p
+mongosh --authenticationDatabase "admin" -u "mongoadmin" -p
 ```
+
+</Callout>
 
 #### MongoDB uchun masofaviy kirishni yoqish(Remote Access)
 
 Agar boshqacha ko'rsatilmagan bo'lsa, MongoDB faqat local kirishni ta'minlaydi. Ma'lumotlar bazasiga masofaviy kirishni yoqish uchun konfiguratsiya fayliga quyidagi o'zgartirishlarni kiriting.
 
-1. Asosiy MongoDB konfiguratsiya faylini tahrirlang.
+**1->** Asosiy MongoDB konfiguratsiya faylini tahrirlang.
 
 ```bash
-sudo vi /etc/mongod.conf
+sudo nano /etc/mongod.conf
 ```
-2. `net` sarlavhasi ostida barcha manzillardan ulanishga ruxsat berish uchun `bindIp` qiymatini `0.0.0.0` ga o'zgartiring. Ushbu manzilga ulanishni cheklash uchun ma'lum bir manzilni kiriting.
+**2->** `net` sarlavhasi ostida barcha manzillardan ulanishga ruxsat berish uchun `bindIp` qiymatini `0.0.0.0` ga o'zgartiring. Ushbu manzilga ulanishni cheklash uchun ma'lum bir manzilni kiriting.
 
 ```conf filename="/etc/mongod.conf" /net:/ /port:/ /bindIp:/
 net:
@@ -291,12 +292,12 @@ security:
 #auditLog:
 ```
 
-3. Restart MongoDB.
+**3->** Restart MongoDB.
 
 ```bash
 sudo systemctl restart mongod
 ```
-4. Agar ufw firewall yoqilgan bo'lsa, `27017` portiga ulanishga ruxsat bering.
+**4->** Agar ufw firewall yoqilgan bo'lsa, `27017` portiga ulanishga ruxsat bering.
 
 ```bash
 sudo ufw allow 27017
@@ -385,4 +386,11 @@ Ushbu mavzu bo'yicha qo'shimcha ma'lumot olish uchun quyidagi manbalarga murojaa
 **Foydalanilgan manbalar:** [www.linode.com](https://www.linode.com/docs/guides/), [www.cherryservers.com](https://www.cherryservers.com/blog/how-to-install-and-start-using-mongodb-on-ubuntu-20-04)
 
 **Sana:** 2023.11.18(2023-yil 18-noyabr)
+
+**Oxirgi yangilanish:** 2024.06.20(2024-yil 20-iyun)
+
+**Muallif: Otabek Ismoilov**
+
+| [Telegram](https://t.me/Otabek_Ismoilov) | [GitHub](https://github.com/ismoilovdevml) | [LinkedIn](https://www.linkedin.com/in/otabek-ismoilov-8625b0222/) |
+| - | - | - |
 </Callout>
