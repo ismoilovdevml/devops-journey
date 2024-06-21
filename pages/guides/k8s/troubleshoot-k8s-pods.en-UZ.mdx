@@ -73,3 +73,40 @@ Quyida xato tavsiflari bilan rasmiy(official) Kubernetes pod xatolar ro'yxati ke
 Keling, ba'zi eng keng tarqalgan pod xatolarini va ularni qanday tuzatishni ko'rib chiqaylik.
 
 ## Troubleshoot ErrImagePullBackOff
+
+```bash
+pods kubectl get pods
+NAME                                READY   STATUS             RESTARTS   AGE
+nginx-deployment-599d6bdb7d-lh7d9   0/1     ImagePullBackOff   0          7m17s
+```
+
+Agar pod holatida `ErrImagePullBackOff`ni ko'rsangiz, bu quyidagi sabablarga ko'ra bo'lishi mumkin.
+
+* Belgilangan image container registryda mavjud emas.
+* Image nomi yoki tegida xato.
+* Registry credentialslar muammolari tufayli berilgan registrdan imageni olish ruxsati rad etildi.
+
+Agar siz pod eventlarini tekshirsangiz, `ErrImagePull` xatosini va undan keyin `ErrImagePullBackOff`ni ko'rasiz. Bu shuni anglatadiki, kubelet imageni qayta-qayta tortib olishga harakat qilishni to'xtatadi.
+
+```bash
+kubectl describe pod <pod-nomi>
+```
+
+Xatolik
+
+```bash
+Warning  Failed     24m (x4 over 25m)    kubelet            Error: ErrImagePull
+Normal   BackOff    23m (x6 over 25m)    kubelet            Back-off pulling image "ngasdinx:latest"
+Warning  Failed     29s (x110 over 25m)  kubelet            Error: ImagePullBackOff
+```
+
+## Troubleshoot Error: InvalidImageName
+
+```bash
+pods kubectl get pod
+NAME                                READY   STATUS             RESTARTS   AGE
+nginx-deployment-6f597fc4cd-j86mm   0/1     InvalidImageName   0          7m26s
+```
+Agar siz manifestda imagening URL manzilini noto'g'ri ko'rsatsangiz, `InvalidImageName` xatosini olasiz.
+
+Misol uchun, agar sizda private container registringiz bo'lsa va siz `https` bilan image nomini eslatib o'tsangiz, u `InvalidImageName` xatosini keltirib chiqaradi. Rasm nomini httpssiz belgilashingiz kerak
