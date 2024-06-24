@@ -294,9 +294,9 @@
     }
   },
   "loki-setup": {
-    "title": "Grafana bilan markazlashtirilgan log tizimini qurish",
-    "longTitle": "Grafana bilan markazlashtirilgan log tizimini qurish",
-    "description": "Grafana bilan markazlashtirilgan log tizimini qurish",
+    "title": "Loki bilan markazlashtirilgan log tizimini qurish",
+    "longTitle": "Loki bilan markazlashtirilgan log tizimini qurish",
+    "description": "Loki bilan markazlashtirilgan log tizimini qurish",
     "level": "Hamma uchun",
     "category": "DevOps",
     "author": {
