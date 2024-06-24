@@ -10,13 +10,13 @@ import { Callout } from "nextra-theme-docs";
 * Sizda ELK stack bo'lishi kerak!
 </Callout>
 
-**A**pplication **P**erformance **M**onitoring (**APM**)  zamonaviy dasturiy ta'minotni ishlab chiqish va IT operatsiyalarining hal qiluvchi jihati hisoblanadi. APM dasturiy ta'minot ilovalarining ishlashi, mavjudligi(availability) va user experienceni kuzatish va boshqarish uchun toollar va amaliyotlardan foydalanishni o'z ichiga oladi. U applicationlarning qanday ishlashini ko'rish imkonini beradi, ishlash muammolari, qiyinchiliklar va anomaliyalarni aniqlash va hal qilishga yordam beradi. APM'ning maqsadi optimal ishlash va ishonchlilikni saqlab qolish orqali applicationlarning foydalanuvchi kutganlari va biznes talablariga javob berishini ta'minlashdan iborat.
+**A**pplication **P**erformance **M**onitoring (**APM**)  zamonaviy dasturiy ta'minotni ishlab chiqish va IT operatsiyalarining hal qiluvchi jihati hisoblanadi. APM dasturiy ta'minot ilovalarining ishlashi, mavjudligi(availability) va user experienceni kuzatish va boshqarish uchun toollar va amaliyotlardan foydalanishni o'z ichiga oladi. U applicationlarning qanday ishlashini ko'rish imkonini beradi, ishlash muammolari, qiyinchiliklar va anomaliyalarni aniqlash va hal qilishga yordam beradi. **APM**'ning maqsadi optimal ishlash va ishonchlilikni saqlab qolish orqali applicationlarning foydalanuvchi kutganlari va biznes talablariga javob berishini ta'minlashdan iborat.
 
 APM bir nechta maqsadlar qo'llaniladi.
 
 * **Performance Monitoring->** Applicationlarning ishlash metrikalarini(metrics), jumladan response timelari, o'tkazish qobiliyati(throughput) va resurslardan foydalanishni doimiy ravishda kuzatib boradi. Bu samaradorlikning pasayishini aniqlashga va applicationlarning samarali ishlashini ta'minlashga yordam beradi.
 
-* **Error Tracking->** Applicationlardagi xatolar(error) va exceptionlarni aniqlaydi va logga yozadi, ildiz sabablari haqida tushuncha beradi va tezkor hal qilish imkonini beradi.
+* **Error Tracking->** Applicationlardagi xatolar(error) va exceptionlarni aniqlaydi va logga yozadi, ildiz sabablari(root cause) haqida tushuncha beradi va tezkor hal qilish imkonini beradi.
 
 * **User Experience Monitoring->** Sahifani yuklash vaqtlari(page load time), tranzaksiya vaqtlari va foydalanuvchilarning o'zaro ta'siri kabi metrikalarni kuzatish orqali end-user experienceni nazorat qiladi. Bu foydalanuvchilar dasturning ishlashini qanday qabul qilishini tushunishga yordam beradi.
 
@@ -45,9 +45,10 @@ APM keng qamrovli monitoring yechimini ta'minlash uchun birgalikda ishlaydigan b
 
 Ushbu amaliyotda biz APM server o'rnatib sozlaymiz va **Java, Node.js, Python(Django, Flask), Ruby on Rails, Rack, Go, .NET, PHP** environmentlarda APM agentni o'rnatib sozlashni ko'rib chiqamiz.
 
-APM ishlashi quyidagi rasmda tasvirlangan. Biz serverimizga APM Server o'rnatamiz va uni Elasticsearcha yo'naltiramiz. APM agentlarni esa har bir applicationimizga qo'shib chiqamiz. Applicationlarimiz ichidagi APM agent APM Serverga ma'lumotlarni yuborib turadi. APM Server esa uni ishlab Elasticsearchga yuboradi, Elasticsearchdan biz Kibana APM UI orqali uni vizualizatsiya qilib ko'rishimiz mumkin.
+APM ishlashi quyidagi rasmda tasvirlangan. Biz serverimizga APM Server o'rnatamiz va uni Elasticsearchga yo'naltiramiz. APM agentlarni esa har bir applicationimizga qo'shib chiqamiz. Applicationlarimiz ichidagi APM agent APM Serverga ma'lumotlarni yuborib turadi. APM Server esa uni ishlab Elasticsearchga yuboradi, Elasticsearchdan biz Kibana APM UI orqali uni vizualizatsiya qilib ko'rishimiz mumkin.
 
 ![apm-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/apm-server/apm-architecture.png)
+![apm-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/apm-server/apm5.png)
 
 ## APM Server o'natish va solzash
 
@@ -102,9 +103,22 @@ sudo systemctl status apm-server
 Elastic APM'ga o'tib **Check APM Server Status** bosganimizda **You have correctly setup APM Server** chiqsa demak bizni APM Serverni to'gri o'rnatib sozladik.
 ![apm-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/apm-server/integration2.png)
 
-APM Serverni o'rnatib Elasticsearchga ulab olganimzidan keyin AMP agentlarni qo'shib chiqishimiz kerak bo'ladi. Application qaysi dasturlash tilida yozilgani qarab APM agent qo'shish o'ziga xos bo'ladi.
+APM Serverni o'rnatib Elasticsearchga ulab olganimzidan keyin AMP agentlarni qo'shib chiqishimiz kerak bo'ladi. Application qaysi dasturlash tilida yozilganiga qarab APM agent qo'shish o'ziga xos bo'ladi.
 
+APM serverni loyihangizga integratsiya qilish uchun bir nechta agentlari bor.
 
+* **Android agent**
+* **Go agent**
+* **iOS agent**
+* **Java agent**
+* **.NET agent**
+* **Node.js agent**
+* **PHP agent**
+* **Python agent**
+* **Ruby agent**
+* **JavaScript Real User Monitoring (RUM) agent**
+
+Biz hozir ushbu agentlardan ba'zi birlarni integratsiya qilishni ko'rib chiqamiz.
 ## Node.js
 
 Bu qismda biz Node.js loyihalarga APM agent qo'shishni ko'rib chiqamiz.
@@ -304,3 +318,52 @@ MIDDLEWARE = [
 ```
 
 Qo'shimcha uchun [Python django applicationlarga APM Agent qo'shish bo'yicha rasmiy qo'llanma](https://www.elastic.co/guide/en/apm/agent/python/current/django-support.html)
+
+
+## Kibana bilan ishlash
+
+Application va servicelaringizga apm-agent integratsiya qilib apm-serverga ulaganingizdan keyin Kibana Dashboarddan **Obervability -> APM** ga o'tamiz. 
+
+![apm-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/apm-server/ui.png)
+
+Bizda APM serverga ulangan application/servicelarimiz ro'yxati chiqishi kerak. 
+![apm-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/apm-server/ui5.png)
+
+
+Kuzatmoqchi bo'lgan application/servicega kirib ko'rishingiz mumkin. Har bir serviceni trace qilib analiz qilishingiz mumkin.
+![apm-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/apm-server/ui1.png)
+
+Application/Servicelar **Service Map**ni ko'rishingiz mumkin bu mikroservice qanday ishlab turgani tasavvur qilishingiz va analiz qilishingiz uchun kerak.
+![apm-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/apm-server/ui2.png)
+
+Machine learning va AIOps bilan anomaliyilarni tez aniqlashingiz mumkin.
+![apm-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/apm-server/ui3.png)
+
+## Qo'shimcha
+
+Applicationlarni APM server bilan apm-agent orqali integratsiya qilish bo'yicha ba'tafsil rasmiy resurslar.
+
+* [**Android agent**](https://www.elastic.co/guide/en/apm/agent/android/current/intro.html)
+* [**Go agent**](https://www.elastic.co/guide/en/apm/agent/go/2.x/introduction.html)
+* [**iOS agent**](https://www.elastic.co/guide/en/apm/agent/swift/1.x/intro.html)
+* [**Java agent**](https://www.elastic.co/guide/en/apm/agent/java/1.x/intro.html)
+* [**.NET agent**](https://www.elastic.co/guide/en/apm/agent/dotnet/1.x/intro.html)
+* [**Node.js agent**](https://www.elastic.co/guide/en/apm/agent/nodejs/4.x/intro.html)
+* [**PHP agent**](https://www.elastic.co/guide/en/apm/agent/php/1.x/intro.html)
+* [**Python agent**](https://www.elastic.co/guide/en/apm/agent/python/6.x/getting-started.html)
+* [**Ruby agent**](https://www.elastic.co/guide/en/apm/agent/ruby/4.x/introduction.html)
+* [**JavaScript Real User Monitoring (RUM) agent**](https://www.elastic.co/guide/en/apm/agent/rum-js/5.x/intro.html)
+
+<Callout type="info" emoji="">
+
+
+**Sana:** 2024.05.13(2024-yil 13-may)
+
+**Oxirgi yangilanish:** 2024.06.21(2024-yil 24-iyun)
+
+**Muallif: Otabek Ismoilov**
+
+| [Telegram](https://t.me/Otabek_Ismoilov) | [GitHub](https://github.com/ismoilovdevml) | [LinkedIn](https://www.linkedin.com/in/otabek-ismoilov-8625b0222/) |
+| - | - | - |
+
+</Callout>
