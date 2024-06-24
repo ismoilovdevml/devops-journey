@@ -8,8 +8,7 @@ import { Callout } from "nextra-theme-docs";
 Markazlashgan loglarni boshqarish va tahlil qilish hozirgi kunda murakkab tizimlar va mikroservicelar arxitekturalari uchun muhim ahamiyat kasb etadi. 
 
 [**Grafana Loki**](https://github.com/grafana/loki) - bu loglarni saqlash, indekslash va qidirish(search) uchun mo'ljallangan kengaytiriladigan, high-performancega ega tizimdir. Grafana tomonidan ishlab chiqilgan Loki o'zining soddaligi, samaradorligi va Grafana bilan integratsiyalashganligi bilan ajralib turadi.
-Grafana Loki arxitekturasi zamonaviy, distributed systemlar ehtiyojlarini qondirish uchun moslashtirilgan. Uning dizayni scalability, high availability va soddalikni ta'kidlab, uni ko'plab **DevOps** va **SRE** jamoalari uchun asosiy tanlovga aylantiradi. Ushbu qo'llanmada biz Grafana Loki Architecture va uning tarkibiy qismlari haqida batafsil ma'lumotga ega bo'lamiz va Docker container loglarini yig'ish uchun Loki, promtail, Grafana sozlaymiz.
-Kompaniyaning distributed environmentda turli xil tizim resurslaridan loglarni saqlash va boshqarish juda qiyin vazifadir.Ushbu vazifani soddalashtirish uchun **log aggregation**(loglarni yig'ish) deb ataladigan kontseptsiya kiritilgan bo'lib, u turli tizim resurslaridan loglarni to'playdi va boshqaradi.
+Grafana Loki arxitekturasi zamonaviy, distributed systemlar ehtiyojlarini qondirish uchun moslashtirilgan. Uning dizayni scalability, high availability va soddalikni ta'kidlab, uni ko'plab **DevOps** va **SRE** jamoalari uchun asosiy tanlovga aylantiradi. Ushbu qo'llanmada biz Grafana Loki Architecture va uning tarkibiy qismlari haqida batafsil ma'lumotga ega bo'lamiz. Kompaniyaning distributed environmentda turli xil tizim resurslaridan loglarni saqlash va boshqarish juda qiyin vazifadir.Ushbu vazifani soddalashtirish uchun **log aggregation**(loglarni yig'ish) deb ataladigan kontseptsiya kiritilgan bo'lib, u turli tizim resurslaridan loglarni to'playdi va boshqaradi.
 
 [**Grafana Loki**](https://github.com/grafana/loki) open-source loglarni yig'ish tizimi bo'lib, uning vazifasi loglarni yig'ish(collect), saqlash(store) va so'rashdir(query).
 Grafana Loki logni compress qilib chiqaradi va loglarni **chunk**(bo'lak)larga bo'lib saqlaydi va ularni fayl tizimlarida yoki AWS S3 kabi backend storageda saqlaydi. **Chunk** - bu log hajmiga asoslangan log yozuvlarini o'z ichiga olgan compress qilingan fayl, shuning uchun chunk o'lchami o'zining o'lcham chegarasiga yetganda, u logni boshqa chunkda saqlaydi.
@@ -40,7 +39,7 @@ Promtail serverlardan loglarni o'qib label va timestamp qo'yib lokiga HTTP orqal
 ```bash
 {namespace="prod", pod="my-app-123", container="app-container"}
 ```
-Loki loglarni promtaildan olib label va timestampdan foydalanib key-value indexlaydi va loghlarni chunklar(bo'laklar)ga bo'lib loki server file systemida yoki S3 bucket(Amazon S3, Google Cloud Storage, yoki MinIO)da saqlaydi. Chunklar ma'lum bir vaqt oralig'idagi loglar hisoblanadi masalan 2-minut. Grafana lokidan loglarni LogQL query language orqali so'rovlar berib vizualizatsiya qilib dashboarda ko'rsatadi.
+Loki loglarni promtaildan olib label va timestampdan foydalanib key-value indexlaydi va loglarni chunklar(bo'laklar)ga bo'lib loki server file systemida yoki S3 bucket(Amazon S3, Google Cloud Storage, yoki MinIO)da saqlaydi. Chunklar ma'lum bir vaqt oralig'idagi loglar hisoblanadi masalan 2-minut. Grafana lokidan loglarni LogQL query language orqali so'rovlar berib vizualizatsiya qilib dashboarda ko'rsatadi.
 
 ## Grafana Loki Componentlari
 
@@ -76,10 +75,10 @@ Grafana Loki bilan integratsiyalashgan holda loglarni qidirish va vizualizatsiya
 
 ### Log Storage
 
-Loki loglarni so'rash va qabul qilish samaradorligini oshirish uchun log ma'lumotlarini saqlaydi. U log ma'lumotlarini chunklarga bo'lib compress qilib, ularni vaqt bo'yicha tartibga soladi va unga label va timestamp beradi. Keyin u har bir chunl uchun key-value formatida indeks yaratadi, ularning log yozuvlari chunk timestampi va labeli bilan. Chunklar va indekslar turli xil backend object storagelarida yoki fayl tizimlarida saqlanishi mumkin. Chunklar saqlanganidan so'ng, u ma'lumotlar uchun saqlash muddatini yaratadi va saqlash muddatiga qarab avtomatik ravishda o'chiriladi. Agar siz fayl tizimidan saqlash sifatida foydalanayotgan bo'lsangiz, chunklar va indekslar uchun default saqlash pathlari `/var/lib/loki/chunks` va `/var/lib/loki/index` hisoblanadi.
+Loki loglarni so'rash va qabul qilish samaradorligini oshirish uchun log ma'lumotlarini saqlaydi. U log ma'lumotlarini chunklarga bo'lib compress qilib, ularni vaqt bo'yicha tartibga soladi va unga label va timestamp beradi. Keyin u har bir chunk uchun key-value formatida indeks yaratadi, ularning log yozuvlari chunk timestampi va labeli bilan. Chunklar va indekslar turli xil backend object storagelarida yoki fayl tizimlarida saqlanishi mumkin. Chunklar saqlanganidan so'ng, u ma'lumotlar uchun saqlash muddatini yaratadi va saqlash muddatiga qarab avtomatik ravishda o'chiriladi. Agar siz fayl tizimidan saqlash sifatida foydalanayotgan bo'lsangiz, chunklar va indekslar uchun default saqlash pathlari `/var/lib/loki/chunks` va `/var/lib/loki/index` hisoblanadi.
 
 
-## Lokida chunklar va iondexlar saqlanishi
+## Lokida chunklar va indexlar saqlanishi
 
 Misol tariqasida, timestamp, HTTP request method, URL manzili va response codeni o'z ichiga olgan logni yaratadigan web-serverdan foydalanayotganingizni tasavvur qiling.
 
@@ -130,6 +129,9 @@ Qo'shimcha Resurslar
  * [**ELK Stack Cluster o'rnatish va sozlash**](https://devops-journey.uz/tutorials/article/elk-setup)
  * [**APM Server Sozlash**](https://devops-journey.uz/tutorials/article/apm-server-sozlash)
  * [**PostgreSQL Monitoring**](https://devops-journey.uz/guides/database/postgres-monitoring)
+
+ Qo'llanma uchun foydalanilgan resurslar
+ * [**Grafana Loki Architecture: A Comprehensive Guide**](https://devopscube.com/grafana-loki-architecture/)
 
 **Sana:** 2024.06.24(2024-yil 24-iyun)
 
