@@ -125,27 +125,6 @@
       "pagination": true
     }
   },
-  "gnp-monitoring": {
-    "title": "Serverlarni monitoring qilish",
-    "longTitle": "Serverlarni monitoring qilish",
-    "description": "Grafana, Prometheus, Node Exporter o'rnatish va sozlash",
-    "level": "Hamma uchun",
-    "category": "DevOps",
-    "author": {
-      "name": "Otabek Ismoilov",
-      "image": "https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/authors/ismoilovdev.jpeg"
-    },
-    "createdAt": "2023-08-29",
-    "minutesRead": 40,
-    "href": "/tutorials/article/gnp-monitoring",
-    "theme": {
-      "breadcrumb": false,
-      "footer": true,
-      "sidebar": false,
-      "toc": false,
-      "pagination": true
-    }
-  },
   "netflix-deploy": {
     "title": "DevSecOps Project: Neftlix",
     "longTitle": "DevSecOps Project: Neftlix",
@@ -209,19 +188,19 @@
       "pagination": true
     }
   },
-  "elk-stack": {
-    "title": "ELK Stackga Kirish",
-    "longTitle": "ELK Stack Kirish",
-    "description": "ELK Stack Kirish, Arxitketura va Componentlar",
+  "bind9-nameserver": {
+    "title": "bind9 bilan DNS nameserver sozlash",
+    "longTitle": "bind9 bilan DNS nameserver sozlash",
+    "description": "bind9 bilan DNS nameserver sozlash",
     "level": "Hamma uchun",
     "category": "DevOps",
     "author": {
       "name": "Otabek Ismoilov",
       "image": "https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/authors/ismoilovdev.jpeg"
     },
-    "createdAt": "2024-04-28",
+    "createdAt": "2024.03.29",
     "minutesRead": 20,
-    "href": "/tutorials/article/elk-stack",
+    "href": "/tutorials/article/bind9-nameserver",
     "theme": {
       "breadcrumb": false,
       "footer": true,
@@ -230,19 +209,19 @@
       "pagination": true
     }
   },
-  "elk-setup": {
-    "title": "ELK Stack Cluster o'rnatish va sozlash",
-    "longTitle": "ELK Stack Cluster o'rnatish va sozlash",
-    "description": "ELK Stack cluster sozlash",
+  "openvpn-subnet": {
+    "title": "OpenVPN orqali subnetlarga ulanish",
+    "longTitle": "OpenVPN orqali subnetlarga ulanish",
+    "description": "OpenVPN orqali subnetlarga ulanish",
     "level": "Hamma uchun",
     "category": "DevOps",
     "author": {
       "name": "Otabek Ismoilov",
       "image": "https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/authors/ismoilovdev.jpeg"
     },
-    "createdAt": "2024-05-13",
-    "minutesRead": 60,
-    "href": "/tutorials/article/elk-setup",
+    "createdAt": "2024.04.08",
+    "minutesRead": 20,
+    "href": "/tutorials/article/openvpn-subnet",
     "theme": {
       "breadcrumb": false,
       "footer": true,
@@ -251,19 +230,19 @@
       "pagination": true
     }
   },
-  "apm-server-sozlash": {
-    "title": "APM Server Sozlash",
-    "longTitle": "APM Server Sozlash",
-    "description": "APM Server Sozlash",
+  "dinamik-to-static": {
+    "title": "Dinamik IP'dagi serverni global tarmoqga chiqarish",
+    "longTitle": "Dinamik IP'dagi serverni global tarmoqga chiqarish",
+    "description": "Dinamik IP'dagi serverni global tarmoqga chiqarish",
     "level": "Hamma uchun",
     "category": "DevOps",
     "author": {
       "name": "Otabek Ismoilov",
       "image": "https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/authors/ismoilovdev.jpeg"
     },
-    "createdAt": "2024-05-13",
-    "minutesRead": 60,
-    "href": "/tutorials/article/apm-server-sozlash",
+    "createdAt": "2024.04.08",
+    "minutesRead": 20,
+    "href": "/tutorials/article/dinamik-to-static",
     "theme": {
       "breadcrumb": false,
       "footer": true,
@@ -285,27 +264,6 @@
     "createdAt": "2024-05-19",
     "minutesRead": 60,
     "href": "/tutorials/article/linux-security",
-    "theme": {
-      "breadcrumb": false,
-      "footer": true,
-      "sidebar": false,
-      "toc": false,
-      "pagination": true
-    }
-  },
-  "loki-architecture": {
-    "title": "Grafana Loki Arxitekturasi",
-    "longTitle": "Grafana Loki Arxitekturasi",
-    "description": "Grafana Loki Arxitekturasi",
-    "level": "Hamma uchun",
-    "category": "DevOps",
-    "author": {
-      "name": "Otabek Ismoilov",
-      "image": "https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/authors/ismoilovdev.jpeg"
-    },
-    "createdAt": "2024-06-24",
-    "minutesRead": 40,
-    "href": "/tutorials/article/loki-architecture",
     "theme": {
       "breadcrumb": false,
       "footer": true,

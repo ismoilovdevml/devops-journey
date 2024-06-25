@@ -1,26 +1,32 @@
 {
-    "bind9-nameserver": {
-      "title": "DNS nameserver sozlash",
+    "elk-stack": {
+      "title": "ELK Stackga Kirish",
       "icon": "▶️",
-      "description": "bind9 bilan nameserver sozlash",
-      "href": "/guides/monitoring/bind9-nameserver"
+      "description": "ELK Stack Kirish, Arxitketura va Componentlar",
+      "href": "/guides/monitoring/elk-stack"
     },
-    "dinamik-to-static": {
-      "title": "Dinamik IP'dagi serverni global tarmoqga chiqarish",
+    "elk-setup": {
+      "title": "ELK Stack Cluster o'rnatish va sozlash",
       "icon": "▶️",
-      "description": "Dinamikni Static qilish",
-      "href": "/guides/monitoring/dinamik-to-static"
+      "description": "ELK cluster",
+      "href": "/guides/monitoring/elk-setup"
     },
-    "openvpn-subnet": {
-      "title": "OpenVPN orqali subnetlarga ulanish",
+    "apm-server-sozlash": {
+      "title": "APM Server Sozlash",
       "icon": "▶️",
-      "description": "OpenVPN monitoring",
-      "href": "/guides/monitoring/openvpn-subnet"
+      "description": "Application monitoring",
+      "href": "/guides/monitoring/apm-server-sozlash"
     },
-    "openvpn-server": {
-      "title": "OpenVPN server sozlash",
+    "gnp-monitoring": {
+      "title": "Serverlarni monitoring qilish",
       "icon": "▶️",
-      "description": "VPN Server sozlash",
-      "href": "/guides/monitoring/openvpn-server"
+      "description": "Grafana Stack",
+      "href": "/guides/monitoring/gnp-monitoring"
+    },
+    "loki-architecture": {
+      "title": "Grafana Loki Arxitekturasi",
+      "icon": "▶️",
+      "description": "Grafana Stack",
+      "href": "/guides/monitoring/loki-architecture"
     }
 }
