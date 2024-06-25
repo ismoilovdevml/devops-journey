@@ -52,5 +52,11 @@
     "icon": "▶️",
     "description": "Github Actions + Discord (Android, iOS)",
     "href": "/guides/ci-cd/flutter-github-action"
+  },
+  "m1-runner-setup": {
+    "title": "Github Actionsga M1 macOS runner qo'shish",
+    "icon": "▶️",
+    "description": "Apple M1 macOS runner",
+    "href": "/guides/ci-cd/m1-runner-setup"
   }
 }
