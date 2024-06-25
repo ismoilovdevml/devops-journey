@@ -6,13 +6,13 @@ import k8sGuides from './k8s/_meta.en-UZ.json';
 import databaseGuides from './database/_meta.en-UZ.json';
 import webserverGuides from './web-server/_meta.en-UZ.json';
 import cloudGuides from './cloud/_meta.en-UZ.json';
-import networkGuides from './network/_meta.en-UZ.json';
+import monitoringGuides from './monitoring/_meta.en-UZ.json';
 
 # Qo'llanmalar
 
 Hamjamiyat tomonidan yozilgan dokumentatsiya va qo'llanmalar. Mavzular **CI/CD, Konteynerlash, Kubernetes(k8s), Monitoring, Network, Load Balancing** va boshqalarni o'z ichiga oladi.
 
-<Tabs items={['▶️CI/CD','▶️Konteynerlash','▶️Kubernetes','▶️Database','▶️Web Serverlar','▶️Cloud','▶️Network']}>
+<Tabs items={['▶️CI/CD','▶️Konteynerlash','▶️Kubernetes','▶️Database','▶️Web Serverlar','▶️Cloud','▶️Monitoring']}>
   <Tab style={{ paddingTop: 8 }}>
     <Cards
       num={3}
@@ -100,13 +100,13 @@ Hamjamiyat tomonidan yozilgan dokumentatsiya va qo'llanmalar. Mavzular **CI/CD, 
   <Tab>
     <Cards
       num={3}
-      children={Object.keys(networkGuides).map((key, i) => (
+      children={Object.keys(monitoringGuides).map((key, i) => (
         <Card
           key={i}
-          title={networkGuides[key].title}
-          description={networkGuides[key].description}
-          icon={networkGuides[key].icon}
-          href={networkGuides[key].href}
+          title={monitoringGuides[key].title}
+          description={monitoringGuides[key].description}
+          icon={monitoringGuides[key].icon}
+          href={monitoringGuides[key].href}
         />
       ))}
     />

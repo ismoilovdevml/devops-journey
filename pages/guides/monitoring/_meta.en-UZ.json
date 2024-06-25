@@ -3,24 +3,24 @@
       "title": "DNS nameserver sozlash",
       "icon": "▶️",
       "description": "bind9 bilan nameserver sozlash",
-      "href": "/guides/network/bind9-nameserver"
+      "href": "/guides/monitoring/bind9-nameserver"
     },
     "dinamik-to-static": {
       "title": "Dinamik IP'dagi serverni global tarmoqga chiqarish",
       "icon": "▶️",
       "description": "Dinamikni Static qilish",
-      "href": "/guides/network/dinamik-to-static"
+      "href": "/guides/monitoring/dinamik-to-static"
     },
     "openvpn-subnet": {
       "title": "OpenVPN orqali subnetlarga ulanish",
       "icon": "▶️",
-      "description": "OpenVPN network",
-      "href": "/guides/network/openvpn-subnet"
+      "description": "OpenVPN monitoring",
+      "href": "/guides/monitoring/openvpn-subnet"
     },
     "openvpn-server": {
       "title": "OpenVPN server sozlash",
       "icon": "▶️",
       "description": "VPN Server sozlash",
-      "href": "/guides/network/openvpn-server"
+      "href": "/guides/monitoring/openvpn-server"
     }
 }
