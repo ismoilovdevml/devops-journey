@@ -183,3 +183,80 @@ Filial nomlash qoidalari:
 Tuzatish branchlari reliz branchlarga juda o'xshaydi chunki ular rejalashtirilmagan bo'lsa ham yangi ishlab chiqarish relizlariga tayyorgarlik ko'rish uchun mo'ljallangan. Ular jonli ishlab chiqarish versiyasining istalmagan holatiga darhol harakat qilish zaruratidan kelib chiqadi. Ishlab chiqarish versiyasidagi muhim xatolik darhol hal qilinishi kerak bo'lsa, tuzatish filiali ishlab chiqarish versiyasini belgilaydigan asosiy filialdagi tegishli tegdan ajratilishi mumkin.
 
 Mohiyat shundan iboratki, jamoa a'zolarining ishi (rivojlanish bo'limida) davom etishi mumkin, boshqa bir kishi esa tezkor ishlab chiqarishni tuzatishni tayyorlamoqda.
+
+## Tuzatish branchini yasash (Creating the hotfix branch)
+
+Tuzatish branchlari `master` branchdan yasalgan. Misol uchun, aytaylik, 1.2 versiyasi jonli ishlayotgan va jiddiy xato tufayli muammolarni keltirib chiqaradigan joriy ishlab chiqarish versiyasidir. Ammo rivojlanishdagi o'zgarishlar hali ham barqaror emas. Keyin tuzatish filialini ajratib, muammoni hal qilishni boshlashimiz mumkin:
+
+```bash
+$ git checkout -b hotfix-1.2.1 master
+Switched to a new branch "hotfix-1.2.1"
+$ ./bump-version.sh 1.2.1
+Files modified successfully, version bumped to 1.2.1.
+$ git commit -a -m "Bumped version number to 1.2.1"
+[hotfix-1.2.1 41e61bb] Bumped version number to 1.2.1
+1 files changed, 1 insertions(+), 1 deletions(-)
+```
+
+Tarqalgandan keyin versiya raqamini ko'rsatishni unutmang!
+
+Keyin xatoni tuzating va tuzatishni bir yoki bir nechta alohida topshiriqlarda (commit) bajaring.
+
+```bash
+$ git commit -m "Fixed severe production problem"
+[hotfix-1.2.1 abbe5d6] Fixed severe production problem
+5 files changed, 32 insertions(+), 17 deletions(-)
+```
+
+## Tuzatish branchini yakunlash (Finishing a hotfix branch)
+
+Tugallangach, xato tuzatish (hotfix) yana `master`ga birlashtirilishi (merge) kerak, lekin xato tuzatish keyingi versiyaga ham kiritilishini taʼminlash uchun uni yana ishlab chiqishga birlashtirish kerak. Bu reliz branchlari qanday tugaganiga to'liq o'xshaydi.
+
+Birinchidan, masterni yangilang va relizni belgilang.
+
+```bash
+$ git checkout master
+Switched to branch 'master'
+$ git merge --no-ff hotfix-1.2.1
+Merge made by recursive.
+(Summary of changes)
+$ git tag -a 1.2.1
+```
+
+<Callout type="info" emoji="">
+Tahrirlash: Tegingizni kriptografik tarzda imzolash uchun `-s` yoki `-u <key>` bayroqlaridan foydalanishningiz ham mumkin.
+</Callout>
+
+Keyinchalik, ishlab chiqishda develop xato tuzatishni ham kiriting:
+
+```bash
+$ git checkout develop
+Switched to branch 'develop'
+$ git merge --no-ff hotfix-1.2.1
+Merge made by recursive.
+(Summary of changes)
+```
+
+Bu yerdagi qoidadan bitta istisno shundaki agar hozirda reliz branch mavjud bo'lsa tuzatish o'zgarishlarini ishlab chiqish `develop` o'rniga o'sha reliz bo'limiga birlashtirish kerak. Tuzatishning reliz bo'limiga qayta birlashtirilishi oxir-oqibat reliz bo'limi tugagach xato tuzatuvchining ham ishlab chiqishga birlashishiga olib keladi. (Agar ishlab chiqishda ish shu zahotiyoq xatoni tuzatishni talab qilsa va reliz bo'limi tugashini kutmasa xato tuzatishni hozirda ishlab chiqishga xavfsiz tarzda birlashtirishingiz mumkin.)
+
+Nihoyat vaqtinchalik branchni olib tashlang:
+
+```bash
+$ git branch -d hotfix-1.2.1
+Deleted branch hotfix-1.2.1 (was abbe5d6).
+```
+
+![git-branching](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/git-branching/git-model4.png)
+
+<Callout type="info" emoji="">
+
+**Sana:** 2022.03.22(2022-yil 22-mart)
+
+**Oxirgi yangilanish:** 2024.08.02(2024-yil 2-avgust)
+
+**Muallif: Ahmad (Akhmadiy) Kadirov**
+
+| [Telegram](https://t.me/programming_everyone) | [GitHub](https://github.com/akhmadiy) | [LinkedIn](https://www.linkedin.com/in/akhmadiy/) |
+| - | - | - |
+
+</Callout>
