@@ -34,3 +34,152 @@ Eng asosiysi ushbu rivojlanish modeliga ko'ra markaziy repositoryda cheksiz umrg
 Shuning uchun har safar o'zgarishlar `master`ga birlashtirilganda by yangi nashr (relase) ekanini anglatadi. Biz ushbu masalaga jiddiy qarashimiz lozim. Dasturiy ta'minotni ishlab chiqish jarayonida yangi reliz uchun maksimal darajada ishonchli va barqaror bo'lishi kerak. Bu bizga loyihamiz sifatli bo'lishini ta'minlaydi.
 
 ![git-branching](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/git-branching/git-model1.png)
+
+## Qo'llab-quvvatlovchi filiallar (Supporting branches)
+
+Asosiy filiallar `master` va `develop` bilan bir qatorda bizning rivojlanish modelimiz jamoa a'zolari o'rtasida paralell rivojlanishga yordam berish, yangilanishlarni kuzatishni onsonlashtirish, relizlardan keyingi chiqgan muammolarni tuzatishga yordam berish uchun turli yordamchi branchlardan foydalaniladi. Asosiy branchlardan farli o'laroq ushbu branchlar vaqtinchalik xisoblanadi chunki ular kerakli ishlar yakunlangach olib tashlanadi.
+
+Biz foydalanishimiz mumkin bo'lgan har xil turdagi branchlar:
+
+* Feature branches (Yangi xususiyatlar)
+* Release branches (Relizlar)
+* Hotfix branches (Relizda chiqgan xatolarni tuzatish uchun)
+
+Ushbu filiallarning har biri o'ziga xos maqsadga ega va qaysi filiallar ularning boshlang'ich filiali bo'lishi mumkinligi va qaysi filiallar ularni birlashtirish maqsadlari bo'lishi kerakligi haqidagi qat'iy qoidalarga bog'liq.
+
+
+Hech qanday holatda bu filiallar texnik nuqtai nazardan "maxsus" emas. Filial turlari biz ulardan qanday foydalanishimizga qarab tasniflanadi. Ular, albatta, oddiy eski Git branchlari. Shunchaki semantik nuqtai nazardan qarash to'g'ri bo'ladi.
+
+## Xususiyatli filiallar (Feature branches)
+
+Quyidagidan bo'linishi mumkin:
+`develop`
+Qayta birlashishi kerak:
+`develop`
+
+Filial nomlash qoidalari (branch naming convention):
+Barcha nomlar faqat quyidagilardan tashqari `master`, `develop`, `release-*`, `hotfix-*`
+
+Xususiyat (feature) yoki biror imkoniyat branchlari (bazan topic branch deb ataladi chunki biror imkoniyat nomi bilan nomlanishi mumkin masalan `authentication` yoki `auth-feauture`) yaqin yoki uzoq kelajakdagi versiya uchun yangi imkoniyatlarni ishlab chiqish uchun ishlatiladi. Imkoniyatni ishlab chiqish boshlanganda ushbu imkoniyat birlashtiriladigan versiya xozircha nomalum bo'lishi mumkin. Xususiyat yoki imkoniyat (feauture) branchining mohiyati shundaki, u xusisiyat ishlab chiqarilgunga qadar mavjud bo'ladi lekin oxir-oqibat `develop`ga qayta birlashadi (biror ishlab chiqilgan xususiyatni ma'lum versiyaga qo'shish uchun) yoki o'chirib tashlanadi (xafagarchilik tug'diradigan tajriba bo'lsa).
+
+
+![git-branching](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/git-branching/git-model2.png)
+
+Xususiyat tarmoqlari odatda `origin` emas, faqat ishlab chiquvchi repolarida mavjud.
+
+## Xususiyat bo'limi yasash
+
+Yangi xususiyat ustida ishlashni boshlaganingizda, `develop` bo'limidan (branch) ajralib chiqing.
+
+```bash
+git checkout -b myfeature develop
+Switched to a new branch "myfeature"
+```
+
+## Tugallangan xususiyatni develop branchiga birlashtirish (merge)
+
+Yakunlangan xususiyatlar ularni kelgusi relizga qo'shish uchun ishlab chiqish bo'limiga birlashtirilishi mumkin:
+
+```bash
+$ git checkout develop
+Switched to branch 'develop'
+$ git merge --no-ff myfeature
+Updating ea1b82a..05e9557
+(Summary of changes)
+$ git branch -d myfeature
+Deleted branch myfeature (was 05e9557).
+$ git push origin develop
+```
+
+`--no-ff` bayrog'i birlashma har doim yangi topshiriq ob'ektini yaratishga olib keladi, xatto birlashtirish oldinga siljish bilan amalga oshirilishi mumkin bo'lsa ham. Bu xususiyat filialining tarixiy mavjudligi haqidagi ma'lumotni yo'qotib qo'ymaydi va ushbu xususiyatni birgalikda qo'shgan barcha majburiyatlarni birgalikda guruhlaydi. Quyidagi rasmni ko'ring:
+
+![git-branching](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/git-branching/git-model3.jpeg)
+
+Ikkinchi holda, Git tarixidan ob'ektlarning qaysi biri birgalikda xususiyatni amalga oshirganligini ko'rishning iloji yo'q - barcha jurnal xabarlarini qo'lda o'qish kerak bo'ladi. Butun xususiyatni (ya'ni, bir guruh majburiyatlarni) qaytarish oxirgi vaziyatda haqiqiy bosh og'rig'idir, holbuki `--no-ff` bayrog'i ishlatilsa, buni osonlikcha bajarish mumkin.
+
+Ha, u yana bir nechta (bo'sh) ob'ektlarni yasaydi, foydasi zararidan katta.
+
+## Reliz branchlari (Release branches)
+
+Quyidagidan bo'linishi mumkin:
+`develop`
+Qayta birlashishi kerak:
+`develop` va `master`
+Filial nomlash qoidalari:
+`relase-*`
+
+Reliz branchlari yangi reliz nashrini (new production relase) tayyorlashni qo'llab-quvvatlaydi. Bundan tashqari, ular kichik xatolarni tuzatishga va meta-ma'lumotlarni relizlar uchun tayyorlashga imkon beradi (versiya raqami, tuzilish sanalari va boshqalar). Ushbu barcha ishlarni reliz bo'limida bajarish orqali ishlab chiqish bo'limi (develop branch) keyingi katta versiya uchun xususiyatlarni olish uchun tozalanadi.
+
+Yangi versiyani `develop` branchdan ajratishning asosiy maqsadi ishlab chiqarish jarayonida aynan ma'lum relizda qilinishi kerak bo'lgan imkoniyatlar yoki tuzatish ishlarini aynan shu relizga bog'lab uni ishlab chiqarish bilan ham birlashtirishdan iborat. Kelajakdagi versiyalarga mo'ljallangan barcha xususiyatlar bo'lmasligi mumkin - ular relizlar tarmog'i bo'linmaguncha kutishlari kerak.
+
+Aynan relizlar bo'limining boshida bo'lajak versiyaga versiya raqami beriladi . O'sha paytgacha ishlab chiqish bo'limi "keyingi versiya" uchun o'zgarishlarni aks ettirdi, ammo bu "keyingi reliz" oxir-oqibat 0,3 yoki 1,0 bo'ladimi, toki reliz bo'limi ishga tushirilgunga qadar noma'lum. Ushbu qaror relizlar bo'limining boshlanishi bilan qabul qilinadi va loyihaning versiya raqamini buzish qoidalari bilan amalga oshiriladi.
+
+## Reliz branchini yasash (Creating a release branch)
+
+Reliz branchlari ishlab chiqish (develop) branchidan yasaladi. Misol uchun, 1.1.5 versiyasi joriy ishlab chiqarish versiyasidir va bizda katta reliz bor. Rivojlanish holati “keyingi versiya”ga tayyor va biz bu versiya 1.2 (1.1.6 yoki 2.0 oʻrniga) boʻlishiga qaror qildik. Shunday qilib, biz filialni ajratamiz va reliz branchiga yangi versiya raqamini aks ettiruvchi nom beramiz:
+
+```bash
+$ git checkout -b release-1.2 develop
+Switched to a new branch "release-1.2"
+$ ./bump-version.sh 1.2
+Files modified successfully, version bumped to 1.2.
+$ git commit -a -m "Bumped version number to 1.2"
+[release-1.2 74d9424] Bumped version number to 1.2
+1 files changed, 1 insertions(+), 1 deletions(-)
+```
+
+Yangi branchni yasab, unga o'tgandan so'ng, biz versiya raqamini ko'ramiz. Bu yerda `bump-version.sh` yangi versiyani aks ettirish uchun ishchi nusxadagi ba'zi fayllarni o'zgartiradigan xayoliy qobiq skript. (Bu albatta qo'lda o'zgartirish bo'lishi mumkin - bu ba'zi fayllarning o'zgarishidir. Bizning holatda ushbu jarayoni avtomatlashtirib qo'yilgan deb tassavur qilamiz. Jarayon abstakt bo'lgani uchun skript fayl misolida keltirildi) Keyin, buzilgan versiya raqami amalga oshiriladi.
+
+Bu yangi branch albatta chiqarilgunga qadar bir muddat mavjud bo'lishi mumkin. Bu vaqt ichida xatolarni tuzatishlar ushbu branchda qo'llanilishi mumkin (ishlab chiqish `develop` branchda emas). Bu yerda yangi katta funksiyalarni qo'shish qat'iyan man etiladi. Ular ishlab chiqishga birlashtirilishi kerak agar katta funksionallar qo'shilishi kerak bo'lsa bularni keying relizga o'tkazish kerak bo'ladi.
+
+## Reliz branchni tugatish (Finishing a release branch).
+
+Reliz branchning holati haqiqiy reliz bo'lishga tayyor bo'lganda ba'zi harakatlarni bajarish kerak. Birinchidan, reliz filiali `master`ga birlashtiriladi (chunki masterdagi har bir topshiriq ta'rifi bo'yicha yangi relizdir, esda tuting). Keyinchalik, ushbu tarixiy versiyaga kelajakda oson murojaat qilish uchun `master` bo'yicha ushbu majburiyat belgilanishi kerak. Va nihoyat, relizlar bo'limiga kiritilgan o'zgarishlarni ishlab chiqishda qayta birlashtirish kerak, shunda kelajakdagi productionlarda ham ushbu xatolar tuzatiladi.
+
+Gitdagi dastlabki ikki qadam:
+
+```bash
+$ git checkout master
+Switched to branch 'master'
+$ git merge --no-ff release-1.2
+Merge made by recursive.
+(Summary of changes)
+$ git tag -a 1.2
+```
+
+Chiqarish tugallandi va kelajakda foydalanish uchun belgilandi.
+
+<Callout type="info" emoji="">
+Tahrirlash: Tegingizni kriptografik tarzda imzolash uchun `-s` yoki `-u <key>` bayroqlaridan foydalanishningiz ham mumkin.
+</Callout>
+
+Reliz branchida kiritilgan o'zgarishlarni saqlab qolish uchun biz ularni qayta ishlab chiqishga (develop) birlashtirishimiz (merge) kerak. Gitda:
+
+```bash
+$ git checkout develop
+Switched to branch 'develop'
+$ git merge --no-ff release-1.2
+Merge made by recursive.
+(Summary of changes)
+```
+
+Ushbu qadam birlashma mojarosiga (merge conflict) olib kelishi mumkin (ehtimol xatto versiya raqamini o'zgartirganimiz uchun). Agar shunday bo'lsa, uni tuzating va majburiyatni bajaring.
+
+Endi biz haqiqatan ham tayyormiz va reliz filiali olib tashlanishi mumkin, chunki bizga endi kerak emas:
+
+```bash
+$ git branch -d release-1.2
+```
+
+## Tuzatish filiallari (Hotfix branches)
+
+Quyidagidan bo'linishi mumkin:
+`master`
+Qayta birlashishi kerak:
+`develop` va `master`
+Filial nomlash qoidalari:
+`hotfix-*`
+
+Tuzatish branchlari reliz branchlarga juda o'xshaydi chunki ular rejalashtirilmagan bo'lsa ham yangi ishlab chiqarish relizlariga tayyorgarlik ko'rish uchun mo'ljallangan. Ular jonli ishlab chiqarish versiyasining istalmagan holatiga darhol harakat qilish zaruratidan kelib chiqadi. Ishlab chiqarish versiyasidagi muhim xatolik darhol hal qilinishi kerak bo'lsa, tuzatish filiali ishlab chiqarish versiyasini belgilaydigan asosiy filialdagi tegishli tegdan ajratilishi mumkin.
+
+Mohiyat shundan iboratki, jamoa a'zolarining ishi (rivojlanish bo'limida) davom etishi mumkin, boshqa bir kishi esa tezkor ishlab chiqarishni tuzatishni tayyorlamoqda.
