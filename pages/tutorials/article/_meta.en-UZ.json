@@ -271,5 +271,26 @@
       "toc": false,
       "pagination": true
     }
+  },
+  "git-branching": {
+    "title": "Muvaffaqiyatli Git branching modeli",
+    "longTitle": "Muvaffaqiyatli Git branching modeli",
+    "description": "Muvaffaqiyatli Git branching modeli",
+    "level": "Hamma uchun",
+    "category": "DevOps",
+    "author": {
+      "name": "Ahmad (Akhmadiy) Kadirov",
+      "image": "https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/authors/akhmadiy.jpeg"
+    },
+    "createdAt": "2024-08-02",
+    "minutesRead": 40,
+    "href": "/tutorials/article/git-branching",
+    "theme": {
+      "breadcrumb": false,
+      "footer": true,
+      "sidebar": false,
+      "toc": false,
+      "pagination": true
+    }
   }
 }

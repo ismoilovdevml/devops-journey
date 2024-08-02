@@ -1,0 +1,36 @@
+import { Callout } from "nextra-theme-docs";
+
+# Muvaffaqiyatli Git branching modeli
+
+![git-branching](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/git-branching/banner.png)
+
+## Kirish
+
+Ushbu maqolada men turli loyihalarni ishlab chiqish jarayonida tadbiq qilsa bo'ladigan rivojlanish modelini yoritib beraman. Aynan ushbu modelni qo'llashdan oldin judayam ko'plab noqulaylik va muammolarga duch kelgan edim. Ushbu maqolani birqancha resurslardan olgan firklarim va ozgina to'plagan tajribam asosida yozishga qaror qildim. Bu maqola sizga tarmoqlanish strategiyasi (branching strategy) va relizlarni boshqarish (release management) masalalarida foydali bo'ladi degan umiddaman.
+
+![git-branching](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/git-branching/git-model.jpeg)
+
+## Git va Nima uchun Git ?
+
+Gitning boshqa tizimlarga nisbatan farqlarini [batafsil ma'lumotlar](https://git.wiki.kernel.org/index.php/GitSvnComparsion) yetarlicha shu sababdan bu mavzuga batafsil to'xtalmayman. Ammo gitni boshqa alternativ VCS vositalaridan afzal ko'raman. Ushbu tizim bir qancha ishlab chiqaruvchilar ishini birlashtira oladigan eng yaxshi tizim. Shu bilan birga git bilan bu jarayon juda sodda va oson. [Git](https://github.com/progit/progit/tree/master/en) haqida asosiy ma'lumotlar 1-3 bo'limlarda yortilgan. Undan tashqari ushbu mavzuga aloqador boshqa ko'plab resurslar topishingiz.
+Men foydalangan va foydalanadigan manbalarni post ohirida qoldiraman!
+Qo'shimcha sifatida ayta olamanki Gitda branching va merging amaliyotlari juda ham oson tadbiq qilingan. Versiyani boshqarish vositalari hamma narsadan ko'ra ko'proq tarmoqlanish/birlashishda yordam berishi kerak.
+
+Keling, ishlab chiqish modeliga o'taylik. Men bu erda taqdim etmoqchi bo'lgan model, aslida, boshqariladigan dasturiy ta'minotni ishlab chiqish jarayoniga kelish uchun har bir jamoa a'zosi amal qilishi kerak bo'lgan protseduralar to'plamidan iborat.
+
+## Asosiy filiallar (The main branches)
+
+Eng asosiysi ushbu rivojlanish modeliga ko'ra markaziy repositoryda cheksiz umrga ega 2ta filial bo'lishi kerak
+
+* `master` or `main`
+* `develop` or `dev`
+
+`master` branch har bir Git foydalanuvchisi uchun tanish bo'lishi kerak. Asosiy branchga paralell ravishta `dev` deb nomlangan branch bo'lishi kerak. `origin/master`da mavjud bo'lgan `HEAD` manba kodini (source code) productionga tayyor deb hisoblaymiz.
+
+`origin/develop`da mavjud bo'lgan so'ngi `HEAD` manba kodi (source code) keyingi taqdimot (production|relase) uchun ohirgi ishlab chiqarish o'zgarishlari (development changes) holatni aks ettiradi. Bazilar buni `"integration branch"` deb atashadi. Bu yerda har qanday avtomatik [build](https://en.wikipedia.org/wiki/Software_build)lar sodir bo'ladi.
+
+`develop` bo'limidagi manba kodi (source code) barqaror (stable) kelib tayyor bo'lganida barcha o'zgarishlar `master` branchga biriktirilishi (merge) va reliz uchun belgilanishi kerak. Bu jarayon birmuncha intensiv yondoshuvni ham talab etadi. Misol uchun relizlarni [versiyalash](https://semver.org/) ham mumkin. Barcha hali reliz qilinmagan o'zgarishlar ushbu branchga birlashadi.
+
+Shuning uchun har safar o'zgarishlar `master`ga birlashtirilganda by yangi nashr (relase) ekanini anglatadi. Biz ushbu masalaga jiddiy qarashimiz lozim. Dasturiy ta'minotni ishlab chiqish jarayonida yangi reliz uchun maksimal darajada ishonchli va barqaror bo'lishi kerak. Bu bizga loyihamiz sifatli bo'lishini ta'minlaydi.
+
+![git-branching](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/git-branching/git-model1.png)
