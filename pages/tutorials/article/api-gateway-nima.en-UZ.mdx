@@ -19,7 +19,7 @@ Shu xususiyatar asosida bizda bir nechta servislar(mikroservices) mavjud:
 * **Customer Review Service**
 * **Inventory Service**
 
-Ilovangizdan foydalanish davomida foydalanuvchi bir necha servislardan foydalanadi. Agar siz asosiy oynaga kirib biror bir mahsulotga qidiruv bersangiz, mahsulotlar roʻyxatini chiqarib beradi. Bu roʻyxat shakllanish jarayonida yuqoridagi servislarga murojaat qilib mahsulot nomi, narxi, mahsulot tarixi va hokazolarni list ko'rinishida taqdim etadi. (quyidagi rasm)
+Ilovangizdan foydalanish davomida foydalanuvchi bir necha servislardan foydalanadi. Agar siz asosiy oynaga kirib biror bir mahsulotga qidiruv bersangiz, mahsulotlar ro'yxatini chiqarib beradi. Bu ro'yxat shakllanish jarayonida yuqoridagi servislarga murojaat qilib mahsulot nomi, narxi, mahsulot tarixi va hokazolarni list ko'rinishida taqdim etadi. (quyidagi rasm)
 
 ![api-gateway-nima](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/api-gateway-nima/1.webp)
 
@@ -46,22 +46,84 @@ Yondashuv oqilona bo'lib ko'rinsada unda jiddiy muammolar mavjud.
 
 ![api-gateway-nima](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/api-gateway-nima/3.webp)
 
-**API Gateway(AG)** — bu mikroservislar to’plami uchun yagona kirish nuqtasi vazifasini bajaradigan servis.
+**API Gateway(AG)** — bu mikroservislar to'plami uchun yagona kirish nuqtasi vazifasini bajaradigan servis.
 
-API Gateway klientdan kelgan request(soʻrov)larni qabul qiladi, ularni tegishli mikroservis larga yo’naltiradi va ularni javobini mijozga qaytaradi.
+API Gateway klientdan kelgan request(so'rov)larni qabul qiladi, ularni tegishli mikroservis larga yo'naltiradi va ularni javobini mijozga qaytaradi.
 
-API Gateway marshrutlash, **autentifikatsiya** va **rate limiting** kabi vazifalar uchun javobgardir. Bu mikroservislarga o’zlarining individual vazifalariga e’tibor qaratish imkonini beradi va tizimning umumiy ishlashi va mashtablashni(scalability) yaxshilaydi.
+API Gateway marshrutlash, **autentifikatsiya** va **rate limiting** kabi vazifalar uchun javobgardir. Bu mikroservislarga o'zlarining individual vazifalariga e'tibor qaratish imkonini beradi va tizimning umumiy ishlashi va mashtablashni(scalability) yaxshilaydi.
 
 ![api-gateway-nima](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/api-gateway-nima/4.webp)
 
 ## Request Routing
-API Gatewayning asosiy funktsiyalaridan biri so’rovlarni marshrutlashdir. API Gatewayning so’rovlarni mos keladigan servislarga yo’naltirish orqali ba’zi API operatsiyalarini amalga oshiradi. So’rovni qabul qilganda, API Gateway requestni qaysi servisga yo’naltirish kerakligini ko’rsatadigan marshrutlash xaritasiga murojaat qiladi.
+API Gatewayning asosiy funktsiyalaridan biri so'rovlarni marshrutlashdir. API Gatewayning so'rovlarni mos keladigan servislarga yo'naltirish orqali ba'zi API operatsiyalarini amalga oshiradi. So'rovni qabul qilganda, API Gateway requestni qaysi servisga yo'naltirish kerakligini ko'rsatadigan marshrutlash xaritasiga murojaat qiladi.
 
 ## API Composition
-API Gateway API tarkibini ham ta’minlaydi. Men buni bazi bir misol yordamida tushuntiraman.
+API Gateway API tarkibini ham ta'minlaydi. Men buni bazi bir misol yordamida tushuntiraman.
 
 ![api-gateway-nima](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/api-gateway-nima/5.webp)
 
-Yuqoridagi rasmda ko’rsatilganidek, Android klient bir nechta API so’rovlarini amalga oshiryapti.
+Yuqoridagi rasmda ko'rsatilganidek, Android klient bir nechta API so'rovlarini amalga oshiryapti.
 
 ![api-gateway-nima](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/api-gateway-nima/6.webp)
+
+Yuqoridagi rasmda ko'rsatilganidek, API Gateway API tarkibini taqdim etadi, bu esa android klientga bitta API so'rovi yordamida ma'lumotlarni samarali tarzda olish imkonini beradi.
+
+## Protocol Translation
+
+API Gateway shuningdek, protokol tarjimasini ham ta'minlaydi. Application servislari ichki protokollar yig'indisidan , jumladan REST va gRPCdan foydalansa ham, u tashqi mijozlarga RESTful API taqdim etishi mumkin. Zarur bo'lganda, ba'zi API operatsiyalarini amalga oshirish RESTful tashqi API va ichki gRPC asoslangan API o'rtasida ma'lumotlarni almashina oladi.
+
+![api-gateway-nima](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/api-gateway-nima/7.webp)
+
+## API Gateway har bir mijozga xos va mos API lar bilan ta'minlaydi
+
+Bitta yagona API bilan bog'liq muammo shundaki, turli mijozlar ko'pincha turli talablarga ega. Masalan, getOrder API operatsiyasi mahsulot ma'lumotlarini, to'lov ma'lumotlarini va inventar ma'lumotlarini qaytaradi. Ba'zi hollarda, barcha mijozlar barcha ma'lumotlarga muhtoj emas. Aytaylik, mobil mijozga faqat ma'lumotlarning bir qismi kerak. Bu holatda Yechim API Gatewayni har bir mijozga o'z APIsi bilan ta'minlaydi. Masalan, API Gateway getOrder Android, iOS va brauzer mijozi uchun turli xil APIlarni taqdim etishi mumkin.
+
+![api-gateway-nima](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/api-gateway-nima/8.webp)
+
+## API Gateway Patternning asosiy xususiyatlari
+
+API Gateway **bir nechta afzalliklarni** beradi . Mijoz so'rovini bajarish va ichki mikroservislarga yo'naltirishimiz sababli, biz API Gateway ni ba'zi foydali xususiyatlardan foydalanishimiz mumkin bo'ladi .
+
+***Xususiyatlarni ko'rib chiqaylik.***
+
+**Routing** API Gateway mijozlardan so'rovlarni qabul qiladi va ularni tegishli mikroservisga yo'naltiradi. Bu mijozlarga bitta kirish nuqtasi orqali turli xil mikroservislarga kirish imkonini beradi, bu esa umumiy tizim dizaynini soddalashtiradi.
+
+**Security:** API Gateway mijozlarni autentifikatsiya qilish va mikroservislar uchun kirishni boshqarish siyosatini amalga oshirish uchun ishlatilishi mumkin. Bu mikroservislarga faqat vakolatli mijozlar kirishini ta'minlashga yordam beradi va ruxsatsiz kirishning oldini olishga yordam beradi.
+
+**Transforming requests and responses** API Gateway turli mijozlarning so'rovlarini qondirish yoki turli xil backend arxitekturasiga mos kelish uchun kiruvchi so'rovlarni va chiquvchi javoblarni backendda o'zgartirishi mumkin.
+
+**Rate limiting:** Siz API Gateway bilan mijozning mikroservislarga kirishini cheklashingiz mumkin. Bu xizmat hujumlarini bartaraf etishi va boshqa turdagi zararli xatti-harakatlarning oldini olishga yordam beradi.
+
+**Load Balancing:** API Gateway kiruvchi so'rovlarni mikroservisning bir nechta namunalari(instances) o'rtasida taqsimlashi mumkin, bu tizimda ko'proq so'rovlarni boshqarish imkonini beradi va uning samaradorligini oshiradi.
+
+**Caching:** API Gateway mikroservislar javoblarni keshlashi mumkin va buning natijasida mikroservislarga yuborilishi kerak bo'lgan so'rovlar sonini kamaytiradi va tizimning umumiy ish faoliyatini yaxshilaydi.
+
+**Serverless execution** API Gateway boshqa servislar bilan integratsiyalasha oladi.
+
+**Circuit breaker:** API Gateway kaskadli nosozliklardan himoyalanish va tizimingiz chidamliligini oshirishga yordam beradigan breaker patternlarni amalga oshirish uchun ishlatilishi mumkin.
+
+**Reverse proxy:** API Gateway kiruvchi so'rovlarni so'rov yo'li yoki boshqa mezonlar asosida tegishli backend xizmatiga yo'naltiruvchi teskari proksi-server sifatida ishlashi mumkin.
+
+**API versionning:** API Gateway API versiyasini amalga oshirish uchun ishlatilishi mumkin, bu sizga APIning bir nechta versiyasini saqlash va bir versiyadan ikkinchisiga o'tishni boshqarish imkonini beradi.
+
+API Gateway ishonchli bo'lishi kerak. Buning uchun load balancer oqali gateway ni bir nechta nusxalarini(replicalari) ishga tushirish kerak. Agar bitta gateway o'chib qolsa yoki nimadur bo'lsa, load balancer so'rovlarni boshqa instancega(gateway) yo'naltiradi.
+
+![api-gateway-nima](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/api-gateway-nima/9.webp)
+
+
+<Callout type="info" emoji="">
+
+**Manba:** Mehmet Ozkaya, Arslan Ahmad, Jonatan Natanael Siaxan
+
+(Ingliz tilidagi baʼzi atamalar tarjima qilinmagan)
+
+**Sana:** 2023.02.27(2023-yil 27-fevral)
+
+**Oxirgi yangilanish:** 2024.08.03(2024-yil 3-avgust)
+
+**Muallif: Gayratjon Rayimjonov**
+
+| [Telegram](https://t.me/gayratjon_rayimjonov) | [GitHub](https://github.com/gayratjonr) | [LinkedIn](https://www.linkedin.com/in/gayratjonr/) |
+| - | - | - |
+
+</Callout>

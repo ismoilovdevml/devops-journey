@@ -1140,7 +1140,7 @@ Bu buyruq `ssh-keygen`-ga yangi SSH kalit juftligini yaratish va uni foydalanuvc
 
 Buyruq bajarilgandan so'ng siz odatda ikkita faylni olasiz:
 
-* `netflix` Bu boshqa tizimlarga ulanishda oʻzingizni autentifikatsiya qilish uchun foydalaniladigan shaxsiy(private) kalit fayli.
+* `netflix` Bu boshqa tizimlarga ulanishda o'zingizni autentifikatsiya qilish uchun foydalaniladigan shaxsiy(private) kalit fayli.
 * `netflix.pub` Bu public kalit fayli. Siz ushbu faylni ushbu kalitdan foydalanishga ruxsat bermoqchi bo'lgan boshqa tizimlar/xizmatlar bilan baham ko'rishingiz mumkin.
 
 > ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/ssh1.png)
@@ -1153,7 +1153,7 @@ cat netflix.pub >> authorized_keys
 * `cat` - fayl mazmunini ko'rsatish uchun ishlatiladigan buyruq.
 * `>>` - faylga chiqish qo'shish uchun ishlatiladigan qayta yo'naltirish operatori.
 
-`authorized_keys` public kalit autentifikatsiyasi uchun SSH da qoʻllaniladigan fayldir. SSH serveri ulanish so'rovini olganida, kirish public kaliti u yerda sanab o'tilgan kalitlardan biriga mos kelishini tekshirish uchun `authorized_keys` faylini ko'rib chiqadi. Agar shunday bo'lsa, kirish huquqi beriladi.
+`authorized_keys` public kalit autentifikatsiyasi uchun SSH da qo'llaniladigan fayldir. SSH serveri ulanish so'rovini olganida, kirish public kaliti u yerda sanab o'tilgan kalitlardan biriga mos kelishini tekshirish uchun `authorized_keys` faylini ko'rib chiqadi. Agar shunday bo'lsa, kirish huquqi beriladi.
 Ushbu buyruqlar ketma-ketligining maqsadi `netflix.pub` faylida saqlangan public kalitni avtorizatsiya qilingan kalitlar ro'yxatiga (authorized_keys) qo'shishi. Kimda tegishli private kalit (netflix) bo'lsa, endi ushbu private kalit yordamida ushbu tizim bilan autentifikatsiya qilish mumkin. U autentifikatsiya qilish uchun o'rnatilgan public-private kalit juftligidan foydalanib, parol talab qilmasdan kirish imkonini beradi. Bu pipeline orqali serverga kirishga imkon beradi.
 
 ```bash

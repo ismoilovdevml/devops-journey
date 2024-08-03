@@ -123,7 +123,7 @@ Kernelning eng muhim vazifalaridan biri interruptlarga xizmat ko'rsatish va ular
 
 ### Multi-tasking
 
-Multitasking - bu operatsion tizimning bir nechta dasturlarni "bir vaqtning o'zida(simultaneously)" bajarish qobiliyati. Buni ishlaydigan processeslar o'rtasida tezda almashish orqali amalga oshiradi. Kooperativ multitasking dasturlardan ko'p vazifani bajarish uchun hamkorlik qilishni talab qiladi. Dastur ishga tushadi va CPU boshqaruvini OSga qaytaradi, keyin esa boshqa dasturni rejalashtiradi. Preemptive multitasking bilan kernel har bir  process uchun qat'iy cheklovlarni amalga oshiradi, shuning uchun barcha  processlarni ishga tushirish uchun  imkoniyat bo'ladi. Har bir processga vaqt boʻlagini (masalan, 100ms) ishga tushirishga ruxsat beriladi, shundan soʻng, agar u hali ham ishlayotgan boʻlsa, u majburiy ravishda oʻchiriladi va boshqa vazifa rejalashtiriladi.
+Multitasking - bu operatsion tizimning bir nechta dasturlarni "bir vaqtning o'zida(simultaneously)" bajarish qobiliyati. Buni ishlaydigan processeslar o'rtasida tezda almashish orqali amalga oshiradi. Kooperativ multitasking dasturlardan ko'p vazifani bajarish uchun hamkorlik qilishni talab qiladi. Dastur ishga tushadi va CPU boshqaruvini OSga qaytaradi, keyin esa boshqa dasturni rejalashtiradi. Preemptive multitasking bilan kernel har bir  process uchun qat'iy cheklovlarni amalga oshiradi, shuning uchun barcha  processlarni ishga tushirish uchun  imkoniyat bo'ladi. Har bir processga vaqt bo'lagini (masalan, 100ms) ishga tushirishga ruxsat beriladi, shundan so'ng, agar u hali ham ishlayotgan bo'lsa, u majburiy ravishda o'chiriladi va boshqa vazifa rejalashtiriladi.
 
 Multi-tasking - bu kompyuterning bir vaqtning o'zida bir nechta task yoki processlarni bajarishi(run).
 
@@ -149,7 +149,7 @@ Agar kernel xotirasining qismlari (kod, ma'lumotlar, stek yoki dinamik ravishda 
 
 Pageable kernel memory - bu system memoryning bir qismi bo'lib, kerak bo'lganda physical(jismoniy) memoryni (RAM) bo'shatish uchun hard diskka ko'chiriladi. Operatsion tizim buni xotirani kichik bo'laklarga yoki "sahifalarga(pages)" bo'lish orqali amalga oshiradi va faqat hozir keraklilarini operativ xotirada saqlaydi.
 
-Pageable kernel memoryni kitob javoni kabi o'ylab ko'ring. Siz faqat javondagi (RAM) kitoblarni (maʼlumotlarni) oʻqishingiz mumkin, lekin javon toʻlgan boʻlsa va siz yangi kitob qoʻshishingiz kerak boʻlsa, hozir oʻqimayotgan kitoblaringizdan birini saqlash qutisiga koʻchirishingiz mumkin. (hard disk). Sizga yana kitob kerak bo'lganda, siz uni javonga almashtirasiz, ehtimol qutiga boshqa kitob qo'yasiz. Bu jarayon, xuddi pageable kernel memory kabi, cheklangan miqdordagi javon maydoni (RAM) bilan ko'p sonli kitoblarni (ma'lumotlarni) boshqarish imkonini beradi. Bu tizimni har doim operativ xotirada saqlashga to'g'ri kelganidan ko'ra ko'proq vazifalar va ma'lumotlarni boshqarish imkonini berib, tizimni yanada moslashuvchan va samarali qiladi.
+Pageable kernel memoryni kitob javoni kabi o'ylab ko'ring. Siz faqat javondagi (RAM) kitoblarni (maʼlumotlarni) o'qishingiz mumkin, lekin javon to'lgan bo'lsa va siz yangi kitob qo'shishingiz kerak bo'lsa, hozir o'qimayotgan kitoblaringizdan birini saqlash qutisiga ko'chirishingiz mumkin. (hard disk). Sizga yana kitob kerak bo'lganda, siz uni javonga almashtirasiz, ehtimol qutiga boshqa kitob qo'yasiz. Bu jarayon, xuddi pageable kernel memory kabi, cheklangan miqdordagi javon maydoni (RAM) bilan ko'p sonli kitoblarni (ma'lumotlarni) boshqarish imkonini beradi. Bu tizimni har doim operativ xotirada saqlashga to'g'ri kelganidan ko'ra ko'proq vazifalar va ma'lumotlarni boshqarish imkonini berib, tizimni yanada moslashuvchan va samarali qiladi.
 
 ### Kernel stack
 
@@ -271,7 +271,7 @@ Release Cycle: Linux kerneli yangi versiyalar odatda har 9-10 haftada chiqarilad
 
 Linux Distributionlari: Rasmiy Linux kerneli turli xil Linux distributivlari uchun asos bo'lib xizmat qiladi (Ubuntu, Fedora va boshqalar). Ushbu distributionlar asosiy kernel ustiga qo'shimcha funksiyalar, oldindan tuzilgan sozlamalar yoki foydalanuvchi uchun qulay vositalarni qo'shishi mumkin.
 
-GPL Litsenziyasi: Linux kerneli GNU General Public License (GPL) ostida chiqarilgan boʻlib, u har kimga dasturiy taʼminotdan foydalanish, oʻzgartirish va tarqatish imkonini beradi, agar ular har qanday oʻzgartirish yoki yaxshilanishlar kiritsa, open source.
+GPL Litsenziyasi: Linux kerneli GNU General Public License (GPL) ostida chiqarilgan bo'lib, u har kimga dasturiy taʼminotdan foydalanish, o'zgartirish va tarqatish imkonini beradi, agar ular har qanday o'zgartirish yoki yaxshilanishlar kiritsa, open source.
 
 Open Source va hamkorlikdagi rivojlanish modeli Linuxni kichik embedded qurilmalardan tortib yirik superkompyuterlargacha bo'lgan hamma narsada qo'llanilishiga olib keldi. Turli xil contributorlar va foydalanuvchilar uni doimiy ravishda rivojlantirish va takomillashtirishga yordam beradi.
 
@@ -281,7 +281,7 @@ Open Source va hamkorlikdagi rivojlanish modeli Linuxni kichik embedded qurilmal
 
 Linux kerneli ishlab chiquvchilarning ierarxik tuzilishi(hierarchical structure) bilan ta'minlanadi, uni quyidagicha soddalashtirish mumkin:
 
-Linus Torvalds: Ierarxiyaning yuqori qismida Linuxning asl yaratuvchisi Linus Torvalds turadi. Rasmiy Linux kerneliga qaysi oʻzgarishlar kiritilishi haqida soʻnggi soʻzni u aytadi.
+Linus Torvalds: Ierarxiyaning yuqori qismida Linuxning asl yaratuvchisi Linus Torvalds turadi. Rasmiy Linux kerneliga qaysi o'zgarishlar kiritilishi haqida so'nggi so'zni u aytadi.
 
 Leytenant Maintainerlar: Linusning to'g'ridan-to'g'ri ostida leytenant maintainerlar, vaqt o'tishi bilan izchil va yuqori sifatli hissa(contribute qilgan) qo'shgan ishonchli shaxslar. Bu shaxslar kernelning turli qismlarini saqlab turadilar, o'ziga xos subsystem(quyi tizim)lari uchun patchelarni ko'rib chiqadilar va Linusga ma'qullagan patchelarni yo'naltiradilar.
 
@@ -325,7 +325,7 @@ Linux kernelining manba kodi har bir kernelning turli qismlarini o'z ichiga olga
 
 `/lib` directoryda siz kernel tomonidan ishlatiladigan turli xil library routinelarini topasiz. Bular kernelning bir nechta joylarida ishlatiladigan umumiy funksiyalardir. Bularni libraryga qo‘yish orqali ularni kerakli joyda qayta ishlatish mumkin, bu esa DRY (Don't Repeat Yourself) kod bazasini saqlaydi.
 
-`/mm` directory Linux kernelining memory management subsystemni o'z ichiga oladi. U xotirani qanday ajratish, ajratish va tartibga solish, jumladan, paging va swappingni boshqaradi. Bu tizimning muhim qismi boʻlib, har bir process oʻziga kerakli xotirani olishini va jismoniy xotiradan samarali foydalanishni taʼminlaydi.
+`/mm` directory Linux kernelining memory management subsystemni o'z ichiga oladi. U xotirani qanday ajratish, ajratish va tartibga solish, jumladan, paging va swappingni boshqaradi. Bu tizimning muhim qismi bo'lib, har bir process o'ziga kerakli xotirani olishini va jismoniy xotiradan samarali foydalanishni taʼminlaydi.
 
 `/net` directoryda turli tarmoq protokollarini (TCP/IP, UDP va boshqalar) amalga oshiradigan va tarmoq aloqasini boshqaradigan networking subsystemi joylashgan. Tarmoqlarning keng qo'llanilishi bilan bu har qanday zamonaviy operatsion tizimning muhim qismidir.
 
@@ -585,7 +585,7 @@ Bu qatlam end-to-end commincate xizmatlarini, ulanishlarni o'rnatish, ma'lumotla
 
 Application Layeri muayyan tarmoq applicationlarining bir-biri bilan aloqa qilishiga imkon beruvchi protokollar va servicelarni o'z ichiga oladi. Masalan, veb-sahifalar uchun HTTP, elektron pochta uchun SMTP va fayllarni uzatish uchun FTP.
 
-Amaliy ma'noda, networking stacki qurilmalarga tarmoqlar orqali ulanish va bir-biri bilan muloqot qilish imkonini beradi. U qurilmalar oʻrtasida maʼlumotlar uzatishni boshqarish, maʼlumotlar yaxlitligi va ishonchli yetkazib berishni taʼminlash orqali internetni koʻrish, fayllarni almashish, video oqim va onlayn oʻyinlar kabi faoliyatni osonlashtiradi.
+Amaliy ma'noda, networking stacki qurilmalarga tarmoqlar orqali ulanish va bir-biri bilan muloqot qilish imkonini beradi. U qurilmalar o'rtasida maʼlumotlar uzatishni boshqarish, maʼlumotlar yaxlitligi va ishonchli yetkazib berishni taʼminlash orqali internetni ko'rish, fayllarni almashish, video oqim va onlayn o'yinlar kabi faoliyatni osonlashtiradi.
 
 ![Tizim arxitekturasi](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/os-kernel/12.png)
 
@@ -607,7 +607,7 @@ Mana bir nechta diqqatga sazovor misollar:
 
 ![Tizim arxitekturasi](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/os-kernel/13.jpg)
 
-SELinux keng qoʻllaniladigan security extensioni boʻlib, mandatory access control (MAC) policelarini amalga oshiradi. U processlarga, fayllarga va tarmoq resurslariga tayinlangan security labellariga asoslangan fine-grained access controlini amalga oshiradi.
+SELinux keng qo'llaniladigan security extensioni bo'lib, mandatory access control (MAC) policelarini amalga oshiradi. U processlarga, fayllarga va tarmoq resurslariga tayinlangan security labellariga asoslangan fine-grained access controlini amalga oshiradi.
 
 #### AppArmor
 

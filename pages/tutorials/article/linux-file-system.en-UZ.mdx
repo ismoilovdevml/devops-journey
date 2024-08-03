@@ -28,7 +28,7 @@ Linuxda har xil fayl tizimlaridan foydalanish mumkin, ularning har biri o'ziga x
 
 ### Linux fayl tizimining umumiy ko'rinishi
 
-Linux fayl tizimining tarixi Linux operatsion tizimining dastlabki kunlariga borib taqaladi. Linuxning dastlabki versiyalarida oddiy va cheklangan fayl tizimi bo'lgan MINIX fayl tizimi ishlatilgan. Biroq, Linuxning tobora ommalashib borishi va yanada rivojlangan va kengaytiriladigan fayl tizimiga bo'lgan ehtiyoj bilan Linux kernelini ishlab chiquvchilar yangi fayl tizimi ustida ishlay boshladilar.Tez orada Ext (extended) fayl tizimi bilan almashtirildi. Ext fayl tizimining birinchi versiyasi Ext2 1993 yilda chiqarildi va mustahkam dizayni va katta hajmdagi fayllarni qoʻllab-quvvatlash va ish faoliyatini yaxshilash kabi ilg'or xususiyatlari tufayli Linux tizimlarida keng qoʻllanila boshlandi.
+Linux fayl tizimining tarixi Linux operatsion tizimining dastlabki kunlariga borib taqaladi. Linuxning dastlabki versiyalarida oddiy va cheklangan fayl tizimi bo'lgan MINIX fayl tizimi ishlatilgan. Biroq, Linuxning tobora ommalashib borishi va yanada rivojlangan va kengaytiriladigan fayl tizimiga bo'lgan ehtiyoj bilan Linux kernelini ishlab chiquvchilar yangi fayl tizimi ustida ishlay boshladilar.Tez orada Ext (extended) fayl tizimi bilan almashtirildi. Ext fayl tizimining birinchi versiyasi Ext2 1993 yilda chiqarildi va mustahkam dizayni va katta hajmdagi fayllarni qo'llab-quvvatlash va ish faoliyatini yaxshilash kabi ilg'or xususiyatlari tufayli Linux tizimlarida keng qo'llanila boshlandi.
 
 Yillar davomida Ext fayl tizimi rivojlandi va takomillashtirildi, bu Ext3 va Ext4 fayl tizimlarining yaratilishiga olib keldi. Ext3 2001-yilda chiqarildi va Ext fayl tizimiga jurnal yuritish imkoniyatlarini qo'shdi, bu esa diskdagi operatsiyalarning ishonchliligi va tezligini oshirdi. 2008-yilda chiqarilgan Ext4 Ext3 imkoniyatlarini yanada takomillashtirildi va kattaroq fayl tizimlarini qo‘llab-quvvatlash va ish faoliyatini yaxshilash imkonini berdi.
 
@@ -99,7 +99,7 @@ Ushbu directorylarning har biri muayyan maqsadga xizmat qiladi va tizimdagi fayl
 
 ![alt text](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/linux-fayl-tizimi/5.jpg)
 
-Index nodening qisqartmasi inode - Linux fayl tizimidagi fayl haqidagi ma'lumotlarni saqlash uchun ishlatiladigan ma'lumotlar tuzilmasi. Inode tuzilmalari har bir faylga xos boʻlib, fayl haqidagi maʼlumotlar, jumladan, uning egaligi, ruxsatlari, timestamplar(vaqt belgilari) va fayl maʼlumotlarining diskdagi joylashuvi haqidagi maʼlumotlarning markaziy ombori boʻlib xizmat qiladi.
+Index nodening qisqartmasi inode - Linux fayl tizimidagi fayl haqidagi ma'lumotlarni saqlash uchun ishlatiladigan ma'lumotlar tuzilmasi. Inode tuzilmalari har bir faylga xos bo'lib, fayl haqidagi maʼlumotlar, jumladan, uning egaligi, ruxsatlari, timestamplar(vaqt belgilari) va fayl maʼlumotlarining diskdagi joylashuvi haqidagi maʼlumotlarning markaziy ombori bo'lib xizmat qiladi.
 
 Har bir inode yaratilganda unga noyob raqam (inode raqami) beriladi va bu raqam inode va uning ma'lumotlariga kirish uchun ishlatiladi. Inode raqami fayl tizimi tomonidan diskdagi fayl ma'lumotlarini aniqlash uchun ishlatiladi va faylning directory yozuvida saqlanadi. Fayl ochilganda, uning inode diskdan o'qiladi va undagi ma'lumotlar faylga kirish ruxsatlarini, timestamplarini va boshqa atributlarini aniqlash uchun ishlatiladi.
 
@@ -181,7 +181,7 @@ Linuxda fayl ruxsatlari ega, guruh va boshqalar uchun o'qish `r`, yozish `w` va 
 
 ![Fayllardagi chmod haqida](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/linux-fayl-tizimi/8.jpg)
 
-Faylga egalik huquqi faylning foydalanuvchi va guruh egasi tomonidan belgilanadi. Fayl egasi uni toʻliq nazorat qiladi va uning ruxsatlarini oʻzgartirishi yoki egalik huquqini boshqa foydalanuvchi yoki guruhga oʻtkazishi mumkin.
+Faylga egalik huquqi faylning foydalanuvchi va guruh egasi tomonidan belgilanadi. Fayl egasi uni to'liq nazorat qiladi va uning ruxsatlarini o'zgartirishi yoki egalik huquqini boshqa foydalanuvchi yoki guruhga o'tkazishi mumkin.
 
 Linuxda `chmod` buyrug'i faylga ruxsatlarni o'zgartirish uchun, `chown` buyrug'i esa faylga egalik huquqini o'zgartirish uchun ishlatiladi. Masalan, `chmod 755 file.txt` buyrug'i egasiga faylni o'qish, yozish va bajarishga ruxsat berish uchun `file.txt` faylining ruxsatlarini o'rnatadi va boshqalarga faqat faylni o'qish va bajarishga ruxsat beradi.
 

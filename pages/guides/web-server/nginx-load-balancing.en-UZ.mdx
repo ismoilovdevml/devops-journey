@@ -251,13 +251,13 @@ server {
 
 * `proxy_pass http://backend/;` Ushbu direktiv Nginx-ga joylashuvga (**/**) mos keladigan barcha kiruvchi so'rovlarni `backend` deb nomlangan `upstream` blokida belgilangan serverlar guruhiga proksi-serverdan o'tkazishni aytadi. Bunday holda, root URL manziliga kelgan har qanday so'rov `backend` `upstream` guruhida belgilangan serverlardan biriga yo'naltiriladi.
 
-* `proxy_set_header Host $host;` Proksilangan soʻrovning Host headerini odatda client soʻrovida mavjud host nomini ifodalovchi `$host` qiymatiga oʻrnatadi.
+* `proxy_set_header Host $host;` Proksilangan so'rovning Host headerini odatda client so'rovida mavjud host nomini ifodalovchi `$host` qiymatiga o'rnatadi.
 
 * `proxy_set_header X-Real-IP $remote_addr;` Proksi-so'rovning `X-Real-IP` headerini `$remote_addr` qiymatiga o'rnatadi, unda so'rov yuborayotgan clientning IP-manzili mavjud.
 
 * `proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;` Clientning IP manzilini mavjud `X-Forwarded-For` headeriga qo'shib, mavjud qiymatlarni saqlaydi. Ushbu header asl clientning IP-manzilini kuzatish uchun ishlatiladi, ayniqsa so'rovlar proksi-serverlar yoki load balancerlar orqali o'tganda.
 
-* `proxy_set_header X-Forwarded-Proto $scheme;` Proksilangan soʻrovning `X-Forwarded-Proto` headerini client soʻrovida ishlatiladigan protokolni (`http` yoki `https`) ifodalovchi `$scheme` qiymatiga oʻrnatadi.
+* `proxy_set_header X-Forwarded-Proto $scheme;` Proksilangan so'rovning `X-Forwarded-Proto` headerini client so'rovida ishlatiladigan protokolni (`http` yoki `https`) ifodalovchi `$scheme` qiymatiga o'rnatadi.
 
 Qisqa qilib aytganda, ushbu konfiguratsiya bloki serverning root URL(**/**) keladigan har qanday so'rovlarni `upstream`dagi serverlari guruhi `backend`dagi barcha serverlarga yo'naltirishni bildiradi va shu bilan birga client ma'lumotlarini saqlash va yo'naltirilgan so'rovga maxsus headerlarni o'zgartirish yoki qo'shish bilan ma'lum tafsilotlarni `backend` serverlariga yuboradi. 
 

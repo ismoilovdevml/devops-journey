@@ -17,7 +17,7 @@ MongoDB SSPL tafsilotlari juda muhokama qilindi. SSPLga muvofiq, SSPL litsenziya
 
 MongoDB relatiom ma'lumotlar bazasi emas. U ma'lumotlarni ma'lumotlar bazasi tablelari(jadval) ichidagi rowlar(qator) sifatida saqlamaydi. Buning o'rniga, u documentlarda ma'lumotlarni saqlaydi. Bu uning NoSQL ilovasi sifatida tasniflanganligini anglatadi. Bu foydalanuvchilarga o'z ma'lumotlarini moslashuvchan va erkin shaklda saqlash imkonini beradi. Foydalanuvchilar o'zlarining ichki ma'lumotlari va dasturlash tuzilmalari bilan moslashish uchun o'zlarining ma'lumotlar bazasi sxemasini belgilashlari mumkin. MongoDB documentlari ob'ektga yo'naltirilgan dasturlash tillarining sinflari va ob'ektlari bilan yaqindan bog'langan strategiya yordamida tashkil etilishi mumkin. Bu unga mijoz ilovalari bilan samarali ishlash imkonini beradi.
 
-Har bir MongoDB document o'z tuzilishiga ega bo'lishi mumkin va documentlarni istalgan vaqtda osongina o'zgartirish mumkin. Ko'pgina RDBMS tizimlaridan farqli o'laroq, document schemasi(sxemasi) oldindan belgilanishi shart emas. MongoDB documentlari binary JSON (BSON) nomli industry-standartidagi JavaScript Object Notation (JSON) fayl formatining o'zgarishidan foydalanadi. JSON open-standard fayl formati boʻlib, maʼlumotni inson oʻqiy oladigan matnda atribut-qiymat juftlari(attribute-value pair) sifatida saqlaydi. BSON binary kodlash yordamida ma'lumotlarni zichlashtiradi va soddalashtiradi. Saqlash maydoni bo'yicha u JSONga qaraganda samaraliroq, chunki uni osonroq tahlil qilish mumkin. Biroq, uni o'qish mumkin emas va odatda dekodlanishi kerak. MongoDB hali ham JSON documentlarini saqlashi yoki BSON maʼlumotlarini JSON formatida olishi mumkin. CSV yoki JSON formatidagi ma'lumotlarni MongoDB-ga osongina import qilish mumkin.
+Har bir MongoDB document o'z tuzilishiga ega bo'lishi mumkin va documentlarni istalgan vaqtda osongina o'zgartirish mumkin. Ko'pgina RDBMS tizimlaridan farqli o'laroq, document schemasi(sxemasi) oldindan belgilanishi shart emas. MongoDB documentlari binary JSON (BSON) nomli industry-standartidagi JavaScript Object Notation (JSON) fayl formatining o'zgarishidan foydalanadi. JSON open-standard fayl formati bo'lib, maʼlumotni inson o'qiy oladigan matnda atribut-qiymat juftlari(attribute-value pair) sifatida saqlaydi. BSON binary kodlash yordamida ma'lumotlarni zichlashtiradi va soddalashtiradi. Saqlash maydoni bo'yicha u JSONga qaraganda samaraliroq, chunki uni osonroq tahlil qilish mumkin. Biroq, uni o'qish mumkin emas va odatda dekodlanishi kerak. MongoDB hali ham JSON documentlarini saqlashi yoki BSON maʼlumotlarini JSON formatida olishi mumkin. CSV yoki JSON formatidagi ma'lumotlarni MongoDB-ga osongina import qilish mumkin.
 
 MongoDB querilar(so'rov) uchun Structured Query Language (SQL) foydalanmaydi. Buning o'rniga u documentlarni insert(kiritish), update(yangilash) yoki delete(o'chirish) va ma'lumotlarni olish(retrieve) uchun `MongoDB Query API`-dan foydalanadi. API qo'shimcha ravishda bulk write operatorini o'z ichiga oladi. APIdan qanday foydalanish haqida qo'shimcha ma'lumot olish uchun [MongoDB Query API hujjatlariga](https://docs.mongodb.com/manual/crud/#std-label-crud) murojaat qiling.
 
@@ -99,7 +99,7 @@ MongoDB texnik hujjatlarida siz murojaat qilishingiz mumkin bo'lgan [SQL to Mong
 
 #### Documentlar and Collectionlar
 
-MongoDB arxitekturasi relation ma'lumotlar bazasidan farqli atamalar bilan tavsiflanadi. Table, row, column, join atamalari oʻrniga document, collection, field soʻzlari ishlatiladi.
+MongoDB arxitekturasi relation ma'lumotlar bazasidan farqli atamalar bilan tavsiflanadi. Table, row, column, join atamalari o'rniga document, collection, field so'zlari ishlatiladi.
 
 SQL ham, MongoDB ham top-level containerga murojaat qilish uchun database atamasidan foydalanadi. Yagona(single) database odatda ma'lum bir maqsadga xizmat qiladi yoki individual mijoz tomonidan qo'llaniladi va ushbu misol uchun ma'lumotlarning butun majmuasini o'z ichiga oladi. MongoDB birinchi marta foydalanilganda avtomatik ravishda ma'lumotlar bazasini(database) yaratadi. Bu ma'lumotlar bazasini ishlatishdan oldin yaratilishi kerak bo'lgan relation ma'lumotlar bazalaridan farq qiladi.
 
@@ -145,7 +145,7 @@ Relation ma'lumotlar bazasidan farqli o'laroq, MongoDB ichki o'rnatilgan fieldla
 
 Bu RDBMSda ierarxik munosabatlar qanday amalga oshirilishidan farq qiladi. SQL-ga asoslangan tableda tabledagi columnlar diskret ma'lumotlar elementlarini saqlaydi. Ular sub-recordlar yoki arraylarni saqlash uchun mo'ljallanmagan. Ancillary relationshiplar foreign keylar orqali aniqlanadi va boshqa table bilan birlashtiriladi. MongoDB ancha moslashuvchan, chunki u har bir documentga boshqa ierarxiyani saqlashga imkon beradi va foreign yoki compound keylarni talab qilmaydi. Embedded documentlar relation  ma'lumotlar bazasida joinlar o'rnini egallaydi. Biroq, RDBMS tablelari bilan solishtirganda MongoDB ma'lumotlarining turli embedded documentlarda takrorlanishi ehtimoli ancha yuqori.
 
-Ushbu misolda `pochtaManzili` nomli key-value uchun embedded documentga ega. Ushbu embedded document `tuman`, `viloyat`, `davlat` va `pochtaIndeksi` toʻrtta ichki key-value pairidan iborat. Ushbu maxsus embedded document quyida ko'rsatilganidek tuzilgan bo'lishi mumkin.
+Ushbu misolda `pochtaManzili` nomli key-value uchun embedded documentga ega. Ushbu embedded document `tuman`, `viloyat`, `davlat` va `pochtaIndeksi` to'rtta ichki key-value pairidan iborat. Ushbu maxsus embedded document quyida ko'rsatilganidek tuzilgan bo'lishi mumkin.
 
 ```json
 pochtaManzili: {
@@ -164,7 +164,7 @@ MongoDB moslashuvchanlikni talab qiladigan vaziyatlarda semi-structured datalard
 
 * Bu foydalanuvchiga ma'lumotlarni har qanday usulda tartibga solish va tuzish uchun to'liq moslashuvchanlikni taklif qiladi. Collectiondagi documentlarni ilovadagi aniq ob'ektlar va classlar bilan moslashtirish oson.
 
-* U filedlar va regular expressionlar asosidagi maxsus querylarni qo'llab-quvvatlaydi. Bu soʻrovlar(query) shaxsiylashtirilgan(personalized) JavaScript funksiyalarini ham oʻz ichiga olishi mumkin. Querylar SQL statementlariga qaraganda ancha ochiq va moslashuvchan.
+* U filedlar va regular expressionlar asosidagi maxsus querylarni qo'llab-quvvatlaydi. Bu so'rovlar(query) shaxsiylashtirilgan(personalized) JavaScript funksiyalarini ham o'z ichiga olishi mumkin. Querylar SQL statementlariga qaraganda ancha ochiq va moslashuvchan.
 
 * MongoDB katta hajmli(high-volume) ma'lumotlar to'plamlari(data set) uchun optimallashtirilgan va yuqori darajada kengaytirilishi mumkin. U shardlar yordamida bir nechta serverlarda load balancingni amalga oshirishi mumkin. Foydalanuvchi tomonidan belgilangan shard keyi ma'lumotlar diapazonlar bo'yicha serverlar bo'ylab qanday taqsimlanishini aniqlaydi.
 

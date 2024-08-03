@@ -9,10 +9,10 @@ import { Callout } from "nextra-theme-docs";
 LLVM - bu low level virtual machineni ifodalovchi qisqartma
 </Callout>
 
-LLVM — kompilyator va toolchain texnologiyalari boʻlib, har qanday dasturlash tili uchun frontend va har qanday instruction set arxitekturasi uchun backendni ishlab chiqish uchun ishlatilishi mumkin. LLVM tildan mustaqil `Intermediate Representation (IR) ` atrofida ishlab chiqilgan bo'lib, u portativ, high-level assembly language bo'lib xizmat qiladi, uni multiple passe orqali turli xil o'zgarishlar bilan optimallashtirish mumkin.
+LLVM — kompilyator va toolchain texnologiyalari bo'lib, har qanday dasturlash tili uchun frontend va har qanday instruction set arxitekturasi uchun backendni ishlab chiqish uchun ishlatilishi mumkin. LLVM tildan mustaqil `Intermediate Representation (IR) ` atrofida ishlab chiqilgan bo'lib, u portativ, high-level assembly language bo'lib xizmat qiladi, uni multiple passe orqali turli xil o'zgarishlar bilan optimallashtirish mumkin.
 
 LLVM C++ tilida yozilgan va compile-time, link-time, run-time va idle-time optimallashtirish uchun mo'ljallangan.
-Dastlab C va C++ uchun tatbiq etilgan LLVMning language-agnostic dizayni oʻshandan beri turli xil frontendlarni yaratdi: LLVM dan foydalanadigan (yoki bevosita LLVM dan foydalanmaydigan, lekin kompilyatsiya qilingan dasturlarni LLVM IR sifatida yarata oladigan) kompilyatorli tillar ActionScript, Ada, C#, Common Lisp, PicoLisp, Crystal, CUDA, D, Delphi, Dylan, Forth, Fortran, Free Basic, Free Pascal, Graphical G, Halide, Haskell, Java bytecode, Julia, Kotlin, Lua, Objective-C, OpenCL, PostgreSQL SQL va PLpgSQL, Ruby, Rust, Scala, Swift, XC, Xojo va Zig.
+Dastlab C va C++ uchun tatbiq etilgan LLVMning language-agnostic dizayni o'shandan beri turli xil frontendlarni yaratdi: LLVM dan foydalanadigan (yoki bevosita LLVM dan foydalanmaydigan, lekin kompilyatsiya qilingan dasturlarni LLVM IR sifatida yarata oladigan) kompilyatorli tillar ActionScript, Ada, C#, Common Lisp, PicoLisp, Crystal, CUDA, D, Delphi, Dylan, Forth, Fortran, Free Basic, Free Pascal, Graphical G, Halide, Haskell, Java bytecode, Julia, Kotlin, Lua, Objective-C, OpenCL, PostgreSQL SQL va PLpgSQL, Ruby, Rust, Scala, Swift, XC, Xojo va Zig.
 
 ![Tizim arxitekturasi](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/llvm/2.jpeg)
 
@@ -24,9 +24,9 @@ LLVM loyihasi 2000 yilda Urbana–Champaigndagi Illinois universitetida Vikram A
 
 2006 yilda Lattner `Clang` nomli yangi loyiha ustida ishlay boshladi. Clang front-end va LLVM back-end kombinatsiyasi Clang/LLVM yoki oddiygina Clang deb ataladi. LLVM nomi dastlab `Low Level Virtual Machine` initialism edi. Bu initialismni "chalkash" va "nomaqbul" qildi va 2011 yildan beri LLVM "rasmiy ravishda endi qisqartma emas", balki loyiha endi an'anaviy virtual mashinalarga qaratilmaydi.
 
-Loyiha LLVM intermediate representation (IR), LLVM debuggerini, C++ standart kutubxonasining LLVM dasturini (C++11 va C++14 toʻliq qoʻllab-quvvatlashi bilan) va boshqalarni oʻz ichiga oladi.
+Loyiha LLVM intermediate representation (IR), LLVM debuggerini, C++ standart kutubxonasining LLVM dasturini (C++11 va C++14 to'liq qo'llab-quvvatlashi bilan) va boshqalarni o'z ichiga oladi.
 
-LLVM `LLVM Foundation` tomonidan boshqariladi. Kompilyator muhandisi Tanya Lattner 2014-yilda uning prezidenti boʻldi va hozirgacha o'z lavozimida.
+LLVM `LLVM Foundation` tomonidan boshqariladi. Kompilyator muhandisi Tanya Lattner 2014-yilda uning prezidenti bo'ldi va hozirgacha o'z lavozimida.
 
 "LLVMni loyihalash va implement qilish uchun" Association for Computing Machinery assotsiatsiyasi Vikram Adve, [Chris Lattner](https://github.com/lattner), va Evan Chengga 2012 yil ACM dasturiy ta'minot tizimi mukofotini taqdim etdi.
 Loyiha dastlab `UIUC` litsenziyasi ostida mavjud edi. 2019-yilda chiqarilgan `v9.0.0` dan keyin, LLVM LLVM istisnolari bilan Apache 2.0 litsenziyasiga qayta litsenziyalandi.
@@ -94,9 +94,9 @@ Amaldagi ko'plab turli konventsiyalar va turli maqsadlar tomonidan taqdim etilga
 
 ## Backend
 
-13-versiyada LLVM IA-32, x86-64, ARM, Qualcomm Hexagon, MIPS, Nvidia Parallel Thread Execution (PTX; LLVM hujjatlarida NVPTX deb ataladi), PowerPC, AMD TeraScale,  koʻpchilik AMD kabi instructionlar toʻplamlarini qoʻllab-quvvatlaydi. Ayrim funksiyalar ayrim platformalarda mavjud emas. Aksariyat xususiyatlar IA-32, x86-64, z/Architecture, ARM va PowerPCuchun mavjud. RISC-V 7-versiyadan boshlab qo'llab-quvvatlanadi.
+13-versiyada LLVM IA-32, x86-64, ARM, Qualcomm Hexagon, MIPS, Nvidia Parallel Thread Execution (PTX; LLVM hujjatlarida NVPTX deb ataladi), PowerPC, AMD TeraScale,  ko'pchilik AMD kabi instructionlar to'plamlarini qo'llab-quvvatlaydi. Ayrim funksiyalar ayrim platformalarda mavjud emas. Aksariyat xususiyatlar IA-32, x86-64, z/Architecture, ARM va PowerPCuchun mavjud. RISC-V 7-versiyadan boshlab qo'llab-quvvatlanadi.
 
-Ilgari LLVM boshqa backendlarni ham toʻliq yoki qisman qoʻllab-quvvatlagan, jumladan C backend, Cell SPU, mblaze (MicroBlaze),AMD R600, DEC/Compaq Alpha (Alpha AXP) va Nios2, lekin bu hardware asosan eskirgan va LLVM ishlab chiquvchilari qo'llab-quvvatlash va texnik xizmat ko'rsatish xarajatlari endi oqlanmasligiga qaror qilishdi.
+Ilgari LLVM boshqa backendlarni ham to'liq yoki qisman qo'llab-quvvatlagan, jumladan C backend, Cell SPU, mblaze (MicroBlaze),AMD R600, DEC/Compaq Alpha (Alpha AXP) va Nios2, lekin bu hardware asosan eskirgan va LLVM ishlab chiquvchilari qo'llab-quvvatlash va texnik xizmat ko'rsatish xarajatlari endi oqlanmasligiga qaror qilishdi.
 
 LLVM, shuningdek, WebAssembly-ni qo'llab-quvvatlaydi, bu kompilyatsiya qilingan dasturlarni Google Chrome / Chromium, Firefox, Microsoft Edge, Apple Safari yoki WAVM kabi WebAssembly yoqilgan muhitlarda bajarishga imkon beradi. LLVM-ga mos keluvchi WebAssembly kompilyatorlari odatda C, C++, D, Rust, Nim, Kotlin va boshqa bir qancha tillarda yozilgan o'zgartirilmagan manba kodini qo'llab-quvvatlaydi.
 
@@ -109,7 +109,7 @@ Ilgari, LLVM assemblerni mashina kodiga tarjima qilish uchun tizim assembleriga 
 
 ## Linker - Bo'glovchi
 
-lld subproject LLVM uchun o'rnatilgan, platformadan mustaqil linkerni ishlab chiqishga urinishdir. lld uchinchi tomon dependesiga linkerni yo'q qilishga qaratilgan. 2017-yilning may oyi holatiga koʻra, lld ELF, PE/COFF, Mach-O va WebAssemblyni toʻliqligining kamayish tartibida qoʻllab-quvvatlaydi. GNU linkerlaridan farqli o'laroq, lld ulanish vaqtini optimallashtirish (link-time optimization - LTO) uchun o'rnatilgan yordamga ega. Bu tezroq kod ishlab chiqarish imkonini beradi, chunki u linker plagindan foydalanishni chetlab o'tadi, biroq boshqa tomondan LTO ning boshqa xususiyatlari bilan o'zaro ishlashni taqiqlaydi.
+lld subproject LLVM uchun o'rnatilgan, platformadan mustaqil linkerni ishlab chiqishga urinishdir. lld uchinchi tomon dependesiga linkerni yo'q qilishga qaratilgan. 2017-yilning may oyi holatiga ko'ra, lld ELF, PE/COFF, Mach-O va WebAssemblyni to'liqligining kamayish tartibida qo'llab-quvvatlaydi. GNU linkerlaridan farqli o'laroq, lld ulanish vaqtini optimallashtirish (link-time optimization - LTO) uchun o'rnatilgan yordamga ega. Bu tezroq kod ishlab chiqarish imkonini beradi, chunki u linker plagindan foydalanishni chetlab o'tadi, biroq boshqa tomondan LTO ning boshqa xususiyatlari bilan o'zaro ishlashni taqiqlaydi.
 
 ![alt text](https://www.aosabook.org/images/llvm/LTO.png)
 
@@ -128,7 +128,7 @@ Polyhedral model (polytope metodi deb ham ataladi) juda ko'p sonli operatsiyalar
 
 ## Debugger
 
-LLDB Debugger (LLDB) LLVM loyihasining debugger komponentidir. U qayta foydalanish mumkin bo'lgan komponentlar to'plami sifatida yaratilgan bo'lib, ular LLVM ning Clang expression parse va LLVM disassembleri kabi mavjud kutubxonalaridan keng foydalanadi. LLDB Illinois universiteti/NCSA open-source litsenziyasi ostidagi bepul va open-source dasturiy ta'minot bo'lib, BSD uslubidagi ruxsat beruvchi dasturiy ta'minot litsenziyasiga kiradi. LLDB C, Objective-C va C++ tillarida yozilgan dasturlarni debuggingni qo'llab-quvvatlaydi. Swift hamjamiyati tilni qo'llab-quvvatlaydigan versiyani qo'llab-quvvatlaydi.U macOS, Linux, FreeBSD, NetBSD va Windowsda ishlashi maʼlum va i386, x86-64 va ARM instructionlar toʻplamini qoʻllab-quvvatlaydi. LLDB Xcode 5 va undan keyingi versiyalar uchun standart debuggerdir. Android Studio debug uchun LLDB dan ham foydalanadi. LLDB boshqa IDE-lardan, jumladan Visual Studio Code, C++ Builder, Eclipse, va CLion-dan foydalanish mumkin.
+LLDB Debugger (LLDB) LLVM loyihasining debugger komponentidir. U qayta foydalanish mumkin bo'lgan komponentlar to'plami sifatida yaratilgan bo'lib, ular LLVM ning Clang expression parse va LLVM disassembleri kabi mavjud kutubxonalaridan keng foydalanadi. LLDB Illinois universiteti/NCSA open-source litsenziyasi ostidagi bepul va open-source dasturiy ta'minot bo'lib, BSD uslubidagi ruxsat beruvchi dasturiy ta'minot litsenziyasiga kiradi. LLDB C, Objective-C va C++ tillarida yozilgan dasturlarni debuggingni qo'llab-quvvatlaydi. Swift hamjamiyati tilni qo'llab-quvvatlaydigan versiyani qo'llab-quvvatlaydi.U macOS, Linux, FreeBSD, NetBSD va Windowsda ishlashi maʼlum va i386, x86-64 va ARM instructionlar to'plamini qo'llab-quvvatlaydi. LLDB Xcode 5 va undan keyingi versiyalar uchun standart debuggerdir. Android Studio debug uchun LLDB dan ham foydalanadi. LLDB boshqa IDE-lardan, jumladan Visual Studio Code, C++ Builder, Eclipse, va CLion-dan foydalanish mumkin.
 
 ![Tizim arxitekturasi](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/llvm/12.png)
 

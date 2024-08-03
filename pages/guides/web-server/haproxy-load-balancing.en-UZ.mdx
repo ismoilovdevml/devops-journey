@@ -125,7 +125,7 @@ defaults
 
 * **log /dev/log local0** va **log /dev/log	local1 notice ->** Logga kirish manzillari va darajalarini belgilaydi. Log messagelari turli log darajalariga(log level) ega **local0** va **local1** obyektlariga yuboriladi (**local1** uchun eslatma).
 
-* **chroot /var/lib/haproxy->** HAProxy fayl tizimi koʻrinishini(filesystem view) cheklash orqali xavfsizlikni oshirish uchun **chroot** directoryni oʻrnatadi.
+* **chroot /var/lib/haproxy->** HAProxy fayl tizimi ko'rinishini(filesystem view) cheklash orqali xavfsizlikni oshirish uchun **chroot** directoryni o'rnatadi.
 
 * **stats socket /run/haproxy/admin.sock mode 660 level admin expose-fd listeners->** Statistika uchun UNIX socketini sozlaydi. Bu tashqi dasturlarga (monitoring toollar kabi) HAProxy bilan o'zaro ta'sir qilish imkonini beradi.
 

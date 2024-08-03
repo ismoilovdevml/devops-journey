@@ -114,7 +114,7 @@ Kubernetes `api-server`i quyidagilar uchun javobgardir
 
 * API management(boshqaruvi): Cluster API so'nggi nuqtasini ochib beradi va barcha API so'rovlarini bajaradi.
 * Autentifikatsiya (client sertifikatlari, tashuvchi tokenlari(bearer token) va HTTP asosiy autentifikatsiyasidan foydalanish) va avtorizatsiya (ABAC va RBAC evaluation).
-* API soʻrovlarini(request) qayta ishlash va API obʼyektlari kabi pods, servicelar va boshqalar uchun maʼlumotlarni tekshirish (Validation and Mutation Admission Controllers)
+* API so'rovlarini(request) qayta ishlash va API obʼyektlari kabi pods, servicelar va boshqalar uchun maʼlumotlarni tekshirish (Validation and Mutation Admission Controllers)
 * Bu etcd bilan aloqa(communicate) qiladigan yagona komponent.
 * api-server control plane va worker node komponentlari o'rtasidagi barcha jarayonlarni(process) muvofiqlashtiradi.
 * api-serverda o'rnatilgan bastion apiserver proksi-server mavjud. Bu API server jarayonining bir qismidir. U asosan clusterdan tashqaridan ClusterIP servicelariga kirishni ta'minlash uchun ishlatiladi, garchi bu servicelar odatda faqat clusterning o'zida mavjud bo'lsa ham.
@@ -261,7 +261,7 @@ Cloud controller integratsiyasi Kubernetes clusteriga misollar(nodelar uchun), L
 
 ![k8s](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/architecture/12.png)
 
-Cloud Controller Manager cloudga xos komponentlarning (nodelar, Loadbalancerlar, storage va h.k.) kerakli stateni(holatini) taʼminlaydigan cloud platformasiga xos controllerlar toʻplamini oʻz ichiga oladi. Quyida cloud controller manageri tarkibiga kiruvchi uchta asosiy controllerlar keltirilgan.
+Cloud Controller Manager cloudga xos komponentlarning (nodelar, Loadbalancerlar, storage va h.k.) kerakli stateni(holatini) taʼminlaydigan cloud platformasiga xos controllerlar to'plamini o'z ichiga oladi. Quyida cloud controller manageri tarkibiga kiruvchi uchta asosiy controllerlar keltirilgan.
 
 **Node Controller:** Bu controller cloud provayderi API bilan gaplashish orqali nodega oid ma'lumotlarni yangilaydi. Masalan, node labeling va annotation, hostnameni olish, protsessor va xotira mavjudligi, nodelarning salomatligi(nodes health) va boshqalar.
 
@@ -411,7 +411,7 @@ Umumiy container runtimelari quyidagilarni o'z ichiga oladi:
 
 **Docker** Dastlab Kubernetes Dockerdan to'g'ridan-to'g'ri foydalangan. Docker dastur va uning bog'liqliklarini har qanday Linux serverida ishlashi mumkin bo'lgan virtual containerga to'playdi.
 
-**containerd** sanoat standartidagi asosiy container runtime. U Linux va Windows uchun demon sifatida mavjud boʻlib, u oʻzining xost tizimining toʻliq container lifecycleni boshqara oladi: imageni uzatish va saqlash, containerni execute qilish va nazorat qilish, low-level storage va tarmoq qoʻshimchalari va boshqalar.
+**containerd** sanoat standartidagi asosiy container runtime. U Linux va Windows uchun demon sifatida mavjud bo'lib, u o'zining xost tizimining to'liq container lifecycleni boshqara oladi: imageni uzatish va saqlash, containerni execute qilish va nazorat qilish, low-level storage va tarmoq qo'shimchalari va boshqalar.
 
 **CRI-O** OCI (Open Container Initiative) mos runtimelaridan foydalanishni ta'minlash uchun Kubernetes CRI dasturi. Bu faqat Kubernetes-ga e'tibor qaratgan container va Docker-ga yengil(lightweight) muqobildir. Container tarmog'i tarmoq interfeyslarini sozlaydigan va IP manzillari, marshrutlash qoidalari va DNS sozlamalari kabi tarmoq sozlamalarini qo'llaydigan CNI plaginlari bilan birgalikda ishlanadi.
 

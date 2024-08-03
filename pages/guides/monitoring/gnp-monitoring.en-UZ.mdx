@@ -266,7 +266,7 @@ ExecStart=/usr/local/bin/node_exporter
 [Install]
 WantedBy=multi-user.target
 ```
-**9->** (Ixtiyoriy) Agar clientni doimiy ravishda kuzatib(monitoring) borish niyatida boʻlsangiz, yuklash vaqtida Node Exporter dasturini avtomatik ravishda ishga tushirish uchun `systemctl enable` buyrugʻidan foydalaning. Bu doimiy ravishda `9100`-portdagi tizim metrikalarini ochib beradi. Agar Node Exporter faqat vaqti-vaqti bilan foydalanish uchun mo'ljallangan bo'lsa, quyidagi buyruqdan foydalanmang.
+**9->** (Ixtiyoriy) Agar clientni doimiy ravishda kuzatib(monitoring) borish niyatida bo'lsangiz, yuklash vaqtida Node Exporter dasturini avtomatik ravishda ishga tushirish uchun `systemctl enable` buyrug'idan foydalaning. Bu doimiy ravishda `9100`-portdagi tizim metrikalarini ochib beradi. Agar Node Exporter faqat vaqti-vaqti bilan foydalanish uchun mo'ljallangan bo'lsa, quyidagi buyruqdan foydalanmang.
 
 ```bash
 sudo systemctl enable node_exporter
@@ -387,7 +387,7 @@ sudo systemctl status grafana-server
 
 ## Grafana va Prometheusni integratsiya qilish
 
-Endi barcha tizim komponentlari o'rnatildi, lekin Grafana va Prometheuprometheus.ymls o'zaro ishlashi uchun sozlanmagan. Qolgan konfiguratsiya vazifalari, jumladan Prometheusni data source sifatida qoʻshish va dashboard panelini import qilish Grafana veb-interfeysi yordamida bajarilishi mumkin.
+Endi barcha tizim komponentlari o'rnatildi, lekin Grafana va Prometheuprometheus.ymls o'zaro ishlashi uchun sozlanmagan. Qolgan konfiguratsiya vazifalari, jumladan Prometheusni data source sifatida qo'shish va dashboard panelini import qilish Grafana veb-interfeysi yordamida bajarilishi mumkin.
 
 Grafana va Prometheusni integratsiya qilish uchun quyidagi amallarni bajaring:
 
@@ -399,7 +399,7 @@ Grafana va Prometheusni integratsiya qilish uchun quyidagi amallarni bajaring:
 **2->** Parolni muvaffaqiyatli o'zgartirgandan so'ng, Grafana `Grafana Dashboard`ni ko'rsatadi.
 ![monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/monitoring/7.png)prometheus.yml
 
-**3->** Prometheusni `data source` sifatida qoʻshish uchun `Configuration` deb yozilgan tishli belgini bosing, soʻng `Data Sources`-ni tanlang.
+**3->** Prometheusni `data source` sifatida qo'shish uchun `Configuration` deb yozilgan tishli belgini bosing, so'ng `Data Sources`-ni tanlang.
 ![monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/monitoring/8.png)
 **4->** Keyingi ekranda `Add data source` tugmasini bosing.
 ![monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/monitoring/9.png)

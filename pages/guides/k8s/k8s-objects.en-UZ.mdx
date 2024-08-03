@@ -15,7 +15,7 @@ Worker node(lar) dastur workloadning komponentlari bo'lgan podlarni joylashtirad
 
 Kubernetes shuningdek, service discovery va load balancing, storage orchestration, avtomatlashtirilgan rollout(ishga tushirish) va rollback(orqaga qaytarish), self-healing(o'z-o'zini davolash), secret va configuration managementni taklif qiladi. Bu xususiyatlar murakkab deployment va operatsiyalarni, jumladan, zero-downtime, oldingi versiyalarga qaytarish(rollback) va applicationlaringiz uchun maxfiy maʼlumotlarni boshqarish imkonini beradi.
 
-Bundan tashqari, Kubernetes kengaytiriladigan boʻlishi uchun moʻljallangan boʻlib, Custom Resource Definitionlari kabi xususiyatlarga ega boʻlib, sizga oʻz API resurslaringizni yaratishga imkon beradi va uni turli workflowlari va foydalanuvchi ehtiyojlariga moslashtiradi. Bu Kubernetesni konteyner orkestratsiyasi va cloud-native development sohasida poydevor sifatida mustahkamlab, uning atrofida tollar, servicelar va qo'llab-quvvatlashning keng ekotizimiga olib keldi.
+Bundan tashqari, Kubernetes kengaytiriladigan bo'lishi uchun mo'ljallangan bo'lib, Custom Resource Definitionlari kabi xususiyatlarga ega bo'lib, sizga o'z API resurslaringizni yaratishga imkon beradi va uni turli workflowlari va foydalanuvchi ehtiyojlariga moslashtiradi. Bu Kubernetesni konteyner orkestratsiyasi va cloud-native development sohasida poydevor sifatida mustahkamlab, uning atrofida tollar, servicelar va qo'llab-quvvatlashning keng ekotizimiga olib keldi.
 
 Kubernetes obyektlari Kubernetes tizimidagi doimiy obyektlardir(persistent entities). Kubernetes ushbu obyektlardan clusteringiz holatini(stateni) ko'rsatish uchun foydalanadi. Kubernetes obyekti odatda o'zi ko'rsatadigan resurs uchun **"desired state(kerali holat)"** ni belgilaydi. Kubernetes tizimi obyekt tomonidan ko'rsatilgan istalgan holatga mos keladigan joriy holatni doimiy ravishda boshqaradi.
 
@@ -82,7 +82,7 @@ Podlar birgalikda ishlashi kerak bo'lgan bir nechta konteynerlarni ishlatishi mu
 
 #### Best Practica!
 
-**Podlar stateless va immutable(oʻzgarmas) boʻlishi kerak:** hech qanday doimiy(persistent) maʼlumotlarni toʻgʻridan-toʻgʻri Podda saqlamang va Podning compute konfiguratsiyasi qayta ishga tushirilganda ham davom etishini kutmang. Sizda barcha saqlangan ma'lumotlar o'chib ketadi!!!
+**Podlar stateless va immutable(o'zgarmas) bo'lishi kerak:** hech qanday doimiy(persistent) maʼlumotlarni to'g'ridan-to'g'ri Podda saqlamang va Podning compute konfiguratsiyasi qayta ishga tushirilganda ham davom etishini kutmang. Sizda barcha saqlangan ma'lumotlar o'chib ketadi!!!
 
 **Stateful applicationlar StatefulSet-dan foydalanishi kerak:** Ular doimiy(persistent) ma'lumotlar va holatga oid(stateful) applicationlar bilan ishlash uchun mo'ljallangan bo'lib, hatto Podni qayta yaratish kerak bo'lganda ham bu holat saqlanishini ta'minlaydi.
 
@@ -103,7 +103,7 @@ Podlar applicationning ish muhitini qamrab oladi: dasturiy ta'minot(software), r
 
 ![k8s](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/objects/6.png)
 
-Kubernetesda Service - bu podlarning logical setini(to'plamini) va ularga kirish(access) policyni belgilaydigan abstraction. Ushbu abstraction iste'molchilarning(consumer) Podlar va Podlarni o'zlari qanday ko'rishlari o'rtasida ajratish imkonini beradi. Podlar doimiy bo'lmagan(non-permanent) resurslar bo'lsa, bu kashf qilish va doimiy mavjudlik(continuous availability) uchun muammo tug'diradi. Servicelar buni Podlarga oʻzining barqaror(stable) IP manzilini va Serviceni tanlash mezonlariga(selector criteria) mos keladigan joriy ishlayotgan Podlar toʻplamiga load-balancing qiluvchi trafikni berish orqali hal qiladi.
+Kubernetesda Service - bu podlarning logical setini(to'plamini) va ularga kirish(access) policyni belgilaydigan abstraction. Ushbu abstraction iste'molchilarning(consumer) Podlar va Podlarni o'zlari qanday ko'rishlari o'rtasida ajratish imkonini beradi. Podlar doimiy bo'lmagan(non-permanent) resurslar bo'lsa, bu kashf qilish va doimiy mavjudlik(continuous availability) uchun muammo tug'diradi. Servicelar buni Podlarga o'zining barqaror(stable) IP manzilini va Serviceni tanlash mezonlariga(selector criteria) mos keladigan joriy ishlayotgan Podlar to'plamiga load-balancing qiluvchi trafikni berish orqali hal qiladi.
 
 Servicelar Kubernetes obyektlarini guruhlash va tanlashning standart usuli bo‘lgan teglar(label) va selectorlardan foydalangan holda Podlar to‘plamiga mos keladi. Misol uchun, Service `app=backend` labeli bilan barcha podlarni boshqarish mumkin. Pod ushbu labelga ega bo'lsa va selectorga mos kelsa, trafik unga Service orqali yo'naltirilishi mumkin.
 
@@ -243,7 +243,7 @@ Kubernetes bir nechta built-in workload resourcelarini taqdim etadi:
 
 * `Deployment` va `ReplicaSet` (eski ReplicationController resursini almashtirish). Deployment sizning clusteringizda stateless applicationlarning workloadini boshqarish uchun juda mos keladi, bu yerda Deploymentdagi har qanday pod bir-birining o'rnini bosadi va kerak bo'lganda almashtirilishi mumkin.
 
-* `StatefulSet` sizga qandaydir tarzda holatni kuzatuvchi bir yoki bir nechta tegishli podlarni ishga tushirish imkonini beradi. Misol uchun, agar sizning workloaddingiz ma'lumotlarni doimiy ravishda yozib olsa, har bir Podga `PersistentVolume` bilan mos keladigan StatefulSet-ni ishga tushirishingiz mumkin. Oʻsha StatefulSet uchun Podlarda ishlaydigan sizning kodingiz umumiy barqarorlikni yaxshilash uchun maʼlumotlarni bir xil StatefulSetʼdagi boshqa podlarga takrorlashi mumkin.
+* `StatefulSet` sizga qandaydir tarzda holatni kuzatuvchi bir yoki bir nechta tegishli podlarni ishga tushirish imkonini beradi. Misol uchun, agar sizning workloaddingiz ma'lumotlarni doimiy ravishda yozib olsa, har bir Podga `PersistentVolume` bilan mos keladigan StatefulSet-ni ishga tushirishingiz mumkin. O'sha StatefulSet uchun Podlarda ishlaydigan sizning kodingiz umumiy barqarorlikni yaxshilash uchun maʼlumotlarni bir xil StatefulSetʼdagi boshqa podlarga takrorlashi mumkin.
 
 * `DaemonSet` nodelar uchun local bo'lgan imkoniyatlarni ta'minlovchi podlarni belgilaydi. Har safar clusteringizga DaemonSet spetsifikatsiyasiga mos keladigan nodeni qo'shsangiz, control plane ushbu DaemonSet uchun Podni yangi nodega rejalashtiradi(schedule). DaemonSet-dagi har bir pod classic Unix/POSIX serveridagi tizim demoniga o'xshash ishni bajaradi. DaemonSet sizning clusteringiz ishlashi uchun asosiy bo'lishi mumkin, masalan, cluster tarmog'ini ishga tushirish uchun plagin, u sizga nodeni boshqarishda yordam berishi yoki siz ishlayotgan konteyner platformasini yaxshilaydigan ixtiyoriy xatti-harakatni ta'minlashi mumkin.
 
@@ -257,7 +257,7 @@ Kubernetes-da labellar va selectorlar clusteringizdagi obyektlarning kichik to'p
 
 #### Labellar
 
-Kubernetesdagi labellar moslashtirilgan key-value pairlari boʻlib, obyektlarga biriktirilgan boʻlib, moslashuvchan tashkil etish va identifikatsiya qilish imkonini beradi. Ular obyektlarni samarali guruhlash, filtrlash va boshqarish uchun metama'lumotlarni taqdim etadi, operatsion vazifalar va dinamik konfiguratsiyaga yordam beradi, obyektlar bo'ylab o'ziga xoslikni ta'minlamasdan tanlab so'rovlar va toifalarga ajratish imkonini beradi.
+Kubernetesdagi labellar moslashtirilgan key-value pairlari bo'lib, obyektlarga biriktirilgan bo'lib, moslashuvchan tashkil etish va identifikatsiya qilish imkonini beradi. Ular obyektlarni samarali guruhlash, filtrlash va boshqarish uchun metama'lumotlarni taqdim etadi, operatsion vazifalar va dinamik konfiguratsiyaga yordam beradi, obyektlar bo'ylab o'ziga xoslikni ta'minlamasdan tanlab so'rovlar va toifalarga ajratish imkonini beradi.
 
 Labellar key-value pairlaridan iborat, masalan, `app: frontend` yoki `tier: backend`. Bitta obyektga bir nechta labelllar qo'shishingiz mumkin, bu obyekt uchun turli perspectivelar yoki toifalarni taqdim etishingiz mumkin. **Metadata**; ular biriktirilgan obyektlarning xatti-harakatlariga(behavior ) bevosita ta'sir qilmaydi.
 Ular foydalanuvchilar operatsion yoki tashkiliy maqsadlarda foydalanishlari mumkin bo'lgan identifikatsiya ma'lumotlarini taqdim etadi.
