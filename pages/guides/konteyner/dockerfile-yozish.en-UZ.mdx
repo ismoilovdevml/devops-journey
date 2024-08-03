@@ -262,7 +262,7 @@ VOLUME /app/data
 
 Ushbu misolda `VOLUME` insturctioni konteyner ichidagi `/app/data` da moint pointni yaratadi. Konteynerni ishga tushirish paytida ushbu jildga yozilgan har qanday ma'lumotlar konteynerning yoziladigan qatlamidan(writable layer) tashqarida saqlanadi, bu esa konteyner to'xtatilgandan yoki o'chirilgandan keyin ham doimiy(persistent) va mavjud bo'ladi.
 
-`VOLUME` dan foydalanish bo‘yicha bir nechta asosiy fikrlarga e’tibor qaratish muhim:
+`VOLUME` dan foydalanish bo‘yicha bir nechta asosiy fikrlarga e'tibor qaratish muhim:
 
 * **Persisting Data(Doimiy ma'lumotlar):** Belgilangan volume mountga yozilgan har qanday ma'lumotlar, hatto konteyner o'chirib tashlangan bo'lsa ham saqlanib qoladi. Bu ma'lumotlarni konteyner instancelarida almashish va qayta ishlatish imkonini beradi.
 
@@ -329,7 +329,7 @@ CMD ["npm", "start"]
 ```
 `USER` instructioni Node.js asosiy imagesida mavjud bo'lmagan `root` foydalanuvchisi bo'lgan node foydalanuvchisiga o'tadi. Foydalanuvchilarni almashtirishdan oldin, dastur ishlayotgan vaqtda o'z fayllariga kirishini ta'minlash uchun dastur jildining egaligi node foydalanuvchisiga o'zgartiriladi.
 
-`USER` instructionidan foydalanish xavfsizlik maqsadlari uchun juda muhim, chunki `root` bo‘lmagan foydalanuvchilar bilan konteynerlarni ishga tushirish konteynerlashtirilgan ilova ichidagi xavfsizlik zaifliklarining potentsial ta’sirini kamaytiradi. Ammo shuni yodda tutingki, Dockerfile'dagi ba'zi operatsiyalar `root` huquqlarini talab qilishi mumkin, shuning uchun Dockerfile'da foydalanuvchini belgilashda xavfsizlikning eng yaxshi amaliyotlari bilan operatsion talablarni muvozanatlash juda muhimdir.
+`USER` instructionidan foydalanish xavfsizlik maqsadlari uchun juda muhim, chunki `root` bo‘lmagan foydalanuvchilar bilan konteynerlarni ishga tushirish konteynerlashtirilgan ilova ichidagi xavfsizlik zaifliklarining potentsial ta'sirini kamaytiradi. Ammo shuni yodda tutingki, Dockerfile'dagi ba'zi operatsiyalar `root` huquqlarini talab qilishi mumkin, shuning uchun Dockerfile'da foydalanuvchini belgilashda xavfsizlikning eng yaxshi amaliyotlari bilan operatsion talablarni muvozanatlash juda muhimdir.
 
 ### Namunalar
 

@@ -1,0 +1,67 @@
+import { Callout } from "nextra-theme-docs";
+
+# API Gateway nima?
+
+***Microservice***
+
+Tasavvur qiling online do'kon yaratmoqchisiz. Ilovangizda quyidagi imkoniyatlar mavjud:
+
+* **Buyurtma berish**
+* **Mahsulot haqida ma'lumotlar olish**
+* **Mahsulot ro'yxatini olish**
+
+Shu xususiyatar asosida bizda bir nechta servislar(mikroservices) mavjud:
+
+* **Product Service**
+* **Order Service**
+* **Pricing Service**
+* **Account Service**
+* **Customer Review Service**
+* **Inventory Service**
+
+Ilovangizdan foydalanish davomida foydalanuvchi bir necha servislardan foydalanadi. Agar siz asosiy oynaga kirib biror bir mahsulotga qidiruv bersangiz, mahsulotlar roʻyxatini chiqarib beradi. Bu roʻyxat shakllanish jarayonida yuqoridagi servislarga murojaat qilib mahsulot nomi, narxi, mahsulot tarixi va hokazolarni list ko'rinishida taqdim etadi. (quyidagi rasm)
+
+![api-gateway-nima](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/api-gateway-nima/1.webp)
+
+Shunday qilib mahsulotni ko'rsatadigan kod **product servis**, **account servis**, **customer review servis**lardan ma'lumotlarni olib bizga ko'rsatadi.
+
+![api-gateway-nima](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/api-gateway-nima/2.webp)
+
+Bu grafikdagi klient ilovasi API **kompasitor** vazifasini bajaradi. U bir nechta servis larni chaqiradi va birlashtiradi.
+
+Bu holatda maummo nimada?
+
+Yondashuv oqilona bo'lib ko'rinsada unda jiddiy muammolar mavjud.
+
+
+* **1. User ma'lumotlarini olish uchun birnechta api ga request jo'natish.** Foydalanuvchi ma'lumotini olish uchun bir nechta so'rovlarni amalga oshirish kerak va foydalanuvchi so'rovlarini ketma-ketlikda bajarish kerak. Bu ketma-ketlikni amalga oshirish uchun api kompozitsiyon kodini yozish talab qilinadi va bu potensial murakkab vazifa.
+
+* **2. Serviselar o'zgarishidagi muammolar(Lack Of Encapsulation).** Ma'lumki servislarga to'g'ridan to'g'ri kirishda ko'plab muammolar mavjud. Application rivojlanib borar ekan, bazida api larni o'zgartirishga to'g'ri keladi. Natijada o'zgargan api lardan foydalanayotgan mijozlarda(web, andorid, iOS) larda api bilan bo'gliq muammolar paydo bo'ladi.
+
+* **3. Mos kelmaydigan protokol(Unfriendly Protocol).** Bazi servis lar gRPC yoki AMQP messaging protokollar ishlatilishi mumkin. Bu ichki servis lar uchun juda zo'r yechim bo'lishi mumkin. Lekin mobile klient yoki veb klientlar uchun anchgina muammo bo'lishi mumkin. Yoki baʼzi bir protokol mexanizmlarini klient platformalarida moslashtirish qiyin bo'lishi mumkin.
+
+**Bu holatda qanday yechim qilish mumkin?** degan tabiiy savol tug'ilishi mumkun. Endi bu muammoni yechimi haqida gaplashsak.
+
+**Yechim:**
+
+![api-gateway-nima](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/api-gateway-nima/3.webp)
+
+**API Gateway(AG)** — bu mikroservislar to’plami uchun yagona kirish nuqtasi vazifasini bajaradigan servis.
+
+API Gateway klientdan kelgan request(soʻrov)larni qabul qiladi, ularni tegishli mikroservis larga yo’naltiradi va ularni javobini mijozga qaytaradi.
+
+API Gateway marshrutlash, **autentifikatsiya** va **rate limiting** kabi vazifalar uchun javobgardir. Bu mikroservislarga o’zlarining individual vazifalariga e’tibor qaratish imkonini beradi va tizimning umumiy ishlashi va mashtablashni(scalability) yaxshilaydi.
+
+![api-gateway-nima](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/api-gateway-nima/4.webp)
+
+## Request Routing
+API Gatewayning asosiy funktsiyalaridan biri so’rovlarni marshrutlashdir. API Gatewayning so’rovlarni mos keladigan servislarga yo’naltirish orqali ba’zi API operatsiyalarini amalga oshiradi. So’rovni qabul qilganda, API Gateway requestni qaysi servisga yo’naltirish kerakligini ko’rsatadigan marshrutlash xaritasiga murojaat qiladi.
+
+## API Composition
+API Gateway API tarkibini ham ta’minlaydi. Men buni bazi bir misol yordamida tushuntiraman.
+
+![api-gateway-nima](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/api-gateway-nima/5.webp)
+
+Yuqoridagi rasmda ko’rsatilganidek, Android klient bir nechta API so’rovlarini amalga oshiryapti.
+
+![api-gateway-nima](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/api-gateway-nima/6.webp)
