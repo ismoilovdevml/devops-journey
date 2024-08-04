@@ -241,7 +241,7 @@ node_exporter
 ```bash
 sudo useradd -rs /bin/false node_exporter
 ```
-**8->** `systemctl` foydalanishi uchun service faylini yarating. Fayl `node_exporter.service` deb nomlanishi va quyidagi formatga ega bo‘lishi kerak. Maydonlarning ko'pchiligi oldingi bo'limda tasvirlanganidek, `prometheus.service` da topilgan maydonlarga o'xshaydi.
+**8->** `systemctl` foydalanishi uchun service faylini yarating. Fayl `node_exporter.service` deb nomlanishi va quyidagi formatga ega bo'lishi kerak. Maydonlarning ko'pchiligi oldingi bo'limda tasvirlanganidek, `prometheus.service` da topilgan maydonlarga o'xshaydi.
 
 ```bash
 sudo nano /etc/systemd/system/node_exporter.service
@@ -293,7 +293,7 @@ Client Nodelari endi monitoringga tayyor. Clientlarni `prometheus.yml` ga qo'shi
 sudo nano /etc/prometheus/prometheus.yml
 ```
 
-**2->** Joblar ro'yxatini o'z ichiga olgan `scrape_configs` bo'limini toping. Unda hozirda prometheus nomli bitta job ro‘yxati keltirilgan. Bu job `9090`-portdagi local Prometheus taskini nazorat qiladi. Prometheus taski ostiga `remote_collector` `job_name`ga ega ikkinchi jobni qo'shing. Quyidagi ma'lumotlarni kiriting.
+**2->** Joblar ro'yxatini o'z ichiga olgan `scrape_configs` bo'limini toping. Unda hozirda prometheus nomli bitta job ro'yxati keltirilgan. Bu job `9090`-portdagi local Prometheus taskini nazorat qiladi. Prometheus taski ostiga `remote_collector` `job_name`ga ega ikkinchi jobni qo'shing. Quyidagi ma'lumotlarni kiriting.
 
 ```bash filename="/etc/prometheus/prometheus.yml" /172.78.1.89:9100/
 ...
@@ -363,7 +363,7 @@ sudo apt-get update
 **5->** Grafana-ning open-source versiyasini o'rnatish
 
 <Callout type="info" emoji="">
-Grafana'ning Enterprise relizini o‘rnatish uchun uning o‘rniga `sudo apt-get install grafana-enterprise` buyrug‘idan foydalaning.
+Grafana'ning Enterprise relizini o'rnatish uchun uning o'rniga `sudo apt-get install grafana-enterprise` buyrug'idan foydalaning.
 </Callout>
 
 ```bash

@@ -71,7 +71,7 @@ Utrecht Haskell kompilyatori LLVM uchun kod yaratishi mumkin. Generator rivojlan
 
 ## Intermediate Representation - IR
 
-LLVM ning yadrosi intermediate representation (IR), assembleyerga o'xshash low-leveldagi dasturlash tilidir. IR - bu reduced instruction set computer (RISC)  ko'p tafsilotlarini qisqartiradigan kuchli terilgan reduced instruction set computer instructionlari to'plami. Masalan, chaqiruv konventsiyasi aniq argumentlar bilan `call` va `ret` instructionlari orqali mavhumlashtiriladi. Shuningdek, belgilangan registrlar to‘plami o‘rniga IR `%0`, `%1` va hokazo ko‘rinishdagi cheksiz vaqtinchalik to‘plamdan foydalanadi. LLVM IRning uchta ekvivalent shaklini qo'llab-quvvatlaydi: odam o'qiy oladigan assembly format(human-readable assembly format), frontendlar uchun mos xotira formati va ketma-ketlashtirish uchun zich bitkod formati. Oddiy "Hello, world!" IR formatidagi dastur:
+LLVM ning yadrosi intermediate representation (IR), assembleyerga o'xshash low-leveldagi dasturlash tilidir. IR - bu reduced instruction set computer (RISC)  ko'p tafsilotlarini qisqartiradigan kuchli terilgan reduced instruction set computer instructionlari to'plami. Masalan, chaqiruv konventsiyasi aniq argumentlar bilan `call` va `ret` instructionlari orqali mavhumlashtiriladi. Shuningdek, belgilangan registrlar to'plami o'rniga IR `%0`, `%1` va hokazo ko'rinishdagi cheksiz vaqtinchalik to'plamdan foydalanadi. LLVM IRning uchta ekvivalent shaklini qo'llab-quvvatlaydi: odam o'qiy oladigan assembly format(human-readable assembly format), frontendlar uchun mos xotira formati va ketma-ketlashtirish uchun zich bitkod formati. Oddiy "Hello, world!" IR formatidagi dastur:
 
 ```c
 @.str = internal constant [14 x i8] c"hello, world\0A\00"

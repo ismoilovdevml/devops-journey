@@ -975,9 +975,9 @@ Pipelinedagi ushbu maxsus bosqich Docker konteynerli ilovasini yaratish va deplo
 * **Credentialsdan foydalanish ->** DockerHub hisob ma'lumotlarini xavfsiz boshqarish uchun `withCredentials `dan foydalanadi `(credentialsId: 'dockerhub')`. Yani bu Jenkins credentialsdan secretlarni olib pipelineda xavfsiz ishlatadi. `dockerhub` credentialsdan user va parol ajratib olinib unga 2ta variable(o'zgaruvchi)ga beriladi va ishlatiladi. 
 Koddagi qism `[usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]`
 
-* **Docker Login ->** Taqdim etilgan hisob ma'lumotlari (`DOCKER_USERNAME` va `DOCKER_PASSWORD`) yordamida Docker login buyrug‘ini bajaradi va Docker Registryga kiradi.
+* **Docker Login ->** Taqdim etilgan hisob ma'lumotlari (`DOCKER_USERNAME` va `DOCKER_PASSWORD`) yordamida Docker login buyrug'ini bajaradi va Docker Registryga kiradi.
 
-* **Docker Build ->** `docker build` buyrug'i yordamida Docker imageni yaratadi: **TMDB_V3_API_KEY** build argumentini **API_KEY** qiymati bilan o‘rnatadi. Docker Imageni belgilangan `${REGISTRY_URL}/${CONTAINER_NAME}:${BUILD_NUMBER}` bilan teg qo'yiladi va loyihamizdagi Dockerfile ko'rsatib build qilinadi.
+* **Docker Build ->** `docker build` buyrug'i yordamida Docker imageni yaratadi: **TMDB_V3_API_KEY** build argumentini **API_KEY** qiymati bilan o'rnatadi. Docker Imageni belgilangan `${REGISTRY_URL}/${CONTAINER_NAME}:${BUILD_NUMBER}` bilan teg qo'yiladi va loyihamizdagi Dockerfile ko'rsatib build qilinadi.
 
 Loyihamizdagi Dockerfile
 

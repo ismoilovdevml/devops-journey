@@ -61,7 +61,7 @@ Biz vaziyatimizda [devops-journey.uz](https://devops-journey.uz/) saytini gorizo
 
 Kengaytirish(Scaling) ikki xil bo'ladi bu vertikal va gorizontal.
 
-* **Vertical Scaling->** Bu bitta serverning resurslarini ko'paytirishni o'z ichiga oladi. Masalan, protsessorni yangilash, qo'shimcha RAM qo'shish yoki serverdagi xotirani kengaytirish. Bu kompyuterga qo‘shimcha imkoniyatlar qo‘shish orqali uni yanada kuchliroq qilish kabi. Biroq, bitta serverni qancha yangilashingiz mumkinligining chegarasi bor va bir nuqtada u juda qimmatga tushishi yoki masshtabni kengaytirishni davom ettirish imkonsiz bo'lishi mumkin. Qisqa qilib aytganda server resurslarini(CPU,RAM,Storage,Network) ko'paytirish orqali kengatirish(scaling)
+* **Vertical Scaling->** Bu bitta serverning resurslarini ko'paytirishni o'z ichiga oladi. Masalan, protsessorni yangilash, qo'shimcha RAM qo'shish yoki serverdagi xotirani kengaytirish. Bu kompyuterga qo'shimcha imkoniyatlar qo'shish orqali uni yanada kuchliroq qilish kabi. Biroq, bitta serverni qancha yangilashingiz mumkinligining chegarasi bor va bir nuqtada u juda qimmatga tushishi yoki masshtabni kengaytirishni davom ettirish imkonsiz bo'lishi mumkin. Qisqa qilib aytganda server resurslarini(CPU,RAM,Storage,Network) ko'paytirish orqali kengatirish(scaling)
 
 * **Horizontal Scaling->** Tarmoq yoki tizimga qo'shimcha serverlar yoki nodelarni qo'shishni o'z ichiga oladi. Bir serverni kuchliroq qilish o'rniga, yukni taqsimlash uchun ko'proq serverlarni qo'shasiz. Bu ish yukini(workload) yengish uchun bir nechta serverlarning birgalikda ishlashiga o'xshaydi. Ushbu yondashuv kengaytirilishi mumkin va kerak bo'lganda qo'shimcha serverlarni qo'shish orqali ortib borayotgan talablarni qondirishi mumkin. Qisqa qilib aytganda bitta serverni resurlarini kuchaytirgandan ko'ra serverlar sonini ko'paytirib bosimni teng taqsimlash.
 
@@ -235,7 +235,7 @@ server {
 
 * `listen 80;` server bloki HTTP trafigi uchun standart port bo'lgan `80`-portdagi kiruvchi ulanishlarni tinglashini(listen) bildiradi. 
 
-* `server_name devops-journey.uz;` `server` blokidagi konfiguratsiyani `devops-journey.uz` domeni bilan bog‘laydi. Ushbu domen uchun so'rov kelib tushganda, ushbu server blokida belgilangan konfiguratsiyalar qo'llaniladi.
+* `server_name devops-journey.uz;` `server` blokidagi konfiguratsiyani `devops-journey.uz` domeni bilan bog'laydi. Ushbu domen uchun so'rov kelib tushganda, ushbu server blokida belgilangan konfiguratsiyalar qo'llaniladi.
 
 ```bash {2}
     location / {

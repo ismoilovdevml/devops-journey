@@ -105,7 +105,7 @@ Podlar applicationning ish muhitini qamrab oladi: dasturiy ta'minot(software), r
 
 Kubernetesda Service - bu podlarning logical setini(to'plamini) va ularga kirish(access) policyni belgilaydigan abstraction. Ushbu abstraction iste'molchilarning(consumer) Podlar va Podlarni o'zlari qanday ko'rishlari o'rtasida ajratish imkonini beradi. Podlar doimiy bo'lmagan(non-permanent) resurslar bo'lsa, bu kashf qilish va doimiy mavjudlik(continuous availability) uchun muammo tug'diradi. Servicelar buni Podlarga o'zining barqaror(stable) IP manzilini va Serviceni tanlash mezonlariga(selector criteria) mos keladigan joriy ishlayotgan Podlar to'plamiga load-balancing qiluvchi trafikni berish orqali hal qiladi.
 
-Servicelar Kubernetes obyektlarini guruhlash va tanlashning standart usuli bo‘lgan teglar(label) va selectorlardan foydalangan holda Podlar to‘plamiga mos keladi. Misol uchun, Service `app=backend` labeli bilan barcha podlarni boshqarish mumkin. Pod ushbu labelga ega bo'lsa va selectorga mos kelsa, trafik unga Service orqali yo'naltirilishi mumkin.
+Servicelar Kubernetes obyektlarini guruhlash va tanlashning standart usuli bo'lgan teglar(label) va selectorlardan foydalangan holda Podlar to'plamiga mos keladi. Misol uchun, Service `app=backend` labeli bilan barcha podlarni boshqarish mumkin. Pod ushbu labelga ega bo'lsa va selectorga mos kelsa, trafik unga Service orqali yo'naltirilishi mumkin.
 
 ![k8s](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/objects/7.jpg)
 
@@ -253,7 +253,7 @@ Kengroq Kubernetes ekotizimida siz qo'shimcha xatti-harakatlarni ta'minlaydigan 
 
 ### Labellar va Selectorlar
 
-Kubernetes-da labellar va selectorlar clusteringizdagi obyektlarning kichik to'plamlarini tartibga solish va tanlash imkonini beruvchi key conceptlardir. Ular toifalarga(categorize) ajratish va aniqlash uchun Kubernetes obyektlariga (masalan, Podlar, Servicelar yoki Deploymentlar) biriktirishingiz mumkin bo‘lgan metama'lumotlardir. Labellar obyektlar bilan bog'langan key/value juftliklari bo'lib, selectorlar ushbu labellar asosida obyektlarni filtrlash uchun ishlatiladi.
+Kubernetes-da labellar va selectorlar clusteringizdagi obyektlarning kichik to'plamlarini tartibga solish va tanlash imkonini beruvchi key conceptlardir. Ular toifalarga(categorize) ajratish va aniqlash uchun Kubernetes obyektlariga (masalan, Podlar, Servicelar yoki Deploymentlar) biriktirishingiz mumkin bo'lgan metama'lumotlardir. Labellar obyektlar bilan bog'langan key/value juftliklari bo'lib, selectorlar ushbu labellar asosida obyektlarni filtrlash uchun ishlatiladi.
 
 #### Labellar
 

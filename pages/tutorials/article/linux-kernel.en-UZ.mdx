@@ -174,7 +174,7 @@ Turli arxitekturalar va hardware konfiguratsiyalarida portativlikni oshirish uch
 * qurilma drayverlari
 Bu turli arxitekturalar va mashine konfiguratsiyalari o'rtasida kodni iloji boricha qayta ishlatishni osonlashtiradi.
 
-Portativ kernel turli hardware arxitekturalari yoki platformalarida ishlash uchun osongina moslash yoki ko'chirish uchun mo'ljallangan, operatsion tizimning asosiy komponenti bo'lgan kernelga ishora qiladi. U hardwarega xos assembler tili o‘rniga C kabi yuqori darajadagi tilda yozilgan bo‘lib, turli tizimlar uchun o‘zgartirishni osonlashtiradi.
+Portativ kernel turli hardware arxitekturalari yoki platformalarida ishlash uchun osongina moslash yoki ko'chirish uchun mo'ljallangan, operatsion tizimning asosiy komponenti bo'lgan kernelga ishora qiladi. U hardwarega xos assembler tili o'rniga C kabi yuqori darajadagi tilda yozilgan bo'lib, turli tizimlar uchun o'zgartirishni osonlashtiradi.
 
 Agar sizda retsept bo'lsa, qaysi oshxonada bo'lishingizdan qat'i nazar, o'zingizning oshxonangizmi, do'stingizning oshxonasimi yoki  ijarada bo'lgan oshxonami, o'sha taomni pishirishingiz mumkin. Turli xil qozon va kostryulkalar yoki pechning quvvati uchun biroz sozlashingiz kerak bo'lishi mumkin, ammo retsept aslida bir xil bo'lib qoladi.
 
@@ -323,7 +323,7 @@ Linux kernelining manba kodi har bir kernelning turli qismlarini o'z ichiga olga
 
 `/kernel` directory Linux kernelining asosiy qismlarini o'z ichiga oladi. U process management(jarayonlarni boshqarish) (scheduling, creating va destroying process), interrupt handling va system calllarini amalga oshirish kabi muhim kichik tizimlarni o'z ichiga oladi. Aslini olganda, u kernelning "yuragi" ni ushlab turadi.
 
-`/lib` directoryda siz kernel tomonidan ishlatiladigan turli xil library routinelarini topasiz. Bular kernelning bir nechta joylarida ishlatiladigan umumiy funksiyalardir. Bularni libraryga qo‘yish orqali ularni kerakli joyda qayta ishlatish mumkin, bu esa DRY (Don't Repeat Yourself) kod bazasini saqlaydi.
+`/lib` directoryda siz kernel tomonidan ishlatiladigan turli xil library routinelarini topasiz. Bular kernelning bir nechta joylarida ishlatiladigan umumiy funksiyalardir. Bularni libraryga qo'yish orqali ularni kerakli joyda qayta ishlatish mumkin, bu esa DRY (Don't Repeat Yourself) kod bazasini saqlaydi.
 
 `/mm` directory Linux kernelining memory management subsystemni o'z ichiga oladi. U xotirani qanday ajratish, ajratish va tartibga solish, jumladan, paging va swappingni boshqaradi. Bu tizimning muhim qismi bo'lib, har bir process o'ziga kerakli xotirani olishini va jismoniy xotiradan samarali foydalanishni taʼminlaydi.
 
@@ -410,7 +410,7 @@ Tasavvur qiling-a, bir guruh shaxslar loyiha ustida hamkorlik qilmoqda, masalan,
 
 Loyiha menejeri har bir guruh a'zosiga o'z mahorati va tajribasidan kelib chiqqan holda aniq vazifalarni belgilash orqali loyihani boshlaydi. Ushbu vazifani belgilash operatsion tizimda processni yaratishga o'xshaydi.
 
-Loyiha davomida loyiha menejeri har bir topshiriqning(task) bajarilishini nazorat qilib, belgilangan muddatlarga rioya etilishini va loyihaning yo‘lda davom etishini ta'minlaydi. Ular vazifalarni qayta belgilashlari yoki kerak bo'lganda ustuvorliklarni sozlashlari mumkin, xuddi operatsion tizimdagi process scheduling kabi.
+Loyiha davomida loyiha menejeri har bir topshiriqning(task) bajarilishini nazorat qilib, belgilangan muddatlarga rioya etilishini va loyihaning yo'lda davom etishini ta'minlaydi. Ular vazifalarni qayta belgilashlari yoki kerak bo'lganda ustuvorliklarni sozlashlari mumkin, xuddi operatsion tizimdagi process scheduling kabi.
 
 Loyiha menejeri, shuningdek, byudjet, vaqt va jihozlar kabi resurslarni boshqaradi va ularni jamoa ishini qo'llab-quvvatlash uchun to'g'ri taqsimlaydi. Ushbu resurslarni taqsimlash operatsion tizim proceslar o'rtasida tizim resurslarini qanday boshqarishi bilan taqqoslanadi.
 
@@ -436,7 +436,7 @@ cgroup - bu processlarni ierarxik tarzda tashkil qilish va tizim resurslarini ie
 
 ![Tizim arxitekturasi](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/os-kernel/22.png)
 
-Memory management deganda operatsion tizimda kompyuter xotirasi resurslarini tashkil qilish va boshqarish jarayoni tushuniladi. Bu xotirani dasturlarga ajratish, xotiraning qaysi qismlari ishlatilayotganligini kuzatish va kerak bo‘lmaganda xotirani ajratishni(allocating memory) o‘z ichiga oladi. Memory management dasturlarning muammosiz bajarilishini ta'minlash va ishdan chiqish yoki tizim sekinlashishi kabi xotira bilan bog'liq muammolarni oldini olish uchun mavjud xotiradan samarali va xavfsiz foydalanishni ta'minlaydi.
+Memory management deganda operatsion tizimda kompyuter xotirasi resurslarini tashkil qilish va boshqarish jarayoni tushuniladi. Bu xotirani dasturlarga ajratish, xotiraning qaysi qismlari ishlatilayotganligini kuzatish va kerak bo'lmaganda xotirani ajratishni(allocating memory) o'z ichiga oladi. Memory management dasturlarning muammosiz bajarilishini ta'minlash va ishdan chiqish yoki tizim sekinlashishi kabi xotira bilan bog'liq muammolarni oldini olish uchun mavjud xotiradan samarali va xavfsiz foydalanishni ta'minlaydi.
 
 Tasavvur qiling, sizda kitoblarni saqlash uchun cheklangan joy bo'lgan kitob javoningiz bor. Har bir kitob kompyuter tizimidagi dastur yoki  processni, kitob javoni esa xotirani(memory) ifodalaydi. Memory management tizimi kutubxonachi vazifasini bajaradi, kitob javonini boshqarish uchun javobgardir.
 
@@ -564,7 +564,7 @@ Linux VFS shuningdek, quyidagilarni o'z ichiga olgan murakkab keshlash mexanizmi
 
 Networking stack - bu tarmoq orqali qurilmalar o'rtasida aloqa o'rnatishga imkon beruvchi dasturiy ta'minot protokollari va komponentlar to'plami. U ma'lumotlarni jo'natish va qabul qilish jarayonini tashkil qiladi, axborotni samarali uzatish va qabul qilishni ta'minlaydi.
 
-Asosan, networking stacki bir necha layerlardan(qatlam) iborat bo'lib, ularning har biri tarmoq aloqasining o'ziga xos jihati uchun javobgardir. Ushbu layerlar ulanishlarni o'rnatish, ma'lumotlar uzatishni boshqarish va ishonchli yetkazib berishni ta'minlash uchun birgalikda ishlaydi. Oddiy tarmoq stek layerlarining soddalashtirilgan ko‘rinishi:
+Asosan, networking stacki bir necha layerlardan(qatlam) iborat bo'lib, ularning har biri tarmoq aloqasining o'ziga xos jihati uchun javobgardir. Ushbu layerlar ulanishlarni o'rnatish, ma'lumotlar uzatishni boshqarish va ishonchli yetkazib berishni ta'minlash uchun birgalikda ishlaydi. Oddiy tarmoq stek layerlarining soddalashtirilgan ko'rinishi:
 
 #### Physical Layer
 Bu layer ma'lumotlarni jismoniy uzatish bilan shug'ullanadi, shu jumladan kabellar, tarmoq adapterlari va tarmoq orqali ma'lumotlarni uzatish uchun ishlatiladigan signalizatsiya usullari.

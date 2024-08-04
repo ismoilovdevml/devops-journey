@@ -62,7 +62,7 @@ WebAssembly platforma-agnostikdir, ya'ni u turli xil operatsion tizimlar va hard
 
 WebAssembly 1950-yillarga to'g'ri keladigan assembly tili tushunchasini uyg'otish uchun nomlangan.
 
-WebAssembly birinchi marta 2015-yilda e'lon qilingan va birinchi namoyish Unity Angry Bots-ni Firefox, Google Chrome va Microsoft Edge-da bajarish edi. Precursor texnologiyalar Mozilla va Google Native Client asm.js edi va dastlabki tatbiq asm.js xususiyatlari to'plamiga asoslangan edi. asm.js texnologiyasi allaqachon near-native kodni bajarish tezligini ta'minlaydi va WebAssembly-ni qo'llab-quvvatlamaydigan yoki xavfsizlik sababli uni o'chirib qo'ygan brauzerlar uchun munosib alternativa sifatida ko'rib chiqilishi mumkin. WebAssembly MVP 2017-yil mart oyida chiqarilgan bo'lib, u oddiy binary format va asosiy brauzerni qo'llab-quvvatlaydi. Ushbu dastlabki nashr yuqori darajadagi tillar uchun kompilyatsiya maqsadi sifatida WebAssembly hayotiyligini va uning veb-ilova ish faoliyatini yaxshilash potentsialini namoyish etdi. 2017-yil sentabr oyi oxirida Safari 11 qo‘llab-quvvatlangan holda chiqarildi. 2018-yil fevral oyida WebAssembly ishchi guruhi Core spetsifikatsiyasi, JavaScript interfeysi va Web API uchun uchta ommaviy ishchi loyihasini chop etdi. 2019-yil iyun oyida Chrome 75 default holda yoqilgan WebAssembly threadlari bilan chiqarildi. 
+WebAssembly birinchi marta 2015-yilda e'lon qilingan va birinchi namoyish Unity Angry Bots-ni Firefox, Google Chrome va Microsoft Edge-da bajarish edi. Precursor texnologiyalar Mozilla va Google Native Client asm.js edi va dastlabki tatbiq asm.js xususiyatlari to'plamiga asoslangan edi. asm.js texnologiyasi allaqachon near-native kodni bajarish tezligini ta'minlaydi va WebAssembly-ni qo'llab-quvvatlamaydigan yoki xavfsizlik sababli uni o'chirib qo'ygan brauzerlar uchun munosib alternativa sifatida ko'rib chiqilishi mumkin. WebAssembly MVP 2017-yil mart oyida chiqarilgan bo'lib, u oddiy binary format va asosiy brauzerni qo'llab-quvvatlaydi. Ushbu dastlabki nashr yuqori darajadagi tillar uchun kompilyatsiya maqsadi sifatida WebAssembly hayotiyligini va uning veb-ilova ish faoliyatini yaxshilash potentsialini namoyish etdi. 2017-yil sentabr oyi oxirida Safari 11 qo'llab-quvvatlangan holda chiqarildi. 2018-yil fevral oyida WebAssembly ishchi guruhi Core spetsifikatsiyasi, JavaScript interfeysi va Web API uchun uchta ommaviy ishchi loyihasini chop etdi. 2019-yil iyun oyida Chrome 75 default holda yoqilgan WebAssembly threadlari bilan chiqarildi. 
 
 WebAssemblyning asosiy motivlari quyidagilar edi
 
@@ -74,7 +74,7 @@ WebAssemblyning asosiy motivlari quyidagilar edi
 
 WebAssembly joriy etilganidan buyon quyida keltirilgan bir qancha muhim yutuqlarga erishdi:
 
-Brauzerni qo'llab-quvvatlash va standartlashtirish: MVP versiyasidan so'ng barcha asosiy veb-brauzerlar, jumladan, Chrome, Firefox, Safari va Edge, WebAssembly-ni qo'llab-quvvatlab, uni keng doiradagi foydalanuvchilar uchun taqdim etdi. WebAssembly standarti 2018-yilda World Wide Web Consortium (W3C) orqali ham rasmiylashtirilib, veb-ekotizimdagi o‘rnini yanada mustahkamladi.
+Brauzerni qo'llab-quvvatlash va standartlashtirish: MVP versiyasidan so'ng barcha asosiy veb-brauzerlar, jumladan, Chrome, Firefox, Safari va Edge, WebAssembly-ni qo'llab-quvvatlab, uni keng doiradagi foydalanuvchilar uchun taqdim etdi. WebAssembly standarti 2018-yilda World Wide Web Consortium (W3C) orqali ham rasmiylashtirilib, veb-ekotizimdagi o'rnini yanada mustahkamladi.
 
 Kengaytirilgan tilni qo'llab-quvvatlash: Vaqt o'tishi bilan WebAssembly-ga kompilyatsiya qilinishi mumkin bo'lgan tillar doirasi sezilarli darajada kengaydi. Dastlab C va C++ qo'llab-quvvatlangan bo'lsa-da, Rust, Go va AssemblyScript kabi boshqa tillar ham WebAssemblyni ishlab chiqish uchun yaxshi tanlovga aylandi.
 
@@ -121,9 +121,9 @@ WASI yoki WebAssembly System Interface - bu WebAssembly (Wasm) ilovalari uchun m
 
 WASI WebAssembly ilovalari va xost tizimi o'rtasida izchil va xavfsiz interfeysni ta'minlaydi, bu Wasm dasturlariga fayllar, tarmoq ulanishlari va muhit o'zgaruvchilari kabi operatsion tizim resurslariga kirish imkonini beradi. WASI maqsadi WebAssembly uchun turli platformalar va operatsion tizimlarda ishlaydigan standartlashtirilgan tizim interfeysini yaratishdir, bu esa dasturchilarga Wasm ilovalarini yaratish va joylashtirishni osonlashtiradi.
 
-Standart interfeysni taqdim etish orqali WASI WebAssembly ilovalarini yanada ko‘chma, sinov muhitiga ega va xavfsizroq bo‘lishiga yordam beradi, chunki ular kodni o‘zgartirishni talab qilmasdan turli operatsion tizimlar va qurilmalarda ishlashi mumkin. WASI-ning modulli dizayni, shuningdek, ishlab chiquvchilarga o'z ilovalari uchun kerakli interfeys qismlaridan foydalanishga imkon beruvchi maxsus API-larni bosqichma-bosqich qabul qilishga imkon beradi.
+Standart interfeysni taqdim etish orqali WASI WebAssembly ilovalarini yanada ko'chma, sinov muhitiga ega va xavfsizroq bo'lishiga yordam beradi, chunki ular kodni o'zgartirishni talab qilmasdan turli operatsion tizimlar va qurilmalarda ishlashi mumkin. WASI-ning modulli dizayni, shuningdek, ishlab chiquvchilarga o'z ilovalari uchun kerakli interfeys qismlaridan foydalanishga imkon beruvchi maxsus API-larni bosqichma-bosqich qabul qilishga imkon beradi.
 
-Docker asoschilaridan biri Solomon Hykes 2019 yilda shunday deb yozgan edi: “Agar WASM+WASI 2008-yilda mavjud bo‘lganida, biz Docker-ni yaratishimiz shart emas edi. Bu qanchalik muhim. Serverdagi WebAssembly - bu hisoblashning kelajagi." Wasmer, 1.0 versiyasida "dasturiy ta'minotni konteynerlashtirishni ta'minlaydi, biz Linux, macOS, Windows va veb-brauzerlar kabi operatsion tizimlarni o'z ichiga olgan holda istalgan joyda o'zgartirilmagan holda ishlaydigan universal binary(ikkilik) fayllarni yaratamiz. Wasm xavfsiz bajarilishi uchun ilovalarni standart bo'yicha avtomatik ravishda sandboxga o'tkazadi"
+Docker asoschilaridan biri Solomon Hykes 2019 yilda shunday deb yozgan edi: “Agar WASM+WASI 2008-yilda mavjud bo'lganida, biz Docker-ni yaratishimiz shart emas edi. Bu qanchalik muhim. Serverdagi WebAssembly - bu hisoblashning kelajagi." Wasmer, 1.0 versiyasida "dasturiy ta'minotni konteynerlashtirishni ta'minlaydi, biz Linux, macOS, Windows va veb-brauzerlar kabi operatsion tizimlarni o'z ichiga olgan holda istalgan joyda o'zgartirilmagan holda ishlaydigan universal binary(ikkilik) fayllarni yaratamiz. Wasm xavfsiz bajarilishi uchun ilovalarni standart bo'yicha avtomatik ravishda sandboxga o'tkazadi"
 
 ## Virtual machine
 
@@ -138,7 +138,7 @@ WebAssembly ikkilik kodi (.wasm) veb-sahifaga odatda WebAssembly moduli bilan o'
 
 #### Instantiation
 
-Brauzer WebAssembly modulini yuklaganida, u to‘g‘ri formatlanganligi va bajarilishi xavfsiz ekanligiga ishonch hosil qilish uchun avval modul bayt kodini tekshiradi. Ushbu qadam WebAssembly ilovalarining xavfsizligi ta'minlash uchun zarurdir.
+Brauzer WebAssembly modulini yuklaganida, u to'g'ri formatlanganligi va bajarilishi xavfsiz ekanligiga ishonch hosil qilish uchun avval modul bayt kodini tekshiradi. Ushbu qadam WebAssembly ilovalarining xavfsizligi ta'minlash uchun zarurdir.
 Brauzer keyin WebAssembly bayt-kodini Just-In-Time (JIT) kompilyatsiyasi yoki oldindan (AOT) kompilyatsiyasidan foydalangan holda xost mashinasi uchun optimallashtirilgan mahalliy mashina kodiga kompilyatsiya qiladi.
 Kompilyatsiyadan so'ng WebAssembly namunasi yaratiladi, u xotira, table va execution uchun zarur bo'lgan boshqa WebAssembly-ga xos elementlarni o'z ichiga oladi.
 
@@ -158,7 +158,7 @@ Asl standartda (MVP) foydalanilgan opcodelar soni 256 ta mumkin bo'lgan opcodeda
 
 ## Kod 
 
-2017-yil mart oyida WebAssembly hamjamiyat guruhi boshlang‘ich (MVP) binary formati, JavaScript API va reference interpretator bo‘yicha konsensusga erishdi. WebAssembly binary format bo'lib, u asosan odamlar tomonidan o'qilmaydigan, kompyuterlar tomonidan bajarilishi uchun mo'ljallangan. Shu bilan birga, WebAssembly uchun WebAssembly Text Format (yoki qisqacha .wat) deb nomlangan matn formati ham mavjud bo'lib, u inson tomonidan o'qilishi uchun mo'ljallangan.
+2017-yil mart oyida WebAssembly hamjamiyat guruhi boshlang'ich (MVP) binary formati, JavaScript API va reference interpretator bo'yicha konsensusga erishdi. WebAssembly binary format bo'lib, u asosan odamlar tomonidan o'qilmaydigan, kompyuterlar tomonidan bajarilishi uchun mo'ljallangan. Shu bilan birga, WebAssembly uchun WebAssembly Text Format (yoki qisqacha .wat) deb nomlangan matn formati ham mavjud bo'lib, u inson tomonidan o'qilishi uchun mo'ljallangan.
 
 Quyidagi jadvalda C da yozilgan 2ta sonni qo'shish va kompilyatsiyadan so'ng unga mos keladigan WebAssembly kodi misoli ko'rsatilgan WebAssembly-ni qo'llab-quvvatlaydigan veb-brauzer yoki runtime environment tomonidan bajariladigan .wat matn formatida (WebAssemblyning odam o'qiy oladigan matnli ko'rinishi) va .wasm binary formatida ko'rsatilgan.
 
@@ -344,7 +344,7 @@ Sun'iy intellekt va machine learning
 
 WebAssembly-ning brauzerda kodni samarali ishga tushirish qobiliyati sun'iy intellekt va machine learning ilovalarini internetga olib kirishi mumkin, bu esa foydalanuvchilarga maxsus dasturlarni o'rnatishni talab qilmasdan kuchli algoritmlarga kirish imkonini beradi.
 
-Til va tollarni takomillashtirish: WebAssembly mashhurlik orttirishda davom etar ekan, uning rivojlanishini qo‘llab-quvvatlash, ishlab chiquvchilar samaradorligini oshirish va tobora murakkablashgan veb-ilovalarni yaratish imkonini beruvchi ko‘proq dasturlash tillari va vositalari paydo bo‘ladi.
+Til va tollarni takomillashtirish: WebAssembly mashhurlik orttirishda davom etar ekan, uning rivojlanishini qo'llab-quvvatlash, ishlab chiquvchilar samaradorligini oshirish va tobora murakkablashgan veb-ilovalarni yaratish imkonini beruvchi ko'proq dasturlash tillari va vositalari paydo bo'ladi.
 
 <Callout type="info" emoji="">
 Brauzerdan tashqarida WebAssembly

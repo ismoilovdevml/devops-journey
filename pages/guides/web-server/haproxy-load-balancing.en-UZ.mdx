@@ -213,7 +213,7 @@ Bu backend nodelarni belgilaydi va bir nechta konfiguratsiya variantlarini belgi
 
 * **`http-request set-header X-Forwarded-Port %[dst_port]`** Backend serverlariga yuborilgan HTTP so'rovlarida **X-Forwarded-Port** headerini o'rnatadi. U so'rov yuborilgan HAProxy serverining destination portini o'z ichiga oladi.
 
-* **`http-request add-header X-Forwarded-Proto https if { ssl_fc }`** HAProxy'ga kiruvchi so‘rov **HTTPS**(ssl_fc) orqali qabul qilingan bo‘lsa, **X-Forwarded-Proto** headerini HTTP so‘rovlariga qo‘shadi. Ushbu header client tomonidan so'rovni amalga oshirishda foydalaniladigan protokolni ko'rsatadi.
+* **`http-request add-header X-Forwarded-Proto https if { ssl_fc }`** HAProxy'ga kiruvchi so'rov **HTTPS**(ssl_fc) orqali qabul qilingan bo'lsa, **X-Forwarded-Proto** headerini HTTP so'rovlariga qo'shadi. Ushbu header client tomonidan so'rovni amalga oshirishda foydalaniladigan protokolni ko'rsatadi.
 * **`option httpchk HEAD / HTTP/1.1\r\nHost:localhost`** Backend serverlari uchun HTTP health checkni sozlaydi. U serverlarning sog'lig'ini tekshirish(health check) uchun HTTP versiyasi va **Host** headeri **localhost** ga o'rnatilgan holda root(ildiz) yo'liga ("`/`") **HTTP HEAD** so'rovini yuboradi. HAProxy ushbu tekshiruvdan kiruvchi so'rovlarni ko'rib chiqish uchun server mavjudligini aniqlash uchun foydalanadi.
 
 * **`server node1 185.168.1.21:3000 check` va `server node2 185.168.1.22:3000 check`** Backend **backendnodes** ichida ikkita serverni (node1 va node2) belgilaydi. Har bir server IP manzili va port raqami (mos ravishda 185.168.1.21:3000 va 185.168.1.22:3000) bilan aniqlanadi. Tekshirish(check) kalit so'zi HAProxy sozlangan health check metodi (**option httpchk**) yordamida ushbu serverlarning sog'lig'ini muntazam ravishda tekshirishi kerakligini bildiradi. Ushbu serverlar kiruvchi so'rovlarni bajarishga tayyor.
@@ -442,7 +442,7 @@ listen stats
 
 `acl devops_journey_acl hdr(host) -i devops-journey.uz` **Host** headerida [**devops-journey.uz**](https://devops-journey.uz/) so'rovlarini tekshiradigan `devops_journey_acl` nomli **ACL** yaratadi. `hdr(host)` ACL kiruvchi HTTP so'rovlarining **Host** headeriini tekshirishini bildiradi. `i` Katta-kichik harflarsiz moslikni bajaradi.
 
-`use_backend devops_journey_backend if devops_journey_acl` Kiruvchi so'rovning **Host** headerida `devops-journey.uz` bo'lsa, va **devops_journey_acl** ga mos keladigan so'rovlarni **devops_journey_backend** nomli maxsus backend serverlarga yo'naltiradi. `devops_journey_acl` shartiga mos kelmaydigan so‘rovlar `backendnodes` backendga yo‘naltiriladi.
+`use_backend devops_journey_backend if devops_journey_acl` Kiruvchi so'rovning **Host** headerida `devops-journey.uz` bo'lsa, va **devops_journey_acl** ga mos keladigan so'rovlarni **devops_journey_backend** nomli maxsus backend serverlarga yo'naltiradi. `devops_journey_acl` shartiga mos kelmaydigan so'rovlar `backendnodes` backendga yo'naltiriladi.
 
 
 Qisqa qilib aytganda, **Host** headeriga asoslangan so'rovlarni moslashtirish uchun **ACL** (`devops_journey_acl`) dan foydalanadi, xususan, domen [**devops-journey.uz**](https://devops-journey.uz/) bo'lgan so'rovlarni yo'naltiradi. Ushbu shartga mos keladigan so'rovlar **devops_journey_backend**dagi serverlarga yo'naltiriladi, qolgan barcha so'rovlar esa default backend **backendnodes**ga yo'naltiriladi.
