@@ -313,5 +313,26 @@
       "toc": false,
       "pagination": true
     }
+  },
+  "monolithic-microservices": {
+    "title": "Monolithic vs Microservices Architecture",
+    "longTitle": "Monolithic vs Microservices Architecture",
+    "description": "Monolithic vs Microservices Architecture",
+    "level": "Hamma uchun",
+    "category": "DevOps",
+    "author": {
+      "name": "Gayratjon Rayimjonov",
+      "image": "https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/authors/gayratjon_rayimjonov.jpeg"
+    },
+    "createdAt": "2024-08-04",
+    "minutesRead": 40,
+    "href": "/tutorials/article/monolithic-microservices",
+    "theme": {
+      "breadcrumb": false,
+      "footer": true,
+      "sidebar": false,
+      "toc": false,
+      "pagination": true
+    }
   }
 }

@@ -1,0 +1,61 @@
+import { Callout } from "nextra-theme-docs";
+
+# Monolithic vs Microservices Architecture
+
+![api-gateway-nima](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/monolithic-microservices/1.webp)
+
+Monolit va Mikroservis arxitekura bu application yaratishdagi ikki xil yondoshuv bo’lib har ikkala arxitekturaning o’ziga yarasha yutuq va kamchiliklari mavjud. Maqolada bu arxitekturalarning ba`zi bir asosiy farqlari, qiyinchiliklari va afzalliklarini ko’rib chiqamiz.
+
+Oxirgi yillarda mikroservis arxitektura ancha ommalashdi, ko’p projectlar mikroservis da yaratilishni boshladi. Oddiy qilib aytadigan bo’lsak, mikroservis trendga chiqdi ))).Mikroservis yaxshi yechim, lekin notog’ri foydalanilgan arxitektura bu kompaniya uchun balo yoki tuzatib bo’lmas yara bo’lishi mumkin. Shuning uchun arxitekturani to’g’ri tanlash juda muhim hisoblanadi. Ba`zi projectlar noto’g’ri tanlangan arxitektura sabab fail bo’ladi. Qaysi holatlarda qanday arxitekturani tanlashni yaxshilab bilib olish kerak.
+
+## Monolit Arxitektura
+
+***Birinchi bo’lib Monolit arxitekrurani ko’rib chiqsak.***
+
+Monolit arxitektura an`anaviy va eng ko’p ishlatilgan arxitekturalardan biri bo’lib, odatda application single code base asosida yaratilgan bo’ladi. Misol uchun siz spring framework da application yaratsangiz, barcha yechimlar application ichidagi filelarda bo’ladi va yagona bazaga ulanadi. Shuning uchun Single code base appicationlarni tushunish anchayin oson. Bu arxitekturadan deyarli barcha kompaniyalar foydalanadi yani yangi yaratilayotgan startup lar yoki yangi ish boshlayotgan kompaniyalar shu arxitekturani ishlatadi. Chunki bu usul mikroservislarga qaraganda boshqarish va ishlab chiqish ancha oson va ortiqcha resurs talab qilmaydi.
+
+![api-gateway-nima](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/monolithic-microservices/2.webp)
+
+Asosiy layerlar taxminan shunday bo’ladi, baiki layerlar soni ham ko’p bo’lishi mumkin lekin database ga ulanish doim o’xshash bo’ladi.
+
+**Monolit arxitekturaning ba`zi bir kamchilik va yutuqlarini ko’rib chiqsak**
+
+* **Oddiylik** — Barcha kodlar bitta yechimda. Agar sizga biror bir o’zgarish kerak bo’lsa hamma kodlar bitta joyda joylashgan bo’ladi. Agar applicationni run local qilmoqchi bo’lsangiz faqat bitta applicationni run qilasiz.
+
+* **Oson deploy** — Oson deploy bo’ladi chunki siz faqat bitta applicationni deploy qilishingiz kerak xalos. Har doim yangi qo’shimchalar qo’shsangiz yoki bug fix qilsangiz yagona applicationni deoplay qilasiz.
+
+* **Tushunish oson** — Deyarli barcha dasturchilar monolit application bilan ishlagan, shuning uchun projectga tez kirishib, boshlab keta oladi.
+
+* **Oson debug** — Debug qilish oson barcha biznes mantiqlar bitta applicationda joylashganligi sabab qo’shimcha konfiguratsiyalarsiz oson dubug qilish mumkin.
+
+* **Test qilish oson** — hamma kodlar va konfiguratsiyalar bitta applicationda bo’lganligi sabab qo’shimcha konfiguratsiylar, boshqa servicelarni holatini(ishlayotganligini) va boshqa qo’shimcha ishlarni bajarish shart emas. Qo’shimchasiga end-to-end testlarni oson implementatsiya qilinadi.
+
+* **Oson Monitoring** — tizimda qandaydir xatoliklar yoki nosozliklar yuzaga kelsa aniqlash juda oson bo’ladi.
+
+Har bir narsaning afzalilari bo’lgani kabi bu arxitekturaning ham kamchilikari bor:
+
+**Monolit arxitekturaning kamchiliklari;**
+
+* **Tizim kattalashganda xizmat ko’rsatish qiyinlashishi** — Loyiha boshlanganida uni boshqarish anchayin oson bo’ladi lekin yillar o’tib kattalashgai sari uni boshqarish qiyinlashib boradi. Monolit applicationlar kichik va o’rta tizimlar uchun ideal yechim hisoblanadi.
+
+* **Deploy payti ishlamay turishi** — application update paytida butun boshli tizim ishlamaydi, toki tizimi ishga tushmagunicha.
+
+* **Jamoa kattalashgan sari ishlash qiyinlashib boradi** — Tasavvur qiling, katta jamoada bitta Monolit application bilan ishlayapti, har bir kichik team o’ziga biriktirilgan turli xil task larni yoki buglarni fix qiladi. Jamolar ishini tugatganidan so’ng bilamizki, kodlar bitta branchga marge qilinadi va bu marge jarayonida juda ko’plab conflict lar chiqish ehtimolligi katta, chunki jamolar umumiy fayllarda ishlashlari mumkin. Bilamizki, kodlar conflict bo’lishi anchayin katta muammo hisoblanadi.
+
+* **Qisman Mahstablash(scalability) imkoni yo’q** — Bilamizki, Monolitni ham mashtablash mumkin. Lekin aynan ko’p request bo’layotgan qisminigina mashtablay olmaymiz, faqatgina to’liq mashtablashimiz mumkin. Bundan tashqari har doim ham gorizontal scale(mashtablash) dan foydalana olmaymiz. Natijada vertikal scale dan foydalanishga majbur bo’lamiz. Bu esa qimmat va chegaralangan scale hisoblanadi.
+
+* **Texnologiyalarni cheklangaligi** — Monolit application bitta texnologiyada yaratilganiligi uchun boshqa bir texnologiyani yoki tilni qo’shish juda qiyin. Misol uchun javada yaratilgan application ga python ni qo’shish juda qiyin.
+
+* **Butun tizimni o’chib qolishi** — Application o’chib qolsa mikroservisdan farqli o’laroq butun tizim o’chib qoladi. mikroservis da esa bitta qisimgina ishlamay turishi mumkin bo’ladi.
+
+**Monolit arxitekturadan qachon foydalanish kerak?**
+
+**Monolit** arxitektura ko’plab ssenariylar uchun juda qo’lay hisoblanadi:
+
+* **1. Loyihamiz katta bo’lmasligini bilsangiz,**
+* **2. Loyiha qanday bo’lishini bilmasangiz masalan talablar aniq ko’rsatilmagan bo’lsa yoki qilinayotgan ish jamoa uchun yangilik bo’lsa,**
+* **3. Loyiha konsepsiyalari aniq bo’lsa ,**
+* **4. Jamoa kichik bo’lsa yoki jamoa yangi bo’lsa ,**
+* **5. Loyiha kichik biznes logikalardan iborat va CRUD dan iborat bo’lsa**
+
+## Mikroservis Arxitektura
