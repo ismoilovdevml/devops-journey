@@ -52,5 +52,11 @@
     "icon": "▶️",
     "description": "Boshlang'ichlar uchun",
     "href": "/guides/k8s/troubleshoot-k8s-pods"
+  },
+  "ha-rke2-setup": {
+    "title": "HA RKE2 Cluster",
+    "icon": "▶️",
+    "description": "RKE2 cluster setup qilish",
+    "href": "/guides/k8s/ha-rke2-setup"
   }
 }
