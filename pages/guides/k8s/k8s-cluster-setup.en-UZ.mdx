@@ -43,12 +43,12 @@ Quyida meni kubernetes cluster uchun tayyorlab olgan serverlarim ro'yxati. E'tib
 
 Amaliyotimiz uchun muhitni serverlarni sozlab olganimizdan keyin amaliyotni boshlasak bo'ladi. Biz kubernetes cluster yaratishda **kubeadm** dan foydalanamiz. Ishni ancha osonlashtirish uchun men oldinroq **kubeadm** bilan ishlab kubernetes cluster yaratadigan **bash script** yozib qo'ygandim. Ushbu amaliyotda biz bash scriptdan foydalanaib k8s cluster yaratamiz. Barcha serverlarimizga ssh orqali kirib olamiz va quyidagicha scriptni ishga tushiramiz.
 
-**K8s installer** script ikki qismga bo'lingan yani k8s-master uchun alohida va k8s-nodelar uchun alohida. [**K8s installer**](https://github.com/ismoilovdevml/devops-tools/tree/master/k8s/Install) bash scriptni kodlari open-source githubga joylashtirilgan.
+**K8s installer** script ikki qismga bo'lingan yani k8s-master uchun alohida va k8s-nodelar uchun alohida. [**K8s installer**](https://github.com/ismoilovdevml/devops-tools/tree/master/Kubernetes/k8s-installer/) bash scriptni kodlari open-source githubga joylashtirilgan.
 
 **1->** **k8s-master** serverimizga kirib quyidagi buyruq orqali scriptni ishga tushiramiz.
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/ismoilovdevml/devops-tools/master/k8s/Install/k8s-master.sh | bash
+curl -sSL https://raw.githubusercontent.com/ismoilovdevml/devops-tools/master/Kubernetes/k8s-installer/k8s-master.sh | bash
 ```
 
 Script quyidagicha ishga tushishi kerak.
@@ -75,7 +75,7 @@ kubeadm join 10.128.0.45:6443 --token snydd0.hdwia5qbrc455aro \
 **3->** k8s nodelar uchun alohida k8s nodelar uchun yozilgan bash scriptni ishga tushiramiz.
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/ismoilovdevml/devops-tools/master/k8s/Install/k8s-worker.sh | bash
+curl -sSL https://raw.githubusercontent.com/ismoilovdevml/devops-tools/master/Kubernetes/k8s-installer/k8s-worker.sh | bash
 ```
 
 Bash script quyidagicha ishga tushishi kerak.
