@@ -70,10 +70,10 @@ Prometheusni GitHub repositoriyadan oldindan kompilyatsiya qilingan binary(ikkil
 
 **1->** [Prometheus downloads](https://prometheus.io/download/) sahifasiga tashrif buyuring va eng so'nggi versiyani yozib oling. Eng so'nggi LTS versiyasi saytda aniq ko'rsatilgan.
 
-**2->** Monitoring serveriga Prometheusni yuklab olish uchun `wget` dan foydalaning. Maqsadli havola https://github.com/prometheus/prometheus/releases/download/v[release]/prometheus-[release].linux-amd64.tar.gz formatiga ega. Yuklab olish uchun [release] qatorini haqiqiy reliz bilan almashtiring. Masalan, quyidagi yuklash buyruqlari 2.48.0 versiyasini chiqaradi.
+**2->** Monitoring serveriga Prometheusni yuklab olish uchun `wget` dan foydalaning. Maqsadli havola https://github.com/prometheus/prometheus/releases/download/v[release]/prometheus-[release].linux-amd64.tar.gz formatiga ega. Yuklab olish uchun [release] qatorini haqiqiy reliz bilan almashtiring. Masalan, quyidagi yuklash buyruqlari 2.54.1 versiyasini chiqaradi.
 
 ```bash
-wget https://github.com/prometheus/prometheus/releases/download/v2.48.0/prometheus-2.48.0.linux-amd64.tar.gz
+wget https://github.com/prometheus/prometheus/releases/download/v2.54.1/prometheus-2.54.1.linux-amd64.tar.gz
 ```
 **3->** Arxivlangan Prometheus fayllarini arxivdan chiqarib oling.
 
@@ -211,10 +211,10 @@ Node Exporter ishlayotgan bo'lsa, uning statistik ma'lumotlar to'plami `9100` po
 </Callout>
 
 **1->** [Prometheus downloads sahifasining Node Exporter bo'limiga](https://prometheus.io/download/#node_exporter) murojaat qiling va oxirgi versiyani aniqlang.
-**2->** Ushbu relizni yuklab olish uchun `wget` dan foydalaning. Fayl formati https://github.com/prometheus/node_exporter/releases/download/v[reliz_raqami]/node_exporter-[reliz_raqami].linux-amd64.tar.gz. [reliz_raqami] ni haqiqiy relizga mos keladigan raqam bilan almashtiring. Misol uchun, quyidagi misol Node Exporter `1.7.0` versiyasini qanday yuklab olishni ko'rsatadi.
+**2->** Ushbu relizni yuklab olish uchun `wget` dan foydalaning. Fayl formati https://github.com/prometheus/node_exporter/releases/download/v[reliz_raqami]/node_exporter-[reliz_raqami].linux-amd64.tar.gz. [reliz_raqami] ni haqiqiy relizga mos keladigan raqam bilan almashtiring. Misol uchun, quyidagi misol Node Exporter `1.8.2` versiyasini qanday yuklab olishni ko'rsatadi.
 
 ```bash
-wget https://github.com/prometheus/node_exporter/releases/download/v1.7.0/node_exporter-1.7.0.linux-amd64.tar.gz
+wget https://github.com/prometheus/node_exporter/releases/download/v1.8.2/node_exporter-1.8.2.linux-amd64.tar.gz
 ```
 **3->** Dasturni arxivdan chiqarib oling
 
@@ -224,12 +224,12 @@ tar xvfz node_exporter-*.tar.gz
 **4->** Bajariladigan(executable) faylni `usr/local/bin`-ga o'tkazing, shunda u butun tizimda mavjud bo'ladi.
 
 ```bash
-sudo mv node_exporter-1.7.0.linux-amd64/node_exporter /usr/local/bin
+sudo mv node_exporter-1.8.2.linux-amd64/node_exporter /usr/local/bin
 ```
 **5->** (Ixtiyoriy) Qolgan fayllarni o'chirib tashlang.
 
 ```bash
-rm -r node_exporter-1.7.0.linux-amd64*
+rm -r node_exporter-1.8.2.linux-amd64*
 ```
 **6->** Node Exporterni ishga tushirishning ikki yo'li mavjud. Uni terminaldan `node_exporter` buyrug'i yordamida ishga tushirish mumkin. Yoki uni system service sifatida faollashtirish mumkin. Uni terminaldan ishga tushirish unchalik qulay emas. Ammo bu vosita faqat vaqti-vaqti bilan foydalanish uchun mo'ljallangan bo'lsa, bu muammo bo'lmasligi mumkin. Node Exporter dasturini qo'lda ishga tushirish uchun quyidagi buyruqdan foydalaning. Terminal statistik ma'lumotlarni yig'ish jarayoniga oid tafsilotlarni chiqaradi.
 
@@ -309,14 +309,15 @@ sudo nano /etc/prometheus/prometheus.yml
 Bitr nechta serverlarni monitoring qilish uchun `prometheus.yml` konfigrasiya fayli quyidagicha yoziladi.
 
 ```bash filename="/etc/prometheus/prometheus.yml" /targets:/
-- job_name: "node_exporter"
+  - job_name: "node_exporter"
     static_configs:
-      - targets: [
-        "195.168.1.134:9100",
-        "195.168.1.122:9100",
-        "195.168.1.116:9100",
-        "195.168.1.145:9100",
-      ]
+      - targets:
+        - "10.128.0.32:9100"
+        - "10.128.0.33:9100"
+        - "10.128.0.34:9100"
+        - "10.128.0.35:9100"
+        - "10.128.0.36:9100"
+        - "10.128.0.37:9100"
 ```
 Bu yerda 4 ta serverga node_exporter o'rnatilgan va biz bularni Prometheus o'rnatgan serverimizdagi `/etc/prometheus/prometheus.yml` konfigratsiya faylida biz kuzatmoqchi bo'lgan severlarimizni ro'yxatini qo'shib qo'yyapmiz. 
 </Callout>
@@ -463,7 +464,7 @@ Qo'shimcha Resurslar
 
 **Sana:** 2023.08.29 (2023-yil 29-Avgust)
 
-**Oxirgi yangilanish:** 2024.02.08(2024-yil 8-fevral)
+**Oxirgi yangilanish:** 2024.09.09(2024-yil 9-sentabr)
 
 **Muallif: Otabek Ismoilov**
 
