@@ -334,5 +334,26 @@
       "toc": false,
       "pagination": true
     }
+  },
+  "ansible-terraform": {
+    "title": "Nega Ansible va Terraformni tanladim?",
+    "longTitle": "Nega Ansible va Terraformni Tanladim?",
+    "description": "Nega Ansible va Terraformni Tanladim?",
+    "level": "Hamma uchun",
+    "category": "DevOps",
+    "author": {
+      "name": "Otabek Ismoilov",
+      "image": "https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/authors/ismoilovdev.jpeg"
+    },
+    "createdAt": "2024-09-13",
+    "minutesRead": 30,
+    "href": "/tutorials/article/ansible-terraform",
+    "theme": {
+      "breadcrumb": false,
+      "footer": true,
+      "sidebar": false,
+      "toc": false,
+      "pagination": true
+    }
   }
 }
