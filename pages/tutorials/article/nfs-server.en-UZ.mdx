@@ -1,0 +1,20 @@
+import { Callout } from "nextra-theme-docs";
+
+# NFS Server sozlash
+![nfs-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/nfs-server/banner.png)
+
+**NFS** (**N**etwork **F**ile **S**ystem) tarmoqda fayl almashinuvi uchun ishlatiladigan ommabop texnologiyalardan biri hisoblanadi. U bir nechta serverlar va mijoz(client) tizimlar orasida ma'lumotlarni samarali ravishda ulashish(sahre) va boshqarish imkonini beradi. Ushbu texnik qo'llanmada biz Ansible Playbook yordamida bir necha turdagi operatsion tizimlarda (Ubuntu, CentOS, RHEL va boshqalar) NFS serverini o'rnatish va sozlash jarayonini avtomatlashtirishni ko'rib chiqamiz.
+
+
+**NFS** (**N**etwork **F**ile **S**ystem) — **Sun Microsystems** tomonidan **1984**-yilda yaratilgan tarmoq fayl tizimi protokoli. NFS'ning yaratilishidagi asosiy maqsad, UNIX tizimlari orasida tarmoq orqali fayllarni ulashish va boshqarishni osonlashtirish edi. Uning yaratilishi Sun Microsystems'ning muhandisi **Russel Sandberg, Bob Lyon, Bill Joy, Steve Kleiman** va boshqa dasturchilarning sa'y-harakatlari natijasida amalga oshirildi.
+
+## NFS'ning Maqsadlari:
+
+* **Tarmoq orqali fayllarni ulashish:** Serverdagi fayllarni clientlar orasida share qilish imkonini yaratish. Bu serverda saqlanadigan fayllarni boshqa tizimlarga ham foydalanuvchi uchun local disk kabi foydalanish imkonini beradi.
+* **Multi-platforma ko'magi:** NFS UNIX asosidagi tizimlarda ishlash uchun ishlab chiqilgan, ammo keyinchalik boshqa operatsion tizimlarga ham kengaytirildi.
+* **Tizimni markazlashtirish:** NFS orqali bir serverda fayllarni markazlashtirilgan holda saqlash va ulardan tarmoqdagi boshqa tizimlar tomonidan foydalanish imkoniyati taqdim etildi. Bu, ayniqsa, katta miqdordagi ma'lumotlarni saqlash va boshqarish kerak bo'lgan korxona muhitlari uchun foydali bo'ldi.
+
+NFS dan Kubernets clusterda ham faol foydalanish mumkin. Kubernetesda NFS odatda bir nechta podlarda persistent storageni ta'minlash uchun ishlatiladi, bu esa uni stateful applicationlarni boshqarishda asosiy komponentga aylantiradi. NFS tez-tez Kubernetesda Persistent Volumes (PV) sifatida ishlatiladi. Persistent Volume administrator tomonidan taqdim etilgan storage resource boʻlib, foydalanuvchilar tomonidan Persistent Volume Claim (PVC) bilan bogʻlanishi mumkin. Bu konteynerlarga qayta ishga tushirish(restart), rescheduling yoki hatto bir nechta podlarda bir xil ma'lumotlarga kirish imkonini beradi. NFS-ga asoslangan PV-lar, ayniqsa, bir nechta podlar o'rtasida fayllarni almashish uchun foydalidir. Kubernetesdagi NFS ham stateful, ham stateless applicationlar uchun shared va persistent storageni boshqarishning moslashuvchan, kengaytiriladigan va ishonchli usulini taklif etadi. **Ceph** yoki **GlusterFS** kabi zamonaviy storage solutionlari yanada ilg'or xususiyatlarni taklif qilsa-da, NFS Kubernetes klasterlarida soddaligi va keng mosligi uchun ko'proq ishlatiladi.
+
+
+## NFS Server o'rnatish
