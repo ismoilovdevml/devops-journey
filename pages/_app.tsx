@@ -6,8 +6,6 @@ import Script from 'next/script';
 
 import * as React from 'react';
 
-import { Providers } from '../components/core';
-
 import '../styles/globals.css';
 
 import * as gtag from '../lib/gtag';
@@ -30,7 +28,7 @@ function App({ Component, pageProps }: AppProps<{ dehydratedState: string }>) {
   }, [router.events]);
 
   return (
-    <Providers dehydratedState={pageProps?.dehydratedState}>
+    <>
       {/* Global Site Tag (gtag.js) - Google Analytics */}
       <Script
         strategy="afterInteractive"
@@ -51,7 +49,7 @@ function App({ Component, pageProps }: AppProps<{ dehydratedState: string }>) {
         }}
       />
       {getLayout(<Component {...pageProps} />)}
-    </Providers>
+    </>
   );
 }
 
