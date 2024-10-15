@@ -2,7 +2,7 @@
  * @type {import('nextra-theme-docs').DocsThemeConfig}
  */
 import { useRouter } from 'next/router';
-import { GithubSponsors } from '@components/icons/github-sponsors';
+import { GithubSponsors } from '@components/github-sponsors';
 
 const github = 'https://github.com/ismoilovdevml/devops-journey';
 
@@ -28,7 +28,7 @@ const Logo = ({ height, width }: { height: number; width: number }) => {
       >
         <use href="public/logos/logo-dark.svg" />
       </svg>
-      <img className='logo-img' src="/hero.png" alt="Hero" height="50" width="50"/>
+      <img className='logo-img' src="/hero.png" alt="Hero" height="50" width="50" />
       <span className='logo-text' style={{ fontWeight: 'bold', fontSize: 18 }}>DevOps Journey</span>
     </div>
   );
@@ -126,7 +126,6 @@ const config: DocsThemeConfig = {
         <meta name="description" content={description} />
 
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:site" content="@livepeer" />
         <meta name="twitter:image" content={image} />
 
         <meta property="og:description" content={description} />
@@ -135,7 +134,7 @@ const config: DocsThemeConfig = {
         <meta property="og:type" content="website" />
         <meta
           name="apple-mobile-web-app-title"
-          content="Livepeer Documentation"
+          content="DevOps Journey"
         />
         <script
           async
@@ -173,7 +172,7 @@ const config: DocsThemeConfig = {
         <>
           {
             EDIT_LINK_WITH_TRANSLATIONS[
-              (locale as keyof typeof EDIT_LINK_WITH_TRANSLATIONS) ?? 'en-UZ'
+            (locale as keyof typeof EDIT_LINK_WITH_TRANSLATIONS) ?? 'en-UZ'
             ]
           }
         </>

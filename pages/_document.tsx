@@ -1,4 +1,3 @@
-import { getCssText } from '@livepeer/react';
 import { SkipNavLink } from '@reach/skip-nav';
 import {
   Head,
@@ -14,10 +13,7 @@ class Document extends NextDocument {
     return (
       <Html lang="en">
         <Head>
-          <style
-            id="stitches"
-            dangerouslySetInnerHTML={{ __html: getCssText() }}
-          />
+          <style id="stitches" />
           {/* Global Site Tag (gtag.js) - Google Analytics */}
           <script
             dangerouslySetInnerHTML={{
