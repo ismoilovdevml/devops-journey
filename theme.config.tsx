@@ -3,6 +3,10 @@
  */
 import { useRouter } from 'next/router';
 import { GithubSponsors } from '@components/github-sponsors';
+import dynamic from 'next/dynamic';
+const Zoom = dynamic(() => import('react-medium-image-zoom'), {
+  ssr: false,
+})
 
 const github = 'https://github.com/ismoilovdevml/devops-journey';
 
@@ -183,6 +187,9 @@ const config: DocsThemeConfig = {
   gitTimestamp: ({ timestamp }) => (
     <>Last updated on {timestamp.toLocaleDateString()}</>
   ),
+  components: {
+    img: props => <Zoom><img {...props} /></Zoom>
+  },
 };
 
 export default config;
