@@ -88,3 +88,7 @@ h3 {
     max-width: 60%;
   }
 }
+
+[data-rmiz-modal-overlay="visible"] {
+  background-color: rgba(0, 0, 0, 0.8);
+}
