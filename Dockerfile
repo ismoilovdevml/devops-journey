@@ -1,44 +1,19 @@
-
-FROM node:18.20.4-alpine as base
-
-ARG PORT=3000
-
-EXPOSE ${PORT}
+FROM node:16-alpine AS build
 
 WORKDIR /app
 
 COPY package*.json ./
+RUN npm install --legacy-peer-deps
 
-FROM base as dependencies
-
-COPY package-lock.json /app/
-
-RUN echo "Installing dependencies" \
-    apk --update --no-cache add --virtual build-dependencies make g++ && \
-    npm install --silent --production
-
-FROM dependencies as develop
-
-ENV NODE_ENV=development
-
-RUN npm install --silent
-
-COPY ./ /app
-
+COPY . .
 RUN npm run build
 
-FROM base as release
+FROM node:16-alpine
 
-ENV NODE_ENV=production
+WORKDIR /app
 
-COPY --from=dependencies /app/node_modules /app/node_modules
-COPY --from=develop /app/build /app/build
+COPY --from=build /app ./
 
-RUN adduser -D -h /app -u 5000 user && \
-    chown -R user:user /app
+EXPOSE 3000
 
-USER user
-
-ENTRYPOINT ["npm", "run"]
-
-CMD ["start"]
+CMD ["npm", "start"]
