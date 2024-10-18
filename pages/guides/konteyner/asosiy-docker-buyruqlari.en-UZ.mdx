@@ -1,8 +1,107 @@
 ---
+image: https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/banner.png
 description: "Eng ko'p ishlatiladigan va asosiy Docker buyruqlari"
 ---
 import { Callout } from "nextra-theme-docs";
 
 # Eng ko'p ishlatiladigan va asosiy Docker buyruqlari
 
-Bu mavzuda eng ko'p ishlatiladigan docker buyruqlarini ko'rib chiqamiz.
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/banner.png)
+
+**Docker** — bu dasturlarni izolyatsiyalangan konteynerlarda ishga tushirish imkoniyatini beruvchi platforma bo'lib, bugungi kunda keng qo'llaniladi. Docker konteynerlari applicationlarni tez va ishonchli ravishda ishga tushirish, deploy qilish va boshqarish uchun ishlatiladi. Konteynerlar bir xil operatsion tizim kernelidan foydalangan holda izolyatsiyalangan muhitda applicationlarni ishga tushirish imkonini beradi. Ushbu qo'llanma Docker bilan ishlashda eng ko'p qo'llaniladigan buyruqlarni o'z ichiga oladi va bu buyruqlarni tushunib olish sizga Docker bilan samarali ishlashda yordam beradi. Docker'ning asosiy imkoniyatlari — ko'p marta ishlatilishi mumkin bo'lgan imagelarni yaratish, konteynerlarni boshqarish, ularni turli muhitlarda ishga tushirish va monitoring qilishni o'z ichiga oladi. Docker buyruqlaridan foydalanib, siz o'z dasturiy ta'minotingizni yanada optimallashtirish va ko'chma qilish imkoniga ega bo'lasiz.
+
+## Docker asosiy buyruqlari
+
+Bu buyruq Dockerning o'rnatilgan versiyasini tekshirish uchun ishlatiladi. U **Docker Client** va **Server (Docker daemon)** haqidagi versiya ma'lumotlarini ko'rsatadi.
+```bash
+docker version
+```
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/1.png)
+
+* Client va Server versiya raqamlari.
+* API versiyasi.
+* Git commit raqami.
+* Go versiyasi
+* Build daqiqalari va mos OS (operatsion tizim).
+---
+Bu buyruq Docker daemon haqida batafsil ma'lumot beradi,
+```bash
+docker info
+```
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/2.png)
+
+* Docker versiyasi.
+* Mavjud konteynerlar va imagelar soni.
+* Docker engine'ning ishlash holati va xotira bo'yicha cheklovlar.
+* Networklar, volumelar, storage driverlari haqida ma'lumot.
+---
+Har qanday Docker buyruqlari uchun yordamchi ma'lumot olish uchun ishlatiladi. Agar qaysidir buyruqning barcha parametr va variantlarini bilishni xohlasangiz, ushbu buyruq yordamida qo‘shimcha ma'lumot olasiz.
+```bash
+docker --help
+```
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/3.png)
+
+---
+## Imagelar bilan ishlash
+
+Bu buyruq hozirgi tizimda mavjud bo'lgan Dockerimagelar ro'yxatini ko'rsatadi.
+
+```bash
+docker images
+```
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/4.png)
+
+* Image nomi (**REPOSITORY**).
+* Teg (**TAG**).
+* Imagening identifikatori (**IMAGE ID**).
+* Yaratilgan vaqti. (**CREATED**)
+* Hajmi (**SIZE**).
+---
+
+Docker Hub yoki boshqa registrydan ma'lum bir imageni yuklab olish uchun ishlatiladi. tag ko'rsatilmagan bo'lsa, Docker **latest** tagli docker imageni avtomatik yuklaydi.
+```bash
+docker pull image-nomi:tag
+```
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/5.png)
+
+* Imagening layerlarining yuklanishi haqida ma'lumot.
+* Yuklanish muvaffaqiyatli bo'lsa, tasdiqlovchi xabar.
+---
+**Dockerfile** asosida image yaratish uchun ishlatiladi. Bu buyruq **Dockerfile** joylashgan katalogni ko'rsatadi va unga asoslangan yangi tasvirni yaratadi. agar Dockerfile buyruqni ishga tushrayotgan katalogda bo'lmasa
+
+ `-f /katalog/Dockerfile` qilib path beriladi.
+```bash
+docker build -t image-nomi:tag .
+```
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/6.png)
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/7.png)
+
+* Dockerfileni o'qish va har bir layer(qatlam) uchun bajarilish holati.
+* Image yaratish muvaffaqiyati va identifikatori (sha256).
+
+---
+Image yangi nom va teg berish uchun ishlatiladi. Bu buyruq imageni klonlash bilan bog'liq emas, shunchaki yangi nom beradi.
+```bash
+docker tag image-nomi yangi-image-nomi 
+```
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/8.png)
+
+```bash
+docker rmi image-nomi
+```
+
+```bash
+docker save -o image-file.tar <image-nomi> 
+```
+
+```bash
+docker load -i image-file.tar
+```
+
+```bash
+docker history <image-nomi> 
+```
+
+```bash
+docker inspect <image-nomi> 
+```
