@@ -86,22 +86,183 @@ docker tag image-nomi yangi-image-nomi
 ```
 ![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/8.png)
 
+---
+Imageni tizimdan o'chirish uchun ishlatiladi. Agar image biron konteyner tomonidan ishlatilayotgan bo'lsa, o'chirib bo'lmaydi.
+
 ```bash
 docker rmi image-nomi
 ```
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/9.png)
 
+---
+Docker imageni arxiv fayli sifatida saqlash uchun ishlatiladi. Bu buyruq iamgeni **.tar** formatida saqlaydi.
 ```bash
 docker save -o image-file.tar <image-nomi> 
 ```
-
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/10.png)
+---
+Oldindan saqlangan imageni arxivdan yuklash uchun ishlatiladi. Bu buyruq saqlangan **.tar** faylini qayta Docker imagega yuklaydi.
 ```bash
 docker load -i image-file.tar
 ```
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/11.png)
 
+---
+Image yaratishda ishlatilgan layerlarning (qatlam) tarixini ko'rish imkonini beradi. Har bir layer Dockerfilening bir qatoriga mos keladi.
 ```bash
 docker history <image-nomi> 
 ```
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/12.png)
 
+---
+Image yoki konteyner haqida batafsil ma'lumot olish uchun ishlatiladi. Bu buyruq **JSON** formatida barcha texnik ma'lumotlarni ko'rsatadi.
 ```bash
 docker inspect <image-nomi> 
 ```
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/13.png)
+
+## Konteynerlar bilan ishlash
+
+Bu buyruq faol holatdagi konteynerlar ro'yxatini ko'rsatadi. Konteynerlarning **ID**'si, nomi, image nomi, holati va portlari haqida ma'lumot beradi.
+```bash
+docker ps 
+```
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/14.png)
+
+Natijada siz har bir konteyner uchun **ID**, **IMAGE**, **COMMAND**, **CREATED**, **STATUS**, **PORTS** va **NAMES** ustunlari ko'rishingiz mumkin.
+
+---
+Bu buyruq barcha konteynerlarni (faollari va to'xtatilganlari) ko'rsatadi.
+```bash
+dockewr ps -a
+```
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/15.png)
+Natijada to'tatilgan konteynerlar ham ko'rsatiladi, ularning **ID**'si, holati va boshqa ma'lumotlari mavjud.
+
+---
+Yangi konteynerni imagedan yaratish va ishga tushirish uchun ishlatiladi. Agar image tizimda mavjud bo'lmasa, avval `docker pull` orqali yuklanadi.
+```bash
+docker run image-nomi
+```
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/16.png)
+
+Konteyner yaratiladi va terminalga biriktiriladi.
+
+---
+
+Konteynerni fon rejimida (detach) ishga tushirish uchun ishlatiladi, ya'ni terminal bilan bog'lanmagan holda ishga tushadi.
+```bash
+docker run -d image-nomi
+```
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/17.png)
+Konteyner fon rejimida ishga tushadi va terminalda konteyner **ID**'si ko'rsatiladi siz `docker ps` orqali ko'rishingiz mumkin
+
+---
+
+Bu buyruq interaktiv rejimda konteynerni ishga tushiradi va terminalni konteynerga biriktiradi. Konteyner ichida boshqarishni qo'lga olasiz.
+```bash
+docker run -it image-nomi /bin/bash
+# yoki
+docker run -it image-nomi /bin/sh
+```
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/18.png)
+
+Konteyner ichida interaktiv sessiya ochiladi, bu orqali konteynerda buyruqlarni bajarasiz.
+
+---
+
+Faol holatdagi konteynerni tartibli to'xtatish uchun ishlatiladi. Ushbu buyruq konteynerga signal yuboradi va u to'xtaydi.
+```bash
+docker stop container-nomi
+```
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/19.png)
+
+Rasmda konteyner faoliyatini to'xtatadi.
+
+---
+
+To'xtatilgan konteynerni qayta ishga tushirish uchun ishlatiladi.
+```bash
+docker start container-nomi
+```
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/20.png)
+
+Natijada konteyner yana faol holatda ishlay boshlaydi.
+
+---
+
+Konteynerni qayta ishga tushirish(restart) uchun ishlatiladi. Ushbu buyruq konteynerni to'xtatib, keyin yana ishga tushiradi.
+
+```bash
+docker restart container-nomi
+```
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/21.png)
+Natijada konteyner to'xtatiladi va darhol qayta ishga tushiriladi.
+
+---
+
+Konteynerni darhol to'xtatish uchun ishlatiladi. Bu buyruq signal yuborib, konteynerni zo'rlik bilan to'xtatadi.
+```bash
+docker kill container-nomi
+```
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/22.png)
+Natijada konteynerlaronteyner favqulodda to'xtatiladi.
+
+---
+
+To'xtatilgan konteynerni tizimdan o'chirish uchun ishlatiladi. Faol holatdagi konteynerni o'chirib bo'lmaydi, avval `docker stop` yoki `docker kill` bilan to'xtatish kerak.
+```bash
+docker rm container-nomi
+```
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/23.png)
+---
+
+Ishlayotgan konteyner ichiga kirib, interaktiv buyruqlarni bajarish imkonini beradi. Agar konteynerda `bash` yo'q bo'lsa, `sh` ishlatiladi.
+```bash
+docker exec -it container-nomi /bin/bash
+# yoki
+docker exec -it container-nomi /bin/sh
+```
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/24.png)
+Natijada konteyner ichida interaktiv terminal sessiyasi ochiladi.
+
+---
+
+Bub buyruq konteynerning loglarini ko'rish imkonini beradi. Bu buyruq yordamida konteyner faoliyati davomida chiqarilgan ma'lumotlarni ko'rishingiz mumkin.
+```bash
+docker logs container-nomi
+```
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/25.png)
+
+Rasmda `redis` kontaeyneri loglarini ko'rsatilgan.
+
+---
+
+Konteynerga volume ulash uchun ishlatiladi. Bu buyruq yordamida konteynerning ma'lum bir katalogiga volumei ulaysiz va bu katalogdagi ma'lumotlar konteyner o'chirilgandan keyin ham saqlanadi.
+```bash
+docker run -v volume:/path image-nomi
+```
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/26.png)
+
+Bu buyruq bir nechta parametrlar bilan ishlaydi:
+
+* `-d` — konteynerni fon rejimida ishga tushiradi.
+* `-p 3000:3000` — lokal mashinaning 3000-portini konteynerning 3000-portiga ulanadi.
+* `--name devops-journey` — konteynerga "devops-journey" nomini beradi, shunda keyinchalik konteyner bilan ishlashda bu nomdan foydalanish mumkin bo‘ladi.
+* `--restart always` — konteyner to'xtab qolsa, u avtomatik ravishda qayta ishga tushiriladi.
+* `devopsjourneyuz/devops-journey-uz:latest` — Docker Hub yoki boshqa registrydan `devops-journey-uz:latest` imageni yuklab, ishga tushiradi.
+
+```bash
+sudo docker run -d -p 3000:3000 --name devops-journey --restart always devopsjourneyuz/devops-journey-uz:latest
+```
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/27.png)
+
+---
+
+Konteyner ishga tushganda unga muhit o'zgaruvchilarni (environment variables) o'rnatish orqali ishlatish mumkin.
+```bash
+docker run --name mysql-server -e MYSQL_ROOT_PASSWORD=FL20315dl2w132 -d mysql:latest
+```
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/28.png)
+
+`-e MYSQL_ROOT_PASSWORD=FL20315dl2w132`  MySQL root foydalanuvchisi uchun parolni belgilaydi. `-e` bu muhit o'zgaruvchisini (environment variable) o'rnatadi.
