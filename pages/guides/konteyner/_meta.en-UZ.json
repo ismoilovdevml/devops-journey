@@ -11,6 +11,12 @@
     "description": "Linux serverlarga Docker o'rnatish",
     "href": "/guides/konteyner/docker-ornatish"
   },
+  "docker-asoslari": {
+    "title": "Mastering Docker",
+    "icon": "▶️",
+    "description": "Mastering Docker: Buyruqlar bilan ishlash to'liq qo'llanmasi",
+    "href": "/guides/konteyner/docker-asoslari"
+  },
   "harbor-setup": {
     "title": "Harbor CR",
     "icon": "▶️",
@@ -22,12 +28,6 @@
     "icon": "▶️",
     "description": "Shaxsiy Docker Registry ko'tarish",
     "href": "/guides/konteyner/docker-registry"
-  },
-  "asosiy-docker-buyruqlari": {
-    "title": "Asosiy Docker buyruqlari",
-    "icon": "▶️",
-    "description": "Eng ko'p ishlatiladigan va asosiy Docker buyruqlari",
-    "href": "/guides/konteyner/asosiy-docker-buyruqlari"
   },
   "code-server": {
     "title": "Code Server",
