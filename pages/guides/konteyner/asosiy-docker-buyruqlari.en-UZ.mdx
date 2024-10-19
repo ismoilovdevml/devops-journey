@@ -337,3 +337,216 @@ docker run -v /host/path:/container/path <image>
 
 Bu holatda host tizimidagi `mnt/nexus-data` katalogi konteynerdagi nexus servisining `nexus/data`ga ulanadi. Shu bilan, hostdagi katalogdagi fayllar konteyner ichidagi `/nexus-data` kataloga xizmat ko'rsatiladi.
 Bind mount yordamida konteyner va host tizim o'rtasida real vaqtda ma'lumot almashinuvini tashkil qilish mumkin.
+
+## Docker Network bilan ishlash
+
+Docker networklari konteynerlar orasidagi aloqani ta'minlash va izolyatsiyalangan muhitda applicationlarni ishga tushirish uchun ishlatiladi. Quyida Docker networklari bilan ishlash uchun asosiy buyruqlar va ularning ishlash tartibi keltirilgan.
+
+Bu buyruq hozirgi tizimda mavjud bo'lgan barcha network(tarmoq)lar ro'yxatini ko'rsatadi.
+```bash
+docker network ls
+```
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/36.png)
+
+Natijada siz tarmoqlarning **NETWORK ID**'si, nomi(**NAME**), turi(**DRIVER**) (bridge, host, overlay) va scope (local yoki global)ni ko'rasiz
+
+---
+
+Bu buyruq yangi tarmoq yaratish uchun ishlatiladi. Odatda bridge turidagi tarmoq yaratiladi, bu konteynerlar orasida o'zaro aloqa o'rnatish uchun ishlatiladi.
+
+```bash
+docker network create network-nomi
+```
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/37.png)
+---
+
+Konteynerni mavjud tarmoqqa ulash orqali siz konteynerlar orasida o'zaro aloqa o'rnatishingiz mumkin.
+
+```bash
+docker network inspect network-nomi
+```
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/38.png)
+
+Natijada `redis` konteyneri `redis-network` tarmog'iga ulanadi, buni `docker network inspect network-nomi` orqali ko'rishingiz mumkin
+
+---
+
+Konteynerni tarmoqdan uzish uchun quyidagi nuyruq ishlatiladi.
+```bash
+docker network connect network-nomi container-nomi
+```
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/39.png)
+Natijada `redis` konteyneri `redis-network` tarmog'idan uziladi, buni `docker network inspect network-nomi` orqali ko'rishingiz mumkin
+
+---
+Bu buyruq tarmoq haqida batafsil texnik ma'lumot beradi, jumladan, tarmoqda ulangan konteynerlar ro'yxati va tarmoq sozlamalari.
+```bash
+docker network disconnect network-nomi container-nomi
+```
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/40.png)
+Natijada siz Ddocker networkning **JSON** formatidagi texnik ma'lumotlari, ulangan konteynerlar va boshqa tafsilotlar.
+
+---
+
+Bu buyruq foydalanilmayotgan tarmoqni tizimdan o'chirish uchun ishlatiladi.
+
+```bash
+docker network rm network-nomi 
+```
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/41.png)
+
+Ushbu buyruqlar Docker konteynerlari orasidagi tarmoq aloqalarini boshqarish uchun ishlatiladi.
+
+## Docker Compose bilan ishlash
+
+**Docker Compose** bir necha servicelarni bir vaqtda boshqarish uchun ishlatiladi. Docker Compose yordamida applicationlarning barcha komponentlarini (masalan, web, db) bir joyda boshqarish mumkin.
+
+
+```bash
+docker compose up
+#backroundga ishga tushirish uchun
+docker compose up -d
+```
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/42.png)
+```bash
+docker compose down
+```
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/43.png)
+
+```bash
+docker compose ps
+```
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/44.png)
+
+```bash
+docker compose logs
+```
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/45.png)
+
+```bash
+docker compose exec web /bin/bash
+```
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/46.png)
+```bash
+docker compose stop
+```
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/47.png)
+
+## Docker tozalash (Clean up)
+Docker tizimida foydalanilmayotgan yoki keraksiz resurslarni tozalash uchun bir nechta buyruqlar mavjud. Ular tizimni optimallashtirish va disk joyini bo'shatish uchun ishlatiladi.
+
+```bash
+docker system prune
+```
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/48.png)
+
+```bash
+docker container prune
+```
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/49.png)
+
+```bash
+docker volume prune
+```
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/50.png)
+
+```bash
+docker image prune
+```
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/51.png)
+
+```bash
+docker network prune
+```
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/52.png)
+
+```bash
+docker system prune -af
+```
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/53.png)
+
+## Docker registry bilan ishlash
+
+Docker Registry — bu Docker imagelarini saqlash, yuklash va ulardan foydalanish uchun mo'ljallangan tizim. Docker Hub eng mashhur umumiy Docker registry hisoblanadi, lekin siz xususiy Docker registry ham o'rnatishingiz mumkin.
+
+```bash
+docker login -u user-name
+```
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/54.png)
+
+```bash
+docker login helm.harbor.uz -u user-name
+```
+
+```bash
+docker logout
+```
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/55.png)
+
+```bash
+docker push repo-name/image-nomi:tag
+```
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/57.png)
+
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/56.png)
+
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/58.png)
+```bash
+docker pull repo-name/image-nomi:tag
+```
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/59.png)
+
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/60.png)
+
+## Boshqa foydali buyruqlar
+
+```bash
+docker stats
+```
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/61.png)
+```bash
+docker top container-nomi
+```
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/62.png)
+```bash
+docker cp container-nomi:/app/data /home/user/path
+```
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/63.png)
+
+```bash
+docker rename eski-container-nomi yangi-container-nomi
+```
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/64.png)
+
+```bash
+docker pause container-nomi
+```
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/65.png)
+
+```bash
+docker unpause container-nomi
+```
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/66.png)
+
+```bash
+docker update --cpus 2 --memory 2g --memory-swap 3g redis-container
+```
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/67.png)
+
+```bash
+docker system df
+```
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/68.png)
+
+<Callout type="info" emoji="">
+
+**Sana:** 2024.10.19(2024-yil 19-oktabr)
+
+**Oxirgi yangilanish:** 2024.10.19(2024-yil 19-oktabr)
+
+**Muallif: Otabek Ismoilov**
+
+| [Telegram](https://t.me/Otabek_Ismoilov) | [GitHub](https://github.com/ismoilovdevml) | [LinkedIn](https://www.linkedin.com/in/otabek-ismoilov-8625b0222/) |
+| - | - | - |
+
+</Callout>
