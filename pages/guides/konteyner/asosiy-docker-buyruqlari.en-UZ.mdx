@@ -266,3 +266,74 @@ docker run --name mysql-server -e MYSQL_ROOT_PASSWORD=FL20315dl2w132 -d mysql:la
 ![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/28.png)
 
 `-e MYSQL_ROOT_PASSWORD=FL20315dl2w132`  MySQL root foydalanuvchisi uchun parolni belgilaydi. `-e` bu muhit o'zgaruvchisini (environment variable) o'rnatadi.
+
+## Volumelar bilan ishlash
+
+Volumelar bilan ishlash Dockerda konteynerlarga doimiy saqlash (persistent storage) imkonini beradi. Volumelar konteynerlar o'chirilganda yoki qayta ishga tushirilganda ham ma'lumotlarni saqlab qoladi. Quyida volumelar bilan ishlash bo'yicha asosiy buyruqlar va ularning misollarini ko'rib chiqamiz.
+
+
+Bu buyruq tizimda yaratilgan barcha volumelarni ro'yxatini ko'rsatadi.
+```bash
+docker volume ls
+```
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/29.png)
+
+---
+
+Bu buyruq yangi volume yaratish uchun ishlatiladi. Bu volume keyinchalik konteynerlarga ulanish uchun ishlatiladi.
+```bash
+docker volume create volume-nomi
+```
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/30.png)
+
+---
+
+Bu buyruq mavjud volumeni tizimdan o'chirish uchun ishlatiladi. Agar volume biron konteyner tomonidan ishlatilayotgan bo'lsa, uni o'chirib bo'lmaydi.
+```bash
+docker volume rm volume-nomi
+```
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/31.png)
+---
+
+Bu buyruq Docker tizimida foydalanilmayotgan volumelarni o'chiradi. Agar volume biror konteyner tomonidan ishlatilmayotgan bo'lsa, u tizimdan olib tashlanadi. Bu tizim bo'sh joyini optimallashtirishga yordam beradi.
+```bash
+docker volume prune
+```
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/32.png)
+---
+
+Bu buyruq tizimdagi barcha volumelarni o'chirish uchun ishlatiladi. Bu yerda `docker volume ls -q` barcha volumelarni faqat `ID`'si bilan ro'yxatlaydi, va bu ro'yxatni `docker volume rm` yordamida o'chiradi.
+```bash
+docker volume rm $(docker volume ls -q)
+```
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/33.png)
+
+---
+
+Bu buyruq volume haqida texnik ma'lumotlar, volumening joylashuvi, mountpointlari kabi ma'lumotlarni qaytaradi.
+```bash
+docker volume inspect volume-nomi
+```
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/34.png)
+
+---
+
+Bu buyruq konteynerga volumeni ulash va shu volume orqali ma'lumotlarni konteynerdan tashqarida saqlash uchun ishlatiladi. Konteyner ichidagi katalog volume bilan bog'lanadi va volumeda saqlangan ma'lumotlar konteynerdan o'chirilgandan keyin ham mavjud bo'ladi.
+```bash
+docker run -v volume-nomi:/data busybox
+```
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/35.png)
+
+Bu misolda `mysql-volume` volume konteynerdagi `/var/lib/mysql` katalogiga ulanadi va konteynerdagi barcha ma'lumotlar volumeda saqlanadi.
+
+---
+
+Bind mount (Host Path) bilan volume ulash hostdagi katalogni konteynerdagi katalogga ulash uchun bind mountdan foydalaniladi.
+
+```bash
+docker run -v /host/path:/container/path <image>
+```
+![docker-commands](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-commands/26.png)
+
+Bu holatda host tizimidagi `mnt/nexus-data` katalogi konteynerdagi nexus servisining `nexus/data`ga ulanadi. Shu bilan, hostdagi katalogdagi fayllar konteyner ichidagi `/nexus-data` kataloga xizmat ko'rsatiladi.
+Bind mount yordamida konteyner va host tizim o'rtasida real vaqtda ma'lumot almashinuvini tashkil qilish mumkin.
