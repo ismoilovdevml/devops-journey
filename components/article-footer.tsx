@@ -65,7 +65,7 @@ const ArticleFooter = () => {
   });
 
   const dislike = useMutation([path], {
-    mutationFn: () => axios.post('/api/like', { path }),
+    mutationFn: () => axios.post('/api/dislike', { path }),
     onSuccess() {
       if (!post) return;
       qk.setQueryData(['post', path], {
