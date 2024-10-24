@@ -38,8 +38,6 @@ const ArticleFooter = () => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const { theme } = useTheme();
 
-  console.log(theme);
-
   const [localStatus, setLocalStatus] = useLocalStorage<
     'liked' | 'disliked' | null
   >(path, null);
