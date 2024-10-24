@@ -193,9 +193,12 @@ const config: DocsThemeConfig = {
     img: props => <Zoom><img {...props} /></Zoom>
   },
   main({ children }) {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const { frontMatter: { showFooter } } = useConfig();
+
     return <>
       {children}
-      <ArticleFooter />
+      {showFooter != false && <ArticleFooter />}
     </>
   }
 };

@@ -3,6 +3,7 @@ import { IconEye, IconThumbDown, IconThumbUp } from '@tabler/icons-react';
 import { useLocalStorage } from '@uidotdev/usehooks';
 import axios from 'axios';
 import { useRouter } from 'next/router';
+import { useTheme } from 'nextra-theme-docs';
 import React from 'react';
 
 import { useMutation, useQuery, useQueryClient } from 'react-query';
@@ -33,6 +34,11 @@ const ArticleFooter = () => {
   const { pathname } = useRouter();
   const path = encodeURI(pathname);
   const qk = useQueryClient();
+
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const { theme } = useTheme();
+
+  console.log(theme);
 
   const [localStatus, setLocalStatus] = useLocalStorage<
     'liked' | 'disliked' | null
@@ -109,6 +115,7 @@ const ArticleFooter = () => {
         </div>
       </div>
       <Giscus
+        key={theme}
         id="comments"
         repo="ismoilovdevml/devops-journey"
         repoId="R_kgDOKEbY2g"
@@ -119,7 +126,9 @@ const ArticleFooter = () => {
         reactionsEnabled="1"
         emitMetadata="0"
         inputPosition="top"
-        theme="preferred_color_scheme"
+        theme={
+          (theme as any) == 'light' ? 'light_high_contrast' : 'noborder_dark'
+        }
         lang="uz"
         loading="lazy"
       />
