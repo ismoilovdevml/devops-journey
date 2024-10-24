@@ -1,12 +1,18 @@
 import type { AppProps } from 'next/app';
 
 import * as React from 'react';
+import { QueryClient, QueryClientProvider } from 'react-query';
 
 import 'react-medium-image-zoom/dist/styles.css';
 import '../styles/globals.css';
 
 function App({ Component, pageProps }: AppProps<{ dehydratedState: string }>) {
-  return <Component {...pageProps} />;
+  const [queryClient] = React.useState(new QueryClient());
+  return (
+    <QueryClientProvider client={queryClient}>
+      <Component {...pageProps} />
+    </QueryClientProvider>
+  );
 }
 
 export default App;

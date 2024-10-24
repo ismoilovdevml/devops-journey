@@ -38,6 +38,8 @@ const Logo = ({ height, width }: { height: number; width: number }) => {
   );
 };
 
+const ArticleFooter = dynamic(() => import("@components/article-footer"), { ssr: false })
+
 const config: DocsThemeConfig = {
   docsRepositoryBase: `${github}/blob/main`,
   chat: {
@@ -190,6 +192,12 @@ const config: DocsThemeConfig = {
   components: {
     img: props => <Zoom><img {...props} /></Zoom>
   },
+  main({ children }) {
+    return <>
+      {children}
+      <ArticleFooter />
+    </>
+  }
 };
 
 export default config;
