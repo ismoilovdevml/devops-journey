@@ -1,14 +1,37 @@
 import Giscus from '@giscus/react';
-import { IconEye, IconThumbDown, IconThumbUp } from '@tabler/icons-react';
+import {
+  IconBrandFacebook,
+  IconBrandLinkedin,
+  IconBrandTelegram,
+  IconBrandX,
+  IconEye,
+  IconMail,
+  IconThumbDown,
+  IconThumbUp,
+} from '@tabler/icons-react';
 import { useLocalStorage } from '@uidotdev/usehooks';
 import axios from 'axios';
 import { useRouter } from 'next/router';
-import { useTheme } from 'nextra-theme-docs';
+import { useConfig, useTheme } from 'nextra-theme-docs';
 import React from 'react';
-
 import { useMutation, useQuery, useQueryClient } from 'react-query';
+import {
+  EmailShareButton,
+  FacebookShareButton,
+  LinkedinShareButton,
+  TelegramShareButton,
+  TwitterShareButton,
+} from 'react-share';
 
 import type { Post } from 'pages/api/logic';
+
+const SHARE_BUTTONS = [
+  { Button: FacebookShareButton, Icon: IconBrandFacebook },
+  { Button: TwitterShareButton, Icon: IconBrandX },
+  { Button: TelegramShareButton, Icon: IconBrandTelegram },
+  { Button: LinkedinShareButton, Icon: IconBrandLinkedin },
+  { Button: EmailShareButton, Icon: IconMail },
+] as const;
 
 const Button: React.FC<
   {
@@ -21,7 +44,7 @@ const Button: React.FC<
     className={[
       'border-2 p-1 rounded hover:disabled:opacity-50 hover:disabled:cursor-not-allowed transition-all',
       isActive
-        ? 'border-blue-500 text-blue-500'
+        ? 'border-green-500 text-green-500'
         : 'border-black/40 dark:border-white/20',
     ].join(' ')}
     {...props}
@@ -37,6 +60,7 @@ const ArticleFooter = () => {
 
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const { theme } = useTheme();
+  const { title } = useConfig();
 
   const [localStatus, setLocalStatus] = useLocalStorage<
     'liked' | 'disliked' | null
@@ -84,13 +108,14 @@ const ArticleFooter = () => {
 
   return (
     <>
-      <div className="flex gap-2 mb-2">
+      <div className="flex gap-2 mb-2 items-start">
         <div className="flex flex-col items-center w-8">
           <div className="p-1 border-2 border-transparent">
             <IconEye stroke={2} />
           </div>
           <span>{post?.views ?? 0}</span>
         </div>
+        <div className="w-2" />
         <div className="flex flex-col items-center w-8">
           <Button
             isActive={localStatus == 'liked'}
@@ -111,6 +136,20 @@ const ArticleFooter = () => {
           </Button>
           <span>{post?.dislikes ?? 0}</span>
         </div>
+        <div className="w-2" />
+        {SHARE_BUTTONS.map(({ Button, Icon }) => (
+          <Button
+            url={window.location.href}
+            className={[
+              'w-9 h-9 flex items-center justify-center border-2 border-black/40 dark:border-white/20 p-1 rounded transition-all',
+              'hover:border-green-500 hover:dark:border-green-500 hover:text-green-500',
+            ].join(' ')}
+            resetButtonStyle={false}
+            title={title}
+          >
+            <Icon stroke={2} />
+          </Button>
+        ))}
       </div>
       <Giscus
         key={theme}
