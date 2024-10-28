@@ -3,9 +3,9 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "dev": "NODE_OPTIONS=--require=elastic-apm-node/start-next.js dotenv-run -- next dev",
+    "dev": "dotenv-run -- next dev",
     "build": "next build",
-    "start": "NODE_OPTIONS=--require=elastic-apm-node/start-next.js next start",
+    "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
@@ -20,7 +20,6 @@
     "axios": "^1.7.7",
     "clsx": "^1.2.1",
     "core-js": "^3.33.2",
-    "elastic-apm-node": "^4.5.3",
     "formidable": "^2.1.2",
     "hls.js": "^1.4.12",
     "next": "13.1.5",
