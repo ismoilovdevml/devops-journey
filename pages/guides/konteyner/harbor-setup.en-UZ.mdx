@@ -25,9 +25,10 @@ Amaliyotni amalga oshirish uchun bizga quyidagi minimum server talablaridagi ser
 | ----------- | ------------- | -------------- | ------------- |------------- | ----------- |
 |  harbor     | Ubuntu 20.04  | 8GB            | 4vCPU,2 core  | 100GB        | Ha kerak    |
 
+Biz Harbor Container Registyrni ikki xil o'rnatish usulini ko'rib chiqamiz manual va ansible bilan.
 </Callout>
 
-## DNS sozlash
+### DNS sozlash
 
 Harbor container registryni o'rnatishimiz uchun bizgda domen kerak bo'ladi. DNS hostingizdan domenga Harbor ishlab turgan server static IP manzilini qo'shishingiz kerak bo'ladi.
 
@@ -46,7 +47,11 @@ Bu yerdan siz domen o'ziga yoki subdomenga Harbor server static IP maznilini ko'
 
 ![harbor](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/harbor-setup/dns2.png)
 
-## Docker o'rnatish.
+
+## Manual Harbor Container Registry o'rnatish
+Bu bosqichda biz Harbor Container Registryni manual(qo'lda) holda setup qilishni ko'rib chiqamiz.
+
+### Docker va Docker Compose o'rnatish.
 
 Harborni ishga tushirish uchun serverimizga Docker va Docker Compose o'rnatib olishimiz kerak bo'ladi. Dokcer va Docker Compose o'rnatish bo'yicha [**Linux serverlarga Docker o'rnatish**](https://devops-journey.uz/guides/konteyner/docker-ornatish) qo'llanmasi orqali o'rnatib olishingiz mumkin.
 
@@ -97,7 +102,7 @@ sudo systemctl enable docker
 sudo systemctl status docker
 ```
 
-## SSL Sertifikat olish
+### SSL Sertifikat olish
 
 **SSL**dan foydalanish port serveriga va undan keladigan trafikni himoya qilish imkonini beradi. Harborda o'zida Nginx mavjud bo'lib Nginx o'rnatib sozlamaymiz.
 
@@ -127,30 +132,18 @@ Certificate: /etc/letsencrypt/live/harbor.helm.uz/fullchain.pem
 Key:  /etc/letsencrypt/live/harbor.helm.uz/privkey.pem
 ```
 
-## Harbor o'rnatish
+### Harbor o'rnatish
 
 Harbor [relizlar sahifasidan](https://github.com/goharbor/harbor/releases/latest) eng so'nggi(latest) Harbor installerini bilan paketini yuklab oling . Siz onlayn yoki oflayn installerini tanlashingiz mumkin.
 
-**1->** Ushbu u script orqali buni osonlashtirishimiz mumkin. Bu script Harbor releaselarda latest offline installerini yuklab oladi.
-
+**1->** Ushbu buyruq orqali `v2.11.1` versiyali offline harbor installerni yuklab olamiz.
 
 ```bash
-curl -s https://api.github.com/repos/goharbor/harbor/releases/latest \
-| grep "browser_download_url.*harbor-offline-installer.*.tgz\"" \
-| tail -n 1 \
-| cut -d : -f 2,3 \
-| tr -d \" \
-| wget -O harbor-offline-installer.tgz -qi -
-```
-
-Yoki sizga biror versiya kerak bo'lsa release sahifasidan offline installerni yuklab olaszi.
-
-```bash /v2.10.2/
-sudo wget https://github.com/goharbor/harbor/releases/download/v2.10.2/harbor-offline-installer-v2.10.2.tgz
+wget https://github.com/goharbor/harbor/releases/download/v2.11.1/harbor-offline-installer-v2.11.1.tgz
 ```
 
 Harbor installerini o'rnatishdan keyin ham saqlab qo'yishingiz kerak, chunki u keyinchalik konfiguratsiya o'zgarishlarini amalga oshirish uchun skriptlarni o'z ichiga oladi.
-**2->** Yuklab olgan latest offline harbor isntallerni arxivdan chiqarib olamiz.
+**2->** Yuklab olgan offline harbor installerni arxivdan chiqarib olamiz.
 
 ```bash
 tar xzvf harbor-offline-installer.tgz
@@ -224,6 +217,89 @@ sudo ./install.sh
 ```
 Harbor muvaffaqiyatli o'rnatilsa rasmdagidek natija chiqishi kerak.
 ![harbor](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/harbor-setup/start.png)
+
+## Ansible bilan Harbor Container Registry o'rnatish
+
+Bu bosqichda biz Harbor Container Registryni Ansible yordamida avtomatlashtirilgan holda setup qilishni ko'rib chiqamiz. Bu bosqichda biz open-source bo'lgan Ansible kolleksiyalardan foydalanamiz repo url **[github.com/ismoilovdevml/infra-as-code](https://github.com/ismoilovdevml/infra-as-code)**
+
+Ansible kolleksiya repositoriyani git clone qilib yuklab olamiz.
+
+```bash
+git clone https://github.com/ismoilovdevml/infra-as-code.git
+```
+
+### Docker va Docker Compose o'rnatish
+
+`infra-as-code` repodan Ansible kolleksiyaalrga o'tib docker uchun yozilgan playbookga o'tamiz.
+
+```bash
+cd infra-as-code/Ansible/docker
+```
+Bu directoriyadan `inventory.ini` faylini ochib docker va docker-compose o'rnatmoqchi bo'lgan serverimiz credentialslarini beramiz. ushbu ansible playbookni yurgizmoqchi bo'lgan kompyuter yoki serverda siz Harbor setup qilmqochi bo'lgan serveringizga ssh connectrion bo'lishi talab qilinadi.
+
+```ini filename="inventory.ini"
+[all]
+harbor-server ansible_host=24.144.106.189 ansible_user=root
+```
+
+Ushbu playbookni yurgizish uchun `community.general` ansible collectionnini o'rnatishimiz kerak bo'ladi
+```bash
+ansible-galaxy collection install community.general
+```
+Docker o'rnatamiz.
+
+```bash
+ansible-playbook -i inventory.ini install_docker.yml
+```
+Playbook muvaffaqiyatli ishga tushganida sizga quyidagi info chiqishi kerak
+![harbor](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/harbor-setup/ansible1.png)
+Docker Compose o'rnatamiz.
+
+```bash
+ansible-playbook -i inventory.ini nstall_docker-compose.yml
+```
+Playbook muvaffaqiyatli ishga tushganida sizga quyidagi info chiqishi kerak
+![harbor](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/harbor-setup/ansible2.png)
+
+Okey yaxshi Docker va Docker Compose o'rnatib oldik endi esa Harbor setup qiladigan ansible playbookni ishga tushirsak bo'ladi.
+
+### Harbor o'rnatish
+Harbor setup qiladigan ansible playbooklar directoriyasiga kiramiz.
+
+```bash
+cd infra-as-code/Ansible/harbor
+```
+Har doimgidek `inventory.ini` da Harbor serverimiz credentialslarini beramiz.
+
+```ini filename="invnetory.ini"
+[harbor_server]
+harbor-server ansible_host=24.144.106.189 ansible_user=root
+```
+
+`vars.yml` fileda esa kerak variablelarni yozib to'ldiramiz.
+
+```bash filename="vars.yml"
+harbor_version: "v2.11.1"
+harbor_hostname: "harbor.helm.uz"
+harbor_admin_password: "Harbor12345"
+harbor_db_password: "root123"
+ssl_option: "certbot"  # "certbot" yoki "self_signed" qiymatlarini olishi mumkin
+certbot_cert_path: "/etc/letsencrypt/live/{{ harbor_hostname }}/fullchain.pem"
+certbot_key_path: "/etc/letsencrypt/live/{{ harbor_hostname }}/privkey.pem"
+self_signed_cert_path: "/path/to/selfsigned/fullchain.pem"  # Self-signed sertifikat uchun to'liq path
+self_signed_key_path: "/path/to/selfsigned/privkey.pem"      # Self-signed kalit uchun to'liq path
+harbor_download_url: "https://github.com/goharbor/harbor/releases/download/{{ harbor_version }}/harbor-offline-installer-{{ harbor_version }}.tgz"
+```
+
+Yuqorida konfiguratsiyada Harbor versiyasi, domen nomi, admin parol va db parol o'zgaruvchilar kiritilgan ularni o'zinmgizga moslab kerakli versiya, domen va admin parol kiritasiz. SSL sertifikat olishda ikkita option qo'yilgan default holda `certbot` va `self-signed` optioni ham bor, agar certbot tanlanganda hech narsa o'zgartirilmaydi va certbot orqali SSL olib ishlanadi agar siz `ssl_option`ni `self_signed`ga o'zgartirsangiz self-siogned SSL sertifikatlarga path berishingiz kerak bo'ladi.
+
+Harborni Container Registryni setup qilish uchun playbokni ishga tushiramiz.
+
+```bash
+ansible-playbook -i inventory.ini bootstrap_harbor.yml
+```
+Playbook muvaffaqiyatli ishga tushganida sizga quyidagi info chiqishi kerak
+![harbor](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/harbor-setup/ansible3.png)
 
 ## Harbor bilan ishlash
 
