@@ -310,3 +310,70 @@ Harborni muvaffaqiyatli o'rnatib ishga tushirganimizdan keyin, Harbor domenimizg
 Birinchi krishingzida `admin` user bilan kirasiz default parol esa `harbor.yml` konfiguratsiyadagi parolimiz.
 
 ![harbor](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/harbor-setup/harbor2.png)
+
+Harbor setup qilganimzidan keyin **Proxy Cache** sozlashimiz kerak bo'ladi, **Proxy Cache** iternetdagi global container registrylardan olingan docker imagelarni o'zini cacheda saqlab keyin marta pul qilinganda localni ishlatish uchun kerak bo'ladi. Masalan sizda CI/CD bor va har safar CI/CD run bo'lganida Dockerhubdan kerakli docker imagelarni internet orqali pull qilinadi agar Harborda **Proxy Cache** Docker Hubga config qilinganida harbor o'zida yo'q docker imagelarni birinchi marta Docker Hubdan yuklab olib o'zida saqlaydi va keyingi CI/CD run qilganizda kerakli docker imagelarni Docker Hubdan internet orqali emas Harbor Container Registrydan local pull qiladi bu samaradorlikni va tezlikni oshiradi.
+
+Buning uchun default **library** projectni o'chiramiz.
+
+![harbor](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/harbor-setup/1.png)
+
+Harbor UI'dan **Administration -> Registries** ga o'tamiz va **NEW ENDPOINT** bosamiz.
+![harbor](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/harbor-setup/2.png)
+Registry Endpointni quyidagicha sozlaymiz: Providerga **Docker Hub** va nom beramiz, Endpoint URL esa Docker Hub URL agar Docker Hub useringiz bo'lsa Accsess ID va Accsess Secretga yozasiz, hammasini tekshirish uchun esa **TEST CONNECTION** bosib tekshirib olasiz.
+![harbor](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/harbor-setup/3.png)
+Registry Endpoint yaratib olganimizdan keyin **Registries** bo'limda yaartganimiz chiqishi kerak
+![harbor](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/harbor-setup/4.png)
+
+Harborda **-> Projects** ga o'tib **library** project yaratib olamiz.
+![harbor](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/harbor-setup/5.png)
+Projectni quyidagicha config qilamiz: Accsess levelni **Public** qilamiz va **Proxy Cache**ni enable qilib yuqorida yartagan **dockerhub** endpointni belgilaymiz va **OK** bosib yaratib olamiz.
+![harbor](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/harbor-setup/6.png)
+
+Harbordan CI/CD va serverlardan foydalanish uchun **Robot Account** yaratib olamiz. **Administration -> Robot Accounts** ga o'tamiz va **NEW ROBOT ACCOUNT** bosamiz.
+![harbor](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/harbor-setup/7.png)
+Robot Accountga nom beramiz masalan `cicd` nomli robot account.
+![harbor](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/harbor-setup/8.png)
+Robot Accountga kerakli Permissionlarni beramiz masalan **Delete** va **Stop** dan boshqa barcha permissionlar.
+![harbor](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/harbor-setup/9.png)
+undan keyin esa Project tallanib projectdan foydalanish uchun yana kerakli permissionlarni beramiz.
+![harbor](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/harbor-setup/10.png)
+Masalan **Delete** va **Stop** dan boshqa barcha permissionlar.
+![harbor](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/harbor-setup/11.png)
+Robot Account yaratganimizdan keyin bizga robot account secret tokenini beradi biz uni saqlab qo'yishimiz kerak bo'ladi.
+![harbor](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/harbor-setup/12.png)
+Harbor tomonidan berilgan robor account token bilan Harbor Container Registrimizga docker login qilib kirib tekshirib ko'ramiz.
+Robot accountlar boshida `robot$` qo'shiladi shunda bizning holatda Container Registri URL **[harbor.helm.uz](https://harbor.helm.uz/)** va robot account user `robot$cicd` password esa secret token bo'ladi.
+![harbor](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/harbor-setup/13.png)
+
+Keling endi Proxy Cacheni ishlayotganini tekshirib ko'rish uchun Harbor Container Registrimizda yo'q bo'lgan docker imageni pull qilib ko'ramiz agar Proxy Cache ishlayotgan bo'lsa xatolik bermasdan o'zida bo'lmasa dockerhubdan o'ziga olib bizga berishi kerak
+![harbor](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/harbor-setup/14.png)
+Okey hammasi yaxshi ishladi Proxy Cache ishamoqda chunki Harborda hech qanday docker image yo'q edi va men `harbor.helm.uz/library/redis:latest` imageni so'radim u esa o'zida bo'lmagani uchun Registrie Endpoint orqali Dockerhubdan `redis:latest` imagheni o'ziga olib keyin bizga yo'naltirdi, keyingi docker pullda esa docker image to'gridan to'gri localni harbordan pull qilinadi.
+
+Buni tekshirib ko'rish uchun Harbor UIdan **library** projectga kirsak bizada yuqorida pull qilga docker imagemiz turgan bo'lishi kerak.
+![harbor](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/harbor-setup/15.png)
+
+Proxy Cache ishlamoqda hammasi yaxshi keling endi Harborga birortda docker image push qilib ko'ramiz. Buning uchun alohia bitta project yaratib olamiz yuqorida **library** project yaratgandek faqat proxy cache yoqmasdan.
+<Callout type="info" emoji="">
+Proxy Cache yoqilgan Harbor projectlarga docker image push qilib bo'maydi!!!
+</Callout>
+Bizning holatimizda `nginx:latest` nomli docker image bor edi uni qayta teglash kerak bo'ladi: `registry-url/repo/image:tag` bunda `harbor.helm.uz/devops-journey/nginx:latest`.
+![harbor](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/harbor-setup/16.png)
+Okey bizda hammasi ishladi.
+![harbor](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/harbor-setup/17.png)
+Keling buni Harbor UIdan projectimizga kirib ko'rishimiz mumkin.
+![harbor](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/harbor-setup/18.png)
+
+Siz shu qimsgacha yetib kelgan bo'lsangiz tabriklayman siz buni muvaffaqiyatli uddaladingiz. Men ham bu postim orqali yordam berdim umid qilaman.
+
+<Callout type="info" emoji="">
+
+**Sana:** 2024.11.5(2024-yil 15-noyabr)
+
+**Oxirgi yangilanish:** 2024.11.15(2024-yil 15-noyabr)
+
+**Muallif: Otabek Ismoilov**
+
+| [Telegram](https://t.me/Otabek_Ismoilov) | [GitHub](https://github.com/ismoilovdevml) | [LinkedIn](https://www.linkedin.com/in/otabek-ismoilov-8625b0222/) |
+| - | - | - |
+
+</Callout>
