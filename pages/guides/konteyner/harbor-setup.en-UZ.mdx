@@ -9,7 +9,10 @@ import { Callout } from "nextra-theme-docs";
 
 ![harbor](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/harbor-setup/banner.png)
 
-[**Harbor**](https://goharbor.io/) container image registryni self-hosting uchun [**open-source**](https://github.com/goharbor/harbor) yechimni taklif qiladi. Bu **C**loud **N**ative **C**omputing **F**oundation (**CNCF**) doirasidagi loyiha. Harbor access polisi va rollari, zaifliklarni(vulnerability) skanerlash va image signing kabi xususiyatlar bilan xavfsizlik va muvofiqlikni o'z dizayni markaziga qo'yadi.
+[**Harbor**](https://goharbor.io/) - bu [**open-source**](https://github.com/goharbor/harbor) konteyner registri bo'lib, konteyner imagelarini saqlash, boshqarish va xavfsizligini ta'minlash uchun mo'ljallangan
+Bu **C**loud **N**ative **C**omputing **F**oundation (**CNCF**) doirasidagi loyiha. Harbor access polisi va rollari, zaifliklarni(vulnerability) skanerlash va image signing kabi xususiyatlar bilan xavfsizlik va muvofiqlikni o'z dizayni markaziga qo'yadi.
+
+Harbor dastlab **VMware** tomonidan ishlab chiqilgan bo'lib, keyinchalik **CNCF**ga topshirilgan. **2020-yil 13-mayda** chiqarilgan **2.0** versiyasida **Harbor OCI (Open Container Initiative)** standartlariga mos keladigan birinchi open-source registr sifatida e'lon qilindi. Bu versiya konteyner imagelari, Helm chartlari, OPAlar va Singularity kabi turli cloud-native artifactlarni saqlash imkoniyatini kengaytirdi.
 
 Minimal konfiguratsiya bilan Harbor Docker command-line interface (CLI) va **kubectl** kabi toolar bilan birlashadi. Docker CLI-dan siz imagelarni xavfsiz push qilish va pull qilib  olish uchun Harbor registryga kirishingiz mumkin. Kubernetes toollari ham sizning Harbor registringiz bilan ishonchli tarzda autentifikatsiya qilishi va registryda saqlangan imagelardan konteynerlarni to'g'ridan-to'g'ri joylashtirish imkonini beradi.
 
