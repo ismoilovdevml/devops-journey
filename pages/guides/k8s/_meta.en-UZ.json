@@ -47,6 +47,12 @@
     "description": "Prometheus, Grafana",
     "href": "/guides/k8s/kubernetes-monitoring"
   },
+  "k8s-klasterlarni-loyihalash": {
+    "title": "Kubernetes Klasterlarini loyihalash",
+    "icon": "▶️",
+    "description": "Klaster arxitektura",
+    "href": "/guides/k8s/k8s-klasterlarni-loyihalash"
+  },
   "troubleshoot-k8s-pods": {
     "title": "Troubleshoot Kubernetes Pods",
     "icon": "▶️",
