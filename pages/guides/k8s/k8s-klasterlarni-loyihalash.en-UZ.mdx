@@ -9,8 +9,34 @@ import { Callout } from "nextra-theme-docs";
 
 ![k8s](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/k8s-klasterlarni-loyihalash/banner.png)
 
-Kubernetes — zamonaviy dasturiy ta'minot infratuzilmasining ajralmas qismi bo'lib, u applicationlarni masshtablash, avtomatlashtirish va boshqarish uchun kuchli platforma hisoblanadi. Lekin Kubernetes klasterlarini to'g'ri loyihalash — bu murakkab va strategik jarayon bo'lib, u infratuzilmaning samaradorligi, xavfsizligi va boshqaruv osonligi kabi omillarga ta'sir qiladi.
+**Kubernetes** — zamonaviy dasturiy ta'minot infratuzilmasining ajralmas qismi bo'lib, u applicationlarni masshtablash, avtomatlashtirish va boshqarish uchun kuchli platforma hisoblanadi. Lekin Kubernetes klasterlarini to'g'ri loyihalash — bu murakkab va strategik jarayon bo'lib, u infratuzilmaning samaradorligi, xavfsizligi va boshqaruv osonligi kabi omillarga ta'sir qiladi.
 
 Turli tashkilotlar o'z ehtiyojlariga ko'ra klasterlarni loyihalashda turli yondashuvlardan foydalanadilar. Masalan, ba'zilar bitta katta klasterni afzal ko'rsa, boshqalar har bir jamoa yoki application uchun alohida klaster yaratadi. Bundan tashqari, **Dev**, **Test** va **Prod** kabi environmentlar uchun izolyatsiyalangan klasterlarni tashkil qilish ham keng tarqalgan.
 
 Klasterlarni loyihalashning qaysi usuli tanlanmasin, har bir yondashuvning o'ziga xos afzalliklari va kamchiliklari bor. Bu qarorlar infratuzilma xarajatlariga, resurslarni boshqarish samaradorligiga va xavfsizlik darajasiga ta'sir qiladi. Ushbu maqola Kubernetes klasterlarini loyihalashda mavjud yondashuvlarni, ularning qulayliklari va cheklovlarini tahlil qilishga qaratilgan bo'lib, sizga to'g'ri qaror qabul qilishda yordam beradi.
+
+## TL;DR
+Kubernetes klasterlarini loyihalashda bir nechta yondashuvlar mavjud: bitta katta umumiy klaster resurslarni optimallashtiradi, lekin xavfsizlik va izolyatsiya cheklangan. Bir nechta kichik klasterlar izolyatsiyani oshiradi, lekin xarajat va boshqaruv murakkabligini keltirib chiqaradi. Har bir application yoki environment uchun klaster tashkil qilish moslashuvchanlikni ta'minlaydi, ammo resurslardan samarali foydalanishni cheklaydi. To'g'ri yondashuv tashkilotning ehtiyojlari, resurslari va strategik maqsadlariga qarab tanlanadi.
+
+## Muammo
+Kubernetes klasterlarini loyihalashda muammo resurslarni samarali boshqarish, xavfsizlikni ta'minlash va xarajatlarni nazorat qilish o'rtasidagi balansni topishdan iborat. Ko'p klasterli yondashuvlar boshqaruv murakkabligini oshiradi, bitta klaster esa izolyatsiya va xavfsizlikni kamaytiradi. Har bir loyihaga yoki environmentga mos keladigan optimal arxitekturani tanlash qiyinchilik tug'diradi, chunki talablar va resurs imkoniyatlari har xil bo'lishi mumkin.
+
+Kubernetes klasterlarini loyihalashda turli yondashuvlar mavjud:
+
+* **One Large Shared Cluster->** Barcha applicationlar va jamoalar(team) uchun yagona klasterdan foydalanish.
+* **Many Small Single-Use Clusters->** Har bir application yoki loyiha(project) uchun alohida kichik klasterlar yaratish.
+* **Cluster Per Application->** Har bir application uchun alohida klaster ajratish.
+* **Cluster Per Environment->** Dasturiy ta'minotning har bir environment (masalan, **dev**(development), **test**(testing), **prod**(production)) uchun alohida klasterlar yaratish.
+* **Cluster Per Team va Cluster Per Region->** Har bir jamoa yoki geografik hudud uchun alohida klasterlar tashkil etish.
+
+## One Large Shared Cluster
+
+**One Large Shared Cluster** - bu yondashuvda barcha applicationlar va jamoalar uchun yagona Kubernetes klasterdan foydalaniladi. Bunday klasterda turli servicelar, software environmentlar (masalan, **dev**(development), **test**(testing), **prod**(production)), hamda jamoalar bir xil infratuzilma doirasida boshqariladi. Ushbu yondashuv ko'pincha **kichik** yoki **o'rta hajm**dagi tashkilotlarda uchraydi, chunki u boshqaruvni markazlashtiradi va resurslardan samarali foydalanishni ta'minlaydi.
+
+### Afzalliklari
+
+* **Resurslardan samarali foydalanish->** Bir klaster barcha applicationlarni boshqaradi, bu umumiy servicelarni qayta-qayta sozlash zaruratini bartaraf etadi. Masalan, master nodelari, load balancer, monitoring va logging tizimlari kabi servicelar faqat bir marta sozlanadi. Bir kompaniya 10 xil applicationni bitta klasterda boshqaradi. Har bir application uchun alohida boshqaruv nodelari va load balancerlarni sozlash o'rniga, ular umumiy boshqaruv tizimidan foydalanadi. Bu server resurslarini tejaydi.
+
+* **Kam xarajatla->** Yagona klasterni boshqarish uchun kamroq infratuzilma resurslari talab qilinadi. Bu serverlar sonini kamaytiradi va xarajatlarni pasaytiradi.Startap kompaniya production va testing applicationlarini bitta klasterda joylashtiradi, bu esa alohida klaster yaratish uchun qo'shimcha tarmoq va qurilma xarajatlarini kamaytiradi.
+
+* **Yagona boshqaruv->** Bir klasterni boshqarish osonroq bo'ladi, chunki barcha konfiglar, yangilanishlar va security policylar bir joyda amalga oshiriladi. IT bo'limi barcha applicationlarning monitoringini Prometheus va Grafana yordamida bir klasterda olib boradi. Har bir applicationni alohida klasterda monitoring qilish o'rniga, ular bir joyda kuzatib boriladi.
