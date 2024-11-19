@@ -18,6 +18,10 @@ Klasterlarni loyihalashning qaysi usuli tanlanmasin, har bir yondashuvning o'zig
 ## TL;DR
 Kubernetes klasterlarini loyihalashda bir nechta yondashuvlar mavjud: bitta katta umumiy klaster resurslarni optimallashtiradi, lekin xavfsizlik va izolyatsiya cheklangan. Bir nechta kichik klasterlar izolyatsiyani oshiradi, lekin xarajat va boshqaruv murakkabligini keltirib chiqaradi. Har bir application yoki environment uchun klaster tashkil qilish moslashuvchanlikni ta'minlaydi, ammo resurslardan samarali foydalanishni cheklaydi. To'g'ri yondashuv tashkilotning ehtiyojlari, resurslari va strategik maqsadlariga qarab tanlanadi.
 
+<Callout type="info" emoji="">
+Maqola davomida misollarni **Yandex** kompaniyasi ko'rsatiladi. Muallifning **Yandex** kompaniyasiga hech qanday aloqasi yo'q va bu hech qanday konfidentsial ma'lumotlar emas bular shunchaki misollar!!!
+</Callout>
+
 ## Muammo
 Kubernetes klasterlarini loyihalashda muammo resurslarni samarali boshqarish, xavfsizlikni ta'minlash va xarajatlarni nazorat qilish o'rtasidagi balansni topishdan iborat. Ko'p klasterli yondashuvlar boshqaruv murakkabligini oshiradi, bitta klaster esa izolyatsiya va xavfsizlikni kamaytiradi. Har bir loyihaga yoki environmentga mos keladigan optimal arxitekturani tanlash qiyinchilik tug'diradi, chunki talablar va resurs imkoniyatlari har xil bo'lishi mumkin.
 
@@ -33,10 +37,66 @@ Kubernetes klasterlarini loyihalashda turli yondashuvlar mavjud:
 
 **One Large Shared Cluster** - bu yondashuvda barcha applicationlar va jamoalar uchun yagona Kubernetes klasterdan foydalaniladi. Bunday klasterda turli servicelar, software environmentlar (masalan, **dev**(development), **test**(testing), **prod**(production)), hamda jamoalar bir xil infratuzilma doirasida boshqariladi. Ushbu yondashuv ko'pincha **kichik** yoki **o'rta hajm**dagi tashkilotlarda uchraydi, chunki u boshqaruvni markazlashtiradi va resurslardan samarali foydalanishni ta'minlaydi.
 
+![k8s](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/k8s-klasterlarni-loyihalash/1.png)
+
 ### Afzalliklari
 
-* **Resurslardan samarali foydalanish->** Bir klaster barcha applicationlarni boshqaradi, bu umumiy servicelarni qayta-qayta sozlash zaruratini bartaraf etadi. Masalan, master nodelari, load balancer, monitoring va logging tizimlari kabi servicelar faqat bir marta sozlanadi. Bir kompaniya 10 xil applicationni bitta klasterda boshqaradi. Har bir application uchun alohida boshqaruv nodelari va load balancerlarni sozlash o'rniga, ular umumiy boshqaruv tizimidan foydalanadi. Bu server resurslarini tejaydi.
+* **Resurslardan samarali foydalanish->** Bir klaster barcha applicationlarni boshqaradi, bu umumiy servicelarni qayta-qayta sozlash zaruratini bartaraf etadi. Masalan, master nodelari, load balancer, monitoring va logging tizimlari kabi servicelar faqat bir marta sozlanadi. Misol uchun **Yandex** kompaniya 10 xil applicationni bitta klasterda boshqaradi. Har bir application uchun alohida boshqaruv nodelari va load balancerlarni sozlash o'rniga, ular umumiy boshqaruv tizimidan foydalanadi. Bu server resurslarini tejaydi.
 
 * **Kam xarajatla->** Yagona klasterni boshqarish uchun kamroq infratuzilma resurslari talab qilinadi. Bu serverlar sonini kamaytiradi va xarajatlarni pasaytiradi.Startap kompaniya production va testing applicationlarini bitta klasterda joylashtiradi, bu esa alohida klaster yaratish uchun qo'shimcha tarmoq va qurilma xarajatlarini kamaytiradi.
 
-* **Yagona boshqaruv->** Bir klasterni boshqarish osonroq bo'ladi, chunki barcha konfiglar, yangilanishlar va security policylar bir joyda amalga oshiriladi. IT bo'limi barcha applicationlarning monitoringini Prometheus va Grafana yordamida bir klasterda olib boradi. Har bir applicationni alohida klasterda monitoring qilish o'rniga, ular bir joyda kuzatib boriladi.
+* **Yagona boshqaruv->** Bir klasterni boshqarish osonroq bo'ladi, chunki barcha konfiglar, yangilanishlar va security policylar bir joyda amalga oshiriladi. Misol uchun **Yandex** IT bo'limi barcha applicationlarning monitoringini Prometheus va Grafana yordamida bir klasterda olib boradi. Har bir applicationni alohida klasterda monitoring qilish o'rniga, ular bir joyda kuzatib boriladi.
+
+### Kamchiliklari
+
+* **Yagona nuqtadagi nosozlik xavfi->** Agar klaster nosozlikka uchrasa, barcha applicationlar ta'sir ko'rsatadi. Misol uchun: **Yandex** servicelari uchun yagona klaster ishlatilsa, klasterning control plane qismi ishlamay qolsa, barcha applicationlar(masalan Yandex GO Yandex Eats va boshqalar) ishlamay qoladi. Bu katta biznes yo'qotishlariga olib kelishi mumkin, yana bir misol bunda **DEV, TEST, PROD** environmentlar bitta clusterda bo'lgani uchun **DEV** environmentdagi xatolik yoki clusterda qilingan xato butun klasterga o'z tasirini ko'rsatadi.
+
+* **Xavfsizlik izolyatsiyasining yetishmasligi->**  Applicationlar bir xil hardware va tarmoq resurslarini shared ishlatadi. Bu xavfsizlik zaifliklariga olib kelishi mumkin. Masalan **Yandex**dagi bir jamoaxavfsizlik tomondan noto'g'ri konfig qilingan kubernetes podini productionga chiqaradi, bu esa boshqa jamoaning servicega tarmoq orqali hujum qilish imkonini beradi. Shuningdek, zararli kod bir poddan boshqasiga tarqaladi.
+
+* ** Resurslar uchun raqobat->** Turli servicelar va jamoalar bir xil resurslar uchun raqobatlashadi, bu esa applicationlarning ish faoliyatiga salbiy ta'sir qilishi mumkin. Misol uchun **Yandex GO** platformasining ertalab **08:00-09:00 va 18:00-19:00** vaqt oralig'ida foydalanuvchilar platformadan ko'p foydalanasihadi va  Yandex GO applicationlari birdan yuqori load ostida qoladi, va bu boshqa applicationlarning (masalan, Yandex Eats va Yandex Maps va boshqalar) ishlashini sekinlashtiradi sababi Yandex Go applicationlari high load tushib resurslarni yeb qo'yayapti )).
+
+* **Murakkab boshqaruv->** Ko'p jamoalar bir xil klasterdan foydalanganda, ularning kirish huquqlari va resurslaridan foydalanishlarini tartibga solish murakkablashadi. Har bir jamoa uchun **RBAC** rolelarini sozlash va boshqarish uchun qo'shimcha vaqt va kuch talab qilinadi. Agar bir jamoa noto'g'ri ruxsatga ega bo'lsa, boshqa servicelarga zarar yetkazishi mumkin.
+
+### Qachon foydalanish kerak?
+
+* **Kichik yoki o'rta tashkilotlar uchun->** Agar kompaniyada ko'p servicelar va jamoalar bo'lmasa va xavfsizlik talablari past bo'lsa, bitta klaster samarali ishlaydi.
+
+* **Kam xarajat va kam murakkablik talab qilinganida->** Resurslarni tejash va boshqaruvni soddalashtirish muhim bo'lsa.
+
+* ***Qoshimcha izolyatsiya talab qilinmasa->** Agar applicationar xavfsizlik izolyatsiyasini talab qilmasa va bir-biriga ta'sir qilmaydigan darajada mustaqil ishlasa.
+
+* **Tezkor prototiplar uchun->** Yangi servicelar yoki applicationlarni tezroq ishga tushirish uchun umumiy klasterdan foydalanish mumkin.
+
+## Many Small Single-Use Clusters
+
+Bu yondashuvda har bir application, project yoki envrionment (masalan, **dev**(development), **test**(testing), **prod**(production)) uchun alohida Kubernetes klaster yaratiladi. Ushbu klasterlar bir-biri bilan bog'liq emas va mustaqil ishlaydi. Har bir klaster o'z resurslari, boshqaruv komponentlari (control plane) va xavfsizlik sozlamalariga ega bo'ladi.
+
+![k8s](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/k8s-klasterlarni-loyihalash/2.png)
+
+### Afzalliklari
+
+* **Xavfsizlik va izolyatsiya->** Har bir application yoki project alohida klasterda ishlaydi, bu esa yuqori xavfsizlikni ta'minlaydi. Bir applicationning nosozligi boshqa applicationlarga ta'sir qilmaydi. Masalan **Yandex** o'zining **Yandex GO**  service applicationlari  uchun alohida klaster va **Yandex Eats** uchun yana bitta klaster tashkil etadi. Yandex Go ishlamay qolsa ham Yandex Eats ishlashda davom etadi bir birga ta'sir qilmaydi.
+
+* ** Resurslar bo'yicha mustaqillik->** Har bir klaster o'z resurslariga ega bo'ladi, bu resurslar uchun raqobatni yo'q qiladi. Misol uchun Yandex Yandex GO platformasi uchun  maxsus klaster tashkil qiladi. Ushbu klaster boshqa servicelarga ta'sir qilmasdan high load bilan ishlaydi.
+
+* **Moslashuvchanlik->** Har bir klaster o'zining maxsus talablariga mos keladigan konfiguratsiyaga ega bo'lishi mumkin. Dasturchilar jamoasi **TEST** environment uchun kichikroq, kam quvvatli klaster ishlatadi, **PRODUCTION** muhiti esa kuchliroq hardware resurslari bilan jihozlangan bo'ladi.
+
+* **Nosozliklarni izolyatsiyalash->** Bir klasterdagi nosozlik boshqa klasterlarning ishlashiga ta'sir qilmaydi. Masalan **Yandex** kompaniyasi turli projectlar uchun alohida klasterlar yaratadi(Yandex GO uchun alohida klaster Yandex Eats uchun alohida klaster vakoza...). Bir projectdagi service nosozligi boshqa projectlarning servicelariga tasir qilmaydi.
+
+### Kamchiliklari
+
+* **Boshqaruvning murakkabligi->** Ko'p klasterlarni boshqarish murakkab bo'lishi mumkin, ayniqsa, ular uchun monitoring, yangilanishlar(upgrade) va xavfsizlikni bir joyda boshqarish qiyinlashadi. Katta IT jamoasiz kichik kompaniya bir vaqtning o'zida 20 ta klasterni boshqarishga harakat qilmoqda, bu esa boshqaruv va monitoringda qiyinchiliklarni keltirib chiqaradi.
+
+* **Ko'proq xarajatlar->** Har bir klaster uchun alohida control planelar talab qilinadi, bu esa infratuzilma xarajatlarini oshiradi. Har bir klaster boshqaruvi uchun alohida serverlar va tarmoq resurslari talab qilinadi, bu kichik kompaniyalar uchun moliyaviy jihatdan og'ir bo'lishi mumkin.
+
+* **Resurslardan kam foydalanish->**  Kichik klasterlarda resurslardan to'liq foydalanilmay qolishi mumkin, chunki ular boshqa klasterlar bilan share qilinmaydi. Masalan **TEST(Testing)** muhiti uchun yaratilgan klaster ish vaqtida kamdan-kam foydalaniladi, lekin u resurslarni egallab turadi.
+
+### Qachon foydalanish kerak?
+
+* **Xavfsizlik va izolyatsiya talab qilinganida->** Bir applicationning xavfsizlik xatosi boshqa applicationlarga ta'sir qilmasligi kerak bo'lgan vaziyatlarda.
+
+* **Yuqori yuklama(High Load) uchun->**  Maxsus yuklama(load) talab qiladigan servicelar uchun alohida klasterlar yaratish maqsadga muvofiq.
+
+* **Moslashuvchan konfiguratsiyalar kerak bo'lganda->** Har bir service yoki application o'zining maxsus konfiguratsiyasi talab qiladigan vaziyatlarda.
+
+* **Katta projectlar uchun->** Yandex jamoasi har bir project uchun alohida klaster tashkil etadi, bu esa projectlarni mustaqil boshqarish imkonini beradi.
