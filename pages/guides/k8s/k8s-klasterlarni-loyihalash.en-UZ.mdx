@@ -31,7 +31,7 @@ Kubernetes klasterlarini loyihalashda turli yondashuvlar mavjud:
 * **Many Small Single-Use Clusters->** Har bir application yoki loyiha(project) uchun alohida kichik klasterlar yaratish.
 * **Cluster Per Application->** Har bir application uchun alohida klaster ajratish.
 * **Cluster Per Environment->** Dasturiy ta'minotning har bir environment (masalan, **dev**(development), **test**(testing), **prod**(production)) uchun alohida klasterlar yaratish.
-* **Cluster Per Team va Cluster Per Region->** Har bir jamoa yoki geografik hudud uchun alohida klasterlar tashkil etish.
+* **Cluster Per Region->** Har bir geografik hudud uchun alohida klasterlar tashkil etish.
 
 ## One Large Shared Cluster
 
@@ -145,3 +145,90 @@ Kubernetes klasterlarini loyihalashda turli yondashuvlar mavjud:
 **Cluster Per Environment** yondashuvi har bir muhit(environment) (masalan, **dev**(development), **test**(testing), **prod**(production)) uchun alohida Kubernetes klaster tashkil qilishni nazarda tutadi. Ushbu yondashuv har bir environmentni mustaqil boshqarish va environmentlar o'rtasidagi to'liq izolyatsiyani ta'minlashga qaratilgan. Bu test jarayonlarini production servicelariga ta'sir qilmasdan olib borish imkonini beradi.
 
 ![k8s](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/k8s-klasterlarni-loyihalash/4.png)
+
+### Afzalliklari
+
+* **Muhitlar(environment) orasidagi izolyatsiya->** Har bir environment mustaqil ishlaydi, bu esa bir environmentdagi nosozlikning boshqasiga ta'sir qilish xavfini yo'q qiladi. Masalan Yandexda yangi Yandex Music funksiyasini ishlab chiqishda dasturchilar uni **DEV** klasterida sinab ko'rishadi. Bu jarayon **PROD** klasteriga ta'sir qilmaydi va userlar uchun service uzulishlarsiz ishlashni davom etadi.
+
+* **Maxsus konfiguratsiyalar->** Har bir klaster maxsus talablar va konfiguratsiyalarga moslashtiriladi. Masalan Yandex GOda prod(production) klasteri yuqori quvvatli serverlar va yaxshi load balancing tizimlariga ega. Shu bilan birga, test va dev klasteri oddiyroq konfiguratsiyaga ega bo'lib, test jarayonlari uchun yetarli.
+
+* **Xavfsizlikni oshirish->** prod(production) klasteri test yoki dev klasteridan to'liq izolyatsiya qilinadi, bu ma'lumotlarning xavfsizligini ta'minlaydi. Masalan Yandex GOda test klasteri faqat test ma'lumotlari bilan ishlaydi, foydalanuvchilar ma'lumotlari esa prod klasterida saqlanadi.
+
+* **Nosozliklarni izolyatsiyalash->** Test environmentdagi xatoliklar proddagi servicelariga ta'sir qilmaydi. Masalan Yandex Eats'da test klasterida payment bo'yich issue chiqdi yoki xavfsizlik bo'yicha issue topildi bunday holda bu muammolar faqat test klasteri uchun prod klasterga hech qanday ta'siri bo'lmaydi.
+
+### Kamchiliklari
+
+* **Ko'proq xarajatlar-> Har bir environment uchun alohida klaster yaratish infratuzilma xarajatlarini oshiradi. Yandex misolida Yandex uchun prod, test va dev environmentlarini alohida boshqarish har bir klaster uchun qo'shimcha serverlar, tarmoq resurslari va monitoring tizimlarini talab qiladi.
+
+* **Murakkab boshqaruv->** Ko'plab klasterlarni boshqarish va ularni sinxronlashtirish murakkablikni oshiradi. Yandex IT jamoasi prod environmentdagi xavfsizlik qoidalarini(security rule) test va dev klasterlarida ham sinxronlashtirishi kerak, bu esa qo'shimcha vaqt va resurs talab qiladi.
+
+* **Resurslardan kam foydalanish->** Kichikroq environment uchun yaratilgan klasterlar to'liq yuklanmaydi(load bo'lmaydi), bu resurslarni noto'liq ishlatishga olib keladi. Yandex GO test klasteri faqat test davrida ishlatiladi, lekin qolgan vaqt davomida resurslar bo'sh qoladi.
+
+### Qachon foydalanish kerak?
+
+* **Xavfsizlik va izolyatsiya talab qilinganida->** Test jarayonlari prod servicelariga ta'sir qilmasligi kerak bo'lgan holatlar uchun.
+
+* **Stabil production environmenti kerak bo'lganda->** Environmentlarning ajratilishi production servicelarining uzluksiz ishlashini ta'minlaydi.
+
+* **Moslashtirilgan konfiguratsiyalar kerak bo'lganda->** Har bir environmentning o'ziga xos talab va konfiguratsiyalarini boshqarish uchun.
+
+* **Katta DevOps jamoasi mavjud bo'lganda->** Ko'plab klasterlarni boshqarish uchun tajribali DevOps jamoasi talab qilinadi.
+
+**Cluster Per Environment** yondashuvi xavfsizlik, izolyatsiya va barqarorlikni(stabillik) ta'minlaydi. Ushbu yondashuv katta va murakkab tizimlarda environmentlar o'rtasidagi mustaqillikni saqlash uchun samarali. Ammo bu yondashuv infratuzilma xarajatlarini oshirishi va murakkab boshqaruvni talab qilishi mumkin. Yandex kabi kompaniyalarda production, testing va development environmentlari uchun alohida klasterlar ishlatish ideal yechim hisoblanadi.
+
+
+## Cluster Per Region
+
+**Cluster Per Region** yondashuvi geografik joylashuvlarga qarab alohida klasterlar yaratishni nazarda tutadi. Har bir mintaqa yoki hudud foydalanuvchilarga yaqin bo'lgan klaster orqali xizmat ko'rsatadi, bu esa tarmoqli kechikishni kamaytiradi va servicening barqarorligini oshiradi. Har bir geografik hudud yoki mintaqa uchun klasterlar tashkil qilinadi. Masalan: Rossiya uchun klaster, Yevropa uchun klaster,Osiyo hududi uchun klaster. Har bir hududdagi foydalanuvchilar o'zlariga yaqin joylashgan klasterdan service olishadi, bu tarmoq trafigini va kechikishni minimallashtiradi.
+![k8s](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/k8s-klasterlarni-loyihalash/5.png)
+
+### Afzalliklari
+
+* **Tarmoqli kechikishni kamaytirish->** Servicelar foydalanuvchilarga yaqin joyda joylashgani uchun tarmoq trafigi tezkor bo'ladi. Masalan Yandex Rossiya foydalanuvchilari uchun Moskva yoki Sankt-Peterburgda joylashgan klasterlardan foydalanadi. Yevropa foydalanuvchilari uchun esa Frankfurt shahrida joylashgan klaster xizmat ko'rsatadi.
+
+* **Servicening barqarorligini(stabillik) oshirish->** Bitta hududdagi nosozlik boshqa hududlardagi foydalanuvchilarga ta'sir qilmaydi. Yandex GOning Yevropa klasterida nosozlik yuzaga kelsa, Rossiya yoki Osiyo foydalanuvchilari bundan ta'sir ko'rmaydi.
+
+* **Huquqiy va mintaqaviy talablarni qondirish->** Har bir hududning huquqiy talablariga moslashish oson bo'ladi. Masalan Yevropa Ittifoqi ma'lumotlarni saqlash uchun **GDPR** (General Data Protection Regulation) talablariga rioya qilishi kerak. Shu sababli, Yandex Yevropa foydalanuvchilari ma'lumotlarini Frankfurt klasterida saqlaydi.
+
+### Kamchiliklari
+
+* **Ko'p infratuzilma xarajatlari->** Har bir hudud uchun alohida klaster yaratish infratuzilma xarajatlarini oshiradi. Yandex har bir mintaqa uchun alohida master nodelari va tarmoq resurslarini ajratishi kerak bo'ladi.
+
+* **Murakkab boshqaruv->** Turli hududlardagi klasterlarni boshqarish murakkablikni oshiradi. Rossiya, Yevropa va Osiyo klasterlarini sinxronlashtirish, monitoring qilish va yangilash uchun katta IT jamoasi talab qilinadi.
+
+### Qachon foydalanish kerak?
+
+* Servicelarni geografik hududlarga yaqinlashtirish zarur bo'lganda.
+* Mintaqaviy huquqiy va xavfsizlik talablarini bajarish kerak bo'lsa.
+* Hududiy nosozliklardan boshqa hududlarni izolyatsiya qilish talab qilinadi.
+
+**Cluster Per Region** geografik hududlarga servicelarni optimallashtirish va mintaqaviy talablarni qondirish uchun ishlatiladi. Yandex kabi yirik kompaniyalar odatda ushbu yondashuvlarni birgalikda qo'llaydi.
+
+## Xulosa
+
+Klaster yondashuvini tanlash loyiha ehtiyojlariga bog'liq. Agar loyiha bir nechta mustaqil servicelardan iborat bo'lsa, har bir service uchun xavfsizlik, barqarorlik va mustaqil boshqaruv talab qilinsa, **Cluster Per Application** yondashuvi eng mos tanlov bo'ladi. Servicelar orasida qat'iy izolyatsiya va maxsus talablarni qondirish kerak bo'lgan holatlarda bu yondashuv ideal hisoblanadi. Agar environmentlar o'rtasida izolyatsiya va production environmentining barqarorligini(stabillik) ta'minlash muhim bo'lsa, **Cluster Per Environment** tanlanadi, bu production va test jarayonlari o'zaro ta'sir qilmasligini kafolatlaydi. Hududiy servicelar yoki global loyihalarda esa **Cluster Per Region** geografik mintaqalar bo'yicha xizmat ko'rsatishni optimallashtirish uchun ishlatiladi, bu tarmoqli kechikishni kamaytiradi va hududiy huquqiy talablarni qondiradi. Vaqtinchalik tadbirlar yoki maxsus ehtiyojlar uchun esa **Many Small Single-Use Clusters** mos keladi, bu yondashuv yuklamani(load) izolyatsiyalashga yordam beradi. Kichik servicelar yoki minimal talablar bilan ishlaydigan loyihalar uchun **One Large Shared Cluster** tanlanadi, chunki bu infratuzilma xarajatlarini kamaytiradi va boshqaruvni soddalashtiradi.
+
+## Qo'shimcha
+
+<Callout type="info" emoji="">
+
+ * [**Kubernetesga Kirish**](https://devops-journey.uz/guides/k8s/k8s-kirish)
+ * [**Kubernetes Arxitekturasi**](https://devops-journey.uz/guides/k8s/k8s-architecture)
+ * [**Kubernetes Obyektlari**](https://devops-journey.uz/guides/k8s/k8s-objects)
+ * [**Kubespray yordamida production uchun Kubernetes Cluster sozlash**](https://devops-journey.uz/guides/k8s/kubespray-setup)
+ * [**Kubernesga Cert-Manager o'rnatish va sozlash**](https://devops-journey.uz/guides/k8s/k8s-cert-manager)
+ * [**Kubernetes Monitoring**](https://devops-journey.uz/guides/k8s/kubernetes-monitoring)
+ * [**Kubernetesga Argo CD o'rnatish va sozlash**](https://devops-journey.uz/guides/k8s/argo-cd-install)
+ * [**Kuberntes CI/CD | Github Actions + Argo CD | GitOps**](https://devops-journey.uz/guides/ci-cd/github-actions-argocd-cicd)
+
+**Sana:** 2024.11.20(2024-yil 20-noyabr)
+
+**Oxirgi yangilanish:** 2024.11.20(2024-yil 20-noyabr)
+
+**Muallif: Otabek Ismoilov**
+
+| [Telegram](https://t.me/Otabek_Ismoilov) | [Github](https://github.com/ismoilovdevml) | [LinkedIn](https://www.linkedin.com/in/otabek-ismoilov-8625b0222/) |
+| - | - | - |
+
+
+</Callout>
