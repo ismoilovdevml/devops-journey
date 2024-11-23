@@ -16,6 +16,12 @@
       "icon": "▶️",
       "description": "HAProxy bilan HTTP/TCP load balancing va monitoring",
       "href": "/guides/web-server/haproxy-load-balancing"
+    },
+    "dinamik-subdomenlar-sozlash": {
+      "title": "Dinamik subdomenlar sozlash",
+      "icon": "▶️",
+      "description": "Subdomenlar bilan ishlash",
+      "href": "/guides/web-server/dinamik-subdomenlar-sozlash"
     }
   }
   

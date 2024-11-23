@@ -1,0 +1,91 @@
+---
+image: https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/ansible-terraform/banner.png
+description: "Dinamik subdomenlar sozlash"
+---
+
+import { Callout } from "nextra-theme-docs";
+
+# Dinamik subdomenlar sozlash
+
+![haproxy](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/web-server/dinamik-subdomenlar-sozlash/banner.png)
+
+Tasavvur qilaylik bizda asosiy bir domen bor va unga tegishli barcha subdomenlarni aniq bir serverga yo'naltirish lozim. Ya'ni bu holatda har safar dns yozuvlarga(DNS record) o'zgartirish kirib o'tirmasdan duch kelgan subdomain serverga yo'nalishi lozim. Bundan talab odatda biznes mantig'i(business logic) bo'yicha har bir userni alohida sub domen deb belgilash, sayt satelitlari yoki shunga o'xshash joylarda kerak bo'ladi.
+
+Demak ishni **DNS**dan boshlasak:
+
+Avvalo DNS sozlamalaridan subdomainlar uchun dns chellenj amnalga oshirib olamiz. Agarda sizda **bind9** orqali to'g'ridan-to'g'ri boshqaruv bo'lsa quyidagi yozuvni qo'shishingiz mumkin. Yoki cloudflare va shunga o'xshash web panel bo'lsa yangi sub domen yaratish nuqtasida sub domen nomiga `* (widlcard)` ishlatib kerakli ipga yo'naltirishni o'zi kifoya.
+
+```
+*.domen.uz.   3600 IN  A 10.10.8.1.
+```
+DNS sozlamalari hozircha shu bilan tugaydi. Endigi navbat server qismda **Nginx** sozlamari uchun. Nginx o'zining boy konfiguratsiyasi sabab regexdan foydalana oladi. Xuddi shu tartibda `server_name` qismi uchun ham regex ishlatishingiz va shu standartga mos domenlarni tanlab olishingiz mumkin. Demak biz bu holatda `root` domendan kelgan barcha subdomainlarga moslashimiz kerak.
+
+```
+server {
+    listen 80;
+	server_name ~^(?<subdomain>.+)\.domen\.uz;
+	add_header Content-Type text/plain;
+	return 200 "Siz $subdomain subdomeniga kirdingiz ";
+}
+```
+
+**SSL sertifikat:**
+
+SSL sertifikatlar ham `wildcard` qo'llay olish imkoniga ega, ammo odatda bepul variant uchun **(Let's Encrypt)** bir oz bosh og'riq bo'lishi mumkin. Certbot odatiy holatda sertifikatni `HTTP-001` metodi bilan tasdiqlaydi. Bunga ko'ra domenning asosiy papkasi `.well-known` papkasi ochiladi va shunga qarab Let's Encrypt serveri ikki tomonlama tasdiqashni amalga oshiriladi. Ammo bu metod `wildcard` domenlar uchun ishlamagani bois `DNS-001` metodi orqali tasdiqlash kerak. Muammo esa bepul sertifikat uchun har uch oyda `_acme-challenge.domen.uz` ga kiritilgan TXT yozuvni qo'lda yangilab borasiz (Agarda bind server o'zingizda bo'lsa bu ishni qo'shimcha scriptlar orqali avtomatlashtirishingiz mumkin).
+
+Quyidagi buyruq orqali barcha subdomenlarga ssl certifikati generatsiya qilinadi.
+
+```
+sudo certbot certonly --manual --preferred-challenges=dns --server https://acme-v02.api.letsencrypt.org/directory --agree-tos -d *.domain.uz
+```
+
+Generatsiya vaqtida sizga `TXT` yozuv uchun token beriladi va uni DNS recordga quyidagi tartibda qo'shishingiz lozim.
+
+```
+_acme-challenge.domen.uz. IN TXT "CERTBOT_TOKEN"
+```
+
+Shundan so'ng nginx konfiguratsiyaga sertifikatlarni qo'shish va ko'rsatiladi.
+
+```
+server {
+	listen 443 ssl http2;
+	server_name ~^(?<subdomain>.+)\.domen\.uz;
+
+	ssl_certificate /etc/letsencrypt/live/domen.uz/fullchain.pem;
+	ssl_certificate_key /etc/letsencrypt/live/domen.uz/privkey.pem;
+
+	add_header Content-Type text/plain;
+	return 200 "Siz $subdomain subdomeniga kirdingiz ";
+}
+```
+
+Barcha sozlash amalga oshirilgach `domen.uz` tarkibidagi har qanday subdomenga kirsangiz sizda dinamik shakllangan subdomenlar ishlashni boshlaydi. Yuqoridagi konfiguratsiyasiyaga asoslanib `$subdomain` o'rgaruvchisidan turlicha foydalanishingiz mumkin (fantaziyaga bog'liq).
+
+Misol:
+
+```
+location    ~* "\.php$" {
+	fastcgi_param SUBDOMAIN "$subdomain";
+	include conf/fastcgi-php.conf;
+	fastcgi_pass unix:/var/run/php8.1-fpm.sock;
+}    
+```
+
+## Qo'shimcha
+
+<Callout type="info" emoji="">
+
+Qo'shimcha Resurslar
+* [**Load Balancing**](https://devops-journey.uz/guides/web-server/load-balancing)
+* [**NGINX Load Balancing**](https://devops-journey.uz/guides/web-server/nginx-load-balancing)
+
+**Sana:** 2024.11.18(2024-yil 18-noyabr)
+
+**Oxirgi yangilanish:** 2024.11.18(2024-yil 18-noyabr)
+
+**Muallif: Manuchehr Usmonov**
+
+| [Telegram](https://t.me/yetimdasturchi) | [Github](https://github.com/yetimdasturchi) | [Blog](https://diary.manu.uz/) |
+| - | - | - |
+</Callout>
