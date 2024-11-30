@@ -41,7 +41,7 @@ quyidagi arxitekturalar bo'yicha:
 * i386 (18.04 va undan katta)
 * ppc64el (faqat LTS versiyalarida)
 
-Apt Repositorydan foydalanib PostgreSQL-ni o'rnatish:
+Apt Repositorydan foydalanib PostgreSQLning latest versiyani o'rnatish:
 
 ```bash
 sudo apt install curl ca-certificates
@@ -68,7 +68,7 @@ quyidagi arxitekturalar bo'yicha:
 * i386 (buster va undan keyingilar)
 * ppc64el
 
-Postgresqlni Debianga o'rnatish quyidagicha:
+Postgresqlning latest versiyasini Debianga o'rnatish quyidagicha:
 
 ```bash
 sudo apt install curl ca-certificates
@@ -224,8 +224,13 @@ ALTER USER postgres WITH PASSWORD 'meningparolcham129c';
 
 Birinchi navbatda **postgresql.conf** kondiguratsiyadan **listen_addresses** qatorini izohdan chiqarib localhost o'rniga * qo'yib qo'yamiz yani barcha IP lar uchun.
 
+Debian based serverlar uchun `postgresql.conf` config fayli `/etc/postgresql/{postgres-versiyasi}/main/postgresql.conf` da joylashgan bo'ladi
 ```bash
-sudo nano /etc/postgresql/16/main/postgresql.conf
+sudo nano /etc/postgresql/17/main/postgresql.conf
+```
+Redhad based serverlar uchun `postgresql.conf` config fayli `/var/lib/pgsql/{postgres-versiyasi}/data/postgresql.conf` da joylashgan bo'ladi
+```bash
+sudo nano /var/lib/pgsql/17/data/postgresql.conf
 ```
 
 ```conf {2}
@@ -266,9 +271,15 @@ O'zgarishlarni saqlab chiqamiz.
 
 **3-> pg_hba.conf** konfiguratsiyamizga quyidagi konfiguratsiyani qo'shib qo'yamiz.
 
+Debian based serverlar uchun `pg_hba.conf` config fayli `/etc/postgresql/{postgres-versiyasi}/main/pg_hba.conf` da joylashgan bo'ladi
 ```bash
 sudo nano /etc/postgresql/16/main/pg_hba.conf
 ```
+Redhad based serverlar uchun `pg_hba.conf` config fayli `/var/lib/pgsql/{postgres-versiyasi}/data/pg_hba.conf ` da joylashgan bo'ladi
+```bash
+sudo nano /var/lib/pgsql/17/data/pg_hba.conf 
+```
+
 ```conf
 # Database administrative login by Unix domain socket
 local   all             postgres                                peer
@@ -308,10 +319,18 @@ host    all             all              ::/0                   md5
 
 **4->** Ushbu konfiguratsiyada barcha iplar ushbu Postgresql bazaga ulanishi kiritilgan. Konfiglarni qo'shib chiqganimizdan keyin o'zgarishlarni saqlab postgresqlga restart beramiz.
 
+Debian based serverlarda quyidagicha:
 ```bash
 sudo systemctl restart postgresql
 sudo systemctl status postgresql
 ```
+
+Redhad based serverlarda quyidagicha:
+```bash
+sudo systemctl restart postgresql-17
+sudo systemctl status postgresql-17
+```
+
 PostgreSQLga restart berganimizdan keyin postgresql databazaga tashqaridan ulana olamiz.
 
 ## Yangi rol yaratish
@@ -407,7 +426,7 @@ E'tibor bering birinchi marta postgres user bilan kirganimizda terminal `postgre
 
 **Sana:** 2023.08.17(2023-yil 17-avgust)
 
-**Oxirgi yangilanish:** 2024.05.16(2024-yil 16-may)
+**Oxirgi yangilanish:** 2024.11.30(2024-yil 30-noyabr)
 
 **Muallif: Otabek Ismoilov**
 
