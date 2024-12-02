@@ -9,6 +9,8 @@ import { Callout } from "nextra-theme-docs";
 
 ![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-ci/banner.png)
 
+
+## Kirish
 **GitLab** - bu veb-ga asoslangan Git repository manageri va DevOps platformasi bo'lib, u dastruchilar o'rtasidagi hamkorlikni soddalashtiradi. U **GitLab CI** orqali versiyani boshqarish(version control), code review, issue tracking va **CI/CD**ni avtomatlashtirish kabi xususiyatlarni taklif etadi. GitLab CI bilan ishlab dasturchilar applicationlarni build qilish, testdan o'tkazish va deploymentni avtomatlashtirish uchun pipelinelarni belgilaydilar. Ushbu integratsiya jamoalarga yuqori sifatli dasturiy ta'minotni samarali va ishonchli yetkazib berish imkonini beradi.
 
 Qisqa qilib aytganda Gitlab web-based git repository manager buni Githubga o'xshatish mumkin, Githubda hamma ishlagan bo'lishi kerak menimcha. Github asosan Open Source loyihlar uchundir private organizatsiylarda ham ishlash mumkin lekin Gitlabdek qulayliklar bo'lmaydi. Githubni o'z serverlaringizda o'rnatib,sozlab ishlata olmaysiz bu ba'zi bir tashkilotlar qonun-qoidalariga to'gri kelmaydi, ko'p tashkilotlar o'z loyiha kodlarini o'z serverlarida saqlashni xohlashdi bunda bizga Gitlab keladi. Siz Gitlabni o'zingizni serverlaringizda o'rnatib o'z Gitlab serveringizni sozlab be'malol ishlashingiz mumkin.
@@ -32,7 +34,7 @@ Repositoriyani xoxlagan IDE'yangizda yoki Gitlabning o'zining **WEB IDE**si orqa
 ![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-ci/3.png)
 Repositoriyamizda `.gitlab-ci.yml` faylk ochib olib uni gitlabga push qilamiz.
 
-```yaml filename='.gitlab-ci.ymml'
+```yaml filename=".gitlab-ci.yml" filename=".gitlab-ci.yml"
 stages:
   - build
   - test
@@ -65,3 +67,193 @@ Okey bizda barcha joblarimiz muvaffaqiyatli yakunlandi
 ![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-ci/7.png)
 
 Keling endi bu qanday ishlagani nimaligini ko'rib chiqamiz.
+
+`.gitlab-ci.yml` — bu **GitLab CI/CD** uchun konfiguratsiya fayli bo'lib, `pipeline`'ning ish tartibini belgilaydi. Fayl **YAML** formatida yoziladi va uning tuzilishi aniq va aniq tartibga rioya qiladi.  **Pipeline** — bu ketma-ket yoki parallel ravishda bajariladigan **job**lar to'plami. Har bir pipeline bosqichlardan iborat bo'lib, ular o'z navbatida job'ni o'z ichiga oladi.
+
+`.gitlab-ci.yml` faylining asosiy printsipi
+
+* Bosqichlar (`stages`) bir-birining ketidan ishlaydi.
+* Job'lar qoidalar asosida bosqichlarda ishga tushadi.
+* Buyruqlar (`script`) bajarilib, natijalar logga yoziladi.
+* Artifacts va cache orqali natijalar yoki vaqtinchalik fayllar saqlanadi.
+* Qoidalar (`rules`) yordamida job qaysi holatda ishlashi aniqlanadi.
+
+Bu struktura har qanday pipeline'ni samarali va moslashuvchan qilish imkonini beradi.
+
+## Struktura va asosiy elementlar
+
+1. `stages`
+
+Pipeline'dagi bosqichlar(stages) ro'yxatini belgilaydi. Har bir job qaysi bosqichda bajarilishini shu yerda ko'rsatilgan tartibga qarab aniqlaydi.
+
+**Misol:**
+
+```yaml filename=".gitlab-ci.yml"
+stages:
+  - build
+  - test
+  - deploy
+```
+Bu holatda, `build` bosqichi birinchi, undan keyin `test`, keyin esa `deploy` bajariladi.
+
+2. `deafult`
+
+Pipeline uchun `default` (standart) parametrlarni belgilaydi, masalan, `image`, `before_script`, yoki boshqa sozlamalar.
+
+**Misol:**
+```yaml filename=".gitlab-ci.yml"
+stages:
+  - build
+  - test
+
+default:
+  image: python:3.9
+  before_script:
+    - pip install -r requirements.txt
+
+build_job:
+  stage: build
+  script:
+    - python setup.py build
+
+test_job:
+  stage: test
+  script:
+    - pytest tests/
+```
+
+3. `variables`
+
+Global o'zgaruvchilarni aniqlaydi. Bu o'zgaruvchilar barcha jobs'larda ishlatiladi.
+**Misol:**
+
+```yaml filename=".gitlab-ci.yml"
+variables:
+  ENVIRONMENT: production
+  TIMEOUT: 30
+```
+4. `jobs`
+Job'lar pipeline'ning asosiy qismini tashkil qiladi va ularning tuzilishi quyidagicha:
+
+```yaml filename=".gitlab-ci.yml"
+stages:
+  - build
+  - test
+
+build_job:
+  stage: build
+  script:
+    - npm install
+    - npm run build
+
+test_job:
+  stage: test
+  script:
+    - npm run test
+```
+
+**Job elementlari:**
+
+* `job_name`: Jobning nomi. Bu foydalanuvchi tomonidan erkin belgilanadi.
+* `stage`: Job qaysi bosqichda bajarilishini belgilaydi. stages bo'limida aniqlangan bosqichlardan birini tanlash kerak.
+* `script`: Jobda bajariladigan buyruqlar ro'yxati. Bu buyruqlar ketma-ket bajariladi.
+* `variables`: Job uchun maxsus o'zgaruvchilar. Global o'zgaruvchilarni ustiga yozib yuborishi mumkin.
+* `rules`: Jobni bajarish qoidalarini belgilaydi (`if`, `changes`, `when`).
+* `tags`: Runner'larni filtrlash uchun ishlatiladi. Faqat belgilangan teglar mos keladigan Runner'larda ishga tushadi.
+* `artifacts`: Job natijalarini saqlaydi. Keyingi bosqichlarda foydalanish yoki yuklab olish uchun.
+* `cache`: Oraliq natijalarni saqlash va qayta foydalanishni tezlashtiradi.
+
+
+5. `before_script` va `after_script`
+
+Job bajarilishidan oldin yoki keyin avtomatik ishlaydigan buyruqlarni belgilaydi.
+
+**Misol:**
+
+```yaml filename=".gitlab-ci.yml"
+before_script:
+  - echo "Setting up environment"
+
+after_script:
+  - echo "Cleaning up"
+```
+
+`image` - Joblar uchun Docker image belgilaydi. Agar pipeline Docker muhitida ishlasa, bu juda muhim.
+Agar jobni bajarish uchun maxsus muhit kerak bo'lsa, masalan, Python, Node.js yoki boshqa texnologiyalar uchun tayyor Docker image ishlatiladi.
+```yaml filename=".gitlab-ci.yml" /image/
+stages:
+  - test
+
+test_job:
+  stage: test
+  image: python:3.9
+  script:
+    - pip install -r requirements.txt
+    - pytest tests/
+```
+
+`services` - Job davomida qo'shimcha servicelar kerak bo'lsa, masalan, ma'lumotlar bazasi yoki kesh tizimi.
+**Misol:**
+
+```yaml filename=".gitlab-ci.yml" /services/
+stages:
+  - test
+
+test_with_db:
+  stage: test
+  image: node:14
+  services:
+    - postgres:13
+  variables:
+    POSTGRES_DB: testdb
+    POSTGRES_USER: user
+    POSTGRES_PASSWORD: password
+  script:
+    - npm install
+    - npm test
+```
+
+`dependencies` - Jobning oldingi job natijalaridan foydalanishini ta'minlaydi.
+
+**Misol:**
+
+```yaml filename=".gitlab-ci.yml" /dependencies/
+stages:
+  - build
+  - test
+
+build_job:
+  stage: build
+  script:
+    - mkdir build
+    - echo "build artifact" > build/artifact.txt
+  artifacts:
+    paths:
+      - build/
+
+test_job:
+  stage: test
+  script:
+    - cat build/artifact.txt
+  dependencies:
+    - build_job
+```
+
+`rules` - Pipeline'ni optimallashtirish va faqat kerakli holatlarda jobni ishlatish uchun ishlatiladi. Jobni qachon va qaysi sharoitda bajarilishini belgilaydi.
+
+**Misol:**
+
+```yaml filename=".gitlab-ci.yml" /rules/
+stages:
+  - deploy
+
+deploy_job:
+  stage: deploy
+  script:
+    - echo "Deploying to production"
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      when: on_success
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: never
+```
