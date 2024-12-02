@@ -257,3 +257,181 @@ deploy_job:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       when: never
 ```
+
+## Pipeline Dizayni
+
+Pipeline dizaynining asosiy maqsadi: jarayonlarni avtomatlashtirish, vaqtni optimallashtirish, va resurslardan samarali foydalanishni ta'minlash. Quyida stagelar, parallel jobs, triggerlar, va Dependencylarni sozlash haqida ko'rib chiqamiz.
+
+**Bosqichlar (Stages)**
+Pipeline bosqichlarga bo'linadi, bu jarayonlarni tartibga solishga yordam beradi. Har bir bosqich ma'lum bir vazifani bajaradi:
+
+**Masalan:**
+
+* `build`: dastur kodini build qilish.
+* `test`: avtomatlashtirilgan testlarni bajarish.
+* `deploy`: dastur yoki serviceni deploy qilish.
+
+**Misol:
+```yaml
+stages:
+  - build
+  - test
+  - deploy
+
+# Build bosqichi
+maven_build:
+  stage: build
+  script:
+    - echo "Building the project..."
+    - mvn clean package
+  artifacts:
+    paths:
+      - target/*.jar
+    expire_in: 1 week
+
+# Test bosqichi
+unit_tests:
+  stage: test
+  script:
+    - echo "Running unit tests..."
+    - mvn test
+
+integration_tests:
+  stage: test
+  script:
+    - echo "Running integration tests..."
+    - mvn verify
+
+# Deploy bosqichi
+deploy_to_production:
+  stage: deploy
+  script:
+    - echo "Deploying to production..."
+    - scp target/*.jar user@production:/opt/app/
+    - ssh user@production "systemctl restart app.service"
+```
+**Parallel Joblar**
+Parallel joblar bir xil bosqichdagi vazifalarni bir vaqtning o'zida bajarishga imkon beradi. Bu katta hajmli jarayonlarni tezlashtirishga yordam beradi.
+
+```yaml
+stages:
+  - test
+
+parallel_tests:
+  stage: test
+  parallel:
+    matrix:
+      - TEST_ENV: "linux"
+      - TEST_ENV: "windows"
+      - TEST_ENV: "macos"
+  script:
+    - echo "Testing in $TEST_ENV environment..."
+    - npm test
+```
+Yuqorida Testlar Linux, Windows va MacOS muhitlarida bir vaqtning o'zida bajariladi.
+
+**Triggerlar**
+Triggerlar pipeline jarayonlarini boshlash usullari:
+
+* **Manual trigger:** Qo'lda ishga tushiriladi, odatda keyingi bosqichni tekshirish yoki monitoring talab qilinganda ishlatiladi.
+* **Scheduled trigger:** Ma'lum vaqt oralig'ida avtomatik ishga tushiriladi (masalan, har kuni kechasi).
+* **Triggered jobs:** Bir job yoki boshqa pipeline tomonidan chaqiriladi.
+
+**Misol: Manual trigger**
+
+```yaml filename=".gitlab-ci.yml"
+deploy_to_staging:
+  stage: deploy
+  script:
+    - echo "Deploying to staging..."
+    - scp app.jar user@staging:/opt/app/
+  when: manual
+```
+
+**Misol: Scheduled Trigger**
+
+```yaml filename=".gitlab-ci.yml"
+nightly_build:
+  stage: build
+  script:
+    - echo "Starting nightly build..."
+    - mvn clean package
+  only:
+    - schedules
+```
+
+**Dependency**
+
+Job'lar orasidagi bog'liqlikni sozlash uchun `needs` parametridan foydalaniladi.
+
+Masalan bu konfiguratsiyada `build_job` tugaganidan keyin `test_job` va undan keyin esa `deploy_job` ishlashnini belgilaydi.
+
+```yaml filename=".gitlab-ci.yml"
+build_job:
+  stage: build
+  script:
+    - echo "Building application..."
+    - mvn clean package
+
+test_job:
+  stage: test
+  script:
+    - echo "Running tests..."
+    - mvn test
+  needs:
+    - build_job
+
+deploy_job:
+  stage: deploy
+  script:
+    - echo "Deploying application..."
+    - scp target/*.jar user@production:/opt/app/
+    - ssh user@production "systemctl restart app.service"
+  needs:
+    - test_job
+```
+Yuqorida `build_job` dastlab ishga tushadi keyin `test_job` faqat `build_job` muvaffaqiyatli tugaganidan keyin boshlanadi, `deploy_job` esa testlar tugallangandan so'ng ishga tushadi.
+
+## Environment va secretlarni boshqarish
+
+GitLab'da environment va secrets bilan ishlash, xavfsizlik va konfiguratsiya boshqaruvi uchun juda muhim. Quyida, ularni qanday boshqarish va ishlatish bo'yicha real-case misollar bilan tushuntirib beraman.
+
+**Environment Variablelar** - bu pipeline davomida foydalaniladigan qiymatlar bo'lib, ular yashirin(protected) yoki umumiy bo'lishi mumkin.
+
+GitLab'da o'zgaruvchilar ikki asosiy turga bo'linadi:
+
+* **Protected Variablelar:** Faqat protected branchlarda (masalan, **main** yoki **production**) uchun ishlaydi.
+* **Umumiy Variablelar:** Har qanday branch yoki environment uchun foydalaniladi.
+
+GitLab'da secrets bilan ishlash maxfiy ma'lumotlarni boshqarish va ulardan xavfsiz foydalanishni ta'minlaydi. Secrets uchun bir nechta integratsiya usullari mavjud: **Vault, Kubernetes Secrets **GitLab Secrets** va boshqalar.
+
+<Callout type="info" emoji="">
+Secretlarni saqlashda Gitlab Secretsdan ko'ra [**Hashicorp Vault**](https://www.vaultproject.io/) tavsiya qilinadi!!!
+</Callout>
+
+Misol uchun Gitlab Secretsda ssh-keyni saqlab quyidagicha ishlatish mumkin. 
+
+**-> Repositoriya -> Settings -> CI/CD -> Variables -> Add variable** ga o'tib key va valueni yozib sqalab ishlata olamiz
+
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-ci/9.png)
+---------------
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-ci/10.png)
+
+--------------
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-ci/11.png)
+
+`.gitlab-ci.yml` da quyidagicha ishlatish mumkin.
+
+```yaml
+stages:
+  - deploy
+
+deploy_job:
+  stage: deploy
+  script:
+    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - ssh -T git@example.com
+```
+
+## Amaliyot CI/CD: Docker
