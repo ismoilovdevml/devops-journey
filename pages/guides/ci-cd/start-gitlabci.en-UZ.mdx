@@ -9,8 +9,6 @@ import { Callout } from "nextra-theme-docs";
 
 ![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-ci/banner.png)
 
-## Kirish
-
 **GitLab** - bu veb-ga asoslangan Git repository manageri va DevOps platformasi bo'lib, u dastruchilar o'rtasidagi hamkorlikni soddalashtiradi. U **GitLab CI** orqali versiyani boshqarish(version control), code review, issue tracking va **CI/CD**ni avtomatlashtirish kabi xususiyatlarni taklif etadi. GitLab CI bilan ishlab dasturchilar applicationlarni build qilish, testdan o'tkazish va deploymentni avtomatlashtirish uchun pipelinelarni belgilaydilar. Ushbu integratsiya jamoalarga yuqori sifatli dasturiy ta'minotni samarali va ishonchli yetkazib berish imkonini beradi.
 
 Qisqa qilib aytganda Gitlab web-based git repository manager buni Githubga o'xshatish mumkin, Githubda hamma ishlagan bo'lishi kerak menimcha. Github asosan Open Source loyihlar uchundir private organizatsiylarda ham ishlash mumkin lekin Gitlabdek qulayliklar bo'lmaydi. Githubni o'z serverlaringizda o'rnatib,sozlab ishlata olmaysiz bu ba'zi bir tashkilotlar qonun-qoidalariga to'gri kelmaydi, ko'p tashkilotlar o'z loyiha kodlarini o'z serverlarida saqlashni xohlashdi bunda bizga Gitlab keladi. Siz Gitlabni o'zingizni serverlaringizda o'rnatib o'z Gitlab serveringizni sozlab be'malol ishlashingiz mumkin.
@@ -21,4 +19,49 @@ Bugungi amaliyotimizda biz docker containerlar bilan ishlaydigan birinchi sodda 
 
 <Callout type="info" emoji="">
 Amaliyotda ishlatilgan [**gitlab.com/devops-journey**](https://gitlab.com/ismoilovdev/devops-journey) repositoriya. **Gitlab CI** namuna fayllarni [**ismoilovdevml/devops-tools**](https://github.com/ismoilovdevml/devops-tools/tree/master/Gitlab)dan topishingiz mumkin.
+
+Ushbu amaliyotda biz global [**gitlab.com**](https://gitlab.com/) dan foydalanamiz bu eslf-hosted deploy qilingan gitlab bilan deyarli bir xil agar siz o'zingizning serveringizga self-hosted **Gitlab** o'rnatmoqchi bo'lsangiz quyidagi qo'llanmani ko'rib chiqing - [**Gitlab Server o'rnatish va sozlash**](https://devops-journey.uz/guides/ci-cd/gitlab-server)
 </Callout>
+
+Boshlanishiga keling bir kichik amaliyotdan boshalymiz. Birinchi navbatda bitta gitlab repositoriya yaratib olamiz. **Create blank project** tanlab repositoriya ochish bo'limiga o'tamiz.
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-ci/1.png)
+
+Bu qismda repositoriyani nomini kiritib repositoriyani yaratib olamiz masaln **gitlab-cicd-examples**
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-ci/2.png)
+Repositoriyani xoxlagan IDE'yangizda yoki Gitlabning o'zining **WEB IDE**si orqali ochib olishingiz mumkin masaln menga ko'proq **WEB IDEA** qulayroq.
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-ci/3.png)
+Repositoriyamizda `.gitlab-ci.yml` faylk ochib olib uni gitlabga push qilamiz.
+
+```yaml filename='.gitlab-ci.ymml'
+stages:
+  - build
+  - test
+  - deploy
+
+build_job:
+  stage: build
+  script:
+    - echo "Building the project"
+test_job:
+  stage: test
+  script:
+    - echo "Running tests"
+
+deploy_job:
+  stage: deploy
+  script:
+    - echo "Deploying the application"
+```
+
+`gitlab-ci.yml` konfig file ochib yuqoridagi yaml configni kiritib gitlabga pushg qilganizdan keyin sizda joblar ishlab turganini ko'rishingiz mumkin.
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-ci/4.png)
+Joblarni ko'k ikonka ustiga bosib yoki jobs bo'limidan ko'rishingiz mumkin
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-ci/5.png)
+har bitta job ustiga bosib uning konsolini ochib jarayonlarni kuzatib borishingiz mumkin.
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-ci/6.png)
+Okey bizda barcha joblarimiz muvaffaqiyatli yakunlandi
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-ci/8.png)
+
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-ci/7.png)
+
+Keling endi bu qanday ishlagani nimaligini ko'rib chiqamiz.
