@@ -20,8 +20,6 @@ Qisqa qilib aytganda Gitlab web-based git repository manager buni Githubga o'xsh
 Bugungi amaliyotimizda biz docker containerlar bilan ishlaydigan birinchi sodda **CI/CD**'ni **Gitlab CI** yordamida yozamiz, keyin uni optimizatsiya qilish va kengaytirish ustida ishlaymiz, keyin esa **DEV, STAGE, PROD** environmentlar sozlab shunga moslab **Gitlab CI**'da **CI/CD**'lar yozamiz va buni kengaytirib boramiz. 
 
 <Callout type="info" emoji="">
-Amaliyotda ishlatilgan [**gitlab.com/devops-journey**](https://gitlab.com/ismoilovdev/devops-journey) repositoriya. **Gitlab CI** namuna fayllarni [**ismoilovdevml/devops-tools**](https://github.com/ismoilovdevml/devops-tools/tree/master/Gitlab)dan topishingiz mumkin.
-
 Ushbu amaliyotda biz global [**gitlab.com**](https://gitlab.com/) dan foydalanamiz bu eslf-hosted deploy qilingan gitlab bilan deyarli bir xil agar siz o'zingizning serveringizga self-hosted **Gitlab** o'rnatmoqchi bo'lsangiz quyidagi qo'llanmani ko'rib chiqing - [**Gitlab Server o'rnatish va sozlash**](https://devops-journey.uz/guides/ci-cd/gitlab-server)
 </Callout>
 
@@ -435,3 +433,148 @@ deploy_job:
 ```
 
 ## Amaliyot CI/CD: Docker
+
+<Callout type="info" emoji="">
+Amaliyotda uchun quyidagi repositoriyada kodlarni ishlatamiz [**gitlab.com/devops-journey**](https://gitlab.com/ismoilovdev/devops-journey) **Gitlab CI** namuna fayllarni [**ismoilovdevml/devops-tools**](https://github.com/ismoilovdevml/devops-tools/tree/master/Gitlab)dan topishingiz mumkin.
+</Callout>
+
+
+CI/CD amaliyot quyidagicha ishlaydi faqat main branchga commit bo'lganda avtomatik ishga tushadi va loyihani build qilib Dockewr image yasaydi va uni Gitlab registryga push qiladi va deploy bosqichida server ssh credentialslari bilan serverga kirib gitlab registrydan docker imageni pull qilib uni ishga tushiradi.
+
+Birinchi navbate kerakli variablelarni Girtab CI/CD vaeriablesga joylashimiz kerak bo'ladi, undan oldin esa serverga docker o'rnatib ssh sozlahsim kerak bo'ladi.
+
+Serverga Docker o'rnatish uchun quyidagi qo'llanmadan foydalanashingiz mumkin - [**Linux serverlarga Docker o'rnatish**](https://devops-journey.uz/guides/konteyner/docker-ornatish)
+
+Biz yozgan CI/CD serverga ssh bilan krib ishlaydigan bosqichi bor shuning uchun serverimizda ssh key yaratib uni sozlab olishimiz kerak bo'ladi.
+
+Serverga kirib sshkey generatsiya qilib olamiz. `ssh-keygen` buyrug'ini kiritib hammasiga **ENTER** bosib o'tamiz. 
+```bash
+ssh-keygen
+```
+SSH directoriyaga kirib ko'ramiz, bizda `id_rsa`(private key) va `id_rsa.pub` public key va `authorized_keys` bo'lishi kerak agar `authorized_key` bo'lmasa yaratib olish kerak.
+
+```bash
+cd ~/.ssh/
+ls
+```
+Public keyni(`id_rsa.pub`) `authorized_key`ga qo'shib qo'yamiz.
+
+```bash
+cat id_rsa.pub >> authorized_keys 
+```
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-ci/15.png)
+
+Private key(`id_rsa`) ni cat qilib ochib uni copy qilib olamiz uni Gitlab CI/CD variablega qo'shismiz kerak bo'ladi.
+
+```bash
+cat id_rsa
+```
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-ci/16.png)
+
+
+CI/CD ishlashi uchun kerak bo'lgan secretlarni Gitlab CI/CD variablega qo'shishimiz kerak bo'ladi.
+
+**-> Repositoriya -> Settings -> CI/CD -> Variables -> Add variable** ga o'tib key va valueni saqlaymiz.
+
+`.gitlab-ci.yml` dagi `SSH_HOST` variabelni qo'shamiz unga serverimiz IP sini berishim kerak bo'ladi.
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-ci/17.png)
+------
+
+`SSH_USER`ga esa serverimizdagi userni kiritamiz uni quyidagi buyruq bilan aniqlash mumkin.
+
+```bash
+whoami
+```
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-ci/18.png)
+-----
+`SSH_PRIVATE_KEY`ga `id_rsa` keyni qo'yamiz.
+
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-ci/19.png)
+
+Bizda quyidagi CI/CD variablelar bo'lishi kerak
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-ci/20.png)
+
+
+**DevOps Journey** loyihasi repositoriyasiga `.gitlab-ci.yml` fayl ochamiz va quyidagicha gitlab ci/cd yozamiz.
+
+```yaml
+stages:
+  - build_and_push
+  - deploy
+
+variables:
+  IMAGE_NAME: devops-journey
+  CONTAINER_NAME: devops-journey
+  PORT: "3000:3000"
+  REPO_NAME: $CI_PROJECT_PATH
+  REGISTRY: "registry.gitlab.com"
+
+build_and_push:
+  stage: build_and_push
+  image: docker:stable
+  services:
+    - docker:dind
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - docker build -t $REGISTRY/$REPO_NAME/$IMAGE_NAME:$CI_COMMIT_SHA .
+    - docker push $REGISTRY/$REPO_NAME/$IMAGE_NAME:$CI_COMMIT_SHA
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+
+deploy:
+  stage: deploy
+  image: alpine:latest
+  before_script:
+    - apk add --update --no-cache openssh-client
+  script:
+    - mkdir -p ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - ssh-keyscan -H $SSH_HOST >> ~/.ssh/known_hosts
+    - ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "echo "$CI_JOB_TOKEN" | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY"
+    - ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "docker pull $REGISTRY/$REPO_NAME/$IMAGE_NAME:$CI_COMMIT_SHA"
+    - ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "docker stop $CONTAINER_NAME || true"
+    - ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "docker rm $CONTAINER_NAME || true"
+    - ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "docker run -d --name $CONTAINER_NAME -p $PORT $REGISTRY/$REPO_NAME/$IMAGE_NAME:$CI_COMMIT_SHA"
+    
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+```
+
+Bu konfiguratsiyani qo'shib main branchga push qilamiz.
+
+Joblar bo'limga o'tsak joblar statusini ko'rishimiz mumkin.
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-ci/12.png)
+
+Okey bizda **Gitlab CI/CD** muvaffaqiyatli ishladi.
+
+-------
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-ci/13.png)
+
+Keling endi serverdan buni tekshirib ko'ramiz qani CI/CD to'gri ishlaganmikin ))
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-ci/14.png)
+
+Okey serverda container chiki chiki ishlab turmoqda hammasi zo'r (***rasm ustiga bosilganda kattalashadi***)
+
+
+<Callout type="info" emoji="">
+
+Qo'shimcha Resurslar
+ * [**Gitlab CI | Releaselar va Integrationlar**](https://devops-journey.uz/guides/ci-cd/gitlab-ci-release-integrations)
+ * [**Github Actions bilan Flutter CI/CD**](https://devops-journey.uz/guides/ci-cd/flutter-github-action)
+ * [**Github Actions CI/CD**](https://devops-journey.uz/guides/ci-cd/github-actions-ci-cd)
+ * [**Linux Serverlarga Jenkins o'rnatish**](https://devops-journey.uz/guides/ci-cd/jenkins-ornatish)
+ * [**Koddan Servergacha: Jenkins bilan Docker CI/CD va Discord bilan integratsiya**](https://devops-journey.uz/guides/ci-cd/jenkins-docker-ci-cd)
+ * [**Kubernetes CI/CD | GitHub Actions + Argo CD | GitOps**](https://devops-journey.uz/guides/ci-cd/github-actions-argocd-cicd)
+
+**Sana:** 2024.12.02(2024-yil 2-dekabr)
+
+**Oxirgi yangilanish:** 2024.12.02(2024-yil 2-dekabr
+
+**Muallif: Otabek Ismoilov**
+
+| [Telegram](https://t.me/Otabek_Ismoilov) | [GitHub](https://github.com/ismoilovdevml) | [LinkedIn](https://www.linkedin.com/in/otabek-ismoilov-8625b0222/) |
+| - | - | - |
+
+</Callout>
