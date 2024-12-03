@@ -13,26 +13,26 @@ import { Callout } from "nextra-theme-docs";
 ## Kirish
 **GitLab** - bu veb-ga asoslangan Git repository manageri va DevOps platformasi bo'lib, u dastruchilar o'rtasidagi hamkorlikni soddalashtiradi. U **GitLab CI** orqali versiyani boshqarish(version control), code review, issue tracking va **CI/CD**ni avtomatlashtirish kabi xususiyatlarni taklif etadi. GitLab CI bilan ishlab dasturchilar applicationlarni build qilish, testdan o'tkazish va deploymentni avtomatlashtirish uchun pipelinelarni belgilaydilar. Ushbu integratsiya jamoalarga yuqori sifatli dasturiy ta'minotni samarali va ishonchli yetkazib berish imkonini beradi.
 
-Qisqa qilib aytganda Gitlab web-based git repository manager buni Githubga o'xshatish mumkin, Githubda hamma ishlagan bo'lishi kerak menimcha. Github asosan Open Source loyihlar uchundir private organizatsiylarda ham ishlash mumkin lekin Gitlabdek qulayliklar bo'lmaydi. Githubni o'z serverlaringizda o'rnatib,sozlab ishlata olmaysiz bu ba'zi bir tashkilotlar qonun-qoidalariga to'gri kelmaydi, ko'p tashkilotlar o'z loyiha kodlarini o'z serverlarida saqlashni xohlashdi bunda bizga Gitlab keladi. Siz Gitlabni o'zingizni serverlaringizda o'rnatib o'z Gitlab serveringizni sozlab be'malol ishlashingiz mumkin.
+Qisqa qilib aytganda Gitlab web-based git repository manager buni Githubga o'xshatish mumkin, Githubda hamma ishlagan bo'lishi kerak menimcha. Github asosan Open Source loyihalar uchundir private organizatsiylarda ham ishlash mumkin lekin Gitlabdek qulayliklar bo'lmaydi. Githubni o'z serverlaringizda o'rnatib,sozlab ishlata olmaysiz bu ba'zi bir tashkilotlar qonun-qoidalariga to'gri kelmaydi, ko'p tashkilotlar o'z loyiha kodlarini o'z serverlarida saqlashni xohlashdi bunda bizga Gitlab keladi. Siz Gitlabni o'zingizni serverlaringizda o'rnatib o'z Gitlab serveringizni sozlab be'malol ishlashingiz mumkin.
 
-**Gitlab CI** bu Gitlabda loyihlarniga **CI/CD** pipelinelar yozish loyihlarni avtomatlashtirish bir nechta qulayliklarni beruvchi **CI/CD** tool hisoblanadi, **Gitlab CI**ni **Github Actions**ga o'xshatish mumkin.
+**Gitlab CI** bu Gitlabda loyihalarniga **CI/CD** pipelinelar yozish loyihalarni avtomatlashtirish bir nechta qulayliklarni beruvchi **CI/CD** tool hisoblanadi, **Gitlab CI**ni **Github Actions**ga o'xshatish mumkin.
 
-Bugungi amaliyotimizda biz docker containerlar bilan ishlaydigan birinchi sodda **CI/CD**'ni **Gitlab CI** yordamida yozamiz, keyin uni optimizatsiya qilish va kengaytirish ustida ishlaymiz, keyin esa **DEV, STAGE, PROD** environmentlar sozlab shunga moslab **Gitlab CI**'da **CI/CD**'lar yozamiz va buni kengaytirib boramiz. 
+Bugungi amaliyotimizda biz **Gitlab CI** strukturarsini va qanday CI/CD yozishni ko'ramiz amaliyot qismida esa docker containerlar bilan ishlaydigan birinchi sodda **CI/CD**'ni **Gitlab CI** yordamida yozamiz, keyin uni optimizatsiya qilish va kengaytirish ustida ishlaymiz, keyin esa **DEV, STAGE, PROD** environmentlar sozlab shunga moslab **Gitlab CI**'da **CI/CD**'lar yozamiz va buni kengaytirib boramiz. 
 
 <Callout type="info" emoji="">
-Ushbu amaliyotda biz global [**gitlab.com**](https://gitlab.com/) dan foydalanamiz bu eslf-hosted deploy qilingan gitlab bilan deyarli bir xil agar siz o'zingizning serveringizga self-hosted **Gitlab** o'rnatmoqchi bo'lsangiz quyidagi qo'llanmani ko'rib chiqing - [**Gitlab Server o'rnatish va sozlash**](https://devops-journey.uz/guides/ci-cd/gitlab-server)
+Ushbu amaliyotda biz global [**gitlab.com**](https://gitlab.com/) dan foydalanamiz bu self-hosted deploy qilingan gitlab bilan deyarli bir xil agar siz o'zingizning serveringizga self-hosted **Gitlab** o'rnatmoqchi bo'lsangiz quyidagi qo'llanmani ko'rib chiqing - [**Gitlab Server o'rnatish va sozlash**](https://devops-journey.uz/guides/ci-cd/gitlab-server)
 </Callout>
 
-Boshlanishiga keling bir kichik amaliyotdan boshalymiz. Birinchi navbatda bitta gitlab repositoriya yaratib olamiz. **Create blank project** tanlab repositoriya ochish bo'limiga o'tamiz.
+Boshlanishiga keling bir kichik amaliyotdan boshalaymiz. Birinchi navbatda bitta gitlab repositoriya yaratib olamiz. **Create blank project** tanlab repositoriya ochish bo'limiga o'tamiz.
 ![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-ci/1.png)
 
-Bu qismda repositoriyani nomini kiritib repositoriyani yaratib olamiz masaln **gitlab-cicd-examples**
+Bu qismda repositoriyani nomini kiritib repositoriyani yaratib olamiz masalan **gitlab-cicd-examples**
 ![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-ci/2.png)
-Repositoriyani xoxlagan IDE'yangizda yoki Gitlabning o'zining **WEB IDE**si orqali ochib olishingiz mumkin masaln menga ko'proq **WEB IDEA** qulayroq.
+Repositoriyani xoxlagan IDE'yangizda yoki Gitlabning o'zining **WEB IDE**si orqali ochib olishingiz mumkin masalan menga ko'proq **WEB IDEA** qulayroq.
 ![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-ci/3.png)
-Repositoriyamizda `.gitlab-ci.yml` faylk ochib olib uni gitlabga push qilamiz.
+Repositoriyamizda `.gitlab-ci.yml` fayl ochib olib uni gitlabga push qilamiz.
 
-```yaml filename=".gitlab-ci.yml" filename=".gitlab-ci.yml"
+```yaml filename=".gitlab-ci.yml"
 stages:
   - build
   - test
@@ -53,8 +53,9 @@ deploy_job:
     - echo "Deploying the application"
 ```
 
-`gitlab-ci.yml` konfig file ochib yuqoridagi yaml configni kiritib gitlabga pushg qilganizdan keyin sizda joblar ishlab turganini ko'rishingiz mumkin.
+`gitlab-ci.yml` config file ochib yuqoridagi yaml configni kiritib gitlabga push qilganizdan keyin sizda joblar ishlab turganini ko'rishingiz mumkin.
 ![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-ci/4.png)
+
 Joblarni ko'k ikonka ustiga bosib yoki jobs bo'limidan ko'rishingiz mumkin
 ![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-ci/5.png)
 har bitta job ustiga bosib uning konsolini ochib jarayonlarni kuzatib borishingiz mumkin.
@@ -66,7 +67,7 @@ Okey bizda barcha joblarimiz muvaffaqiyatli yakunlandi
 
 Keling endi bu qanday ishlagani nimaligini ko'rib chiqamiz.
 
-`.gitlab-ci.yml` — bu **GitLab CI/CD** uchun konfiguratsiya fayli bo'lib, `pipeline`'ning ish tartibini belgilaydi. Fayl **YAML** formatida yoziladi va uning tuzilishi aniq va aniq tartibga rioya qiladi.  **Pipeline** — bu ketma-ket yoki parallel ravishda bajariladigan **job**lar to'plami. Har bir pipeline bosqichlardan iborat bo'lib, ular o'z navbatida job'ni o'z ichiga oladi.
+`.gitlab-ci.yml` — bu **GitLab CI/CD** uchun konfiguratsiya fayli bo'lib, `pipeline`'ning ish tartibini belgilaydi. Fayl **YAML** formatida yoziladi va uning tuzilishi aniq tartibga rioya qiladi.  **Pipeline** — bu ketma-ket yoki parallel ravishda bajariladigan **job**lar to'plami. Har bir pipeline bosqichlardan iborat bo'lib, ular o'z navbatida job'ni o'z ichiga oladi.
 
 `.gitlab-ci.yml` faylining asosiy printsipi
 
@@ -94,7 +95,7 @@ stages:
 ```
 Bu holatda, `build` bosqichi birinchi, undan keyin `test`, keyin esa `deploy` bajariladi.
 
-2. `deafult`
+2. `default`
 
 Pipeline uchun `default` (standart) parametrlarni belgilaydi, masalan, `image`, `before_script`, yoki boshqa sozlamalar.
 
@@ -123,6 +124,7 @@ test_job:
 3. `variables`
 
 Global o'zgaruvchilarni aniqlaydi. Bu o'zgaruvchilar barcha jobs'larda ishlatiladi.
+
 **Misol:**
 
 ```yaml filename=".gitlab-ci.yml"
@@ -176,7 +178,7 @@ after_script:
   - echo "Cleaning up"
 ```
 
-`image` - Joblar uchun Docker image belgilaydi. Agar pipeline Docker muhitida ishlasa, bu juda muhim.
+`image` - Joblar uchun Docker image belgilaydi. Agar pipeline Docker environmentda ishlasa, bu juda muhim.
 Agar jobni bajarish uchun maxsus muhit kerak bo'lsa, masalan, Python, Node.js yoki boshqa texnologiyalar uchun tayyor Docker image ishlatiladi.
 ```yaml filename=".gitlab-ci.yml" /image/
 stages:
@@ -258,7 +260,7 @@ deploy_job:
 
 ## Pipeline Dizayni
 
-Pipeline dizaynining asosiy maqsadi: jarayonlarni avtomatlashtirish, vaqtni optimallashtirish, va resurslardan samarali foydalanishni ta'minlash. Quyida stagelar, parallel jobs, triggerlar, va Dependencylarni sozlash haqida ko'rib chiqamiz.
+Pipeline dizaynining asosiy maqsadi: jarayonlarni avtomatlashtirish, vaqtni optimallashtirish, va resurslardan samarali foydalanishni ta'minlash. Quyida stagelar, parallel joblar, triggerlar, va dependencylarni sozlash haqida ko'rib chiqamiz.
 
 **Bosqichlar (Stages)**
 Pipeline bosqichlarga bo'linadi, bu jarayonlarni tartibga solishga yordam beradi. Har bir bosqich ma'lum bir vazifani bajaradi:
@@ -269,8 +271,8 @@ Pipeline bosqichlarga bo'linadi, bu jarayonlarni tartibga solishga yordam beradi
 * `test`: avtomatlashtirilgan testlarni bajarish.
 * `deploy`: dastur yoki serviceni deploy qilish.
 
-**Misol:
-```yaml
+**Misol:**
+```yaml filename=".gitlab-ci.yml"
 stages:
   - build
   - test
@@ -311,7 +313,7 @@ deploy_to_production:
 **Parallel Joblar**
 Parallel joblar bir xil bosqichdagi vazifalarni bir vaqtning o'zida bajarishga imkon beradi. Bu katta hajmli jarayonlarni tezlashtirishga yordam beradi.
 
-```yaml
+```yaml filename=".gitlab-ci.yml" {6-13}
 stages:
   - test
 
@@ -337,7 +339,7 @@ Triggerlar pipeline jarayonlarini boshlash usullari:
 
 **Misol: Manual trigger**
 
-```yaml filename=".gitlab-ci.yml"
+```yaml filename=".gitlab-ci.yml" {6}
 deploy_to_staging:
   stage: deploy
   script:
@@ -348,7 +350,7 @@ deploy_to_staging:
 
 **Misol: Scheduled Trigger**
 
-```yaml filename=".gitlab-ci.yml"
+```yaml filename=".gitlab-ci.yml" {7}"
 nightly_build:
   stage: build
   script:
@@ -364,7 +366,7 @@ Job'lar orasidagi bog'liqlikni sozlash uchun `needs` parametridan foydalaniladi.
 
 Masalan bu konfiguratsiyada `build_job` tugaganidan keyin `test_job` va undan keyin esa `deploy_job` ishlashnini belgilaydi.
 
-```yaml filename=".gitlab-ci.yml"
+```yaml filename=".gitlab-ci.yml" {12-13,21-22}
 build_job:
   stage: build
   script:
@@ -401,7 +403,7 @@ GitLab'da o'zgaruvchilar ikki asosiy turga bo'linadi:
 * **Protected Variablelar:** Faqat protected branchlarda (masalan, **main** yoki **production**) uchun ishlaydi.
 * **Umumiy Variablelar:** Har qanday branch yoki environment uchun foydalaniladi.
 
-GitLab'da secrets bilan ishlash maxfiy ma'lumotlarni boshqarish va ulardan xavfsiz foydalanishni ta'minlaydi. Secrets uchun bir nechta integratsiya usullari mavjud: **Vault, Kubernetes Secrets **GitLab Secrets** va boshqalar.
+GitLab'da secrets bilan ishlash maxfiy ma'lumotlarni boshqarish va ulardan xavfsiz foydalanishni ta'minlaydi. Secrets uchun bir nechta integratsiya usullari mavjud: **Vault, Kubernetes Secrets, GitLab Secrets** va boshqalar.
 
 <Callout type="info" emoji="">
 Secretlarni saqlashda Gitlab Secretsdan ko'ra [**Hashicorp Vault**](https://www.vaultproject.io/) tavsiya qilinadi!!!
@@ -413,14 +415,15 @@ Misol uchun Gitlab Secretsda ssh-keyni saqlab quyidagicha ishlatish mumkin.
 
 ![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-ci/9.png)
 ---------------
+Bu yerdan  `Add variable`
 ![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-ci/10.png)
-
 --------------
+Key va Valueni yozamiz
 ![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-ci/11.png)
 
-`.gitlab-ci.yml` da quyidagicha ishlatish mumkin.
+Keyin esa `.gitlab-ci.yml` da quyidagicha ishlatish mumkin.
 
-```yaml
+```yaml filename=".gitlab-ci.yml"
 stages:
   - deploy
 
@@ -432,16 +435,16 @@ deploy_job:
     - ssh -T git@example.com
 ```
 
-## Amaliyot CI/CD: Docker
+## CI/CD amaliyot Docker bilan
 
 <Callout type="info" emoji="">
 Amaliyotda uchun quyidagi repositoriyada kodlarni ishlatamiz [**gitlab.com/devops-journey**](https://gitlab.com/ismoilovdev/devops-journey) **Gitlab CI** namuna fayllarni [**ismoilovdevml/devops-tools**](https://github.com/ismoilovdevml/devops-tools/tree/master/Gitlab)dan topishingiz mumkin.
 </Callout>
 
 
-CI/CD amaliyot quyidagicha ishlaydi faqat main branchga commit bo'lganda avtomatik ishga tushadi va loyihani build qilib Dockewr image yasaydi va uni Gitlab registryga push qiladi va deploy bosqichida server ssh credentialslari bilan serverga kirib gitlab registrydan docker imageni pull qilib uni ishga tushiradi.
+CI/CD amaliyot quyidagicha ishlaydi faqat `main` branchga commit bo'lganda avtomatik ishga tushadi va loyihani build qilib Docker image yasaydi va uni Gitlab container registryga push qiladi va deploy bosqichida server ssh credentialslari bilan serverga kirib gitlab registrydan docker imageni pull qilib uni ishga tushiradi.
 
-Birinchi navbate kerakli variablelarni Girtab CI/CD vaeriablesga joylashimiz kerak bo'ladi, undan oldin esa serverga docker o'rnatib ssh sozlahsim kerak bo'ladi.
+Birinchi navbatda kerakli variablelarni Gitlab CI/CD variablesga joylashimiz kerak bo'ladi, undan oldin esa serverga docker o'rnatib ssh sozlashimiz kerak bo'ladi.
 
 Serverga Docker o'rnatish uchun quyidagi qo'llanmadan foydalanashingiz mumkin - [**Linux serverlarga Docker o'rnatish**](https://devops-journey.uz/guides/konteyner/docker-ornatish)
 
@@ -477,6 +480,7 @@ CI/CD ishlashi uchun kerak bo'lgan secretlarni Gitlab CI/CD variablega qo'shishi
 **-> Repositoriya -> Settings -> CI/CD -> Variables -> Add variable** ga o'tib key va valueni saqlaymiz.
 
 `.gitlab-ci.yml` dagi `SSH_HOST` variabelni qo'shamiz unga serverimiz IP sini berishim kerak bo'ladi.
+
 ![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-ci/17.png)
 ------
 
@@ -497,7 +501,7 @@ Bizda quyidagi CI/CD variablelar bo'lishi kerak
 
 **DevOps Journey** loyihasi repositoriyasiga `.gitlab-ci.yml` fayl ochamiz va quyidagicha gitlab ci/cd yozamiz.
 
-```yaml
+```yaml filename=".gitlab-ci.yml"
 stages:
   - build_and_push
   - deploy
@@ -558,6 +562,118 @@ Keling endi serverdan buni tekshirib ko'ramiz qani CI/CD to'gri ishlaganmikin ))
 Okey serverda container chiki chiki ishlab turmoqda hammasi zo'r (***rasm ustiga bosilganda kattalashadi***)
 
 
+Keling endi bu qandya ishlaganini tushuntirib beraman.
+
+CI/CD 2ta stagedan iborat bo'lib bular `build_and_push` va `deploy`
+
+`build_and_push` bu Docker imageni build qilib va uni Container registyrga pushg qilish vazifasini bajaradi.
+
+`deploy` esa `build_and_push`da build bo';gan imageni serverda ishga tushirib beradi.
+
+```yaml filename=".gitlab-ci.yml"
+stages:
+  - build_and_push
+  - deploy
+```
+
+Variables bo'limida quyidagi variablelar bor, bu global variablelar hisoblanadi.
+
+```yaml filename=".gitlab-ci.yml"
+variables:
+  IMAGE_NAME: devops-journey
+  CONTAINER_NAME: devops-journey
+  PORT: "3000:3000"
+  REPO_NAME: $CI_PROJECT_PATH
+  REGISTRY: "registry.gitlab.com"
+```
+
+* `IMAGE_NAME` Build qilingan Docker image nomi.
+* `CONTAINER_NAM`E Docker konteyner nomi.
+* `PORT` Docker konteyner ichki va tashqi portini boglaydi (masalan, 3000 portni 3000 port bilan biriktiradi).
+* `REPO_NAME` Hozirgi GitLab loyihasining yo'li(path) (masalan, group/project).
+* `REGISTRY` Docker Registryning URL manzili.
+
+Keling `build_and_push` stageni ko'rib chiqamiz.
+
+```yaml filename=".gitlab-ci.yml"
+build_and_push:
+  stage: build_and_push
+  image: docker:stable
+  services:
+    - docker:dind
+```
+Ushbu bosqichni bajarishda Docker CLI mavjud bo'lgan `docker:stable` docker imagedan foydalanilgan va `services` sifadida `docker:dind` Docker daemon (docker-in-docker) ishlatiladi.
+
+```yaml filename=".gitlab-ci.yml"
+before_script:
+  - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+```
+`before_script`da global variablelardan foydalagangan holda Container registryga login qilib kirish jarayoni yozilgan.
+
+```yaml filename=".gitlab-ci.yml"
+script:
+  - docker build -t $REGISTRY/$REPO_NAME/$IMAGE_NAME:$CI_COMMIT_SHA .
+  - docker push $REGISTRY/$REPO_NAME/$IMAGE_NAME:$CI_COMMIT_SHA
+```
+
+`script`da docker build buyruq yordamida docker image build qiladi va `$CI_COMMIT_SHA` unique key bilan teg qilib ikkinchi buyruqda variabledagi Container registryga imageni push qiladi.
+
+```yaml filename=".gitlab-ci.yml"
+rules:
+  - if: '$CI_COMMIT_BRANCH == "main"'
+```
+Bu `rules` qismi esa qachon ishga tushishini bildiradi bu holda `main` branhchga commit bo'lganda `build_and_push` stage ishga tushadi.
+
+Keling endi `deploy` stageni ko'rib chiqamiz.
+
+```yaml filename=".gitlab-ci.yml"
+deploy:
+  stage: deploy
+  image: alpine:latest
+```
+Bu qismda stage va undan qaysi imagedan foydalanish belgilangan bu holda eng yengil Linux distributivi `alpine:latest` docker image ishlatiladi.
+
+```yaml filename=".gitlab-ci.yml"
+before_script:
+  - apk add --update --no-cache openssh-client
+```
+`before_script`da `alpine:latest` docker imagega ssh bilan ishlash uchun kerakli paketlar o'rnatiladi.
+
+```yaml filename=".gitlab-ci.yml"
+script:
+  - mkdir -p ~/.ssh
+  - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+  - chmod 600 ~/.ssh/id_rsa
+  - ssh-keyscan -H $SSH_HOST >> ~/.ssh/known_hosts
+```
+`script` qismida Gitlab CI/CD variablesga qo'yilgan `SSH_PRIVATE_KEY` dan foydalanib ssh-keyni ulanish uchun solab kerakli permissionlarni beradi.
+
+
+```yaml filename=".gitlab-ci.yml"
+    - ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "echo "$CI_JOB_TOKEN" | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY"
+    - ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "docker pull $REGISTRY/$REPO_NAME/$IMAGE_NAME:$CI_COMMIT_SHA"
+    - ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "docker stop $CONTAINER_NAME || true"
+    - ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "docker rm $CONTAINER_NAME || true"
+    - ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "docker run -d --name $CONTAINER_NAME -p $PORT $REGISTRY/$REPO_NAME/$IMAGE_NAME:$CI_COMMIT_SHA"
+```
+
+Yuqoridagi buyruqlar ssh bilan serverga kirib quyidagi ketma ketlikda ishga tushadi, birinchi bo'lib `docker login` qilib Container Registryga authentikatsiya qilib kiradi keyin esa `docker pull` bilan  `build_and_push` stageda build bo'lgan va unique tag qilingan docker imageni pull qilib oladi va shu nom bilan ishlab turgan docker imageni to'xtatib/o'chirib yangi docker pull qilib olgan docker imageni global variableda berilgan port container nomi va aniq belgilangan imageni ishga tushiradi, qarabsiznki sizning applicationchangiz ishlab turibdi :)
+
+```yaml filename=".gitlab-ci.yml"
+rules:
+  - if: '$CI_COMMIT_BRANCH == "main"'
+```
+Bu `rules` esa qachon `deploy` job ishga tushishini bildiradi bu holdat `main` branchga push bo'lganida avtomatik ishlaydi.
+
+
+
+<Callout type="info" emoji="">
+Vazifa: Endi esa qizga qiziq bir vazifa beraman :)
+
+Vazifa shundan iboratki shu pipelinedan foydalanib endi siz muliple environment uchun Gitlab CI/CD yozishingiz kerak bo'ladi. Kichik yordam: `main`(production), `dev`(development), `stage`(staging) branchlar qiling va bitta umumiy `.gitlab-ci.yml` yozinng va branchlarga rule yozib chiqing masalan `main` branchda o'zgarish bo'lganda production serverlarga `main` branchdagi kodlarni ishga tushirsin va buyo'gi o'zingizning fantaziyangizga bo'gliq :)
+</Callout>
+
+
 <Callout type="info" emoji="">
 
 Qo'shimcha Resurslar
@@ -570,7 +686,7 @@ Qo'shimcha Resurslar
 
 **Sana:** 2024.12.02(2024-yil 2-dekabr)
 
-**Oxirgi yangilanish:** 2024.12.02(2024-yil 2-dekabr
+**Oxirgi yangilanish:** 2024.12.02(2024-yil 3-dekabr)
 
 **Muallif: Otabek Ismoilov**
 
