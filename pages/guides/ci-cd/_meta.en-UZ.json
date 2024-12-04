@@ -53,6 +53,12 @@
     "description": "Github Actions + Discord (Android, iOS)",
     "href": "/guides/ci-cd/flutter-github-action"
   },
+  "java-spring-boot-deployment": {
+    "title": "Spring Boot Deployment",
+    "icon": "▶️",
+    "description": "Gitlab CI va Github Actions bilan",
+    "href": "/guides/ci-cd/java-spring-boot-deployment"
+  },
   "m1-runner-setup": {
     "title": "Github Actionsga M1 macOS runner qo'shish",
     "icon": "▶️",
