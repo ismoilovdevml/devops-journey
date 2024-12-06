@@ -1,0 +1,105 @@
+---
+image: https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgres-monitoring-pmm/banner.png
+description: "Percona PMM bilan PostgreSQL monitoring"
+---
+
+import { Callout } from "nextra-theme-docs";
+
+# Percona PMM bilan PostgreSQL monitoring
+
+![pmm-postgresql-monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgres-monitoring-pmm/banner.png)
+
+## Kirish
+
+Hozirgi zamonaviy IT infratuzilmalarida monitoring tizimlari katta ahamiyat kasb etadi. Tizim holatini kuzatish va uning ishlash samaradorligini oshirish uchun monitoring tollari zarur. Shu maqsadda, ushbu qo'llanmada **P**ercona **M**onitoring and **M**anagement (**PMM**) yordamida PostgreSQL monitoringini haqida bo'ladi bugungi amaliyotimiz
+
+**Percona** - open source ma'lumotlar bazalari uchun yuqori sifatli xizmatlar va tollar ishlab chiqaruvchi yetakchi kompaniyalardan biridir. U **MySQL**, **PostgreSQL** va **MongoDB** kabi ma'lumotlar bazalari bilan ishlashni soddalashtiruvchi yechimlar taqdim etadi. **P**ercona **M**onitoring and **M**anagement (**PMM**) esa ma'lumotlar bazalari va serverlarni kuzatish, analiz qilish va boshqarish uchun kuchli vosita hisoblanadi.
+
+**PostgreSQL** - yuqori darajada kengaytiriladigan va mustahkam open source ma'lumotlar bazasi tizimi bo'lib, dunyo bo'ylab keng qo'llaniladi. Uni samarali boshqarish uchun monitoring juda muhimdir. Monitoring orqali tizim yuklamasini(load) kuzatish va muvozanatni ta'minlash, write va read jarayonlarining samaradorligini oshirish, resurslardan samarali foydalanish va nosozliklarni oldindan aniqlash kabi maqsadlarga erishish mumkin.
+
+Ushbu qo'llanma davomida biz Percona PMM yordamida PostgreSQL monitoringini bosqichma-bosqich ko'rib chiqamiz. Sizga PMM o'rnatish, sozlash va undan foydalanish jarayonlarini amaliy misollar bilan ko'rsatamiz.
+
+
+## Ishni boshlash
+
+Ushbu amaliyotni amalga oshirish uchun bizga quyidagi minimum server talablaridagi server kerak bo'ladi.
+
+<Callout type="info" emoji="">
+**Minimum Server talabi**
+
+Eslatma: Server Linux OS ning qaysi distorligi muhim emas bu qo'llanmada Redhad based va Debian based serverlarda ko'rstiladi
+
+| Host        | OS            | RAM            | CPU           | Xotira       |
+| ----------- | ------------- | -------------- | ------------- |------------- |
+|  pmm-server        | Ubuntu 20.04 yoki Rocky Linux 8  | 4GB           | 2vCPU,1 core  | 50GB        |
+|  postgres-server     | Ubuntu 20.04 yoki Rocky Linux 8  | 4GB            | 4vCPU,2 core  | 50GB         |
+</Callout>
+
+PMM bir nechta asosiy komponentlardan tashkil topgan:
+
+* **PMM Server->** PMM Server barcha ma'lumotlarni yig'ib, saqlab va vizualizatsiya qilish uchun markaziy rolni o'ynaydi. U Prometheus yordamida ma'lumotlarni yig'adi va VictoriaMetrics yoki ClickHouse kabi ma'lumotlar bazalarida saqlaydi. Grafana bu ma'lumotlarni grafikalar ko'rinishida taqdim etadi, bu esa foydalanuvchiga tizim holatini real vaqt rejimida kuzatish imkonini beradi.
+
+* **PMM Client->** PMM Agent monitoring qilinayotgan serverlarga o'rnatiladi va ma'lumotlarni to'plab PMM Server'ga uzatadi. U turli servicelar uchun metrikalarni yig'ish va kuzatish vazifasini bajaradi, masalan, Node Exporter yordamida server resurslarini, Database Exporter orqali ma'lumotlar bazasining ichki metrikalarini, va QAN Agent yordamida querylarni(so'rovlarni) tahlil qilishni amalga oshiradi.
+
+* **Query Analytics->** PMMning yana bir muhim komponenti bu **Query Analytics (QAN)** bo'lib, u ma'lumotlar bazasidagi querylarni tahlil qiladi va samaradorligini baholaydi. Bu sekin ishlayotgan yoki resurslarni ko'p talab qiladigan querylarni aniqlash va optimallashtirishga yordam beradi.
+
+PMM componentlarini quyidagi percona rasmiy sahifasida ko'rishingiz mumkin - [**PMM components and versions**](https://docs.percona.com/percona-monitoring-and-management/details/pmm_components_and_versions.html)
+
+
+
+PMM arxitketurasini quyidagi rasmda ko'rishingiz mumkin([**Rasm olingna sahifa**](https://docs.percona.com/percona-monitoring-and-management/details/architecture.html))
+
+![pmm-postgresql-monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgres-monitoring-pmm/2.jpg)
+
+![pmm-postgresql-monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgres-monitoring-pmm/2.jpg)
+
+![pmm-postgresql-monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgres-monitoring-pmm/3.jpg)
+
+## PMM server o'rnatish
+
+Hammasi bilan tanishib chiqganimizdan keyin ishni boshlasak ham bo'ladi monitoring uchun ajratilgan serverimizga PMM serverni Docker yordamida o'rnatamiz.
+
+<Callout type="info" emoji="">
+Agar serveringizda Docker o'rnatilmagan bo'lsa quyidagi qo'llanma yordami Docker o'rnatib olishingiz mumkin. - [**Linux serverlarga Docker o'rnatish**](https://devops-journey.uz/guides/konteyner/docker-ornatish)
+</Callout>
+
+PMM server malumotlarini saqlash uchun docker volumedan foydalanadi bu qo'llanmada biz host-pathdan foydalanamiz. PMM server malumotlarini saqlash uchun directoriya ochib olamiz.
+
+```bash
+mkdir -p /mnt/pmm
+chmod 0755 /mnt/pmm
+```
+PMM docker imageni pull qilib olamiz.
+
+```bash
+docker pull percona/pmm-server:2
+```
+PMM serverni ishga tushiramiz.
+
+```bash
+docker run -d \
+  --name pmm-server \
+  --restart always \
+  -p 443:443 \
+  -p 80:80 \
+  -v /mnt/pmm:/srv \
+  percona/pmm-server:2
+```
+![pmm-postgresql-monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgres-monitoring-pmm/4.png)
+
+PMM serverni Docker yordamida ishga tushirganimizdan keyin 1-daqida kutib keyin container ichiga kikrib admin parol qo'yishimiz kerak bo'ladi.
+
+```bash
+docker exec -t pmm-server change-admin-password parolimiziLIR34123
+```
+Parol qo'yganimizda rasmdagidek bo'lishi kerak.
+![pmm-postgresql-monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgres-monitoring-pmm/5.png)
+
+Brazuer orqali serveringiz IPsiga 80 portga kirsangiz sizda PMM server Grafana ochilishi kerak rasmdagidek.
+Bu yerda default user `admin` parol esa yuqorida qo'ygan parolimiz bizning holatda `parolimiziLIR34123`.
+
+![pmm-postgresql-monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgres-monitoring-pmm/6.png)
+
+PMM serverga login qilib kirganingizda sizda default Home Dashbord ochilishi kerak.
+
+![pmm-postgresql-monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgres-monitoring-pmm/7.png)

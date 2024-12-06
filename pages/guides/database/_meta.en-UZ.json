@@ -41,6 +41,12 @@
       "description": "Prometheus/Grafana va postgres_exporter bilan monitoring",
       "href": "/guides/database/postgres-monitoring"
     },
+    "postgres-monitoring-pmm": {
+      "title": "PMM bilan PostgreSQL Monitoring",
+      "icon": "▶️",
+      "description": "Percona PMM",
+      "href": "/guides/database/postgres-monitoring-pmm"
+    },
     "sql-injection": {
       "title": "SQL Injection Attack",
       "icon": "▶️",
