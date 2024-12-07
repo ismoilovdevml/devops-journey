@@ -103,3 +103,72 @@ Bu yerda default user `admin` parol esa yuqorida qo'ygan parolimiz bizning holat
 PMM serverga login qilib kirganingizda sizda default Home Dashbord ochilishi kerak.
 
 ![pmm-postgresql-monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgres-monitoring-pmm/7.png)
+
+Okeyy PMM serverni o'rnatib solzab oldik endi PMM client o'rnatishimiz kerak.
+
+## PMM client o'rnatish
+
+PMM clientni paketini serverlarimizga o'rnatamiz.
+
+### Debian-based serverlar uchun
+
+Repositoriyani sozlab olamiz
+
+```bash
+wget https://repo.percona.com/apt/percona-release_latest.generic_all.deb
+dpkg -i percona-release_latest.generic_all.deb
+```
+
+PMM clientni install qilamiz.
+
+```bash
+sudo apt update
+sudo apt install -y pmm2-client
+```
+Versiyasini tekshiramiz.
+
+```bash
+pmm-admin --version
+```
+
+### Redhat-based serverlar uchun
+
+Repositoriyani sozlab olamiz
+
+```bash
+sudo yum install -y https://repo.percona.com/yum/percona-release-latest.noarch.rpm
+```
+
+PMM clientni install qilamiz.
+
+```bash
+sudo yum install -y pmm2-client
+```
+Versiyasini tekshiramiz.
+
+```bash
+pmm-admin --version
+```
+![pmm-postgresql-monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgres-monitoring-pmm/8.png)
+
+PMM client o'rnatib olganimizdan keyin uni PMM serverga register qilib qo'shishimiz kerak bo'ladi, buning uchun quyidagi buyruqdan foydalanamiz.
+
+```bash
+pmm-admin config --server-insecure-tls --server-url=https://admin:parolimiziLIR34123@137.184.123.133:443 143.198.149.142 generic dev-postgres
+```
+Keling bu buyruqni tushuntirib beraman.
+* `pmm-admin config` Ushbu buyruq yordamida PMM Agent PMM Server bilan bog'lanadi.
+* `--server-insecure-tls` PMM Server sertifikati self-signed bo'lsa, bu parametr TLS sertifikatni tekshirishni ochiradi, ya'ni sertifikatning haqiqiyligini tekshirish talab qilinmaydi.
+
+* `--server-url=https://admin:parolimiziLIR34123@137.184.123.133` Bu URL shuni anglatadi: `https` - PMM Serverga HTTPS orqali ulanishni bildiradi. `admin:parolimiziLIR34123`- PMM Serverdagi admin login va parol. `137.184.123.133:443` - PMM Server IP manzili va port (443 HTTPS uchun standart port).
+
+* `143.198.149.142` Bu PMM Agent o'rnatilgan va kuzatilayotgan serverning IP manzili, agent qaysi serverda ishlayotganligini ko'rsatadi.
+
+* `generic` Node turi. `generic` PMM Agent uchun umumiy turdagi serverni bildiradi.
+
+* `dev-postgres` Bu monitoring qilinayotgan serverning nomi. PMM Server interfeysida ushbu nom bilan ko'rinadi.
+
+![pmm-postgresql-monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgres-monitoring-pmm/9.png)
+
+PMM Server dashbaordga kirib **Node Names** bo'limini ochganimizda bizning register qilgan serverimiz chiqishi kerak.
+![pmm-postgresql-monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgres-monitoring-pmm/10.png)
