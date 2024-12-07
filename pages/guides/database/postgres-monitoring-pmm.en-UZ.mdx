@@ -13,7 +13,7 @@ import { Callout } from "nextra-theme-docs";
 
 Hozirgi zamonaviy IT infratuzilmalarida monitoring tizimlari katta ahamiyat kasb etadi. Tizim holatini kuzatish va uning ishlash samaradorligini oshirish uchun monitoring tollari zarur. Shu maqsadda, ushbu qo'llanmada **P**ercona **M**onitoring and **M**anagement (**PMM**) yordamida PostgreSQL monitoringini haqida bo'ladi bugungi amaliyotimiz
 
-**Percona** - open source ma'lumotlar bazalari uchun yuqori sifatli xizmatlar va tollar ishlab chiqaruvchi yetakchi kompaniyalardan biridir. U **MySQL**, **PostgreSQL** va **MongoDB** kabi ma'lumotlar bazalari bilan ishlashni soddalashtiruvchi yechimlar taqdim etadi. **P**ercona **M**onitoring and **M**anagement (**PMM**) esa ma'lumotlar bazalari va serverlarni kuzatish, analiz qilish va boshqarish uchun kuchli vosita hisoblanadi.
+**Percona** - open source ma'lumotlar bazalari uchun yuqori sifatli servicelar va tollar ishlab chiqaruvchi yetakchi kompaniyalardan biridir. U **MySQL**, **PostgreSQL** va **MongoDB** kabi ma'lumotlar bazalari bilan ishlashni soddalashtiruvchi yechimlar taqdim etadi. **P**ercona **M**onitoring and **M**anagement (**PMM**) esa ma'lumotlar bazalari va serverlarni kuzatish, analiz qilish va boshqarish uchun kuchli vosita hisoblanadi.
 
 **PostgreSQL** - yuqori darajada kengaytiriladigan va mustahkam open source ma'lumotlar bazasi tizimi bo'lib, dunyo bo'ylab keng qo'llaniladi. Uni samarali boshqarish uchun monitoring juda muhimdir. Monitoring orqali tizim yuklamasini(load) kuzatish va muvozanatni ta'minlash, write va read jarayonlarining samaradorligini oshirish, resurslardan samarali foydalanish va nosozliklarni oldindan aniqlash kabi maqsadlarga erishish mumkin.
 
@@ -27,7 +27,7 @@ Ushbu amaliyotni amalga oshirish uchun bizga quyidagi minimum server talablarida
 <Callout type="info" emoji="">
 **Minimum Server talabi**
 
-Eslatma: Server Linux OS ning qaysi distorligi muhim emas bu qo'llanmada Redhad based va Debian based serverlarda ko'rstiladi
+Eslatma: Server Linux OS ning qaysi distroligi muhim emas bu qo'llanmada Red Hat based va Debian based serverlarda ko'rsatiladi
 
 | Host        | OS            | RAM            | CPU           | Xotira       |
 | ----------- | ------------- | -------------- | ------------- |------------- |
@@ -63,18 +63,18 @@ Hammasi bilan tanishib chiqganimizdan keyin ishni boshlasak ham bo'ladi monitori
 Agar serveringizda Docker o'rnatilmagan bo'lsa quyidagi qo'llanma yordami Docker o'rnatib olishingiz mumkin. - [**Linux serverlarga Docker o'rnatish**](https://devops-journey.uz/guides/konteyner/docker-ornatish)
 </Callout>
 
-PMM server malumotlarini saqlash uchun docker volumedan foydalanadi bu qo'llanmada biz host-pathdan foydalanamiz. PMM server malumotlarini saqlash uchun directoriya ochib olamiz.
+**1->** PMM server malumotlarini saqlash uchun docker volumedan foydalanadi bu qo'llanmada biz host-pathdan foydalanamiz. PMM server malumotlarini saqlash uchun directoriya ochib olamiz.
 
 ```bash
 mkdir -p /mnt/pmm
 chmod 0755 /mnt/pmm
 ```
-PMM docker imageni pull qilib olamiz.
+**2->** PMM docker imageni pull qilib olamiz.
 
 ```bash
 docker pull percona/pmm-server:2
 ```
-PMM serverni ishga tushiramiz.
+**3->** PMM serverni ishga tushiramiz.
 
 ```bash
 docker run -d \
@@ -87,7 +87,7 @@ docker run -d \
 ```
 ![pmm-postgresql-monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgres-monitoring-pmm/4.png)
 
-PMM serverni Docker yordamida ishga tushirganimizdan keyin 1-daqida kutib keyin container ichiga kikrib admin parol qo'yishimiz kerak bo'ladi.
+**4->** PMM serverni Docker yordamida ishga tushirganimizdan keyin 1-daqida kutib keyin container ichiga kirib admin parol qo'yishimiz kerak bo'ladi.
 
 ```bash
 docker exec -t pmm-server change-admin-password parolimiziLIR34123
@@ -95,7 +95,7 @@ docker exec -t pmm-server change-admin-password parolimiziLIR34123
 Parol qo'yganimizda rasmdagidek bo'lishi kerak.
 ![pmm-postgresql-monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgres-monitoring-pmm/5.png)
 
-Brazuer orqali serveringiz IPsiga 80 portga kirsangiz sizda PMM server Grafana ochilishi kerak rasmdagidek.
+**5->** Brazuer orqali serveringiz IPsiga 80 portga kirsangiz sizda PMM server Grafana ochilishi kerak rasmdagidek.
 Bu yerda default user `admin` parol esa yuqorida qo'ygan parolimiz bizning holatda `parolimiziLIR34123`.
 
 ![pmm-postgresql-monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgres-monitoring-pmm/6.png)
@@ -104,28 +104,28 @@ PMM serverga login qilib kirganingizda sizda default Home Dashbord ochilishi ker
 
 ![pmm-postgresql-monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgres-monitoring-pmm/7.png)
 
-Okeyy PMM serverni o'rnatib solzab oldik endi PMM client o'rnatishimiz kerak.
+Okeyy PMM serverni o'rnatib sozlab oldik endi PMM client o'rnatishimiz kerak.
 
 ## PMM client o'rnatish
 
-PMM clientni paketini serverlarimizga o'rnatamiz.
+**1->** PMM clientni paketini serverlarimizga o'rnatamiz.
 
 ### Debian-based serverlar uchun
 
-Repositoriyani sozlab olamiz
+**1->** Repositoriyani sozlab olamiz
 
 ```bash
 wget https://repo.percona.com/apt/percona-release_latest.generic_all.deb
 dpkg -i percona-release_latest.generic_all.deb
 ```
 
-PMM clientni install qilamiz.
+**2->** PMM clientni install qilamiz.
 
 ```bash
 sudo apt update
 sudo apt install -y pmm2-client
 ```
-Versiyasini tekshiramiz.
+**3->** Versiyasini tekshiramiz.
 
 ```bash
 pmm-admin --version
@@ -133,25 +133,25 @@ pmm-admin --version
 
 ### Redhat-based serverlar uchun
 
-Repositoriyani sozlab olamiz
+**1->** Repositoriyani sozlab olamiz
 
 ```bash
 sudo yum install -y https://repo.percona.com/yum/percona-release-latest.noarch.rpm
 ```
 
-PMM clientni install qilamiz.
+**2->** PMM clientni install qilamiz.
 
 ```bash
 sudo yum install -y pmm2-client
 ```
-Versiyasini tekshiramiz.
+**3->** Versiyasini tekshiramiz.
 
 ```bash
 pmm-admin --version
 ```
 ![pmm-postgresql-monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgres-monitoring-pmm/8.png)
 
-PMM client o'rnatib olganimizdan keyin uni PMM serverga register qilib qo'shishimiz kerak bo'ladi, buning uchun quyidagi buyruqdan foydalanamiz.
+**2->** PMM client o'rnatib olganimizdan keyin uni PMM serverga register qilib qo'shishimiz kerak bo'ladi, buning uchun quyidagi buyruqdan foydalanamiz.
 
 ```bash
 pmm-admin config --server-insecure-tls --server-url=https://admin:parolimiziLIR34123@137.184.123.133:443 143.198.149.142 generic dev-postgres
@@ -170,15 +170,21 @@ Keling bu buyruqni tushuntirib beraman.
 
 ![pmm-postgresql-monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgres-monitoring-pmm/9.png)
 
-PMM Server dashbaordga kirib **Node Names** bo'limini ochganimizda bizning register qilgan serverimiz chiqishi kerak.
+**3->** PMM Server dashbaordga kirib **Node Names** bo'limini ochganimizda bizning register qilgan serverimiz chiqishi kerak.
 ![pmm-postgresql-monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgres-monitoring-pmm/10.png)
 
 ## PostgreSQL'ga PMM client o'rnatish
 
 Yuyorida biz PMM server va PMM client o'rnatib sozlab oldik. Bu bosqichda biz PostgreSQL'ga PMM PostgreSQL monitoring uchun kerakli tollarni o'rnatib config qilib PMM serverga ulaymiz.
 
+<Callout type="info" emoji="">
+Agar serveringizda **PostgreSQL** o'rnatilmagan bo'lsa quyidagi qo'llanma yordami **PostgreSQL** o'rnatib olishingiz mumkin. - [**Linux Serverlarga Postgresql o'rnatish**](https://devops-journey.uz/guides/database/postgresql-ornatish).
+
+Amaliyotda ishlatilgan PostgreSQl versiyasi **17**
+</Callout>
+
 ### pmm userini sozlash
-**1->** PMM uchun PostgreSQL'da super user ochhib parol qo'yishimiz kerak bo'ladi.
+**1->** PMM uchun PostgreSQL'da super user ochib parol qo'yishimiz kerak bo'ladi.
 
 ```bash
 sudo -u postgres psql
@@ -194,7 +200,7 @@ Debian based serverlar uchun `pg_hba.conf` config fayli `/etc/postgresql/{postgr
 ```bash
 sudo nano /etc/postgresql/17/main/pg_hba.conf
 ```
-Redhad based serverlar uchun `pg_hba.conf` config fayli `/var/lib/pgsql/{postgres-versiyasi}/data/pg_hba.conf ` da joylashgan bo'ladi
+RedHat based serverlar uchun `pg_hba.conf` config fayli `/var/lib/pgsql/{postgres-versiyasi}/data/pg_hba.conf ` da joylashgan bo'ladi
 ```bash
 sudo nano /var/lib/pgsql/17/data/pg_hba.conf 
 ```
@@ -242,24 +248,24 @@ Buning uchun `pg_stat_monitor` extensionni o'rnatib olishimiz kerak bo'ladi, und
 
 #### Debian-based serverlar uchun
 
-Kerakli tollarni isntall qilib olamiz.
+**1->** Kerakli tollarni isntall qilib olamiz.
 
 ```bash
 sudo apt update
 sudo apt install curl
 ```
 
-`percona-release` repositoriya paketini yuklab olamiz.
+**2->** `percona-release` repositoriya paketini yuklab olamiz.
 ```bash
 curl -O https://repo.percona.com/apt/percona-release_latest.generic_all.deb
 ```
 
-`percona-release`ni install qilamiz.
+**3->** `percona-release`ni install qilamiz.
 
 ```bash
 sudo apt install gnupg2 lsb-release ./percona-release_latest.generic_all.deb
 ```
-Repolarni  yangilaymiz.
+**4->** Repolarni  yangilaymiz.
 
 ```bash
 sudo apt update
@@ -267,7 +273,7 @@ sudo apt update
 
 #### Redhat-based serverlar uchun
 
-`percona-release`ni install qilamiz.
+**1->** `percona-release`ni install qilamiz.
 
 ```bash
 sudo yum install -y https://repo.percona.com/yum/percona-release-latest.noarch.rpm
@@ -277,7 +283,7 @@ sudo yum install -y https://repo.percona.com/yum/percona-release-latest.noarch.r
 
 `percona-release` o'rnatilgandan keyin `pg_stat_monitor`niu o'rnatib sozlasak bo'ladi.
 
-Percona repositoriyani enable qilishimiz kerak postgres versiyamizga mosini, bizning holatimizda postgres versiyasi 17 shuninch uchun `ppg17` agar 16 bo'lsa `ppg16`.
+**1->** Percona repositoriyani enable qilishimiz kerak postgres versiyamizga mosini, bizning holatimizda postgres versiyasi 17 shuning uchun `ppg17` agar 16 bo'lsa `ppg16`.
 
 ```bash
 sudo percona-release setup ppg17
@@ -294,13 +300,13 @@ sudo apt-get install percona-pg-stat-monitor17
 sudo yum install percona-pg-stat-monitor17
 ```
 
-`pg_stat_monitor` o'rnatganimizdan keyin postgresqlga extension qilib config qilishimiz kerak bo'ladi.
+**2->** `pg_stat_monitor` o'rnatganimizdan keyin postgresqlga extension qilib config qilishimiz kerak bo'ladi.
 
 Debian based serverlar uchun `postgresql.conf` config fayli `/etc/postgresql/{postgres-versiyasi}/main/postgresql.conf` da joylashgan bo'ladi
 ```bash
 sudo nano /etc/postgresql/17/main/postgresql.conf
 ```
-Redhad based serverlar uchun `postgresql.conf` config fayli `/var/lib/pgsql/{postgres-versiyasi}/data/postgresql.conf ` da joylashgan bo'ladi
+RedHat based serverlar uchun `postgresql.conf` config fayli `/var/lib/pgsql/{postgres-versiyasi}/data/postgresql.conf ` da joylashgan bo'ladi
 ```bash
 sudo nano /var/lib/pgsql/17/data/postgresql.conf 
 ```
@@ -311,7 +317,7 @@ pg_stat_monitor.pgsm_normalized_query = on
 pg_stat_monitor.pgsm_enable_query_plan = on
 ```
 
-Konfiguratsiyadan keyin postgresqlga reload beramiz.
+**3->** Konfiguratsiyadan keyin postgresqlga reload beramiz.
 
 ```bash
 # Debin-based
@@ -320,7 +326,7 @@ sudo systemctl reload postgresql
 sudo systemctl reload postgresql-17
 ```
 
-Posgresqlda extension yaratamiz.
+**4->** Posgresqlda extension yaratamiz.
 
 ```bash
 sudo -u postgres psql
@@ -328,7 +334,7 @@ CREATE EXTENSION pg_stat_monitor;
 \q
 ```
 
-Versiyasini tekshiramiz.
+**5->** Versiyasini tekshiramiz.
 
 ```bash
 sudo -u postgres psql
@@ -337,7 +343,7 @@ SELECT pg_stat_monitor_version();
 ```
 ![pmm-postgresql-monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgres-monitoring-pmm/13.png)
 
-PMM postgres clientni endi PMM serverga ulashimiz kerak bo'ladi.
+**6->** PMM postgres clientni endi PMM serverga ulashimiz kerak bo'ladi.
 
 ```bash
 pmm-admin add postgresql \
@@ -350,7 +356,7 @@ pmm-admin add postgresql \
 Bunda `--username` postgresdagi pmm user, `--password` esa postgres pmm userning paroli va `--server-url`da PMM server crdentialslari.
 ![pmm-postgresql-monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgres-monitoring-pmm/14.png)
 
-Postgres ulangani quyidagi buyruq orqali ko'rishingiz mumkin, servicelar statusi **Running**
+**7->** Postgres ulangani quyidagi buyruq orqali ko'rishingiz mumkin, servicelar statusi **Running**
 ```bash
 pmm-admin list
 ```
@@ -368,7 +374,7 @@ Chap tomonda bo'limlarda **PostgreSQL** bo'limi bor uni ochib ko'rishingiz mumki
 Bu qismda **Node Name** va **Service Named**da biz qo'shgan server va service nomi chiqishi kerak.
 ![pmm-postgresql-monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgres-monitoring-pmm/26.png)
 
-Umumiy PostgreSQL dashboard quyidagicha olishi kerak.
+Umumiy PostgreSQL dashboard quyidagicha bo'lishi kerak.
 ![pmm-postgresql-monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgres-monitoring-pmm/15.png)
 
 Percona PMM yana bir juda kerakli xususiyati bu **Query Analytics(QAN)** hisoblanadi. Keling uni sinab ko'ramiz. 
@@ -395,6 +401,7 @@ Percona OS monitoringda ham **Node Compare** dashboardi bor u bilan serverlaring
 
  * [**PostgreSQLga kirish**](https://devops-journey.uz/guides/database/postgresql-kirish)
  * [**PostgreSQL Monitoring**](https://devops-journey.uz/guides/database/postgres-monitoring)
+ * [**PostgreSQL High-Availability Cluster**](https://github.com/vitabaks/postgresql_cluster)
 
 **Sana:** 2024.12.07(2024-yil 7-dekabr)
 
