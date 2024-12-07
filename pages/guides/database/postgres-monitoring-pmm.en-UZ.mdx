@@ -172,3 +172,237 @@ Keling bu buyruqni tushuntirib beraman.
 
 PMM Server dashbaordga kirib **Node Names** bo'limini ochganimizda bizning register qilgan serverimiz chiqishi kerak.
 ![pmm-postgresql-monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgres-monitoring-pmm/10.png)
+
+## PostgreSQL'ga PMM client o'rnatish
+
+Yuyorida biz PMM server va PMM client o'rnatib sozlab oldik. Bu bosqichda biz PostgreSQL'ga PMM PostgreSQL monitoring uchun kerakli tollarni o'rnatib config qilib PMM serverga ulaymiz.
+
+### pmm userini sozlash
+**1->** PMM uchun PostgreSQL'da super user ochhib parol qo'yishimiz kerak bo'ladi.
+
+```bash
+sudo -u postgres psql
+```
+
+```sql
+CREATE USER pmm WITH SUPERUSER ENCRYPTED PASSWORD 'parolcha03jldOSL';
+```
+
+**2->** PMM client PostgreSQL bazaga local ulanishi uchun `pg_hba.conf` ni quyidagicha config qilishimiz kerak.
+
+Debian based serverlar uchun `pg_hba.conf` config fayli `/etc/postgresql/{postgres-versiyasi}/main/pg_hba.conf` da joylashgan bo'ladi
+```bash
+sudo nano /etc/postgresql/17/main/pg_hba.conf
+```
+Redhad based serverlar uchun `pg_hba.conf` config fayli `/var/lib/pgsql/{postgres-versiyasi}/data/pg_hba.conf ` da joylashgan bo'ladi
+```bash
+sudo nano /var/lib/pgsql/17/data/pg_hba.conf 
+```
+```conf
+local   all             pmm                                     md5
+```
+```conf {17}
+# Database administrative login by Unix domain socket
+local   all             postgres                                peer
+# TYPE  DATABASE        USER            ADDRESS                 METHOD
+# "local" is for Unix domain socket connections only
+local   all             all                                     peer
+# IPv4 local connections:
+host    all             all             127.0.0.1/32            scram-sha-256
+# IPv6 local connections:
+host    all             all             ::1/128                 scram-sha-256
+# Allow replication connections from localhost, by a user with the
+# replication privilege.
+local   replication     all                                     peer
+host    replication     all             127.0.0.1/32            scram-sha-256
+host    replication     all             ::1/128                 scram-sha-256
+host    all             all              0.0.0.0/0              md5
+host    all             all              ::/0                   md5
+local   all             pmm                                     md5
+```
+
+**3->** Konfiguratsiyadan keyin konfiglarni qayta yuklash kerak bo'ladi.
+
+```bash
+su - postgres
+psql -c "select pg_reload_conf()"
+```
+
+**4->** Tekshirib ko'rishimiz mumkin, parol so'ralganda `pmm` userni parolini kiritamiz.
+
+```bash
+psql -h localhost -U pmm -d postgres -c "\conninfo"
+```
+![pmm-postgresql-monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgres-monitoring-pmm/11.png)
+
+### `percona-release` o'rnatish
+PostgreSQL monitoring qilish uchun postgres extensionlar o'rnatishimiz kerak bo'ladi bunda rasmiy postgresqlning `pg_stat_statements` extensioni va perconaning `pg_stat_monitor` extensioni bor bu amaliyotda biz `pg_stat_monitor` extensiondan foydalanamiz.
+
+Buning uchun `pg_stat_monitor` extensionni o'rnatib olishimiz kerak bo'ladi, undan oldin esa  `percona-release` o'rnatishimiz kerak bo'ladi
+
+#### Debian-based serverlar uchun
+
+Kerakli tollarni isntall qilib olamiz.
+
+```bash
+sudo apt update
+sudo apt install curl
+```
+
+`percona-release` repositoriya paketini yuklab olamiz.
+```bash
+curl -O https://repo.percona.com/apt/percona-release_latest.generic_all.deb
+```
+
+`percona-release`ni install qilamiz.
+
+```bash
+sudo apt install gnupg2 lsb-release ./percona-release_latest.generic_all.deb
+```
+Repolarni  yangilaymiz.
+
+```bash
+sudo apt update
+```
+
+#### Redhat-based serverlar uchun
+
+`percona-release`ni install qilamiz.
+
+```bash
+sudo yum install -y https://repo.percona.com/yum/percona-release-latest.noarch.rpm
+```
+
+### `pg_stat_monitor` o'rnatish va config qilish
+
+`percona-release` o'rnatilgandan keyin `pg_stat_monitor`niu o'rnatib sozlasak bo'ladi.
+
+Percona repositoriyani enable qilishimiz kerak postgres versiyamizga mosini, bizning holatimizda postgres versiyasi 17 shuninch uchun `ppg17` agar 16 bo'lsa `ppg16`.
+
+```bash
+sudo percona-release setup ppg17
+```
+![pmm-postgresql-monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgres-monitoring-pmm/12.png)
+
+`pg_stat_monitor` paketini o'rnatamiz.
+#### Debian based serverlar uchun
+```bash
+sudo apt-get install percona-pg-stat-monitor17
+```
+#### Redhat based serverlar uchun
+```bash
+sudo yum install percona-pg-stat-monitor17
+```
+
+`pg_stat_monitor` o'rnatganimizdan keyin postgresqlga extension qilib config qilishimiz kerak bo'ladi.
+
+Debian based serverlar uchun `postgresql.conf` config fayli `/etc/postgresql/{postgres-versiyasi}/main/postgresql.conf` da joylashgan bo'ladi
+```bash
+sudo nano /etc/postgresql/17/main/postgresql.conf
+```
+Redhad based serverlar uchun `postgresql.conf` config fayli `/var/lib/pgsql/{postgres-versiyasi}/data/postgresql.conf ` da joylashgan bo'ladi
+```bash
+sudo nano /var/lib/pgsql/17/data/postgresql.conf 
+```
+```conf
+shared_preload_libraries = 'pg_stat_monitor'
+pg_stat_monitor.pgsm_query_max_len = 2048
+pg_stat_monitor.pgsm_normalized_query = on
+pg_stat_monitor.pgsm_enable_query_plan = on
+```
+
+Konfiguratsiyadan keyin postgresqlga reload beramiz.
+
+```bash
+# Debin-based
+sudo systemctl reload postgresql
+# Redhat based
+sudo systemctl reload postgresql-17
+```
+
+Posgresqlda extension yaratamiz.
+
+```bash
+sudo -u postgres psql
+CREATE EXTENSION pg_stat_monitor;
+\q
+```
+
+Versiyasini tekshiramiz.
+
+```bash
+sudo -u postgres psql
+SELECT pg_stat_monitor_version();
+\q
+```
+![pmm-postgresql-monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgres-monitoring-pmm/13.png)
+
+PMM postgres clientni endi PMM serverga ulashimiz kerak bo'ladi.
+
+```bash
+pmm-admin add postgresql \
+--username=pmm \
+--password=parolcha03jldOSL \
+--server-url=https://admin:parolimiziLIR34123@137.184.123.133:443 \
+--server-insecure-tls \
+--service-name=dev-postgres
+```
+Bunda `--username` postgresdagi pmm user, `--password` esa postgres pmm userning paroli va `--server-url`da PMM server crdentialslari.
+![pmm-postgresql-monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgres-monitoring-pmm/14.png)
+
+Postgres ulangani quyidagi buyruq orqali ko'rishingiz mumkin, servicelar statusi **Running**
+```bash
+pmm-admin list
+```
+![pmm-postgresql-monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgres-monitoring-pmm/16.png)
+## Dashboardlar bilan ishlash
+
+Okey biz yuqorida PMM server o'rnatib sozladik PMM client o'rnatib PMM serverga register qildik va Postgresql'ga `pg_stat_monitor` o'rnatib PMM serverga bo'gladik va biz eng oxirgi bosqichga Monitoring Dashboardlar bilan ishlash bosqichiga keldik.
+
+Percona PMM Home dashboardi quyidagicha ko'rinishda bo'ladi.
+![pmm-postgresql-monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgres-monitoring-pmm/24.png)
+
+Chap tomonda bo'limlarda **PostgreSQL** bo'limi bor uni ochib ko'rishingiz mumkin.
+
+![pmm-postgresql-monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgres-monitoring-pmm/17.png)
+Bu qismda **Node Name** va **Service Named**da biz qo'shgan server va service nomi chiqishi kerak.
+![pmm-postgresql-monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgres-monitoring-pmm/26.png)
+
+Umumiy PostgreSQL dashboard quyidagicha olishi kerak.
+![pmm-postgresql-monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgres-monitoring-pmm/15.png)
+
+Percona PMM yana bir juda kerakli xususiyati bu **Query Analytics(QAN)** hisoblanadi. Keling uni sinab ko'ramiz. 
+![pmm-postgresql-monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgres-monitoring-pmm/18.png)
+Har bir queryni ochib analiz qilishimiz ham mumkin.
+![pmm-postgresql-monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgres-monitoring-pmm/19.png)
+
+PostgreSQL bo'limini ochsak bir nechta dashboardlar chiqadi.
+![pmm-postgresql-monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgres-monitoring-pmm/20.png)
+Dashboardlar orasida **PostgreSQL Instance Compare** dashboardi ham juda foydali u bilan siz bir nechta PostgreSQL bazalarini tenglashtirib monitoring qilishingiz mumkin.
+![pmm-postgresql-monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgres-monitoring-pmm/21.png)
+
+![pmm-postgresql-monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgres-monitoring-pmm/22.png)
+
+Percona PMM databazalardan tashqari OS'ni ham monitoring qiladi, quyida Dashboardlar ro'yxati.
+![pmm-postgresql-monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgres-monitoring-pmm/23.png)
+Percona OS monitoringda ham **Node Compare** dashboardi bor u bilan serverlaringizni taqqoslab monitoring qilsangiz bo'ladi.
+![pmm-postgresql-monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgres-monitoring-pmm/25.png)
+
+
+## Qo'shimcha
+
+<Callout type="info" emoji="">
+
+ * [**PostgreSQLga kirish**](https://devops-journey.uz/guides/database/postgresql-kirish)
+ * [**PostgreSQL Monitoring**](https://devops-journey.uz/guides/database/postgres-monitoring)
+
+**Sana:** 2024.12.07(2024-yil 7-dekabr)
+
+**Oxirgi yangilanish:** 2024.12.07(2024-yil 7-dekabr)
+
+**Muallif: Otabek Ismoilov**
+
+| [Telegram](https://t.me/Otabek_Ismoilov) | [Github](https://github.com/ismoilovdevml) | [LinkedIn](https://www.linkedin.com/in/otabek-ismoilov/) |
+| - | - | - |
+
+</Callout>
