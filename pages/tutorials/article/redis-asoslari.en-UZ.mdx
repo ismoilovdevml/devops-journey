@@ -1,0 +1,67 @@
+---
+image: https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/redis-asoslari/banner.png
+description: "Redis asoslari"
+---
+
+import { Callout } from "nextra-theme-docs";
+
+# Redis asoslari | Arxitektrura, O'rnatish, Konfiguratsiya, Monitoring
+![redis-asoslari](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/redis-asoslari/banner.png)
+
+
+## Kirish 
+
+Redis(**RE**mote **DI**ctionary **S**ervice) — bu open-source, in-memory key-value ma'lumotlar bazasi(database)  bo'lib, u yuqori tezlikda(high-speed) ma'lumotlarni saqlash va olish imkonini beradi. U asosan keshlash(caching), message-queuing va real-time data streamlarini boshqarish uchun ishlatiladi. Redis turli xil data structurelarini qo'llab-quvvatlaydi, jumladan, `strings`,`lists`, `sets`,`hashes` va `sorted sets`
+
+![redis-asoslari](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/redis-asoslari/1.png)
+
+**Redis** —  2009-yilda italiyalik dasturchi **Salvatore Sanfilippo** tomonidan ishlab chiqilgan.
+Dastlab, u o'zining shaxsiy loyihasi uchun Redisni yaratgan, ammo keyinchalik uni open source loyiha sifatida ommaga taqdim etgan. 2015-yildan 2020-yilgacha Sanfilippo Redis Labs (hozirgi nomi Redis) homiyligida loyiha jamoasini boshqargan. 2020-yilda u loyiha rahbarligidan chetlangan. 2021-yilda Redis Labs kompaniyasi nomidan "Labs" so'zini olib tashlab, "Redis" deb atala boshlandi. Hozirda Redis open source loyiha bo'lib, uning rivojlanishi va qo'llab-quvvatlanishi global dasturchilar hamjamiyati tomonidan amalga oshiriladi.
+
+
+Redisning asosiy afzalliklari quyidagilardan iborat:
+* **Yuqori tezlik->** Ma'lumotlarning in memory saqlanishi tufayli Redis juda tezkor ishlashni ta'minlaydi.
+* **Oson foydalanish->** Redisning sodda va intuitiv interfeysi dasturchilar uchun qulaylik yaratadi.
+* **Turli Data Structurelar bilan ishlash->** Redis bir nechta data structurelarini qo'llab-quvvatlaydi, bu esa uni moslashuvchan qiladi.
+
+Redis quyidagi holatlarda keng qo'llaniladi:
+* **Keshlash(Caching)->** Veb-saytlar va applicationlarda tezkor ma'lumotlarni saqlash uchun.
+* **Sessiyalarni boshqarish->** Foydalanuvchi sessiyalarini samarali boshqarish va saqlashda.
+* **Real-time Data Streaming->** Message queue va real-time tahlillar uchun.
+* **Leaderboardlar->** O'yinlar va boshqa applicationlarda reytinglarni saqlash va boshqarish uchun.
+* **Geoma'lumotlar(Geospatial Data)->** Geografik joylashuv ma'lumotlarini saqlash va qayta ishlashda.
+
+## Arxitektura
+
+Redis eng ko'p qo''laniladigan amaliyot bu keshlashdir. Masalan Redis PostgreSQl/MySQL va boshqa databaselar olida turadi va client yuborgan requestlar birinchi redis cachega boradi aagr redisda bo'lsa tezda responseni o'zini redis qaytaradi ya'ni ko'p bir xil requestlarni redis keshda ushlab turadi va keshdan response qaytaradi bunda databasega load(yuklama) tushmaydi.
+![redis-asoslari](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/redis-asoslari/2.png)
+
+Redis in-memory(RAM) bo'lgani uchun juda tez ishlaydi yani traditional databaselar HDD/SSD larga qaraganda juda tezkor buni quyidagi rasmda ko'rishingiz mumkin.
+
+![redis-asoslari](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/redis-asoslari/3.jpg)
+
+Bu qismda quyidagialrni ko'rib chiqamiz.
+
+* yagona Redis
+* Redis HA
+* Redis Sentinel
+* Redis Cluster
+
+### Yagona Redis
+
+Yagona Redis instance Redisning eng oddiy foydalanishidir ya'ni bitta vm serverga Redis o'rnatiladi va ishlatiladi. Bun yechim kichik loyihalar va development/testing environmentlar uchundir, bu tanlov katta production uchun mos kelmaydi chunki agar redis ishlab turgan vmda muammoi bo'lsa yoki ishlamay qolsa muammolar keltirib chiqaradi.
+
+
+Redis ma'lumotlarni doimiy saqlash uchun ikkita asosiy mexanizmdan foydalanadi: RDB (Redis Database) va AOF (Append-Only File). Ularning har biri o'ziga xos xususiyatlarga ega bo'lib, turli holatlar uchun moslashgan.
+
+RDB — bu snapshot-based ishlaydigan persistence mexanizmi. Redis ma'lumotlarining aniq bir vaqt oralig'idagi snapshotini diskka yozadi. Ushbu snapshot ma'lumotlarni Redisni qayta ishga tushirganda tiklash imkonini beradi. Redis belgilangan vaqt oralig'ida yoki ma'lum miqdordagi o'zgarishlardan so'ng snapshot yaratadi. Snapshot `.rdb` fayl formatida saqlanadi. RDB procssesi main procsessdan ajralgan fork procsessda ishlaydi. RBD qulayliklari: Snapshot procssesi diskka yozilganligi uchun juda samarali va RDB fayllari compress(siqilgan) qilingan shaklda saqlanadi va kam joy egallaydi. Kamchiliklari: Snapshotlar ma'lum vaqt oralig'ida yaratilganligi sababli Redis to'satdan to'xtab qolsa, so'nggi o'zgarishlar yo'qolishi mumkin va     fork processllari ko'p memory ishlatishi mumkin.
+
+AOF — bu logga yozish (write-ahead log) usuli bilan ishlaydigan saqlash mexanizmi. Redisdagi har bir yozish (write) amali ketma-ket append usulida faylga yoziladi. Redis qayta ishga tushirilganida datasetni tiklash uchun ushbu operatsiyalarni ketma-ket takrorlab chiqadi.
+
+Har bir yozish amali diskdagi `appendonly.aof` fayliga qo'shiladi.Redis qayta ishga tushganda, AOF faylidagi yozuvlar ketma-ket bajarilib, ma'lumotlar tiklanadi. AOF qulayliklari: Ma'lumot yo'qotish xavfi minimal, chunki har bir amal yozib boriladi va AOF fayli inson o'qiy oladigan formatda bo'ladi.Restore(tiklash) jarayoni RDB ga qaraganda aniqroq va ancha ishonchli. AOF kamchiliklari: Har bir amal yozilganligi sababli AOF fayli kattalashishi mumkin va sizga ko'proq storage kerak bo'lishi mumkin va Restore qilish RBD ga qaraganda sekin bo'ladi.
+
+Redisda RBD va AOFni ham birgalikda ishlatish mumkin.
+
+### HA Redis
+
+![redis-asoslari](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/redis-asoslari/4.png)
