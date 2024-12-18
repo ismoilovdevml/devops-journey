@@ -5,7 +5,7 @@ description: "Redis asoslari"
 
 import { Callout } from "nextra-theme-docs";
 
-# Redis asoslari | Arxitektrura, O'rnatish, Konfiguratsiya, Monitoring
+# Redis asoslari | Arxitektura, O'rnatish, Konfiguratsiya, Monitoring
 ![redis-asoslari](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/redis-asoslari/banner.png)
 
 
@@ -82,4 +82,115 @@ Keling endi buni Afzalliklari/Kamchiliklarini ko'rib chiqsak.
 ![redis-asoslari](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/redis-asoslari/5.png)
 **Redis Sentinel** — bu high availability va avtomatik failoverni ta'minlash uchun mo'ljallangan komponentdir. Sentinel Redis serverlarini monitoring qiladi, avariyalar aniqlanganda avtomatik ravishda yangi master nodeni tanlaydi va replicalarni unga ulaydi. Redis sentinel master va replica nodelarning holatini doimiy kuzatib boradi va nodelar ishlamay qolganda xabar beradi. Agar master server ishdan chiqqanda avtomatik ravishda yangi master tayinlaydi va replicalarni yangi master bilan bog'laydi va sozlamalarni boshqaradi.
 
-Sentinel doimiy ravishda master va replica nodelarga so'rov(request) yuborib, ularning holatini tekshiradi, nodelar `PING` va `PONG` javoblari(response) orqali tekshiriladi. Agar master 5 soniya davomida javob bermasa, Sentinel nodeni `subjectively down`, ko'pchilik Sentinel jarayonlari bu holatni tasdiqlasa, node `objectively down` deb e'lon qilinadi.Agar master server ishlamay qolsa (fail holat), Sentinel avtomatik ravishda eng yangi ma'lumotlarga ega bo'lgan replica nodeni yangi master sifatida tanlaydi va qolgan replica nodelarni yangi master bilan ulaydi. Sentinel barcha replicalar uchun yangi master tugunning IP-manzilini va portini yangilaydi. Failover uchun kamida 3 ta Sentinel kerak bo'ladi.
+Sentinel doimiy ravishda master va replica nodelarga so'rov(request) yuborib, ularning holatini tekshiradi, nodelar `PING` va `PONG` javoblari(response) orqali tekshiriladi. Agar master 5 soniya davomida javob bermasa, Sentinel nodeni `subjectively down`, ko'pchilik Sentinel jarayonlari bu holatni tasdiqlasa, node `objectively down` deb e'lon qilinadi.Agar master server ishlamay qolsa (fail holat), Sentinel avtomatik ravishda eng yangi ma'lumotlarga ega bo'lgan replica nodeni yangi master sifatida tanlaydi va qolgan replica nodelarni yangi master bilan ulaydi. Sentinel barcha replicalar uchun yangi master nodening IP-manzilini va portini yangilaydi. Failover uchun kamida 3 ta Sentinel kerak bo'ladi.
+
+### Redis Cluster
+![redis-asoslari](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/redis-asoslari/6.png)
+
+**Redis Cluster** — bu sharding va disturbuted data uchun mo'ljallangan disturbuted systemdir. Redis Cluster yordamida katta hajmdagi ma'lumotlarni bir nechta nodelar o'rtasida taqsimlab ishlatish mumkin.
+
+Redis Cluster ma'lumotlarni `hash-slot`lar orqali bo'lib saqlaydi. Umumiy `16384` ta `hash-slot` mavjud, har bir node bu slotlarning ma'lum qismini boshqaradi va shu bilan katta malumotlarni sharding qilib bir nechta bo'lkalarga bo'lib samarali boshqarish mumkin.
+
+Redis clusterda har bir master ma'lumotlarning bir qismini boshqaradi (hash-slotlarni). Master nodelar write va read operatsiyalarini bajaradi. Har bir master uchun kamida bitta replica bo'lishi kerak, replica master ishlamay qolganda uning o'rnini egallaydi (failover). Redis Cluster ma'lumotlarni 1`6384` ta `hash-slot`ga bo'ladi. Kalitlarning hash qiymati (CRC16) bu slotlardan biriga moslanadi. Nodelar hash-slotlarning muayyan qismini boshqaradi, masalan:
+
+* **master1:** 0-5000
+* **master2:** 5001-10000
+* **master3:** 10001-16384
+
+**Gossip** — bu disturbuted systemlarda nodelarning o'zaro aloqa qilish va tizimning umumiy holatini bilish uchun ishlatiladigan protokol. PING va PONG paketlari yordamida nodelar bir-birining holatini tekshiradi: Har bir node o'zining qo'shni nodelariga PING paketlarini yuboradi.Qo'shni tugunlar PONG javobi qaytaradi. Agar PONG javobi kelmasa, nodening ishlamayotgani deb hisoblanadi. Agar bir node boshqa nodeninh ishlamay qolganini aniqlasa, bu ma'lumotni klaster bo'ylab Gossip orqali tarqatadi.
+
+
+## Redis o'rnatish
+
+Yuqorida biz Redis nima? nima uchun ishlatiladi? qanday ishlaydi? va qanday arxitektura degan savollarni o'rganib chiqdik endi esa yagona instanceli Redis o'rnatishni ko'rib chiqsak bo'ladi.
+
+
+Ushbu amaliyotni amalga oshirish uchun bizga quyidagi minimum server talablaridagi server kerak bo'ladi.
+
+<Callout type="info" emoji="">
+**Minimum Server talabi**
+
+Eslatma: Server Linux OS ning qaysi distroligi muhim emas bu qo'llanmada Red Hat based va Debian based serverlarda ko'rsatiladi
+
+| Host        | OS            | RAM            | CPU           | Xotira       |
+| ----------- | ------------- | -------------- | ------------- |------------- |
+|  redis-server        | Ubuntu 20.04 yoki Rocky Linux 8  | 4GB           | 2vCPU,1 core  | 50GB        |
+</Callout>
+
+
+### Debian based servarlar uchun
+
+**1->** Tizimni yangilab kerakli toollarni install qilib oling.
+
+```bash
+sudo apt update && sudo apt-upgrade -y
+sudo apt-get install lsb-release curl gpg
+```
+
+**2->** Redisni o'rnatamiz.
+
+```bash
+curl -fsSL https://packages.redis.io/gpg | sudo gpg --dearmor -o /usr/share/keyrings/redis-archive-keyring.gpg
+sudo chmod 644 /usr/share/keyrings/redis-archive-keyring.gpg
+echo "deb [signed-by=/usr/share/keyrings/redis-archive-keyring.gpg] https://packages.redis.io/deb $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/redis.list
+sudo apt-get update
+sudo apt-get install redis
+```
+
+**3->** Redisni ishga tushiramiz.
+
+```bash
+sudo systemctl enable redis-server
+sudo systemctl start redis-server
+```
+
+**4->** Statusini tekshiramiz.
+
+```bash
+sudo systemctl status redis-server
+```
+
+### Red Hat based servarlar uchun
+
+**1->** Tizimni yangilab kerakli toollarni install qilib oling.
+
+```bash
+sudo yum update && sudo yum upgrade -y
+```
+
+**2->** Redisni o'rnatamiz.
+
+```bash
+sudo yum install redis
+```
+
+**3->** Redisni ishga tushiramiz.
+
+```bash
+sudo systemctl enable redis
+sudo systemctl start redis
+```
+
+**4->** Statusini tekshiramiz.
+
+```bash
+sudo systemctl status redis
+```
+![redis-asoslari](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/redis-asoslari/7.png)
+
+
+Redis o'rnatganimizdan keyin uni statusini ham tekshirib keling unining to'gri ishlayotganini `redis-cli` dan foydalanib tekshiramiz.
+
+```bash
+redis-cli
+```
+
+```bash
+127.0.0.1:6379> ping
+PONG
+```
+![redis-asoslari](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/redis-asoslari/8.png)
+
+
+## Redis konfiguratsiya
+
