@@ -65,3 +65,21 @@ Redisda RBD va AOFni ham birgalikda ishlatish mumkin.
 ### HA Redis
 
 ![redis-asoslari](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/redis-asoslari/4.png)
+
+Redis replication — bu ma'lumotlarni master serverdan  replica serverlarga nusxalash jarayoni. Bu jarayon Redisning xavfsizlik, ma'lumotlarni ko'paytirish, va balanslash imkoniyatlarini yaxshilaydi. Redis replication bir yo'nalishli (masterdan replicaga) bo'lib, master node yozuvlarni qabul qiladi va uni replica nodelarga tarqatadi.
+
+Redis replication quyidagicha ishlaydi: Bir master bir nechta replica (slave) nodelarini boshqaradi va master server barcha `write`larni qabul qiladi va ma'lumotlarni replicalarga yuboradi, replica nodelar esa `read`ga javob beradi va read querilarini slave nodelar orasida taqsimlab `read` loadni kamaytirish mumkin.
+
+Replica node masterga ulanish so'rovi yuboradi (`PSYNC` buyruği yordamida) va master RDB snapshotini yaratadi va uni replicaga yuboradi.Snapshot yuklab bo'lingach, masterdagi yangi o'zgarishlar replicaga yuborila boshlaydi, keyin hamma `write`larni replicalarga yuboradi replica serverlar esa bu o'zgarishlarni qayta ishlaydi va o'zlarini yangilaydi.
+
+Keling endi buni Afzalliklari/Kamchiliklarini ko'rib chiqsak.
+
+**Afzalliklari:** Read so'rovlarini replica nodelar orasida taqsimlash mumkin bu katta hajmdagi read so'rovlarida tizimni tezkor va samarador qiladi. Agar master server ishdan chiqsa, replicalar ishlashni davom ettiradi **Redis Sentinel** yordamida **avto-failover** amalga oshiriladi. Replicalarni backup nusxalari sifatida ishlatish mumkin.
+
+**Kamchiliklarini:** Masterdagi o'zgarishlar replicaga darhol o'tmasligi mumkin shu sababli, muayyan vaqtda ma'lumotlar farqi (lag) bo'lishi mumkin. Faqat read uchun so'rovlar replicaga yo'naltiriladi. Barcha write amallari faqat masterda bajariladi va bu master serverga load oshishini bildiradi.
+
+### Redis Sentinel
+![redis-asoslari](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/redis-asoslari/5.png)
+**Redis Sentinel** — bu high availability va avtomatik failoverni ta'minlash uchun mo'ljallangan komponentdir. Sentinel Redis serverlarini monitoring qiladi, avariyalar aniqlanganda avtomatik ravishda yangi master nodeni tanlaydi va replicalarni unga ulaydi. Redis sentinel master va replica nodelarning holatini doimiy kuzatib boradi va nodelar ishlamay qolganda xabar beradi. Agar master server ishdan chiqqanda avtomatik ravishda yangi master tayinlaydi va replicalarni yangi master bilan bog'laydi va sozlamalarni boshqaradi.
+
+Sentinel doimiy ravishda master va replica nodelarga so'rov(request) yuborib, ularning holatini tekshiradi, nodelar `PING` va `PONG` javoblari(response) orqali tekshiriladi. Agar master 5 soniya davomida javob bermasa, Sentinel nodeni `subjectively down`, ko'pchilik Sentinel jarayonlari bu holatni tasdiqlasa, node `objectively down` deb e'lon qilinadi.Agar master server ishlamay qolsa (fail holat), Sentinel avtomatik ravishda eng yangi ma'lumotlarga ega bo'lgan replica nodeni yangi master sifatida tanlaydi va qolgan replica nodelarni yangi master bilan ulaydi. Sentinel barcha replicalar uchun yangi master tugunning IP-manzilini va portini yangilaydi. Failover uchun kamida 3 ta Sentinel kerak bo'ladi.
