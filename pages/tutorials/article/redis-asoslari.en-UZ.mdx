@@ -123,7 +123,7 @@ Eslatma: Server Linux OS ning qaysi distroligi muhim emas bu qo'llanmada Red Hat
 **1->** Tizimni yangilab kerakli toollarni install qilib oling.
 
 ```bash
-sudo apt update && sudo apt-upgrade -y
+sudo apt update && sudo apt upgrade -y
 sudo apt-get install lsb-release curl gpg
 ```
 
@@ -134,7 +134,7 @@ curl -fsSL https://packages.redis.io/gpg | sudo gpg --dearmor -o /usr/share/keyr
 sudo chmod 644 /usr/share/keyrings/redis-archive-keyring.gpg
 echo "deb [signed-by=/usr/share/keyrings/redis-archive-keyring.gpg] https://packages.redis.io/deb $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/redis.list
 sudo apt-get update
-sudo apt-get install redis
+sudo apt-get install redis -y
 ```
 
 **3->** Redisni ishga tushiramiz.
@@ -161,7 +161,7 @@ sudo yum update && sudo yum upgrade -y
 **2->** Redisni o'rnatamiz.
 
 ```bash
-sudo yum install redis
+sudo yum install redis -y
 ```
 
 **3->** Redisni ishga tushiramiz.
@@ -194,3 +194,165 @@ PONG
 
 ## Redis konfiguratsiya
 
+Keling endi Redis o'rnatganimizdan keyin uni production ready config qilamiz.
+
+Red Hat based serverlarda `redis.conf` quyidagi papkalarda bo'ladi `/etc/redis/redis.conf` yoki `/etc/redis.conf
+` Debin based serverlarda esa `/etc/redis/redis.conf` papkada joylashgan bo'ladi.
+
+**1->** Boshlanishiga asosiy sozlanishlardan boshallik.
+
+```bash filename="redis.conf"
+bind 127.0.0.1 # yoki 0.0.0.0
+port 6379
+```
+Bu config orqali default portni o'zgartishingiz mumkin va `bind` orqali kerakli IP range yoki `0.0.0.0` qilib global qilib ochishingiz mumkin(xavfsizlik yuzasidan maslahat berilmaydi!).
+
+**2->** Xavfsizlik yuzasidan Redis user yaratib parol qo'yamiz.
+
+```bash
+requirepass mening-p@r@Lim
+```
+Redisga ulanishda Redis addres port va parol yozib ulanadi user yozish shart emas.
+
+**3->** Performance uchun config qilamiz.
+
+```bash
+maxclients 10000
+maxmemory 2gb
+maxmemory-policy allkeys-lru
+```
+
+`maxclients` Bir vaqtning o'zida qancha client ulanishi mumkinligini belgilaydi `maxmemory` esa Redis faqat ma'lum hajmdagi memorydan foydalanadi bu serverni yuqori load bermaslikga yordam beradi.
+
+`maxmemory-policy`  Xotira to'lsa, Redis eski ma'lumotlarni qanday o'chirishini belgilaydi.
+
+* `noeviction` Yangi ma'lumotlarni qabul qilmaydi.
+* `allkeys-lru` Barcha keylar ichida kam ishlatilganini o'chirib tashlaydi.
+* `volatile-lru` Faqat muddati o'tayotgan keylarni o'chirib tashlaydi.
+
+**4->** Persistence (Ma'lumotlarni Saqlash)
+Redisda ma'lumotlarni saqlash uchun **RDB** va **AOF** mexanizmlari mavjud buni yuqorida aytib o'tganmiz. Production uchun odatda **AOF** ishlatiladi.
+
+RDB config
+```bash
+save 900 1     # 15 daqiqada kamida 1 o'zgarish bo'lsa
+save 300 10    # 5 daqiqada kamida 10 o'zgarish bo'lsa
+save 60 10000  # 1 daqiqada kamida 10,000 o'zgarish bo'lsa
+```
+
+AOF config
+```bash
+appendonly yes
+appendfilename "appendonly.aof"
+appendfsync everysec
+```
+
+* `always` Har bir writedan so'ng diskka yozadi (xavfsiz, lekin sekin).
+* `everysec` Har soniyada yozadi (balanslash).
+* `no` Diskga yozishni operatsion tizimga qoldiradi (tez, lekin xavfsiz emas).
+
+Xoxlasangiz RDB yoki AOF ishlatishingiz mumkin yoki RDB va AOF ni birgalikda ishlatishingiz mumkin.
+
+**5->** Monitoring
+
+Bu config orqali loglarni yozib borish va slow query(sekin so'rovlar)ni kuzatishingiz mumkin.
+```bash
+logfile /var/log/redis/redis.log
+slowlog-log-slower-than 10000
+slowlog-max-len 128
+```
+
+
+**6->** Redisga restart beramiz va tekshiramiz.
+
+```bash
+# Red Hat based serverlar uchun
+sudo systemctl restart redis
+# Debian based serverlar uchun
+sudo systemctl restart redis-server
+```
+
+Login qilib tekshirib ko'ramiz.
+
+```bash
+redis-cli
+127.0.0.1:6379> auth mening-p@r@Lim
+```
+![redis-asoslari](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/redis-asoslari/9.png)
+
+## Monitoring
+
+Redisni o'rganib uni ishga tushirib oldik endi navbat monitoingga. Redis monitoring uchun Grafana/Prometheusdan foydalanamiz va Redis metrikalarni olish uchun **[redis_exporter](https://github.com/oliver006/redis_exporter)** dan foydalanamiz.
+
+**1->** `redis_exporterni` Github ***[Releases](https://github.com/oliver006/redis_exporter/releases)***'dan kerakli versiyani topib yuklab olamiz. Biz `v1.67.0` verisyasini ishlatamiz
+```bas
+wget https://github.com/oliver006/redis_exporter/releases/download/v1.67.0/redis_exporter-v1.67.0.linux-amd64.tar.gz
+```
+
+**2->** yuklab olingan arxiv faylni arxivdan chiqarib `redis_exporter` binary faylni `/usr/local/bin/` papkasiga chiqaramiz.
+
+```bash
+tar -xvzf redis_exporter-v1.67.0.linux-amd64.tar.gz
+cd redis_exporter-v1.67.0.linux-amd64
+sudo mv redis_exporter /usr/local/bin/
+```
+
+**3->** `redis_exporter` uchun systemd file yaratib uni systemd orqali ishga tushiramiz.
+
+```bash
+sudo nano /etc/systemd/system/redis_exporter.service
+```
+
+```bash filename="/etc/systemd/system/redis_exporter.service"
+[Unit]
+Description=Redis Exporter for Prometheus
+After=network.target
+
+[Service]
+User=redis
+Group=redis
+ExecStart=/usr/local/bin/redis_exporter \
+    --redis.addr=redis://127.0.0.1:6379 \
+    --redis.password="mening-p@r@Lim"
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+```
+
+redis_exporterni ishga tushiramiz va statusini tekshiramiz
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable redis_exporter
+sudo systemctl start redis_exporter
+```
+
+redis_exporter to'gri ishlayotganini bilish uchun unga curl request yuborib ko'ramiz bizda metrikalar chiqishi kerak.
+
+```bash
+curl http://localhost:9121/metrics
+```
+
+**4->** Redis exporterni prometheusga ulaymiz.
+
+`/etc/prometheus/prometheus.yml` konfigga quyidagicha redis exporter configini qo'shamiz.
+
+
+```bash filename=""
+  - job_name: 'redis_exporter'
+    static_configs:
+      - targets: ['localhost:9121']
+```
+
+prometheusga restart beramiz.
+
+```bash
+sudo systemctl restart prometheus
+```
+
+**6->** Redis exporter uchun yozilgan Grafana dashoarni import qilib olamiz **JSON** formatda. Dashboard JSON kodlari quyidagi havolada **[https://github.com/oliver006/redis_exporter/blob/master/contrib/grafana_prometheus_redis_dashboard.json](https://github.com/oliver006/redis_exporter/blob/master/contrib/grafana_prometheus_redis_dashboard.json)**
+
+Dashboardni import qilganimizdan keyin dashboard bizda ochilishi kerak.
+
+![redis-asoslari](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/redis-asoslari/10.png)
