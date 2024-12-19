@@ -5,9 +5,8 @@ description: "Redis asoslari"
 
 import { Callout } from "nextra-theme-docs";
 
-# Redis asoslari | Arxitektura, O'rnatish, Konfiguratsiya, Monitoring
+# Redis asoslari - Arxitektura, O'rnatish, Konfiguratsiya, Monitoring
 ![redis-asoslari](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/redis-asoslari/banner.png)
-
 
 ## Kirish 
 
@@ -31,9 +30,13 @@ Redis quyidagi holatlarda keng qo'llaniladi:
 * **Leaderboardlar->** O'yinlar va boshqa applicationlarda reytinglarni saqlash va boshqarish uchun.
 * **Geoma'lumotlar(Geospatial Data)->** Geografik joylashuv ma'lumotlarini saqlash va qayta ishlashda.
 
+<Callout type="info" emoji="">
+Bugungi amaliyotda biz Redis nimaligini o'rganamiz keyin nima uchun ishlatilishini va Arxitekturasini o'rganmiz unda keyin o'rnatishga o'tamiz va bu amaliyotda yagona redis instance uchun ***production ready*** konfiguratsiya qilamiz va oxirida Redisni monitoring qilish uchun `redis_exporter`'dan foydalanib **Grafana/Prometheus** orqali Redisni monitoring qilamiz.
+</Callout>
+
 ## Arxitektura
 
-Redis eng ko'p qo''laniladigan amaliyot bu keshlashdir. Masalan Redis PostgreSQl/MySQL va boshqa databaselar olida turadi va client yuborgan requestlar birinchi redis cachega boradi aagr redisda bo'lsa tezda responseni o'zini redis qaytaradi ya'ni ko'p bir xil requestlarni redis keshda ushlab turadi va keshdan response qaytaradi bunda databasega load(yuklama) tushmaydi.
+Redis eng ko'p qo'laniladigan amaliyot bu keshlashdir. Masalan Redis PostgreSQl/MySQL va boshqa databaselar oldida turadi va client yuborgan requestlar birinchi redis cachega boradi aagr redisda bo'lsa tezda responseni o'zini redis qaytaradi ya'ni ko'p bir xil requestlarni redis keshda ushlab turadi va keshdan response qaytaradi bunda databasega load(yuklama) tushmaydi.
 ![redis-asoslari](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/redis-asoslari/2.png)
 
 Redis in-memory(RAM) bo'lgani uchun juda tez ishlaydi yani traditional databaselar HDD/SSD larga qaraganda juda tezkor buni quyidagi rasmda ko'rishingiz mumkin.
@@ -42,23 +45,29 @@ Redis in-memory(RAM) bo'lgani uchun juda tez ishlaydi yani traditional databasel
 
 Bu qismda quyidagialrni ko'rib chiqamiz.
 
-* yagona Redis
-* Redis HA
-* Redis Sentinel
-* Redis Cluster
+* **yagona Redis**
+* **Redis HA**
+* **Redis Sentinel**
+* **Redis Cluster**
 
 ### Yagona Redis
 
 Yagona Redis instance Redisning eng oddiy foydalanishidir ya'ni bitta vm serverga Redis o'rnatiladi va ishlatiladi. Bun yechim kichik loyihalar va development/testing environmentlar uchundir, bu tanlov katta production uchun mos kelmaydi chunki agar redis ishlab turgan vmda muammoi bo'lsa yoki ishlamay qolsa muammolar keltirib chiqaradi.
 
 
-Redis ma'lumotlarni doimiy saqlash uchun ikkita asosiy mexanizmdan foydalanadi: RDB (Redis Database) va AOF (Append-Only File). Ularning har biri o'ziga xos xususiyatlarga ega bo'lib, turli holatlar uchun moslashgan.
+Redis ma'lumotlarni doimiy saqlash uchun ikkita asosiy mexanizmdan foydalanadi: **RDB (Redis Database)** va **AOF (Append-Only File)**. Ularning har biri o'ziga xos xususiyatlarga ega bo'lib, turli holatlar uchun moslashgan.
 
-RDB — bu snapshot-based ishlaydigan persistence mexanizmi. Redis ma'lumotlarining aniq bir vaqt oralig'idagi snapshotini diskka yozadi. Ushbu snapshot ma'lumotlarni Redisni qayta ishga tushirganda tiklash imkonini beradi. Redis belgilangan vaqt oralig'ida yoki ma'lum miqdordagi o'zgarishlardan so'ng snapshot yaratadi. Snapshot `.rdb` fayl formatida saqlanadi. RDB procssesi main procsessdan ajralgan fork procsessda ishlaydi. RBD qulayliklari: Snapshot procssesi diskka yozilganligi uchun juda samarali va RDB fayllari compress(siqilgan) qilingan shaklda saqlanadi va kam joy egallaydi. Kamchiliklari: Snapshotlar ma'lum vaqt oralig'ida yaratilganligi sababli Redis to'satdan to'xtab qolsa, so'nggi o'zgarishlar yo'qolishi mumkin va     fork processllari ko'p memory ishlatishi mumkin.
+**RDB** — bu snapshot-based ishlaydigan persistence mexanizmi. Redis ma'lumotlarining aniq bir vaqt oralig'idagi snapshotini diskka yozadi. Ushbu snapshot ma'lumotlarni Redisni qayta ishga tushirganda tiklash imkonini beradi. Redis belgilangan vaqt oralig'ida yoki ma'lum miqdordagi o'zgarishlardan so'ng snapshot yaratadi. Snapshot `.rdb` fayl formatida saqlanadi. RDB procssesi main processdan ajralgan fork procsessda ishlaydi. 
 
-AOF — bu logga yozish (write-ahead log) usuli bilan ishlaydigan saqlash mexanizmi. Redisdagi har bir yozish (write) amali ketma-ket append usulida faylga yoziladi. Redis qayta ishga tushirilganida datasetni tiklash uchun ushbu operatsiyalarni ketma-ket takrorlab chiqadi.
+**RBD qulayliklari:** Snapshot processi diskka yozilganligi uchun juda samarali va RDB fayllari compress(siqilgan) qilingan shaklda saqlanadi va kam joy egallaydi.
 
-Har bir yozish amali diskdagi `appendonly.aof` fayliga qo'shiladi.Redis qayta ishga tushganda, AOF faylidagi yozuvlar ketma-ket bajarilib, ma'lumotlar tiklanadi. AOF qulayliklari: Ma'lumot yo'qotish xavfi minimal, chunki har bir amal yozib boriladi va AOF fayli inson o'qiy oladigan formatda bo'ladi.Restore(tiklash) jarayoni RDB ga qaraganda aniqroq va ancha ishonchli. AOF kamchiliklari: Har bir amal yozilganligi sababli AOF fayli kattalashishi mumkin va sizga ko'proq storage kerak bo'lishi mumkin va Restore qilish RBD ga qaraganda sekin bo'ladi.
+**Kamchiliklari:** Snapshotlar ma'lum vaqt oralig'ida yaratilganligi sababli Redis to'satdan to'xtab qolsa, so'nggi o'zgarishlar yo'qolishi mumkin va     fork processllari ko'p memory ishlatishi mumkin.
+
+**AOF** — bu logga yozish (write-ahead log) usuli bilan ishlaydigan saqlash mexanizmi. Redisdagi har bir yozish (write) amali ketma-ket append usulida faylga yoziladi. Redis qayta ishga tushirilganida datasetni tiklash uchun ushbu operatsiyalarni ketma-ket takrorlab chiqadi.Har bir yozish amali diskdagi `appendonly.aof` fayliga qo'shiladi.Redis qayta ishga tushganda, AOF faylidagi yozuvlar ketma-ket bajarilib, ma'lumotlar tiklanadi. 
+
+**AOF qulayliklari:** Ma'lumot yo'qotish xavfi minimal, chunki har bir amal yozib boriladi va AOF fayli inson o'qiy oladigan formatda bo'ladi.Restore(tiklash) jarayoni RDB ga qaraganda aniqroq va ancha ishonchli.
+
+**AOF kamchiliklari:** Har bir amal yozilganligi sababli AOF fayli kattalashishi mumkin va sizga ko'proq storage kerak bo'lishi mumkin va Restore qilish RBD ga qaraganda sekin bo'ladi.
 
 Redisda RBD va AOFni ham birgalikda ishlatish mumkin.
 
@@ -66,7 +75,7 @@ Redisda RBD va AOFni ham birgalikda ishlatish mumkin.
 
 ![redis-asoslari](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/redis-asoslari/4.png)
 
-Redis replication — bu ma'lumotlarni master serverdan  replica serverlarga nusxalash jarayoni. Bu jarayon Redisning xavfsizlik, ma'lumotlarni ko'paytirish, va balanslash imkoniyatlarini yaxshilaydi. Redis replication bir yo'nalishli (masterdan replicaga) bo'lib, master node yozuvlarni qabul qiladi va uni replica nodelarga tarqatadi.
+Redis replication — bu ma'lumotlarni master serverdan  replica serverlarga nusxalash jarayoni. Bu jarayon Redisning xavfsizlik, ma'lumotlarni ko'paytirish, va balanslash imkoniyatlarini yaxshilaydi. Redis replication bir yo'nalishli (masterdan replicaga) bo'lib, master node writelarni qabul qiladi va uni replica nodelarga tarqatadi.
 
 Redis replication quyidagicha ishlaydi: Bir master bir nechta replica (slave) nodelarini boshqaradi va master server barcha `write`larni qabul qiladi va ma'lumotlarni replicalarga yuboradi, replica nodelar esa `read`ga javob beradi va read querilarini slave nodelar orasida taqsimlab `read` loadni kamaytirish mumkin.
 
@@ -91,13 +100,13 @@ Sentinel doimiy ravishda master va replica nodelarga so'rov(request) yuborib, ul
 
 Redis Cluster ma'lumotlarni `hash-slot`lar orqali bo'lib saqlaydi. Umumiy `16384` ta `hash-slot` mavjud, har bir node bu slotlarning ma'lum qismini boshqaradi va shu bilan katta malumotlarni sharding qilib bir nechta bo'lkalarga bo'lib samarali boshqarish mumkin.
 
-Redis clusterda har bir master ma'lumotlarning bir qismini boshqaradi (hash-slotlarni). Master nodelar write va read operatsiyalarini bajaradi. Har bir master uchun kamida bitta replica bo'lishi kerak, replica master ishlamay qolganda uning o'rnini egallaydi (failover). Redis Cluster ma'lumotlarni 1`6384` ta `hash-slot`ga bo'ladi. Kalitlarning hash qiymati (CRC16) bu slotlardan biriga moslanadi. Nodelar hash-slotlarning muayyan qismini boshqaradi, masalan:
+Redis clusterda har bir master ma'lumotlarning bir qismini boshqaradi (hash-slotlarni). Master nodelar write va read operatsiyalarini bajaradi. Har bir master uchun kamida bitta replica bo'lishi kerak, replica master ishlamay qolganda uning o'rnini egallaydi (failover). Redis Cluster ma'lumotlarni `16384` ta `hash-slot`ga bo'ladi. Kalitlarning hash qiymati (CRC16) bu slotlardan biriga moslanadi. Nodelar hash-slotlarning muayyan qismini boshqaradi, masalan:
 
 * **master1:** 0-5000
 * **master2:** 5001-10000
 * **master3:** 10001-16384
 
-**Gossip** — bu disturbuted systemlarda nodelarning o'zaro aloqa qilish va tizimning umumiy holatini bilish uchun ishlatiladigan protokol. PING va PONG paketlari yordamida nodelar bir-birining holatini tekshiradi: Har bir node o'zining qo'shni nodelariga PING paketlarini yuboradi.Qo'shni tugunlar PONG javobi qaytaradi. Agar PONG javobi kelmasa, nodening ishlamayotgani deb hisoblanadi. Agar bir node boshqa nodeninh ishlamay qolganini aniqlasa, bu ma'lumotni klaster bo'ylab Gossip orqali tarqatadi.
+**Gossip** — bu disturbuted systemlarda nodelarning o'zaro aloqa qilish va tizimning umumiy holatini bilish uchun ishlatiladigan protokol. PING va PONG paketlari yordamida nodelar bir-birining holatini tekshiradi: Har bir node o'zining qo'shni nodelariga PING paketlarini yuboradi.Qo'shni tugunlar PONG javobi qaytaradi. Agar PONG javobi kelmasa, nodening ishlamayotgani deb hisoblanadi. Agar bir node boshqa nodening ishlamay qolganini aniqlasa, bu ma'lumotni klaster bo'ylab Gossip orqali tarqatadi.
 
 
 ## Redis o'rnatish
@@ -118,12 +127,12 @@ Eslatma: Server Linux OS ning qaysi distroligi muhim emas bu qo'llanmada Red Hat
 </Callout>
 
 
-### Debian based servarlar uchun
+### Debian based serverlar uchun
 
 **1->** Tizimni yangilab kerakli toollarni install qilib oling.
 
 ```bash
-sudo apt update && sudo apt-upgrade -y
+sudo apt update && sudo apt upgrade -y
 sudo apt-get install lsb-release curl gpg
 ```
 
@@ -134,7 +143,7 @@ curl -fsSL https://packages.redis.io/gpg | sudo gpg --dearmor -o /usr/share/keyr
 sudo chmod 644 /usr/share/keyrings/redis-archive-keyring.gpg
 echo "deb [signed-by=/usr/share/keyrings/redis-archive-keyring.gpg] https://packages.redis.io/deb $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/redis.list
 sudo apt-get update
-sudo apt-get install redis
+sudo apt-get install redis -y
 ```
 
 **3->** Redisni ishga tushiramiz.
@@ -150,7 +159,7 @@ sudo systemctl start redis-server
 sudo systemctl status redis-server
 ```
 
-### Red Hat based servarlar uchun
+### Red Hat based serverlar uchun
 
 **1->** Tizimni yangilab kerakli toollarni install qilib oling.
 
@@ -161,7 +170,7 @@ sudo yum update && sudo yum upgrade -y
 **2->** Redisni o'rnatamiz.
 
 ```bash
-sudo yum install redis
+sudo yum install redis -y
 ```
 
 **3->** Redisni ishga tushiramiz.
@@ -179,7 +188,7 @@ sudo systemctl status redis
 ![redis-asoslari](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/redis-asoslari/7.png)
 
 
-Redis o'rnatganimizdan keyin uni statusini ham tekshirib keling unining to'gri ishlayotganini `redis-cli` dan foydalanib tekshiramiz.
+Redis o'rnatganimizdan keyin uni statusini ham tekshirib keling unning to'gri ishlayotganini `redis-cli` dan foydalanib tekshiramiz.
 
 ```bash
 redis-cli
@@ -194,3 +203,190 @@ PONG
 
 ## Redis konfiguratsiya
 
+Keling endi Redis o'rnatganimizdan keyin uni production ready config qilamiz.
+
+Red Hat based serverlarda `redis.conf` quyidagi papkalarda bo'ladi `/etc/redis/redis.conf` yoki `/etc/redis.conf` Debin based serverlarda esa `/etc/redis/redis.conf` papkada joylashgan bo'ladi.
+
+**1->** Boshlanishiga asosiy sozlanishlardan boshlaylik.
+
+```bash filename="redis.conf"
+bind 127.0.0.1 # yoki 0.0.0.0
+port 6379
+```
+Bu config orqali default portni o'zgartishingiz mumkin va `bind` orqali kerakli IP range yoki `0.0.0.0` qilib global qilib ochishingiz mumkin(xavfsizlik yuzasidan maslahat berilmaydi!).
+
+**2->** Xavfsizlik yuzasidan Redisga parol qo'yamiz.
+
+```bash filename="redis.conf"
+requirepass mening-p@r@Lim
+```
+Redisga ulanishda Redis addres port va parol yozib ulanadi user yozish shart emas.
+
+**3->** Performance uchun config qilamiz.
+
+```bash filename="redis.conf"
+maxclients 10000
+maxmemory 2gb
+maxmemory-policy allkeys-lru
+```
+
+`maxclients` Bir vaqtning o'zida qancha client ulanishi mumkinligini belgilaydi `maxmemory` esa Redis faqat ma'lum hajmdagi memorydan foydalanadi bu serverni yuqori load bermaslikga yordam beradi.
+
+`maxmemory-policy`  Xotira to'lsa, Redis eski ma'lumotlarni qanday o'chirishini belgilaydi.
+
+* `noeviction` Yangi ma'lumotlarni qabul qilmaydi.
+* `allkeys-lru` Barcha keylar ichida kam ishlatilganini o'chirib tashlaydi.
+* `volatile-lru` Faqat muddati o'tayotgan keylarni o'chirib tashlaydi.
+
+**4->** Persistence (Ma'lumotlarni Saqlash)
+Redisda ma'lumotlarni saqlash uchun **RDB** va **AOF** mexanizmlari mavjud buni yuqorida aytib o'tganmiz. Production uchun odatda **AOF** ishlatiladi.
+
+RDB config
+```bash filename="redis.conf"
+save 900 1     # 15 daqiqada kamida 1 o'zgarish bo'lsa
+save 300 10    # 5 daqiqada kamida 10 o'zgarish bo'lsa
+save 60 10000  # 1 daqiqada kamida 10,000 o'zgarish bo'lsa
+```
+
+AOF config
+```bash filename="redis.conf"
+appendonly yes
+appendfilename "appendonly.aof"
+appendfsync everysec
+```
+
+* `always` Har bir writedan so'ng diskka yozadi (xavfsiz, lekin sekin).
+* `everysec` Har soniyada yozadi (balanslash).
+* `no` Diskga yozishni operatsion tizimga qoldiradi (tez, lekin xavfsiz emas).
+
+Xoxlasangiz RDB yoki AOF ishlatishingiz mumkin yoki RDB va AOFni birgalikda ishlatishingiz mumkin.
+
+**5->** Monitoring
+
+Bu config orqali loglarni yozib borish va slow query(sekin so'rovlar)ni kuzatishingiz mumkin.
+```bash filename="redis.conf"
+logfile /var/log/redis/redis.log
+slowlog-log-slower-than 10000
+slowlog-max-len 128
+```
+
+
+**6->** Redisga restart beramiz va tekshiramiz.
+
+```bash
+# Red Hat based serverlar uchun
+sudo systemctl restart redis
+# Debian based serverlar uchun
+sudo systemctl restart redis-server
+```
+
+Login qilib tekshirib ko'ramiz.
+
+```bash
+redis-cli
+127.0.0.1:6379> auth mening-p@r@Lim
+```
+![redis-asoslari](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/redis-asoslari/9.png)
+
+## Monitoring
+
+Redisni o'rganib uni ishga tushirib oldik endi navbat monitoringga. Redis monitoring uchun **Grafana/Prometheus**dan foydalanamiz va Redis metrikalarni olish uchun **[redis_exporter](https://github.com/oliver006/redis_exporter)** dan foydalanamiz.
+
+<Callout type="info" emoji="">
+Monitoring bo'limni boshlashdan oldin sizda **Grafana/Prometheus** haqida bilimga ega bo'lsihingiz va sizda **Grafana/Prometheus** o'rnatib/sozlangan bo'lishi kerak.
+
+**Prometheus->** HTTP endpointlarini o'lchash orqali nazorat qilinadigan targetlardan metrikalarni to'playdigan open-source monitoring tool.
+Prometheus haqida malumot va o'rnatish uchun quyidagi qo'llanmani ko'rib chiqishingiz mumkin. [To'liq qo'llanma](https://devops-journey.uz/guides/monitoring/gnp-monitoring). [Prometheus nima?](https://devops-journey.uz/guides/monitoring/gnp-monitoring#prometheus-nima), [Prometheus o'ratish va sozlash](https://devops-journey.uz/guides/monitoring/gnp-monitoring#prometheus-oratish-va-sozlash), [Prometheusni service sifatida sozlash](https://devops-journey.uz/guides/monitoring/gnp-monitoring#prometheusni-service-sifatida-sozlash)
+
+**Grafana->** Monitoring va vizualizatsiya uchun mashhur open-source platformasi. Grafana bir nechta manbalardan, jumladan Prometheusdan olingan boy vizualizatsiyani (grafiklar, jadvallar va heatmaplar kabi) taqdim etadi. Uning moslashtirilgan dashboardi barcha muhim ko'rsatkichlarning(metrics) jamlangan ko'rinishini taqdim etadi.
+Grafana haqida malumot va o'rnatish uchun quyidagi qo'llanmani o'qib chiqing. [Grafana nima?](https://devops-journey.uz/guides/monitoring/gnp-monitoring#grafana-nima), [Grafana serverini qanday o'rnatish va sozlash](https://devops-journey.uz/guides/monitoring/gnp-monitoring#grafana-serverini-qanday-ornatish-va-sozlash), [Grafana va Prometheusni integratsiya qilish](https://devops-journey.uz/guides/monitoring/gnp-monitoring#grafana-va-prometheusni-integratsiya-qilish), [Grafana Dashboardni import qilish](https://devops-journey.uz/guides/monitoring/gnp-monitoring#grafana-dashboardni-import-qilish)
+</Callout>
+
+**1->** `redis_exporterni` Github **[Releases](https://github.com/oliver006/redis_exporter/releases)**'dan kerakli versiyani topib yuklab olamiz. Biz `v1.67.0` verisyasini ishlatamiz
+
+```bash
+wget https://github.com/oliver006/redis_exporter/releases/download/v1.67.0/redis_exporter-v1.67.0.linux-amd64.tar.gz
+```
+
+**2->** Yuklab olingan arxiv faylni arxivdan chiqarib `redis_exporter` binary faylni `/usr/local/bin/` papkasiga chiqaramiz.
+
+```bash
+tar -xvzf redis_exporter-v1.67.0.linux-amd64.tar.gz
+cd redis_exporter-v1.67.0.linux-amd64
+sudo mv redis_exporter /usr/local/bin/
+```
+
+**3->** `redis_exporter` uchun systemd `.service` file yaratib uni systemd orqali ishga tushiramiz.
+
+```bash
+sudo nano /etc/systemd/system/redis_exporter.service
+```
+
+```bash filename="/etc/systemd/system/redis_exporter.service"
+[Unit]
+Description=Redis Exporter for Prometheus
+After=network.target
+
+[Service]
+User=redis
+Group=redis
+ExecStart=/usr/local/bin/redis_exporter \
+    --redis.addr=redis://127.0.0.1:6379 \
+    --redis.password="mening-p@r@Lim"
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+```
+
+redis_exporterni ishga tushiramiz va statusini tekshiramiz
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable redis_exporter
+sudo systemctl start redis_exporter
+```
+
+redis_exporter to'gri ishlayotganini bilish uchun unga curl request yuborib ko'ramiz bizda metrikalar chiqishi kerak.
+
+```bash
+curl http://localhost:9121/metrics
+```
+
+**4->** Redis exporterni prometheusga ulaymiz.
+
+`/etc/prometheus/prometheus.yml` konfigga quyidagicha redis exporter configini qo'shamiz.
+
+
+```bash filename=""
+  - job_name: 'redis_exporter'
+    static_configs:
+      - targets: ['localhost:9121']
+```
+
+prometheusga restart beramiz.
+
+```bash
+sudo systemctl restart prometheus
+```
+
+**6->** Redis exporter uchun yozilgan Grafana dashoarni import qilib olamiz **JSON** formatda. Dashboard JSON kodlari quyidagi havolada **[https://github.com/oliver006/redis_exporter/blob/master/contrib/grafana_prometheus_redis_dashboard.json](https://github.com/oliver006/redis_exporter/blob/master/contrib/grafana_prometheus_redis_dashboard.json)**
+
+Dashboardni import qilganimizdan keyin dashboard bizda ochilishi kerak.
+
+![redis-asoslari](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/redis-asoslari/10.png)
+
+## Qo'shimcha
+
+<Callout type="info" emoji="">
+
+**Sana:** 2024.12.19(2024-yil 19-dekabr)
+
+**Oxirgi yangilanish:** 2024.19.07(2024-yil 19-dekabr)
+
+**Muallif: Otabek Ismoilov**
+
+| [Telegram](https://t.me/Otabek_Ismoilov) | [Github](https://github.com/ismoilovdevml) | [LinkedIn](https://www.linkedin.com/in/otabek-ismoilov/) |
+| - | - | - |
+
+</Callout>
