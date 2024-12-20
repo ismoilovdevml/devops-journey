@@ -37,28 +37,33 @@ Ushbu amaliyotni amalga oshirish uchun bizga quyidagi minimum server talablarida
 
 Keycloak o'rnatishni biz ikki qismga bo'ldik ya'ni keycloak 16chi versiyagacha o'rnatish bosqacha bo'lgan va 17chi versiyadan boshlab o'rnatishdan katta o'zgarishlar bo'lgan shuning uchun biz 16 versiyagacha bo'lgan keycloak uchun alohida va 17dan boshlangan keycloak uchun boshqa o'rnatish qo'llanmasini yozdik. Keyclok versiyani loyihangi talablari yoki boshqa bo'gliklar orqali tanlaysiz.
 
+<Callout type="info" emoji="">
+Keycloakning o'rnatishning quyidagi usullari bor biz bugungi amaliyotda **OpenJDK** va **Docker** yordamida o'rnatamiz.
+![keycloak-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/keycloak-server/install.png)
+</Callout>
+
 ### 16-chi versiyagacha
 
 Ushbu o'rnatish 16-chi versiyagacha bo'lgan keycloak uchun o'rnatish qo'llanmasi va biz bunda **keycloak 15.0.0** versiyani o'rnatamiz.
 
-**1->** Serverni yangilab kerali dasturlarni o'rnatib olamiz.
+**1->** Serverni yangilab kerakli dasturlarni o'rnatib olamiz.
 
 ```bash
 sudo apt update && sudo apt upgrade -y
 sudo apt install git nano zip unzip wget apt-transport-https gnupg lsb-release -y
 ```
 
-**2->** Keycloak ishlashi uchun **OpenJDK 17** talab qilinadi. Quyidagi buyruq yordamida OpenJDK 17ni o'rnataib olamiz.
+**2->** Keycloak ishlashi uchun **OpenJDK 17** talab qilinadi. Quyidagi buyruq yordamida **OpenJDK 17**ni o'rnatib olamiz.
 
 ```bash
 sudo apt install openjdk-17-jre openjdk-17-jdk -y
 ```
-OpenJDK 17 o'rnatilgani quyidagi buyruq orqali tekshirib ko'rishingiz
+OpenJDK 17 o'rnatilgani quyidagi buyruq orqali tekshirib ko'rishingiz mumkin.
 
 ```bash
 java -version
 ```
-Terminalda quyidagi natija chiqishi kerak
+Terminalda quyidagi natija chiqishi kerak.
 
 ```txt
 openjdk version "17.0.9" 2023-10-17
@@ -66,28 +71,28 @@ OpenJDK Runtime Environment (build 17.0.9+9-Ubuntu-120.04)
 OpenJDK 64-Bit Server VM (build 17.0.9+9-Ubuntu-120.04, mixed mode, sharing)
 ```
 
-**3->** Ushbu amaliyotda biz source code orqali Keycloak **15.0.0** versiyasni ubuntu 20.04 serverga o'rnatamiz. Buning uchun keycloak source kodlarini serverimiz `/opt` papkasiga yuklab olamiz va arxivdan chiqaramiz. Rasmiy [Keycloak Downloads](https://www.keycloak.org/downloads.html) sahifasi.
+**3->** Ushbu amaliyotda biz source code orqali Keycloak **15.0.0** versiyasini serverga o'rnatamiz. Buning uchun keycloak source kodlarini serverimiz `/opt` papkasiga yuklab olamiz va arxivdan chiqaramiz. Rasmiy [Keycloak Downloads](https://www.keycloak.org/downloads.html) sahifasi.
 
 ```bash
 cd /opt
 sudo wget https://github.com/keycloak/keycloak/releases/download/15.0.0/keycloak-15.0.0.tar.gz
 ```
 
-**4->** Yuklab olgan keycloak source kodlarni .tar arxivini arxivdan chiqarib olamiz. Keycloak source kodlarini arxivdan chiqarib olganimizda source kodlar **keycloak-15.0.0** papkasida bo'ladi biz uni nomini **keycloak**ga o'zgartiramiz. Biz **/opt** papkasi ichidamiz.
+**4->** Yuklab olgan keycloak source kodlarni `.tar.gz` arxivini arxivdan chiqarib olamiz. Keycloak source kodlarini arxivdan chiqarib olganimizda source kodlar **keycloak-15.0.0** papkasida bo'ladi biz uni nomini **keycloak**ga o'zgartiramiz. Biz **/opt** papkasi ichidamiz.
 
 ```bash
 sudo tar -xvzf keycloak-15.0.0.tar.gz
 sudo mv keycloak-15.0.0 /opt/keycloak
 ```
 
-**4->** Xavfsizlik nuqtai nazaridan Keycloak dasturini root useri bilan ishga tushirmasligimiz kerak. Shuning uchun keycloakga linux **user** va **group** yaratib olamiz va keycloak home ishlaydigan directoriyasini `/opt/keycloak` qilib qo'yamiz.
+**5->** Xavfsizlik nuqtai nazaridan Keycloak dasturini **root** useri bilan ishga tushirmasligimiz kerak. Shuning uchun keycloakga linux **user** va **group** yaratib olamiz va keycloak home ishlaydigan directoriyasini `/opt/keycloak` qilib qo'yamiz.
 
 ```bash
 sudo groupadd keycloak
 sudo useradd -r -g keycloak -d /opt/keycloak -s /sbin/nologin keycloak
 ```
 
-**5->** Keycloak ishlashi uchun keycloak userga **/opt/keycloak** directoriyasi ownershiplikni beramiz va **/opt/keycloak/bin/** directoriyaga executable permissionlarni beramiz.
+**6->** Keycloak ishlashi uchun keycloak userga **/opt/keycloak** directoriyasi ownershiplikni beramiz va **/opt/keycloak/bin/** directoriyaga executable permissionlarni beramiz.
 
 ```bash
 cd /opt
@@ -95,20 +100,20 @@ sudo chown -R keycloak: keycloak
 sudo chmod o+x /opt/keycloak/bin/
 ```
 
-**6->** Keycloakni SystemD orqali boshqarish uchun **/etc** directoriyada keycloak uchun konfiguratsiya directoriya ochib olamiz.
+**7->** Keycloakni **SystemD** orqali boshqarish uchun **/etc** directoriyada keycloak uchun konfiguratsiya directoriya ochib olamiz.
 
 ```bash
 cd /etc/
 sudo mkdir keycloak
 ```
 
-**7->** **/opt/keycloak/docs/contrib/scripts/systemd/wildfly.conf** directoriyadagi `wildfly.conf` faylini `keycloak.conf` nomi bilan **/etc/keycloak/** directoriyaga ko'chiramiz.
+**8->** `/opt/keycloak/docs/contrib/scripts/systemd/wildfly.conf` directoriyadagi `wildfly.conf` faylini `keycloak.conf` nomi bilan `/etc/keycloak/` directoriyaga ko'chiramiz.
 
 ```bash
 sudo cp /opt/keycloak/docs/contrib/scripts/systemd/wildfly.conf /etc/keycloak/keycloak.conf
 ```
 
-**8->** Keycloakni ishga tushirish scriptni(launch.sh) faylini **/opt/keycloak/docs/contrib/scripts/systemd/** directoriyadan **/opt/keycloak/bin/** directoriyaga ko'chiramiz.
+**9->** Keycloakni ishga tushirish scriptni(`launch.sh`) faylini `/opt/keycloak/docs/contrib/scripts/systemd/` directoriyadan `/opt/keycloak/bin/` directoriyaga ko'chiramiz.
 
 ```bash
 sudo cp /opt/keycloak/docs/contrib/scripts/systemd/launch.sh /opt/keycloak/bin/
@@ -119,7 +124,7 @@ Usbu sciptni keycloak user execute qilish uchun keycloak userni owner qilib qo'y
 sudo chown keycloak: /opt/keycloak/bin/launch.sh
 ```
 
-**6->** `launch.sh` sciptda keycloak ishlaydigan directoriyani belgilashimiz kerak.
+**10->** `launch.sh` sciptda keycloak ishlaydigan directoriyani belgilashimiz kerak.
 
 ```bash
 sudo nano /opt/keycloak/bin/launch.sh
@@ -141,20 +146,20 @@ else
 fi
 ```
 
-**7->** **/opt/keycloak/docs/contrib/scripts/systemd/** papkadagi `wildfly.service` faylini **/etc/systemd/system/** papkaga `keycloak.service` nomi bilan nusxalaymiz.
+**11->** `/opt/keycloak/docs/contrib/scripts/systemd/` papkadagi `wildfly.service` faylini `/etc/systemd/system/` papkaga `keycloak.service` nomi bilan nusxalaymiz.
 
 ```bash
 sudo cp /opt/keycloak/docs/contrib/scripts/systemd/wildfly.service /etc/systemd/system/keycloak.service
 ```
 
-**8->** `keycloak.service` faylini nano matn muharrida ochib quyidagicha o'zgartishlar kiritamiz.
+**12->** `keycloak.service` faylini nano/vim matn muharrida ochib quyidagicha o'zgartishlar kiritamiz.
 
 ```bash
 sudo nano /etc/systemd/system/keycloak.service
 ```
 
 Dastlab keycloak.service konfiguratsiyamniz quyidagi ko'rinishda bo'ladi
-```bash
+```bash filename="/etc/systemd/system/keycloak.service"
 [Unit]
 Description=The WildFly Application Server
 After=syslog.target network.target
@@ -175,7 +180,7 @@ WantedBy=multi-user.target
 
 Konfiguratsiyamizni yangilab o'zgarishlarni saqlab chiqamiz.
 
-```bash {2,8-10,12-13}
+```bash {2,8-10,12-13} filename="/etc/systemd/system/keycloak.service"
 [Unit]
 Description=The Keycloak Server
 After=syslog.target network.target
@@ -195,34 +200,34 @@ StandardOutput=null
 WantedBy=multi-user.target
 ```
 
-**9->**  systemd manager orqali daeon-reload berib keycloakni enable qilib qo'yamiz yani server o'chib yonganidan keyin avtomatik ishga tushishi uchun.
+**13->**  systemd manager orqali daemon-reload berib keycloakni enable qilib qo'yamiz yani server o'chib yonganidan keyin o'chib qolmasdan auto-start bo'lib avtomatik ishga tushishi uchun.
 
 ```bash
 sudo systemctl daemon-reload
 sudo systemctl enable keycloak
 ```
 
-**10->** Keycloakni start berib ishga tuhsiramiz va statusini ko'ramiz.
+**14->** Keycloakni start berib ishga tushiramiz va statusini ko'ramiz.
 
 ```bash
 sudo systemctl start keycloak
 sudo systemctl status keycloak
 ```
 
-**11->** Keycloakni muvaffaqiyatli ishga tushirganimizdan keyin brauzer orqali serverimiz public IPsi bilan **8080** portiga kirganimizda bizda Keycloak oynasi ochilishi kerak.
+**15->** Keycloakni muvaffaqiyatli ishga tushirganimizdan keyin brauzer orqali serverimiz public IPsi bilan **8080** portiga kirganimizda bizda Keycloak oynasi ochilishi kerak.
 
 http://0.0.0.0:8080/auth/
 
 ![keycloak-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/keycloak-server/keycloak.png)
 
-Keycloak hech qanday birinchi Administrator user bilan kelmaydi shuning uchun biz uni o'zimiz yaratib olishimiz kerak. Biz hozir localhost:8080 qilib kirmaganimiz uchun UI orqali admni user yarata olmaymiz shuning uchun `add-user-keycloak.sh` scripti orqali admin user yarataib olamiz.
+Keycloak hech qanday birinchi Administrator user bilan kelmaydi shuning uchun biz uni o'zimiz yaratib olishimiz kerak. Biz hozir `localhost:8080` qilib kirmaganimiz uchun UI orqali admin user yarata olmaymiz shuning uchun `add-user-keycloak.sh` scripti orqali admin user yarataib olamiz.
 
 ```bash
 sudo /opt/keycloak/bin/add-user-keycloak.sh -r master -u admin -p adminparol239dw2
 ```
-Keycloak admin user yaratib olganimzidan keyin avtomatik **master** realm bilan birga keladi.
+Keycloak admin user yaratib olganimizdan keyin avtomatik **master** realm bilan birga keladi.
 
-**11->** Keycloakga restart berib brauzer orqali qayta kiramiz.
+**16->** Keycloakga restart berib brauzer orqali qayta kiramiz.
 
 ```bash
 sudo systemctl restart keycloak
@@ -234,7 +239,7 @@ Okey bizda **Administration Console** ochildi va kirganimizda quyidagi oyna ochi
 
 ![keycloak-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/keycloak-server/keycloak3.png)
 
-Bizda muammo chiqdi yani biz http bilan kiryapmiz keycloak esa SSL https talab qilyapti. Buning uchun keycloakga domen ulab nginx orqali reverse proxy qilib expose qilishimiz mumkin yoki Kyecloakdan SSL verificationni o'chirib qo'yishimiz kerak. Keling keycloakdan SSL verificationni o'chirib qo'yamiz.
+Bizda muammo chiqdi yani biz http bilan kiryapmiz keycloak esa SSL https talab qilyapti, https talab qilishining sababi biz hozirni default holda **production** modeda ishga tushiryapmiz. Keling birinchisiga **development** modeda http bilan ishga tushiramiz. Keling keycloakdan SSL verificationni o'chirib qo'yamiz.
 
 ```bash
 sudo /opt/keycloak/bin/kcadm.sh config credentials \
@@ -261,5 +266,169 @@ Login qilib kiramiz birinchi oyna.
 
 ![keycloak-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/keycloak-server/keycloak5.png)
 
-Okey bizda hammasi ishlayapti biz muvaffaqiyatli keycloak 15.0.0 o'rnatdik va dastlablki sozlashni yakunladik.
+Okey bizda hammasi ishlayapti biz muvaffaqiyatli keycloak 15.0.0 o'rnatdik va dastlabki sozlashni yakunladik.
 
+### 16-chi versiyadan keyingilar
+
+Ushbu o'rnatish 16-chi versiyadan baland bo'lgan keycloak uchun o'rnatish qo'llanmasi va biz bunda **keycloak 26.0.7** latest versiyani o'rnatamiz.
+
+**1->** Serverni yangilab kerakli dasturlarni o'rnatib olamiz.
+
+```bash
+sudo apt update && sudo apt upgrade -y
+sudo apt install git nano zip unzip wget apt-transport-https gnupg lsb-release -y
+```
+
+**2->** Keycloak **v26.0.7** ishlashi uchun **OpenJDK 21** talab qilinadi. Quyidagi buyruq yordamida **OpenJDK 21**ni o'rnataib olamiz.
+
+```bash
+sudo apt install openjdk-21-jdk -y
+```
+OpenJDK 21 o'rnatilgani quyidagi buyruq orqali tekshirib ko'rishingiz mumkin.
+
+```bash
+java -version
+```
+Terminalda quyidagi natija chiqishi kerak
+
+```txt
+openjdk version "21.0.5" 2024-10-15
+OpenJDK Runtime Environment (build 21.0.5+11-Ubuntu-1ubuntu120.04)
+OpenJDK 64-Bit Server VM (build 21.0.5+11-Ubuntu-1ubuntu120.04, mixed mode, sharing)
+```
+
+**3->** Ushbu amaliyotda biz source code orqali Keycloak **26.0.7** versiyasni o'rnatamiz. Buning uchun keycloak source kodlarini serverimiz `/opt` papkasiga yuklab olamiz va arxivdan chiqaramiz. Rasmiy [Keycloak Downloads](https://www.keycloak.org/downloads.html) sahifasi.
+
+```bash
+cd /opt
+sudo wget https://github.com/keycloak/keycloak/releases/download/26.0.7/keycloak-26.0.7.tar.gz
+```
+
+**4->** Yuklab olgan keycloak source kodlarni `.tar.gz` arxivini arxivdan chiqarib olamiz. Keycloak source kodlarini arxivdan chiqarib olganimizda source kodlar **keycloak-26.0.7** papkasida bo'ladi biz uni nomini **keycloak**ga o'zgartiramiz. Biz **/opt** papkasi ichidamiz.
+
+```bash
+sudo tar -xvzf keycloak-26.0.7.tar.gz
+sudo mv keycloak-26.0.7 /opt/keycloak
+```
+
+**5->** Xavfsizlik nuqtai nazaridan Keycloak dasturini **root** useri bilan ishga tushirmasligimiz kerak. Shuning uchun keycloakga linux **user** va **group** yaratib olamiz va keycloak home ishlaydigan directoriyasini `/opt/keycloak` qilib qo'yamiz.
+
+```bash
+sudo groupadd keycloak
+sudo useradd -r -g keycloak -d /opt/keycloak -s /sbin/nologin keycloak
+```
+
+**6->** Keycloak ishlashi uchun keycloak userga `/opt/keycloak` directoriyasi ownershiplikni beramiz va `/opt/keycloak/bin/` directoriyaga executable permissionlarni beramiz.
+
+```bash
+cd /opt
+sudo chown -R keycloak: keycloak
+sudo chmod o+x /opt/keycloak/bin/
+```
+
+**7->** Keycloakni **SystemD** orqali boshqarish uchun `/etc` directoriyada keycloak uchun konfiguratsiya directoriya ochib olamiz.
+
+```bash
+cd /etc/
+sudo mkdir keycloak
+```
+
+**8->** `/opt/keycloak/conf/keycloak.conf` directoriyadagi `keycloak.conf` faylini `/etc/keycloak/` directoriyaga ko'chiramiz.
+
+```bash
+sudo cp /opt/keycloak/conf/keycloak.conf /etc/keycloak/keycloak.conf
+```
+
+**9->** Keycloakni systemd orqali boshqarish uchun `keycloak.service` faylini nano/vim matn muharrida ochib quyidagciha konfig qilamiz.
+
+```bash
+sudo nano /etc/systemd/system/keycloak.service
+```
+
+`keycloak.service` konfiguratsiyamniz quyidagi ko'rinishda bo'ladi
+```bash filename="/etc/systemd/system/keycloak.service"
+[Unit]
+Description=The Keycloak Server
+After=syslog.target network.target
+Before=httpd.service
+
+[Service]
+EnvironmentFile=-/etc/keycloak/keycloak.conf
+User=keycloak
+Group=keycloak
+ExecStart=/opt/keycloak/bin/kc.sh start-dev
+ExecStop=/opt/keycloak/bin/kc.sh stop
+Restart=on-failure
+LimitNOFILE=102642
+
+[Install]
+WantedBy=multi-user.target
+```
+
+**13->**  systemd manager orqali daemon-reload berib keycloakni enable qilib qo'yamiz yani server o'chib yonganidan keyin auto-start bo'lib avtomatik ishga tushishi uchun.
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable keycloak
+```
+
+**14->** Keycloakni start berib ishga tushiramiz va statusini ko'ramiz.
+
+```bash
+sudo systemctl start keycloak
+sudo systemctl status keycloak
+```
+
+**15->** Keycloakni muvaffaqiyatli ishga tushirganimizdan keyin brauzer orqali serverimiz public IPsi bilan **8080** portiga kirganimizda bizda Keycloak oynasi ochilishi kerak.
+
+http://0.0.0.0:8080/auth/
+
+![keycloak-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/keycloak-server/6.png)
+
+Keycloak hech qanday birinchi Administrator user bilan kelmaydi shuning uchun biz uni o'zimiz yaratib olishimiz kerak. Biz hozir localhost:8080 qilib kirmaganimiz uchun UI orqali admni user yarata olmaymiz shuning uchun `add-user-keycloak.sh` scripti orqali admin user yarataib olamiz.
+
+```bash
+/opt/keycloak/bin/kc.sh bootstrap-admin user --username admin --password adminparol239dw2
+```
+![keycloak-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/keycloak-server/7.png)
+Keycloak admin user yaratib olganimzidan keyin avtomatik **master** realm bilan birga keladi.
+
+**16->** Keycloakga restart berib brauzer orqali qayta kiramiz.
+
+```bash
+sudo systemctl restart keycloak
+```
+
+Okey bizda **Administration Console** ochildi va kirganimizda quyidagi oyna ochilishi kerak
+
+![keycloak-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/keycloak-server/8.png)
+
+Bizda muammo chiqdi yani biz http bilan kiryapmiz keycloak esa SSL https talab qilyapti buning sababi biz keyloakni **production** modedda ishga tushirdik. Kleing boshlanishga **development** modeda http bilan ishga tushiramiz. Keling keycloakdan SSL verificationni o'chirib qo'yamiz.
+
+```bash
+sudo /opt/keycloak/bin/kcadm.sh config credentials \
+    --server http://localhost:8080 \
+    --realm master \
+    --user admin \
+    --password adminparol239dw2
+```
+![keycloak-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/keycloak-server/9.png)
+
+```bash
+sudo /opt/keycloak/bin/kcadm.sh update realms/master -s sslRequired=NONE
+```
+Keycloakga restart beramiz.
+
+```bash
+sudo systemctl restart keycloak
+```
+
+Keycloakga brauzerdan qayta kirib **Administration Console**ga kirganimzida bizda quyidagi login qilib kirish uchun oyna ochiladi.
+
+![keycloak-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/keycloak-server/10.png)
+
+Login qilib kiramiz birinchi oyna.
+
+![keycloak-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/keycloak-server/11.png)
+
+Okey bizda hammasi ishlayapti biz muvaffaqiyatli keycloak **26.0.7** o'rnatdik va dastlabki sozlashni yakunladik.
