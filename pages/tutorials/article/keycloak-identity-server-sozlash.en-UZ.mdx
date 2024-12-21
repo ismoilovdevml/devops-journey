@@ -431,4 +431,108 @@ Login qilib kiramiz birinchi oyna.
 
 ![keycloak-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/keycloak-server/11.png)
 
-Okey bizda hammasi ishlayapti biz muvaffaqiyatli keycloak **26.0.7** o'rnatdik va dastlabki sozlashni yakunladik.
+Okey bizda hammasi ishlayapti biz muvaffaqiyatli keycloak **26.0.7** o'rnatdik va **development** modeda dastlabki sozlashni yakunladik.
+
+Keling endi **production** modeda ishga tushirib SSL bilan ishlatamiz.
+
+**1->** Birinchi navbtada DNS yordamida domainni serverga ulash uchun **A** record qo'shib serverimiz public IP'sini ulaymiz.
+Rasmda Ahost DNS orqali A record qo'shish namunasini ko'rsatilgan.
+
+![keycloak-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/keycloak-server/14.png)
+
+**2** Serverga certbot o'rnatamiz va domenimizga SSL sertifikat generatsiya qilib olamiz. Masalan domenimiz **auth.helm.uz**.
+
+```bash
+sudo apt install certbot
+sudo certbot certonly --standalone -d auth.helm.uz
+```
+![keycloak-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/keycloak-server/12.png)
+
+![keycloak-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/keycloak-server/13.png)
+certbot generatsiya qilgan sertifikatlar quyidagi papkada joylashgan bo'ladi `/etc/letcenrypt/live/auth.helm.uz/`
+
+**3->** Keycloak `PKCS12` formatidagi keystore bilan ishlaydi, shuning uchun **Let's Encrypt** sertifikati mos formatga o'zgartirish kerak bo'ladi. Let's Encrypt sertifikatlari .pem formatida bo'ladi PKCS12 keystore .pem formatini kalit (key) va sertifikatni birlashtirib ishlatadi. Quyidagi buyruq bilan  sertifikatni `PKCS12` formatga o'tkazamiz `-passout`ga keystore uchun parol qo'yishimiz kerak bo'ladi.
+```bash
+openssl pkcs12 -export \
+  -in /etc/letsencrypt/live/auth.helm.uz/fullchain.pem \
+  -inkey /etc/letsencrypt/live/auth.helm.uz/privkey.pem \
+  -out /etc/letsencrypt/live/auth.helm.uz/keystore.p12 \
+  -name keycloak \
+  -passout pass:adminCH@
+```
+
+**4->** Yaratilgan keystore faylni tekshish uchun quyidagi buyruqni ishga tushirib ko'ramiz.
+
+```bash
+keytool -list -keystore /etc/letsencrypt/live/auth.helm.uz/keystore.p12 -storepass adminCH@
+```
+![keycloak-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/keycloak-server/15.png)
+
+**5->** Biz Keycloakni systemd bilan `keycloak` user bilan ishga tushiramiz shuning uchun `keycloak` userga keystore fayliga kirish permissionlarni berishimiz kerak bo'ladi.
+```bash
+sudo chown keycloak:keycloak /etc/letsencrypt/live/auth.helm.uz/keystore.p12
+sudo chmod 640 /etc/letsencrypt/live/auth.helm.uz/keystore.p12
+```
+File permissionlarni tekshiramiz.
+
+```bash
+sudo ls -l /etc/letsencrypt/live/auth.helm.uz/keystore.p12
+```
+![keycloak-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/keycloak-server/16.png)
+
+**6->** Keycloakni **production** modeda ishga tushirishi uchun `/etc/systemd/system/keycloak.service` faylini quyidagi o'zgartirishlarni kiritamiz.
+
+```bash  { 11-16 }filename="/etc/systemd/system/keycloak.service"
+[Unit]
+Description=The Keycloak Server
+After=syslog.target network.target
+Before=httpd.service
+
+[Service]
+EnvironmentFile=-/etc/keycloak/keycloak.conf
+Type=idle
+User=keycloak
+Group=keycloak
+ExecStart=/opt/keycloak/bin/kc.sh start --optimized \
+  --https-key-store-file=/etc/letsencrypt/live/auth.helm.uz/keystore.p12 \
+  --https-key-store-password=adminCH@ \
+  --hostname=auth.helm.uz \
+  --https-port=443 \
+  --hostname-strict=false
+StandardOutput=append:/var/log/keycloak.log
+StandardError=inherit
+RestartSec=2s
+Restart=always
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+LimitNOFILE=102642
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Systemd konfiguratsiyasini yangilaymiz va restart beramiz.
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl restart keycloak
+```
+
+**7->** Keycloak statusini tekshiramiz.
+
+```bash
+sudo systemctl status keycloak
+```
+![keycloak-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/keycloak-server/17.png)
+
+Loglarni kuzatamiz.
+
+```bash
+sudo tail -f /var/log/keycloak.log
+```
+![keycloak-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/keycloak-server/18.png)
+
+Brauzer orqali `https://auth.helm.uz` addresga kirganimizda keycloak SSL bilan ishlab turgan bo'lishi kerak.
+
+![keycloak-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/keycloak-server/19.png)
+
+Okey biz **Keycloak** `26.0.7` versiyasini muvaffaqiyatli **production** modeda ishga tushirdik tabriklayman.
