@@ -1,4 +1,4 @@
-import { Tab, Tabs } from 'nextra-theme-docs';
+import { Tabs } from 'nextra/components';
 import * as React from 'react';
 
 export type SyncedTabsState = {
@@ -15,8 +15,8 @@ export const SyncedTabsContext = React.createContext<SyncedTabsState>({
   },
 });
 
-export const SyncedTab = (props: React.ComponentProps<typeof Tab>) => {
-  return <Tab {...props} />;
+export const SyncedTab = (props: React.ComponentProps<typeof Tabs.Tab>) => {
+  return <Tabs.Tab {...props} />;
 };
 
 export const SyncedTabs = (

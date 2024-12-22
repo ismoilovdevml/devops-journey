@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 
 import React, { useEffect, useState } from 'react';
 
-import tutorials from 'pages/tutorials/article/_meta.en-UZ.json';
+import tutorials from 'pages/tutorials/article/_meta.js';
 
 import { JsonLd, Tutorial } from 'types/tutorial';
 

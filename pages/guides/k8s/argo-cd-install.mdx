@@ -1,0 +1,177 @@
+---
+image: https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/argo-cd/banner.png
+description: "Kubernetesga Argo CD o'rnatish va sozlash"
+---
+
+import { Callout } from "nextra/components";
+
+# Kubernetesga Argo CD o'rnatish va sozlash
+
+![argo-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/argo-cd/banner.png)
+
+## Kirish
+
+Applicationlaringizni deploy qilish uchun Kubernetes-dan foydalanish moslashuvchan masshtablash, distributed komponentlarni boshqarish va applicationlaringizning turli versiyalarini boshqarish kabi muhim infratuzilmaviy afzalliklarni taqdim etishi mumkin. Biroq, nazoratning kuchayishi bilan murakkablik kuchayadi. Continuous Integration va **C**ontinuous **D**eployment(**CD**) tizimlari odatda versiyani boshqarish, o'zgartirish jurnali(change log) va orqaga qaytarish(rollback) funksiyalarini taʼminlash uchun yuqori darajadagi abstraksiyada ishlaydi. Ushbu abstraksiya layeriga mashhur yondashuv **GitOps** deb ataladi.
+
+**GitOps**, o'z mohiyatiga ko'ra, deklarativ infratuzilma va dastur kodi uchun yagona manba sifatida Git repositoriyalaridan foydalanadigan eng yaxshi amaliyotlar to'plamidir. Ushbu metodologiya versiyalarni boshqarish, hamkorlik va avtomatlashtirish tamoyillarini infratuzilma va applicationlarni yetkazib berish sohasiga olib kirishga qaratilgan. **GitOps**-ni qabul qilish orqali jamoalar Kubernetes konfiguratsiyasini boshqarishda shaffof, tekshiriladigan va avtomatlashtirilgan yondashuvni qo'llashlari mumkin.
+
+**Argo CD**, kuchli va open source **GitOps** continuous delivery(CD) tooli, Kubernetes ekotizimida **GitOps** afzalliklarini amalga oshirishda muhim rol o'ynaydi. Argo CD GitOps tamoyillarini Kubernetes klasterlarida applicationlar va ularning konfiguratsiyasini joylashtirish va sinxronlashtirishni avtomatlashtirish uchun kengaytiradi. U Git-ga asoslangan markazlashtirilgan control planeni ta'minlaydi, bu applicationlar va infratuzilmaning istalgan holatini doimiy ravishda saqlab turishni ta'minlaydi va deployment workflowlarini tartibga solishda paradigma o'zgarishiga olib keladi.
+
+
+Ushbu qo'llanmada biz Argo CD-ni Kubernetes klasterida o'rnatish va sozlashni ko'rib chiqamiz. Ushbu qo'llanmaga rioya qilish orqali siz GitOps amaliyotlarini amalga oshirish, aspplicationlarni deploy qilish avtomatlashtirish va Kubernetes environmentingizda mustahkam va samarali continuous delivery(CD) pipeline ta'minlash uchun Argo CD-dan qanday foydalanish haqida  tushunchaga ega bo'lasiz.
+
+## Ishni Boshlash
+
+Ishni boshlash uchun bizga kerak bo'ladi.
+
+* Ishlab turgan kubernetes cluster
+* helm va Nginx Ingress Controller
+* Cert-Manager
+
+<Callout type="info" emoji="">
+Ushbu qo'llanmani yaxshi tushinish uchun quyidagi qo'llanmalarni ko'rib chiqish tavsiya qilinadi!
+
+* Ishlashga tayyor Kubernetes yaratish uchun [**Kubernetes klaster yaratish va sozlash(kubeadm)**](https://devops-journey.uz/guides/k8s/k8s-cluster-setup)
+
+* Cert-Manager uchun [**Kubernetesga Cert-Manager o'rnatish va sozlash**](https://devops-journey.uz/guides/k8s/k8s-cert-manager)
+</Callout>
+
+## Argo CD O'rnatish
+
+![argo-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/argo-cd/argocd-ui.webp)
+
+Kubernetes klasterimizga Argo CD'ni helm orqali o'rnatamiz.
+
+**1->** Argo CD helm repositoriyani qo'shib olamiz va yangilab olamiz.
+
+```bash
+helm repo add argo https://argoproj.github.io/argo-helm
+helm repo update argo
+```
+
+**2->** Argo CD'ni ynagi argo-cd nomli namespace ochib shunga o'rnatamiz.
+
+```bash
+helm install argocd argo/argo-cd --namespace argo-cd --create-namespace
+```
+
+Belgilangan versiyani o'rnatish
+
+```bash
+helm install argo-cd argo/argo-cd --version 5.53.8 --namespace argo-cd --create-namespace
+```
+
+[**Rasmiy Argo CD helm charti**](https://artifacthub.io/packages/helm/argo/argo-cd)
+
+**3->** Argo CD o'rnatib bo'lganimzidan keyin statusini tekshiramiz.
+
+```bash
+kubectl get pods -n argo-cd
+```
+![argo-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/argo-cd/argo-cd.png)
+
+## Argo CD epose qilish
+
+Argo CDni kubernetes klasterimizda ishga tugirganimzidan keyin Argo CDni tashqariga ochamiz, domen ulaymiz va SSL Sertifikat olamiz. Buning uchun sizda Kubernes klaster networki sozlangan bo'lishi va Nginx Ingress Controller, Cert-manager o'rnatilgan va sozlangan bo'lishi kerak.
+
+**1->** Argo CDni tashqariga ochish uchun k8s-master serverimizda keling `argo-cd` nomli papka ochib `argo-cd-ingress.yaml` nomli .yaml configuratsiya fayl ochib olamiz.
+
+```bash
+mkdir argo-cd
+cd argo-cd
+nano argocd-ingress.yaml
+```
+
+**2->** `argocd-ingress.yaml` konfiguratsiyamizni yozamiz.
+
+konfiguratsiyamizni yozishdan oldin argo-cd servicelari statusini ko'rib chiqishimiz kerak.
+
+```bash
+kubectl get service -n argo-cd
+```
+![argo-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/argo-cd/argo-cd1.png)
+
+Statusdan ko'radigan bo'lsak  biz `argocd-server` nomli serviceni expose qilishimiz kerak `80/443`. `argocd-server` esa `argo-cd` namesapceda.
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: argocd-ingress
+  namespace: argo-cd
+  annotations:
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    nginx.org/ssl-services: "argocd-server"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+  
+spec:
+  ingressClassName: "nginx"
+  rules:
+  - host: argocd.xilol.uz
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: argocd-server
+            port:
+              number: 443
+  tls:
+  - hosts:
+    - argocd.xilol.uz
+    secretName: argocdserver-tls
+```
+
+Ushbu configuratsiyani qisqa qilib tushuntiradigan bo'lsak bu `argo-cd` nomli namesapcedagi `argocd-server` nomli serviceni expose qiladi uning porti `443` va biz Sertifikat olish uchun `letsencrypt-prod` ClusterIssuerdan foydalanamiz. argocd.xilol.uz bu bizning domenimiz va ingress Nginx. DNS hostinga esa k8s-master serverimiz static IP sini bog'laymiz.
+
+**5->** configuratsiyani apply qilib ishga tushiramiz.
+
+```bash
+kubectl apply -f argocd-ingress.yaml
+```
+Konfiguratsiyani apply qilib argocd.xilol.uz domeniga brauzer orqali kirib ko'rganimizda quyidagi Argo CD kirish oynasi ochilishi kerak.
+
+![argo-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/argo-cd/argo-cd2.png)
+
+**6->** Argo CDga kirish uchun birinchi parolni olish
+
+```bash
+kubectl -n argo-cd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
+```
+
+Argo CD o'rnatib brauzerdan kirganimzidan bizdan kirish uchun login parol so'raladi. Kirish uchun user bu `admin` parolini esa tepadagi buyruq orqali bilib olishingiz mumkin.
+
+**Username -> admin**
+
+**Passowrd -> yuroqidagi buyruq orqali olingan parol**
+![argo-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/argo-cd/argo-cd3.png)
+
+Argo CD ga kirganimzida quyidagi oyna ochiladi.
+![argo-cd](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/argo-cd/argo-cd4.png)
+
+## Amaliyot
+
+Keling Argo CD o'rnatib olganimizdan keyin amaliyot qilamiz. Bu uchun ushbu qo'llanmadan foydalanishingiz mumkin [**Kuberntes CI/CD | Github Actions + Argo CD**](https://devops-journey.uz/guides/ci-cd/github-actions-argocd-cicd). Ushbu qo'llanmada Kuberntes uchun **CI/CD** yozilgan **CI** qimsi **Github Actions** bilan **CD** qismi esa **Argo CD** bilan.
+
+## Qo'shimcha
+<Callout type="info" emoji="">
+Qo'shimcha Resurslar
+ 
+ * [**Kubernetesga Kirish**](https://devops-journey.uz/guides/k8s/k8s-kirish)
+ * [**Kubernetes Arxitekturasi**](https://devops-journey.uz/guides/k8s/k8s-architecture)
+ * [**Kubernetes Obyektlari**](https://devops-journey.uz/guides/k8s/k8s-objects)
+ * [**Kubernetes cluster yaratish va sozlash(kubeadm)**](https://devops-journey.uz/guides/k8s/k8s-cluster-setup)
+ * [**Kubernesga Cert-Manager o'rnatish va sozlash**](https://devops-journey.uz/guides/k8s/k8s-cert-manager)
+ * [**Kuberntes CI/CD | Github Actions + Argo CD | GitOps**](https://devops-journey.uz/guides/ci-cd/github-actions-argocd-cicd)
+
+**Sana:** 2024.01.26 (2024-yil 26-yanvar)
+
+**Muallif: Otabek Ismoilov**
+
+| [Telegram](https://t.me/Otabek_Ismoilov) | [Github](https://github.com/ismoilovdevml) | [LinkedIn](https://www.linkedin.com/in/otabek-ismoilov/) |
+| - | - | - |
+
+
+</Callout>

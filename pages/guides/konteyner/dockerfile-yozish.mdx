@@ -1,0 +1,416 @@
+---
+image: https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/dockerfile-yozish.png
+description: "Dockerfilelar yozish bo'yicha qo'llanma"
+---
+
+import { Callout } from "nextra/components";
+
+# Dockerfilelar yozish bo'yicha qo'llanma
+
+![dockerfile](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/dockerfile-yozish.png)
+
+
+Docker samaradorligining markazida **Dockerfile** yotadi - Docker imagelarini yaratish uchun ishlatiladigan asosiy skript. Ushbu fayllar takrorlanadigan va portativ konteynerli muhitni yaratish uchun zarur bo'lgan ko'rsatmalar va bog'liqliklarni qamrab oladi. O'rnatish jarayonini soddalashtirish va turli muhitlarda izchillikni ta'minlashga intilayotgan dasturchilar va DevOps muhandislari uchun samarali Dockerfilelarni qanday yaratishni tushunish juda muhimdir.
+
+Ushbu qo'llanma Dockerfilelar qanday yozishni uni elementlarini ko'rib chiqamiz.
+
+### FROM
+
+Dockerfiledagi `FROM` instructioni sizning imagengiz asosida quriladigan asosiy imageni belgilash uchun ishlatiladi. Bu yangi konteyner imegaseni yaratish uchun boshlang'ich nuqtadir. Docker imageni yaratishni boshlaganingizda, odatda uni ma'lum muhit yoki funksiyalar to'plamini ta'minlaydigan mavjud imagega asoslashni xohlaysiz. `FROM` instructioni ushbu asosiy imageni belgilaydi.
+
+```bash /FROM/ {1}
+FROM <image>[:<tag>] [@<digest>]
+#Node.js namunalar
+FROM node
+FROM node:18
+FROM node@sha256:XXXXXX
+```
+
+**image** - bu yangi imagengizga asoslanmoqchi bo'lgan imagening nomi.
+
+**tag** (ixtiyoriy) imagening muayyan versiyasi yoki variantini bildiradi. Agar belgilanmagan bo'lsa, u default bo'yicha `latest` bo'ladi.
+
+**@digest** (ixtiyoriy) sizga imageni uning content hashi (digest) bo'yicha belgilash imkonini beradi va bu imagega aniq mos kelishini ta'minlaydi.
+
+### MAINTAINER, LABEL
+
+Dockerfile-dagi `MAINTAINER` instructioni qurilayotgan imagening muallifi yoki maintainerini ko'rsatish uchun ishlatilgan. Biroq, bu instruction iamge haqidagi metamaʼlumotlar, jumladan, texnik maʼlumotlar bilan taʼminlash uchun `LABEL` dan foydalanish foydasiga eskirgan.
+
+Maintainerni ko'rsatish uchun `LABEL` dan qanday foydalanish mumkinligiga misol:
+
+```bash /MAINTAINER/ /LABEL/ {2,4}
+FROM node:18
+MAINTAINER Otabek Ismoilov
+# LABEL bilan
+LABEL maintainer="Otabek Ismoilov ismoilovdev@gmail.com"
+```
+
+### RUN
+
+Docker faylidagi `RUN` buyrug'i Docker imagedagi buyruqlarni bajarish uchun ishlatiladi. Ushbu buyruqlar odatda paketlarni o'rnatish, tizimni yangilash, fayllarni yuklab olish yoki konteyner ichidagi muhitni tayyorlash uchun zarur bo'lgan boshqa vazifalar uchun ishlatiladi.
+
+`RUN` qanday ishlatilishiga misol:
+
+```bash /RUN/ {4-7}
+FROM ubuntu:latest
+
+# Konteynerni yangilash va konteynerga zip, git, unzip o'rnatish
+RUN apt-get update && apt-get install -y \
+    zip \
+    git \
+    unzip
+```
+
+Javascript applicationlar uchun misol
+
+```bash /RUN/ {3-4}
+FROM node:18
+
+RUN npm install
+RUN npm build
+```
+### WORKDIR
+
+Dockerfiledagi `WORKDIR` ko'rsatmasi(instructioni) Dockerfiledagi har qanday keyingi ko'rsatmalar uchun ishchi jildni o'rnatish uchun ishlatiladi. Bu buyruqlar bajariladigan konteyner ichidagi joriy jildni o'zgartiradi.
+
+`WORKDIR` ga misol:
+
+```bash /WORKDIR/ {2}
+FROM python:3.9-slim
+WORKDIR /usr/src/app
+```
+`WORKDIR /usr/src/app` Bu qator konteyner ichidagi ishchi jildni `/usr/src/app` ga o'rnatadi. Dockerfile-dagi keyingi buyruqlar, agar bekor qilinmasa, ushbu ko'rsatilgan jildda bajariladi.
+
+Ishchi jildi o'rnatish, ayniqsa, fayllarda ishlaydigan yoki yo'llarga(path) murojaat qilish kerak bo'lgan buyruqlar har safar to'liq yo'lni ko'rsatmasdan doimiy ishlashini ta'minlash uchun foydalidir. Shuni ta'kidlash kerakki, `WORKDIR`-dan foydalanish, agar asosiy imageda mavjud bo'lmasa, jild yaratmaydi. Agar ko'rsatilgan jildg imageda mavjud bo'lmasa, Docker uni buyruq talab qilganda yoki `COPY` instructioni yordamida ushbu jildga fayllar ko'chirilganda yaratadi.
+
+
+### COPY
+
+Dockerfiledagi `COPY` buyrug'i fayllar yoki jildlarni host mashinasidan qurilayotgan Docker imagesiga nusxalash uchun ishlatiladi.
+
+`COPY` qanday ishlatilishiga misol:
+
+```bash /COPY/ {4}
+FROM ubuntu:latest
+RUN mkdir /myapp
+
+COPY app-files /myapp
+```
+
+app-files jildidagi fayllarni host mashinasidan image ichidagi `/myapp` jildiga ko'chiradi.
+
+Python applicationlari uchun real namuna
+
+```bash /COPY/ {3}
+FROM python:3.9-slim
+WORKDIR /usr/src/app
+COPY . /usr/src/app
+RUN pip install --no-cache-dir -r requirements.txt
+```
+`WORKDIR` konteyner ichidagi ishni jildni `/usr/src/app` ga o'rnatadi. `COPY` Joriy jilddagi barcha fayllarni Docker imagedagi `/usr/src/app` jildiga ko'chiradi.
+
+### ENV
+
+Dockerfiledagi `ENV` buyrug'i konteyner ichidagi muhit o'zgaruvchilarini(environment variable) o'rnatish uchun ishlatiladi. Ushbu o'zgaruvchilar key-value juftliklari bo'lib, ularga konteyner ichida ishlaydigan har qanday jarayon orqali kirish mumkin.
+
+`ENV` insturctionlaridan foydalanishni ko'rsatadigan oddiy Dockerfile misoli:
+
+```bash /ENV/ {3-4}
+FROM node:14
+
+ENV NODE_ENV=production
+ENV PORT=3000
+```
+Real mysql database uchun `ENV` ishlatilishi
+
+```bash /ENV/ {3-6}
+FROM mysql:latest
+
+ENV MYSQL_ROOT_PASSWORD=my-secret-pw
+ENV MYSQL_DATABASE=mydb
+ENV MYSQL_USER=user
+ENV MYSQL_PASSWORD=password
+```
+
+### ADD
+
+Dockerfile-dagi `ADD` insturctioni fayllarni, jildlarni yoki masofaviy URL-larni yaratish kontekstidan yaratilayotgan Docker imagening fayl tizimiga nusxalash uchun ishlatiladi. Bu sizga Docker build kontekstidan (Dockerfile joylashgan jild) local fayllar yoki jildlarni imagega qo'shish imkonini beradi.
+
+`ADD` insturctioni sintaksisi quyidagicha:
+
+```bash /ADD/ {3}
+FROM node:14
+
+ADD myapp /usr/src/app
+```
+Bu yerda Docker build kontekstidan `myapp` nomli local jildni image ichidagi `/usr/src/app` jildiga qo'shiladi.
+
+Masofaviy fayl qo'shsih quyidagicha
+
+```bash /ADD/ {3}
+FROM python:3.9
+
+ADD https://example.com/file.txt /app/file.txt
+```
+`ADD` insturctioni, shuningdek, masofaviy(remote) URL-manzillardan fayllarni olib, ularni imagega qo'shishi mumkin. Ushbu misolda fayl (file.txt) `https://example.com/file.txt` dan yuklab olinadi va imagening `/app` jildiga joylashtiriladi.
+
+### CMD
+
+`CMD`  insturctioni ushbu Docker imagega asoslangan konteyner ishga tushirilganda bajarilishi kerak bo'lgan buyruqni belgilash uchun ishlatiladi. U konteyner ishga tushganda ishga tushirish uchun standart buyruqni belgilaydi, garchi uni konteynerni ishga tushirishda buyruq berish orqali bekor qilish mumkin.
+
+CMD insturctioni sintaksisi quyidagicha:
+
+```bash /CMD/ {3}
+FROM python:3.9
+
+CMD ["python", "app.py"]
+```
+Ushbu misolda, ushbu imagega asoslangan konteyner ishga tushirilganda, u standart buyruq sifatida Python skripti `app.py` ni ishga tushiradi.
+
+Web Serverni ishga tushirishga misol
+
+```bash {3}
+FROM nginx:latest
+
+CMD ["nginx", "-g", "daemon off;"]
+```
+Bu yerda CMD instructioni Nginx veb-serverini konteyner ichida ishga tushirish buyrug'ini belgilaydi.
+
+### ENTRYPOINT
+
+`ENTRYPOINT` instructioni Docker imagedan konteyner ishga tushirilganda bajariladigan asosiy buyruqni o'rnatadi. Runtimeda buyruq berish orqali bekor qilinishi mumkin bo'lgan `CMD` instructionidan farqli o'laroq, `ENTRYPOINT` konteynerning bajarilishi(execute) uchun belgilangan boshlanish nuqtasini ta'minlaydi, ammo konteyner ishga tushirilganda u hali ham qo'shimcha argumentlar yoki buyruqlar bilan to'ldirilishi mumkin.
+
+`ENTRYPOINT` instructioni sintaksisi `CMD` ga o'xshaydi:
+
+```bash /ENTRYPOINT/ {3}
+FROM python:3.9
+
+ENTRYPOINT ["python", "app.py"]
+```
+Bunday holda, `ENTRYPOINT` instructioni konteyner ishga tushirilganda Python skripti `app.py` ni asosiy buyruq sifatida bajarishi(execute) kerakligini bildiradi.
+
+`CMD` bilan birga ishlatilishi
+
+```bash /ENTRYPOINT/ /CMD/ {3-4}
+FROM nginx:latest
+
+ENTRYPOINT ["nginx", "-g", "daemon off;"]
+CMD ["-c", "/etc/nginx/nginx.conf"]
+```
+
+Ushbu Dockerfile Nginx serverini standart sozlamalar bilan ishga tushirish uchun `ENTRYPOINT`-dan foydalanadi va foydalaniladigan konfiguratsiya faylini belgilash uchun `CMD`-dan foydalanadi (nginx.conf). Konteyner ishga tushganda, ENTRYPOINT standart sozlamalar bilan Nginx-ni ishga tushiradi va CMD konfiguratsiya fayli argumentini taqdim etish orqali uni to'ldiradi.
+
+`ENTRYPOINT` konteynerning asosiy ishlashini aniqlash va izchil bajarilish muhitini ta'minlash uchun foydalidir. U ko'pincha ma'lum bir boshlang'ich nuqtasi yoki ishga tushirish jarayonini talab qiladigan uzoq muddatli servicelar yoki ilovalar uchun qo'llaniladi. Bundan tashqari, u foydalanuvchilarga runtimeda qo'shimcha argumentlar yoki buyruqlar taqdim etish imkonini beradi va uning funksiyalarini kengaytiradi.
+
+### EXPOSE
+
+`EXPOSE` insturctioni Dockerga konteyner runtimeda ma'lum tarmoq portlarini tinglashi(listen) haqida xabar berish uchun ishlatiladi. Biroq, u portlarni publish qilmaydi yoki ochmaydi. U foydalanuvchilar uchun konteyner qaysi portlarni tinglamoqchi(listen) ekanligini tushunish uchun documentatsiya sifatida xizmat qiladi.
+
+`EXPOSE` insturctionining sintaksisi oddiy:
+
+```bash /EXPOSE/ {4}
+FROM nginx:latest
+
+# HTTP trafigi uchun 80 portini ochadi(expose)
+EXPOSE 80
+```
+
+Bunday holda, `EXPOSE` insturctioni Dockerga konteyner kiruvchi trafik uchun `80`-portni tinglashini(listen) aytadi. Biroq, bu insturctionning o'zi portni host machinega publish qilmaydi yoki uni mapda ko'rsatmaydi. Portlarni konteynerdan hostga map qilish yoki publish qilish uchun konteynerni `docker run -p` buyru'gidan foydalanishingiz kerak.
+
+Masalan, konteynerning `80`-portini host-mashinadagi `8080`-portga map qilish uchun siz konteynerni quyidagicha ishga tushirasiz:
+
+```bash /-p/
+docker run -p 8080:80 my_image
+```
+
+Bu buyruq Docker-ga `80`-portni konteynerdan hostdagi `8080`-portga publish qilishni aytadi, bu esa konteyner ichida ishlaydigan servicelarga tashqi kirish imkonini beradi.
+
+`EXPOSE` konteyner qaysi portlardan foydalanishni kutayotganini bildirish uchun ko'proq qo'llanma xususiyatidir. Bu foydalanuvchilarga runtimeda konteynerning tarmoq harakatiga bevosita ta'sir qilmasdan mo'ljallangan tarmoq aloqa portlarini tushunishga yordam beradi. Haqiqiy port ulanishi va tarmoq konfiguratsiyasi konteyner tegishli port mapping bilan `docker run` buyrug'i yordamida ishga tushirilganda amalga oshiriladi.
+
+Misol uchun Node.js dasturiga namuna Dockerfile
+
+```bash /EXPOSE/ {15}
+FROM node:14
+
+WORKDIR /usr/src/app
+
+# package.json va package-lock.json fayllaridan nusxa oladi
+COPY package*.json ./
+
+# Dependencilarniu o'rnatadi
+RUN npm install
+
+# Ilova fayllarini nusxalaydi
+COPY . .
+
+# Node.js ilovasi uchun 3000 portini ochadi
+EXPOSE 3000
+
+# Node.js ilovasini ishga tushirish buyrug'i
+CMD ["npm", "start"]
+```
+Ushbu Node.js misolida `EXPOSE` insturctioni konteyner ichidagi Node.js ilovasi `3000`-portda tinglashini(listen) bildiradi. Bu ko'plab Node.js ilovalari uchun umumiy senariy bo'lishi mumkin, chunki ular odatda ushbu portdan default bo'yicha foydalanadilar.
+
+### VOLUME
+
+`VOLUME` instructioni Docker konteynerida mount point yaratish uchun ishlatiladi va konteyner tomonidan yaratilgan ma'lumotlarni doimiy ravishda saqlash yoki konteyner va host mashinasi o'rtasida ma'lumotlarni almashish uchun ishlatiladi.
+
+`VOLUME` instructioni sintaksisiga misol:
+
+```bash /VOLUME/ {5}
+# Use a base image
+FROM ubuntu:latest
+
+# Ma'lumotlarni saqlash uchun volume yaratish
+VOLUME /app/data
+```
+
+Ushbu misolda `VOLUME` insturctioni konteyner ichidagi `/app/data` da moint pointni yaratadi. Konteynerni ishga tushirish paytida ushbu jildga yozilgan har qanday ma'lumotlar konteynerning yoziladigan qatlamidan(writable layer) tashqarida saqlanadi, bu esa konteyner to'xtatilgandan yoki o'chirilgandan keyin ham doimiy(persistent) va mavjud bo'ladi.
+
+`VOLUME` dan foydalanish bo'yicha bir nechta asosiy fikrlarga e'tibor qaratish muhim:
+
+* **Persisting Data(Doimiy ma'lumotlar):** Belgilangan volume mountga yozilgan har qanday ma'lumotlar, hatto konteyner o'chirib tashlangan bo'lsa ham saqlanib qoladi. Bu ma'lumotlarni konteyner instancelarida almashish va qayta ishlatish imkonini beradi.
+
+* **Runtimeda Volume Mount:** Konteynerni ishga tushirganda, Docker'dagi `-v` yoki `--volume` flagi yoki `--mount` flagi local jild yoki nomlangan jildni Dockerfile'da `VOLUME` yordamida yaratilgan jildga yo'naltirish uchun ishlatiladi.
+
+Masalan:
+
+```bash
+docker run -v /host/path:/app/data my_image
+```
+
+Bu buyruq host mashinasidagi `/host/path` jildini konteyner ichidagi `/app/data` jildiga moslashtiradi.
+
+* **Specialized Data Containers(Ixtisoslashgan ma'lumotlar konteynerlari):** volumelarni konteynerlar o'rtasida ham taqsimlash(share) mumkin. Nomlangan volumeni yaratish bir nechta konteynerlarga bir xil ma'lumotlarni almashish imkonini beradi.
+
+Misol uchun:
+
+```bash
+docker run --name container1 -v shared_data:/app/data my_image
+docker run --name container2 --volumes-from container1 another_image
+```
+
+Bu yerda `container2` `container1` volumidan foydalanadi.
+
+Dockerfiledagi `VOLUME` birinchi navbatda Docker uchun ko'rsatma bo'lib xizmat qiladi, bu konteyner ichidagi ma'lum bir jild doimiy ma'lumotlarni(persistent data) saqlash yoki konteynerlar yoki host mashinasi bilan ma'lumotlarni almashish uchun mo'ljallanganligini ko'rsatadi. Bu Docker konteynerlarida stateful datalarni boshqarishning asosiy jihati.
+
+### USER
+
+`USER` insturctioni Docker faylida keyingi buyruqlarni bajarayotganda Docker konteyneri qaysi foydalanuvchiga(user) ishlashi kerakligini belgilash uchun ishlatiladi. U foydalanuvchini username nomi yoki UID (Foydalanuvchi identifikatori) bo'yicha sozlash imkonini beradi.
+
+`USER` instructioni sintaksisi quyidagicha:
+
+```bash
+USER <username yoki UID>
+```
+`<username yoki UID>` asosiy imagedagi mavjud foydalanuvchining yoki Dockerfile-da yaratilgan foydalanuvchining usernamesi yoki UID bo'lishi mumkin.
+Docker faylida USER instructionian foydalanishni ko'rsatadigan bir nechta misollar:
+
+```bash /USER/ {5}
+FROM ubuntu:latest
+
+# Yangi foydalanuvchi "appuser" yaratadi va o'sha foydalanuvchiga o'tadi
+RUN useradd -ms /bin/bash appuser
+USER appuser
+
+WORKDIR /home/appuser
+
+COPY . .
+CMD ["./start.sh"]
+```
+Ushbu misolda, `useradd` yordamida `appuser` nomli yangi foydalanuvchi yaratilgan va `USER` insturctioni Dockerfile faylidagi keyingi buyruqlar uchun `appuser`ni standart foydalanuvchi sifatida belgilaydi. Bu cheklangan imtiyozlar bilan dasturni ishga tushirish uchun foydalidir.
+
+UID dan foyalanishga misol
+
+```bash /USER/ {7}
+FROM node:14
+WORKDIR /usr/src/app
+
+COPY . .
+
+RUN chown -R node:node /usr/src/app
+USER node
+CMD ["npm", "start"]
+```
+`USER` instructioni Node.js asosiy imagesida mavjud bo'lmagan `root` foydalanuvchisi bo'lgan node foydalanuvchisiga o'tadi. Foydalanuvchilarni almashtirishdan oldin, dastur ishlayotgan vaqtda o'z fayllariga kirishini ta'minlash uchun dastur jildining egaligi node foydalanuvchisiga o'zgartiriladi.
+
+`USER` instructionidan foydalanish xavfsizlik maqsadlari uchun juda muhim, chunki `root` bo'lmagan foydalanuvchilar bilan konteynerlarni ishga tushirish konteynerlashtirilgan ilova ichidagi xavfsizlik zaifliklarining potentsial ta'sirini kamaytiradi. Ammo shuni yodda tutingki, Dockerfile'dagi ba'zi operatsiyalar `root` huquqlarini talab qilishi mumkin, shuning uchun Dockerfile'da foydalanuvchini belgilashda xavfsizlikning eng yaxshi amaliyotlari bilan operatsion talablarni muvozanatlash juda muhimdir.
+
+### Namunalar
+
+Quyida bir nechta dasturlar uchun yozilgan Dockerfilelar
+
+#### JavaScript (Node.js)
+
+```bash
+FROM node:18
+
+WORKDIR /usr/src/app
+COPY package*.json ./
+
+RUN npm install
+
+COPY . .
+EXPOSE 3000
+CMD ["npm", "start"]
+```
+#### Python
+
+```bash
+FROM python:3.9
+WORKDIR /usr/src/app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY . .
+
+EXPOSE 5000
+CMD ["python", "app.py"]
+```
+
+#### Rust
+
+```bash
+FROM rust:latest
+WORKDIR /usr/src/app
+COPY . .
+
+CMD ["cargo", "run"]
+```
+
+#### .NET(C#)
+```bash
+# Use a base image
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+WORKDIR /app
+
+COPY *.csproj .
+RUN dotnet restore
+
+COPY . .
+RUN dotnet publish -c Release -o out
+
+FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS runtime
+WORKDIR /app
+COPY --from=build /app/out .
+ENV ASPNETCORE_ENVIRONMENT=Development
+ENV TZ="Asia/Tashkent"
+ENTRYPOINT ["dotnet", "YourApp.dll", "--urls=http://0.0.0.0:4040"]
+```
+
+#### Go
+
+```bash
+FROM golang:latest
+WORKDIR /go/src/app
+
+COPY . .
+
+RUN go build -o main .
+
+EXPOSE 8080
+
+CMD ["./main"]
+```
+
+Qo'shimcha Dockerfilelar va yaxshiroq loyiha va fremworkga moslab yozilgan Dockerfile namunlarini **[devops-tools](https://github.com/ismoilovdevml/devops-tools/tree/master/Docker)** github repositoriyasidan topsishingiz mumkin

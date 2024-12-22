@@ -1,0 +1,156 @@
+---
+image: https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgresql-monitoring.png
+description: "PostgreSQL Monitoring"
+---
+
+import { Callout } from "nextra/components";
+
+# PostgreSQL Monitoring
+
+![postgresql-ornatish](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgresql-monitoring.png)
+
+## Kirish
+
+Bugungi raqamli asrda ma'lumotlar bazalari son-sanoqsiz ilovalarning asosi bo'lib, korxonalar, hukumatlar va jismoniy shaxslar uchun muhim servicelarni taqdim etadi. Elektron tijorat platformalaridan sog'liqni saqlash tizimlariga qadar ma'lumotlar bazalari zamonaviy dunyomizni quvvatlaydigan katta hajmdagi ma'lumotlarni saqlaydi. Shunday qilib, ushbu ma'lumotlar bazalarining sog'lig'i, ishlashi va mavjudligini ta'minlash muhim ahamiyatga ega.
+
+## Prometheus, Grafana va postgres_exporter haqida qisqacha ma'lumot
+
+**Prometheus->** HTTP endpointlarini o'lchash orqali nazorat qilinadigan targetlardan metrikalarni to'playdigan open-source monitoring tool.
+Prometheus haqida malumot va o'rnatish uchun quyidagi qo'llanmani ko'rib chiqishingiz mumkin. [To'liq qo'llanma](https://devops-journey.uz/guides/monitoring/gnp-monitoring). [Prometheus nima?](https://devops-journey.uz/guides/monitoring/gnp-monitoring#prometheus-nima), [Prometheus o'ratish va sozlash](https://devops-journey.uz/guides/monitoring/gnp-monitoring#prometheus-oratish-va-sozlash), [Prometheusni service sifatida sozlash](https://devops-journey.uz/guides/monitoring/gnp-monitoring#prometheusni-service-sifatida-sozlash)
+
+**Grafana->** Monitoring va vizualizatsiya uchun mashhur open-source platformasi. Grafana bir nechta manbalardan, jumladan Prometheusdan olingan boy vizualizatsiyani (grafiklar, jadvallar va heatmaplar kabi) taqdim etadi. Uning moslashtirilgan dashboardi barcha muhim ko'rsatkichlarning(metrics) jamlangan ko'rinishini taqdim etadi.
+Grafana haqida malumot va o'rnatish uchun quyidagi qo'llanmani o'qib chiqing. [Grafana nima?](https://devops-journey.uz/guides/monitoring/gnp-monitoring#grafana-nima), [Grafana serverini qanday o'rnatish va sozlash](https://devops-journey.uz/guides/monitoring/gnp-monitoring#grafana-serverini-qanday-ornatish-va-sozlash), [Grafana va Prometheusni integratsiya qilish](https://devops-journey.uz/guides/monitoring/gnp-monitoring#grafana-va-prometheusni-integratsiya-qilish), [Grafana Dashboardni import qilish](https://devops-journey.uz/guides/monitoring/gnp-monitoring#grafana-dashboardni-import-qilish)
+
+**postgres_exporter->** PostgreSQL ko'rsatkichlari(metrics) uchun Prometheus exporteri. U PostgreSQL bilan birga ishlaydi, ma'lumotlar bazasi bilan bog'liq ko'metrikalarni Prometheus qabul qilishi mumkin bo'lgan formatda oladi va ochib beradi. postgres_exporter yordamida connection statsdan tortib so'rovlar unumdorligigacha(query performance) bo'lgan PostgreSQL ning turli jihatlarini kuzatish mumkin.
+
+## postgres_exporterni o'rnatish va sozlash
+
+
+[postgres_exporter](https://github.com/prometheus-community/postgres_exporter) - bu PostgreSQL va Prometheus o'rtasidagi ko'prik vazifasini o'taydigan monitoring stackidagi asosiy komponent. PostgreSQL-ning ichki ko'rsatkichlarini(internal metrics) Prometheus tushunadigan formatga tarjima qilish orqali bu bizga ma'lumotlar bazasining sog'lig'i va ishlashini diqqat bilan kuzatib borish imkonini beradi.
+
+**1->** Oxirgi versiyani yuklab oling. postgres_exporter rasmiy [GitHub repositoriyasiga](https://github.com/prometheus-community/postgres_exporter/releases) tashrif buyuring va oxirgi versiyani yuklab oling.
+
+```bash
+mkdir /opt/postgres_exporter
+cd /opt/postgres_exporter
+wget https://github.com/prometheus-community/postgres_exporter/releases/download/v0.15.0/postgres_exporter-0.15.0.linux-arm64.tar.gz
+```
+**2->** Arxivdan chiqarib oling. Bu arxiv bilan bir xil nomdagi papkani yaratadi. Ushbu papkaga o'ting:
+
+```bash
+tar -xvf postgres_exporter_*.tar.gz
+cd postgres_exporter-0.15.0.linux-arm64
+```
+**3->** Binary faylni mos joyga ko'chiring.
+
+Binary faylni `/usr/local/bin` ga o'tkazamiz, shuning uchun uni istalgan joydan osongina execute qilish mumkin:
+
+```bash
+sudo cp postgres_exporter /usr/local/bin
+```
+
+**4->** Execution permission berish. postgres_exporter binary fayli execute qilish mumkinligiga ishonch hosil qiling:
+```bash
+sudo chmod +x /usr/local/bin/postgres_exporter
+```
+**5->** Konfiguratsiya. PostgreSQL ulanish qatorini sozlang. postgres_exporter PostgreSQLga ulanish uchun connection stringni talab qiladi.
+Buni  environment variable yordamida o'rnating. Bu yerda biz `DATA_SOURCE_NAME` deb nomlanuvchi o'zgaruvchini o'rnatamiz . `DATA_SOURCE_NAME` ichidagi barcha belgilangan ma'lumotlar bazalaridan metrikalar yig'iladi. 
+
+```bash
+cd /opt/postgres_exporter
+sudo nano postgres_exporter.env
+```
+
+```bash filename="/opt/postgres_exporter/postgres_exporter.env" {2,4}
+# birorta databaseni kuzatish uchun quyidagi configratsiyani o'zingizga moslab oling
+DATA_SOURCE_NAME="postgresql://username:password@localhost:5432/database-name?sslmode=disable"
+# yoki barcha databaselarni monitoring qilmoqchi bo'lsangi quyidagi configratsiyani o'zingizga moslab oling
+DATA_SOURCE_NAME="postgresql://postgres:postgres@localhost:5432/?sslmode=disable"
+```
+**6->** Postgres foydalanuvchisini yaratish.
+Birinchi buyruq exportchi serviceni ishga tushiradigan postgres nomli tizim foydalanuvchisini yaratadi. Bu service cheklangan imtiyozlar bilan ishlashini ta'minlaydi va xavfsizlikni oshiradi.
+```bash
+sudo useradd -rs /bin/false postgres
+```
+**7->** Systemd uchun service faylini yaratish orqali siz tizimga postgres_exporter jarayonini qanday boshqarish va ishga tushirish haqida ko'rsatma berasiz.
+
+```bash
+sudo nano /etc/systemd/system/postgres_exporter.service
+```
+
+```bash filename="/etc/systemd/system/postgres_exporter.service" {8-10}
+[Unit]
+Description=Prometheus exporter for Postgresql
+Wants=network-online.target
+After=network-online.target
+[Service]
+User=postgres
+Group=postgres
+WorkingDirectory=/opt/postgres_exporter
+EnvironmentFile=/opt/postgres_exporter/postgres_exporter.env
+ExecStart=/usr/local/bin/postgres_exporter --web.listen-address=:9187 --web.telemetry-path=/metrics
+Restart=always
+[Install]
+WantedBy=multi-user.target
+```
+
+**8->** Nihoyat, servicega start bering va ishga tushiring
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl start postgres_exporter
+sudo systemctl enable postgres_exporter
+sudo systemctl status postgres_exporter
+```
+## postgres_exporterni prometheus bilan integratsiya qilish
+
+**1->** posres_exporterni Prometheus bilan integratsiya qilish uchun prometheus o'rnatilgan serverga kirib `prometheus.yml` konfigratsiya fayliga quyidagi konfigatsiyalarni qo'shishingiz kerak.
+
+```bash
+sudo systemctl stop prometheus
+sudo nano /etc/prometheus/prometheus.yml
+```
+**2->** scrape uchun yangi target qo'shamiz.
+
+```bash filename="/etc/prometheus/prometheus.yml"
+— job_name: 'postgres_exporter'
+    static_configs:
+    — targets: ['0.0.0.0:9187']
+```
+`0.0.0.0` o'rniga postgres_exporter o'rnatilgan serveringiz IP manzilini yozasiz va faylni saqlab prometheusni qayta ihsga tushirasiz.
+```bash
+sudo systemctl restart prometheus
+```
+## Grafana dashboarda metrikalarni vizualizatsiya qilish
+Nihoyat biz barcha bosqichlarni tugatdik endigi navbat Grafana dashboardga. PostgreSQL monitoring ucun bir nechta dashboardlar mavjud ularni hohishingiz va talabingizga qarab tanlab olaverasiz. 
+
+![wordpress](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/image.png)
+![wordpress](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/2.png)
+
+Rasmda [PostgreSQL Database(ID: 9628)](https://grafana.com/grafana/dashboards/9628-postgresql-database/) nomli monitoring dashboardi.
+
+Agar siz Grafanaga dashboard qo'ya olmagan bo'lsangiz Grafanaga dashboard qo'yicha bo'yicha quyidagi qo'llanmani o'qib chiqing. [Grafana Dashboardni import qilish](https://devops-journey.uz/guides/monitoring/gnp-monitoring#grafana-dashboardni-import-qilish)
+
+
+Umid qilamanki sizda barchasi muvafaqqiyatli bo'ldi :)
+
+## Qo'shimcha
+
+<Callout type="info" emoji="">
+
+ * [**PostgreSQLga kirish**](https://devops-journey.uz/guides/database/postgresql-kirish)
+ * [**Serverlarni monitoring qilish**](https://devops-journey.uz/guides/monitoring/gnp-monitoring)
+ * [**Linux Serverlarga Postgresql o'rnatish**](https://devops-journey.uz/guides/database/postgresql-ornatish)
+ * [**Kubernetes Monitoring**](https://devops-journey.uz/guides/k8s/kubernetes-monitoring)
+
+
+**Sana:** 2023.10.15(2023-yil 15-oktabr)
+
+**Oxirgi yangilanish:** 2024.02.08(2024-yil 8-fevral)
+
+**Muallif: Otabek Ismoilov**
+
+| [Telegram](https://t.me/Otabek_Ismoilov) | [Github](https://github.com/ismoilovdevml) | [LinkedIn](https://www.linkedin.com/in/otabek-ismoilov/) |
+| - | - | - |
+
+</Callout>

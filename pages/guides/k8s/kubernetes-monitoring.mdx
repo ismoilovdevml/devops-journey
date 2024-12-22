@@ -1,0 +1,298 @@
+---
+image: https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/k8s-monitoring/banner.png
+description: "Kubernetes Monitoring"
+---
+
+import { Callout } from "nextra/components";
+
+# Kubernetes Monitoring
+
+![k8s-monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/k8s-monitoring/banner.png)
+
+
+Ushbu amaliyotda biz Kubernetes clusterni monitoring qilishni ko'rib chiqamiz. Kubernetes monitoring qilishda **Prometheus** va **Grafana** ishlatamiz. Prometheus va Grafana haqida ma'lumot.
+
+* [**Prometheus nima?**](https://devops-journey.uz/guides/monitoring/gnp-monitoring#prometheus-nima)
+* [**Grafana nima?**](https://devops-journey.uz/guides/monitoring/gnp-monitoring#grafana-nima)
+* [**Grafana Dashboardni import qilish**](https://devops-journey.uz/guides/monitoring/gnp-monitoring#grafana-dashboardni-import-qilish)
+
+## Ishni boshlash
+
+Ushbu amaliyot uchun bizga kerak bo'ladi:
+
+* Ishlab turgan Kubernetes cluster
+* **helm** va **NGINX Ingress Controller**
+* **Cert-Manager**
+* **Longhorn**
+
+<Callout type="info" emoji="">
+Ushbu qo'llanmani yaxshi tushinish uchun quyidagi qo'llanmalarni ko'rib chiqish tavsiya qilinadi!
+
+* Ishlashga tayyor Kubernetes yaratish uchun: [**Kubernetes klaster yaratish va sozlash(kubeadm)**](https://devops-journey.uz/guides/k8s/k8s-cluster-setup)
+
+* Cert-Manager uchun: [**Kubernetesga Cert-Manager o'rnatish va sozlash**](https://devops-journey.uz/guides/k8s/k8s-cert-manager)
+
+* Longhorn uchun: [**Longhorn o'rnatish va sozlash**](https://devops-journey.uz/guides/k8s/k8s-cluster-setup#longhorn-ornatish-va-sozlash)
+</Callout>
+
+**Rasmda Kubernetes [Prometheus arxitekturasi](https://prometheus.io/docs/introduction/overview/)**
+
+![k8s-monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/k8s-monitoring/architecture.png)
+
+Kubernetes Prometheus stackidagi komponentlar:
+
+* Prometheus Server
+* Alert Manager
+* Grafana
+
+## Prometheus o'rnatish
+
+Keling Kubernetesga Prometheus, Grafana va boshqa monitoing toollarni ishlatish uchun **monitoring** nomli namespace ochib ishlaymiz.
+
+**1->** Monitoring uchun namespace yaratib olamiz.
+
+```bash
+kubectl create namespace monitoring
+```
+
+**2->** Helm orqali Prometheus repositoriyani qo'shib monitoring namespacega o'rnatamiz.
+
+```bash
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
+helm install prometheus prometheus-community/prometheus --namespace monitoring
+```
+
+**3->** Statusini tekshiramiz.
+
+```bash
+kubectl get pods -n monitoring
+kubectl get svc -n monitoring
+```
+
+![k8s-monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/k8s-monitoring/monitoring1.png)
+
+Okey hammasi yaxshi biz hozir Prometheusni o'rnatib oldik.
+
+## Metrics exporterlar o'rnatish
+
+Kubernetes clasterimizni analiz qilib moinitoring qilishimiz uchun bizga metrics exporterlar kerak bo'ladi, ular Kubernetes cluster metrikalarini olib berib turadi.
+
+**1->** [kube-state-metrics](https://github.com/kubernetes/kube-state-metrics) o'rnatish
+
+```bash
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
+helm install kube-state-metrics prometheus-community/kube-state-metrics --namespace monitoring
+```
+
+**2->** [prometheus-node-exporter](https://github.com/prometheus-community/helm-charts/tree/main/charts/prometheus-node-exporter) o'rnatish
+
+```bash
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
+helm install prometheus-node-exporter prometheus-community/prometheus-node-exporter --namespace monitoring
+```
+
+## Grafana o'rnatish
+
+**1->** Helm orqali Grafana repositoriyani qo'shib yangilab olamiz.
+
+```bash
+helm repo add grafana https://grafana.github.io/helm-charts
+helm repo update
+```
+
+**2->** helm orqali **monitoring** namespacega Grafana o'rnatamiz.
+
+```bash
+helm install grafana grafana/grafana --namespace monitoring
+```
+
+Grafan o'rnatib olganimzidan keyin uni domen ulab NGINX Ingress orqali expose qilamiz.
+
+**4->** grafana nomli papka ochib ichiga **grafana-ingress.yaml** configuratsiya fayl ochamiz.
+
+```bash
+mkdir grafana
+cd grafana
+nano grafana-ingress.yaml
+```
+
+**5->** monitoing namespaceda grafana serviceni ko'rsak u 80 portda ishlab turibti.
+![k8s-monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/k8s-monitoring/grafana.png)
+
+Ya'ni grafana service monitoring namespaceda 80 portda ishlaydi.
+
+Bizning **grafana-ingress.yaml** konfiguratsiyamiz quyidagicha.
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: grafana-ingress
+  namespace: monitoring
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  ingressClassName: "nginx"
+  rules:
+  - host: grafana.xilol.uz
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: grafana
+            port:
+              number: 80
+  tls:
+  - hosts:
+    - grafana.xilol.uz
+    secretName: grafana-tls
+```
+
+DNS hostimizdan Kubernetes clasterga domen ulab konfiguratsiyamizni apply qilamiz.
+
+```bash
+kubectl apply -f grafana-ingress.yaml
+```
+
+## Grafana Dashboard sozlash
+
+Grafana bu metrikalarni vizualizatsiya qilib beradigan tool hisoblanadi. Grafanaga Data Sourcelar ulanadi yani metrikalarni to'plab grafanaga beruvchilar  bizning holatda bu Prometheus. Grafanaga Prometheusni ulab olganimizdan keyin Grafana Prometheus metrikalaridan foydalana oladi. Prometheusdagi metrikalarni vizualizatsiya qilish uchun esa Grafanaga dashboard qo'yiladi. Biz ushu amaliyot uchun [github.com/dotdc/grafana-dashboards-kubernetes](https://github.com/dotdc/grafana-dashboards-kubernetes) dashboardlar to'plamini tanladik.
+
+**1->** Yuqorida Grafana o'rnatib domenga ulab expose qilgandik endi shu domen orqali grafana kiramiz bizda birinchi admin bo'lib login qilish oynasi ochilishi kerak.
+
+![k8s-monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/k8s-monitoring/grafana1.png)
+
+* **Email or username->** admin
+* **Password->** admin passwordni olish uchun quyidagi buyruqdan foydalansiz
+
+admin user passwordni olish uchun
+```bash
+kubectl get secret --namespace monitoring grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
+```
+
+**2->** Grafanga login qilib kirib olganimizdan keyin **Data Source** sozlab olishimiz kerak yani Prometheusni ulab olishimiz kerak. Login qilib kirganimizdan keyin ochilgan **Home** pagedan **DATA SOURCES** bo'limga o'tamiz.
+
+![k8s-monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/k8s-monitoring/grafana2.png)
+
+Data Sourceda Prometheusni tanlaymiz sizda quyidagi oyna ochiladi.
+
+![k8s-monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/k8s-monitoring/grafana3.png)
+
+**Connection** bo'limdan Prometheus server URLga quyidagi URLNI beramiz.
+
+```url
+http://prometheus-server.monitoring.svc.cluster.local/
+``` 
+
+va **Save & test** bosib ulab olamiz hammasi to'gri bo'lsa muvaffaqiyatli ulanishi kerak.
+
+![k8s-monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/k8s-monitoring/monitoring2.png)
+
+**3->** Grafanaga Dashboard ulash uchun, Grafana boshqaruv paneliga qayting. To'rt kvadratdan iborat `Dashboard` ikonkasini tanlang va ` + Import`-ni tanlang.
+![monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/monitoring/17.png)
+**4->** Ushbu oynada Dashboard import qilamiz JSON model orqali yoki Grafana Dashboard ID orqali biz ID orqali import qilamiz. Biz [github.com/dotdc/grafana-dashboards-kubernetes](https://github.com/dotdc/grafana-dashboards-kubernetes) Kubernetes Dashboardlar to'plamini tanlagandik unda Dashboardlar ID raqamlari belgilangan ushbu dashboardlarni ID orqali import qilamiz. Masalan biz `k8s-views-global.json	15757` ni tanlaymiz va import qilamiz.
+
+| Dashboard                       | ID    |
+| ------------------------------- | ----- |
+| k8s-addons-prometheus.json      | 19105 |
+| k8s-addons-trivy-operator.json  | 16337 |
+| k8s-system-api-server.json      | 15761 |
+| k8s-system-coredns.json         | 15762 |
+| k8s-views-global.json           | 15757 |
+| k8s-views-namespaces.json       | 15758 |
+| k8s-views-nodes.json            | 15759 |
+| k8s-views-pods.json             | 15760 |
+
+![k8s-monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/k8s-monitoring/monitoring3.png)
+
+Undan keyingi oynada Data Sourcega Prometheusni belgilab **Import** qilamiz.
+
+![k8s-monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/k8s-monitoring/grafana5.png)
+
+Bizda Grafana metrikalarni vizualizatsiya qilib ko'rsatishi  kerak.
+
+![k8s-monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/k8s-monitoring/grafana6.png)
+
+Okey yaxshi biz hammasini muvaffaqiyatli uddaladik endi qolgan dashboardlarni ham import qilib ulab chiqamiz.
+
+Dashboardlar ro'yxati.
+
+| Dashboard                       | ID    |
+| ------------------------------- | ----- |
+| k8s-addons-prometheus.json      | 19105 |
+| k8s-addons-trivy-operator.json  | 16337 |
+| k8s-system-api-server.json      | 15761 |
+| k8s-system-coredns.json         | 15762 |
+| k8s-views-global.json           | 15757 |
+| k8s-views-namespaces.json       | 15758 |
+| k8s-views-nodes.json            | 15759 |
+| k8s-views-pods.json             | 15760 |
+
+## NGINX Ingress monitoring
+
+Keling Prometheus Garafana orqali NGINX Ingressni ham monitoring qilamiz.
+
+**1->** NGINX Ingress controllerimizni yangilab exporterni yoqib prometheusga ulashimiz kerak.
+
+```bash
+helm upgrade ingress-nginx ingress-nginx \
+--repo https://kubernetes.github.io/ingress-nginx \
+--namespace ingress-nginx \
+--set controller.metrics.enabled=true \
+--set-string controller.podAnnotations."prometheus\.io/scrape"="true" \
+--set-string controller.podAnnotations."prometheus\.io/port"="10254"
+```
+
+NGINX ingresni yangi konfiglarni qo'shib yangilab olganimzidan keyin valuelarni tekshirib olishimiz mumkin.
+
+```bash
+helm get values ingress-nginx --namespace ingress-nginx
+```
+
+Sizda quyidagi konfig chiqishi kerak.
+
+```yaml
+USER-SUPPLIED VALUES:
+controller:
+  metrics:
+    enabled: true
+  podAnnotations:
+    prometheus.io/port: "10254"
+    prometheus.io/scrape: "true"
+```
+
+**2->** NGINX Ingressni monitoring qilish uchun Dashboard import qilamiz. NGINX Ingress monitoring qilish uchun quyidagi JSON model dashboardan foydalanamiz.
+
+Ushbu JSON kodni nusxalab dashboardni import qilishingiz mumkin: [https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/grafana/dashboards/nginx.json](https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/grafana/dashboards/nginx.json)
+
+NGINX ingress Controllerni monitoring qilish bo'yicha [rasmiy qo'llanma.](https://github.com/kubernetes/ingress-nginx/blob/main/docs/user-guide/monitoring.md)
+
+![k8s-monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/k8s-monitoring/grafana7.png)
+
+## Qo'shimcha
+<Callout type="info" emoji="">
+Qo'shimcha Resurslar
+ 
+ * [**Kubernetesga Kirish**](https://devops-journey.uz/guides/k8s/k8s-kirish)
+ * [**Kubernetes Arxitekturasi**](https://devops-journey.uz/guides/k8s/k8s-architecture)
+ * [**Kubernetes Obyektlari**](https://devops-journey.uz/guides/k8s/k8s-objects)
+ * [**Kubernetes cluster yaratish va sozlash(kubeadm)**](https://devops-journey.uz/guides/k8s/k8s-cluster-setup)
+ * [**Kubernetesga Argo CD o'rnatish va sozlash**](https://devops-journey.uz/guides/k8s/argo-cd-install)
+ * [**Kuberntes CI/CD | Github Actions + Argo CD | GitOps**](https://devops-journey.uz/guides/ci-cd/github-actions-argocd-cicd)
+
+**Sana:** 2024.02.07(2024-yil 7-fevral)
+
+**Oxirgi yangilanish:** 2024.02.07(2024-yil 7-fevral)
+
+**Muallif: Otabek Ismoilov**
+
+| [Telegram](https://t.me/Otabek_Ismoilov) | [Github](https://github.com/ismoilovdevml) | [LinkedIn](https://www.linkedin.com/in/otabek-ismoilov/) |
+| - | - | - |
+
+
+</Callout>

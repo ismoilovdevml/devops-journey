@@ -1,0 +1,343 @@
+---
+image: https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/minio-server/banner.png
+description: "Minio bilan Object Storage Server sozlash"
+---
+
+import { Callout } from "nextra/components";
+
+# Minio bilan Object Storage Server sozlash
+
+![minio-server-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/minio-server/banner.png)
+
+## Kirish
+
+Bugungi raqamli landshaftda kengaytiriladigan va samarali storage solutiolariga bo'lgan ehtiyoj birinchi o'ringa chiqdi. Tashkilotlar borgan sari katta hajmdagi ma'lumotlarni ishlab chiqargan va boshqarayotganligi sababli, an'anaviy(traditional) storage systemlari ko'pincha zamonaviy applicationlar va workflowlar talablariga mos kelish uchun kurash olib boradi. Bu yerda bizga **Minio** keladi.
+
+**Minio** - cloud-native va konteynerli environmentlar uchun yaratilgan open source, high-performance object storage serveridir. U developerlar va korxonalarga fotosuratlar, videolar, log fayllari, backuplar va boshqalar kabi tuzilmagan(unstructured) ma'lumotlarni saqlash va boshqarish uchun oddiy, ammo kuchli yechimni taqdim etadi. Minio-ni ajratib turadigan narsa uning **Amazon S3 API** bilan mosligi bo'lib, S3-compatible storagega tayanadigan mavjud applicationlar va ekotizimlarga integratsiyani osonlashtiradi.
+
+Minio yordamida tashkilotlar o'zlarining private cloud storage infratuzilmasini yaratishi mumkin, ular public cloud providerlari bilan bir xil darajada kengaytirilishi, chidamliligi va ishonchliligini ta'minlaydi, lekin ularning ma'lumotlari va infratuzilmasi ustidan to'liq nazoratga ega. On-premise yoki cloudda foydalanishdan qat'i nazar, Minio foydalanuvchilarga o'ziga xos ishlash, xavfsizlik va muvofiqlik talablariga javob beradigan storage solutionlarini yaratish imkonini beradi.
+
+Ushbu qo'llanmada biz Minio serverini o'rnatish va sozlash jarayonini o'rganamiz. Bu bilan siz Minio-ning salohiyatidan foydalanish va tashkilotingizning storage ehtiyojlarini qondirish uchun undan foydalanish uchun bilim va tajribaga ega bo'lasiz.
+
+## Ishni boshlash
+
+Ushbu amaliyotni amalga oshirish uchun bizga quyidagi minimum server talablaridagi server kerak bo'ladi. Xotira qancha ko'p va tezligi yuqori xotira bo'lsa shuncha yaxshi.
+
+<Callout type="info" emoji="">
+**Minimum Server talabi**
+
+| OS            | RAM            | CPU           | Xotira       | Static IP  |
+| ------------- | -------------- | ------------- |------------- | ---------- |
+| Ubuntu 20.04  | 4GB            | 2 core        | 256GB        | Ha kerak   |
+
+</Callout>
+
+## Minio Server o'rnatish va sozlash
+
+Minio o'rnatishni bir nechta usullari bor. Masalan.
+
+* **[Single-Node Single-Drive](https://min.io/docs/minio/linux/operations/install-deploy-manage/deploy-minio-single-node-single-drive.html#minio-snsd)**
+* **[Single-Node Multi-Drive](https://min.io/docs/minio/linux/operations/install-deploy-manage/deploy-minio-single-node-multi-drive.html#minio-snmd)**
+* **[Multi-Node Multi-Drive](https://min.io/docs/minio/linux/operations/install-deploy-manage/deploy-minio-multi-node-multi-drive.html#minio-mnmd)**
+
+Ushbu qo'llanma biz **[Single-Node Single-Drive](https://min.io/docs/minio/linux/operations/install-deploy-manage/deploy-minio-single-node-single-drive.html#minio-snsd)** o'rnatishdan foydalanmiz. Biz bitta nodeli bitta drayverli Minio o'rnatamiz.
+
+
+**1->** Binary Minio Serverni yuklab olamiz va o'rnatamiz. Intel yoki AMD 64-bit protsessorida Linux bilan ishlaydigan server uchun MiniIO server o'rnatish faylini quyidagicha yuklab olamiz.
+
+```bash
+wget https://dl.min.io/server/minio/release/linux-amd64/minio
+chmod +x minio
+sudo mv minio /usr/local/bin/
+```
+
+**2->** Minio serverni binary holda o'rnatganimiz uchun SystemD bilan boshqarish uchun **minio.service** fayl yaratib konfiguratsiya qilamiz.
+
+```bash
+sudo nano /usr/lib/systemd/system/minio.service
+```
+
+**minio.service** faylimizga quyidagi konfiglarni yozib saqlab chiqamiz.
+
+```bash {6,9,11-12,15,17}
+[Unit]
+Description=MinIO
+Documentation=https://min.io/docs/minio/linux/index.html
+Wants=network-online.target
+After=network-online.target
+AssertFileIsExecutable=/usr/local/bin/minio
+
+[Service]
+WorkingDirectory=/usr/local
+
+User=minio-user
+Group=minio-user
+ProtectProc=invisible
+
+EnvironmentFile=-/etc/default/minio
+ExecStartPre=/bin/bash -c "if [ -z \"${MINIO_VOLUMES}\" ]; then echo \"Variable MINIO_VOLUMES not set in /etc/default/minio\"; exit 1; fi"
+ExecStart=/usr/local/bin/minio server $MINIO_OPTS $MINIO_VOLUMES
+
+# MinIO RELEASE.2023-05-04T21-44-30Z adds support for Type=notify (https://www.freedesktop.org/software/systemd/man/systemd.service.html#Type=)
+# This may improve systemctl setups where other services use `After=minio.server`
+# Uncomment the line to enable the functionality
+# Type=notify
+
+# Let systemd restart this service always
+Restart=always
+
+# Specifies the maximum file descriptor number that can be opened by this process
+LimitNOFILE=65536
+
+# Specifies the maximum number of threads this process can create
+TasksMax=infinity
+
+# Disable timeout logic and wait until process is stopped
+TimeoutStopSec=infinity
+SendSIGKILL=no
+
+[Install]
+WantedBy=multi-user.target
+
+# Built for ${project.name}-${project.version} (${project.name})
+```
+
+**3->** Xavfsizlik yuzasidan minio uchun minio guruh va user ochib minio storage pathga ownerlik beramiz. Biz minio storage pathini  **mnt/data**ga belgilab qo'yamiz.
+
+Minio uchun papka yaratib olamiz.
+
+```bash
+sudo mkdir -p /mnt/data
+```
+
+```bash
+sudo groupadd -r minio-user
+sudo useradd -M -r -g minio-user minio-user
+sudo chown minio-user:minio-user /mnt/data
+```
+
+**4->** Minio sozlash uchun minio Environment config yaratib sozlab olamiz.
+
+```bash
+sudo nano /etc/default/minio
+```
+**minio** Environment konfigimizni quyidagicha to'ldiramiz.
+
+```bash {6-7,11,15}
+# MINIO_ROOT_USER and MINIO_ROOT_PASSWORD sets the root account for the MinIO server.
+# This user has unrestricted permissions to perform S3 and administrative API operations on any resource in the deployment.
+# Omit to use the default values 'minioadmin:minioadmin'.
+# MinIO recommends setting non-default values as a best practice, regardless of environment
+
+MINIO_ROOT_USER=myminioadmin
+MINIO_ROOT_PASSWORD=miniooadmin234pr934
+
+# MINIO_VOLUMES sets the storage volume or path to use for the MinIO server.
+
+MINIO_VOLUMES="/mnt/data"
+
+# MINIO_OPTS sets any additional commandline options to pass to the MinIO server.
+# For example, `--console-address :9001` sets the MinIO Console listen port
+MINIO_OPTS="--console-address :9001"
+
+# MINIO_SERVER_URL sets the hostname of the local machine for use with the MinIO Server
+# MinIO assumes your network control plane can correctly resolve this hostname to the local machine
+
+# Uncomment the following line and replace the value with the correct hostname for the local machine and port for the MinIO server (9000 by default).
+
+#MINIO_SERVER_URL="http://minio.example.net:9000"
+```
+
+Ushbu konfiguratsiyamizda minio admin user/parol va console-addres/minio-volume belgilab sozlaymiz.
+
+**5->** Minio Serverimini systemd orqali ishga tushiramiz.
+
+```bash
+sudo systemctl start minio.service
+```
+
+Statusini tekshirib ko'ramiz.
+
+```bash
+sudo systemctl status minio.service
+```
+
+Server o'chib yonganda Minio service avtomatik ishga tushmnaydi shuning uchun avtomatik ishga tushishni yoqib qo'yamiz.
+
+```bash
+sudo systemctl enable minio.service
+```
+
+![minio-server-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/minio-server/minio1.png)
+
+```txt
+Feb 15 12:45:27 devops minio[19390]: MinIO Object Storage Server
+Feb 15 12:45:27 devops minio[19390]: Copyright: 2015-2024 MinIO, Inc.
+Feb 15 12:45:27 devops minio[19390]: License: GNU AGPLv3 <https://www.gnu.org/licenses/agpl-3.0.html>
+Feb 15 12:45:27 devops minio[19390]: Version: RELEASE.2024-02-14T21-36-02Z (go1.21.7 linux/amd64)
+Feb 15 12:45:27 devops minio[19390]: Status:         1 Online, 0 Offline.
+Feb 15 12:45:27 devops minio[19390]: S3-API: http://10.0.0.4:9000  http://127.0.0.1:9000
+Feb 15 12:45:27 devops minio[19390]: Console: http://10.0.0.4:9001 http://127.0.0.1:9001
+Feb 15 12:45:27 devops minio[19390]: Documentation: https://min.io/docs/minio/linux/index.html
+Feb 15 12:45:27 devops minio[19390]: Warning: The standard parity is set to 0. This can lead to data loss.
+```
+
+Quyida applicationlar bo'glanishi uchun S3 API va Console ko'rsatilgan. Applicationlar Minio serverga `0.0.0.0:9000` serverimiz public IP manzilida `9000` portda bo'glana oladi Minio UI ga esa `0.0.0.0:9001` `9001` port orqali brauzerdan kira olamiz.
+
+
+**6->** Minio Console boshqaruv paneliga kirish uchun o'zingizga qulay brauzerdan serveringiz public IPsi va `9001` portga kirsangiz sizda Minio Console ochilishi kerak.
+
+![minio-server-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/minio-server/minio2.png)
+![minio-server-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/minio-server/mino3.png)
+
+Okey biz Minioni muvaffaqiyatli o'rnatib oldik keling birorta bucket ochib fayl yuklab ko'ramiz. Bucket ochayotganimizda **Versioning**ni yoqib qo'yish maslahat beriladi.
+
+![minio-server-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/minio-server/minio4.png)
+
+Qo'shimcha sozlashlarni bucket Settingidan sozlab olasiz. Bucketni private yoki public qilish va qo'shimcha sozlamalarni o'z ichiga oladi.
+![minio-server-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/minio-server/minio6.png)
+
+### Minioga domen ulash.
+
+Keling Minio S3 API va Console UI'ga domen ulab domen orqali kiradigan qilib ishga tushiramiz.
+
+**1->** Serverimizga Nginx va certbot o'rnatib olamiz.
+
+```bash
+sudo apt update
+sudo apt install nginx certbot python3-certbot-nginx -y
+```
+
+**2->** Serverimizga Nginx o'rnatib olganimizdan keyin uni ishga tushirib statusini tekshiramiz.
+
+```bash
+sudo systemctl start nginx
+sudo systemctl status nginx
+sudo systemctl enable nginx
+```
+
+**3->** Minio S3 API ni domen ulab nginx configuratsiya qilamiz. **/etc/nginx/sites-available/domenimiz.uz** faylida domenimiz nomi bilan konfiguratsiya ochib olamiz va quyidagicha konfiguratsiya qilamiz. Masalan menda xilol.uz domeni bor shuning uchun men `minio-api` nomli subdomen qilib `minio-api.xilol.uz` domenini ishlataman. Bu yerda `minio-api.xilol.uz` bu namuna uchun siz o'z domengizni qo'ying.
+
+```bash
+sudo nano /etc/nginx/sites-available/minio-api.xilol.uz
+```
+`minio-api.xilol.uz` konfiguratsiyamiz quyidagicha bo'ladi. Minio S3 API yani applicationlar ulanishi uchun ishlaydigan API **9000** portda ishlaydi shu portni nginx reverse proxy, proxy_pass qilib expose qilamiz.
+
+```bash {3,6}
+server {
+    listen 80;
+    server_name minio-api.xilol.uz;
+
+    location / {
+        proxy_pass http://localhost:9000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+Ushbu Nginx konfiguratsiya **minio-api.xilol.uz** ga kelgan barcha requestlarni **:9000** portga yo'naltiradi.
+
+**4->** Konfiguratsiyamizni **sites-available**dan **sites-enabled**ga `ln -s` qilib symbolic link qilib bo'glaymiz.
+```bash
+sudo ln -s /etc/nginx/sites-available/minio-api.xilol.uz /etc/nginx/sites-enabled/
+```
+
+DNS domen hostimizdan domenimizga subdomen qo'shib serverimiz static public IPsini bo'glaymiz. Rasmda Ahostdan namuna. `0.0.0.0 `o'rniga serveringiz static IP manzilini yozing.
+
+![minio-server-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/minio-server/ahost.png)
+
+**5->** DNS dan domenni ulaganimzidan keyin cerbot orqali **Let's Encrypt** SSL sertifikat olamiz.
+
+```bash
+sudo certbot --nginx -d minio-api.xilol.uz
+```
+
+Siz buni quyidagicha amalga oshirasiz **teshmat@gmail.com** o'rniga ishlaydigan o'zingizning emailingizni yozing.
+![minio-server-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/minio-server/server.png)
+![minio-server-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/minio-server/server1.png)
+
+**6->** Okey hammasi yaxshi keling endi Minio S3 API ni test qilib ishlatib ko'ramiz. Buning uchun Minio Console UIdan birorta bucket ochib uni public qilamiz va birorta rasm yuklaymiz bucketimizga uni URL manzilini olib birorta brauzerdan kirib ko'rsak shu rasmni berilgan domen va path orqali ochishi kerak.
+
+Keling **storage** nomli bucket yaratib olib uni public qilamiz.
+
+![minio-server-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/minio-server/minio4.png)
+
+Bucketimiz settingidan **Access Policy**ni **public** qilib qo'yamiz bu shunchaki test uchun.
+
+![minio-server-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/minio-server/minio7.png)
+
+Endi esa bucketimizga kirib birorta rasm yuklaymiz.
+
+![minio-server-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/minio-server/minio8.png)
+
+Okey men **storage** nomli backuetimga **bmw-m4.jpg** nomli rasm faylni yukladim  menda bu file URL **/storage/bmw-m4.jpg** bo'ladi. Bu holda Minio S3 API miz domenini ham bo'glaganimzida quyidagi URL bo'ladi [minio-api.xilol.uz/storage/bmw-m4.jpg](https://minio-api.xilol.uz/storage/bmw-m4.jpg). Okey keling shu URLga birorta brauzer orqali kiraylik.
+
+![minio-server-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/minio-server/image.png)
+
+Okeey hammasi zo'r biz Minio S3 API ga muvaffaqiyatli domen ulab uni test ham qilib ko'rdik.
+
+**8->** Keling endi Minio Console UI uchun ham domen ulab Ningx konfiguratsiya qilib certbot bilan SSL sertifikat olamiz. Hammasi yuqoridagi jarayonlar bilan bir xil bo'ladi.
+
+Minio Console UI uchun `minio-ui` subdomenni ishlatamiz shunda namuna domenimiz `minio-ui.xilol.uz` bo'ladiu. Nginx konfiguratsiya fayl yaratib olamiz.
+
+```bash
+sudo nano /etc/nginx/sites-available/minio-ui.xilol.uz
+```
+Yuqoridagi konfiguratsiyamizdan Minio Console UI porti va domenni o'zgartirgan holda konfigni yozib o'zgarishlarni saqlab chiqamiz.
+
+```bash {3,6}
+server {
+    listen 80;
+    server_name minio-ui.xilol.uz;
+
+    location / {
+        proxy_pass http://localhost:9001;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+
+```bash
+sudo ln -s /etc/nginx/sites-available/minio-ui.xilol.uz /etc/nginx/sites-enabled/
+```
+
+DNS hostimizdan subdomen qo'shib unga serverimiz public IP yimizni ulab qo'yamiz. DNS hostingdan domen IP ga domen bog'laganimizdan keyin certbot orqali SSL sertifikat olamiz.
+
+```bash
+sudo certbot --nginx -d minio-ui.xilol.uz
+```
+
+Hammasini yakunlaganimizdan keyin [minio-ui.xilol.uz](https://minio-ui.xilol.uz/) domeniga brauzerdan kirganimizda `https` bilan Minio Console UI ochilishi kerak. SSL sertifikat olib Chrome brauzerdan kirsa SSLni sezishi biroz vaqt oladi ya'ni SSL yo'q deb turadi. Firefox ancha tezkor ishlaydi.
+
+![minio-server-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/minio-server/server2.png)
+
+Uhh nihoyat biz barchasini muvaffaqiyat yakunladik. Biz minioni binary holatda o'rnatdik va SystemD orqali bosghqarish uchun service konfiguratsiya qilidik  va Minio qo'shimcha sozlamalar uchun konfig yaratib  minio fayllarni saqlash joyini **/mnt/data**ga bog'ladik. Minio S3 API va Minio Console UIga Nginx konfiguratsiya qilib domen ulab cerbot orqali SSL sertifikat olib ishga tushirdik.
+
+Bizda hozir
+
+* **[minio-ui.xilol.uz](https://minio-ui.xilol.uz/)->** Bu Minioni boshqarish uchun  Console UI.
+* **[minio-api.xilol.uz](https://minio-api.xilol.uz/)->** Bu applicationlarimiz ulanishi uchun Minio S3 API
+
+<Callout type="info" emoji="">
+
+Qo'shimcha Resurslar
+ * [**Install and Deploy MinIO**](https://min.io/docs/minio/linux/operations/installation.html)
+ * [**Deploy MinIO: Single-Node Single-Drive**](https://min.io/docs/minio/linux/operations/install-deploy-manage/deploy-minio-single-node-single-drive.html#minio-snsd)
+ * [**Deploy MinIO: Single-Node Multi-Drive**](https://min.io/docs/minio/linux/operations/install-deploy-manage/deploy-minio-single-node-multi-drive.html#minio-snmd)
+ * [**Deploy MinIO: Multi-Node Multi-Drive**](https://min.io/docs/minio/linux/operations/install-deploy-manage/deploy-minio-multi-node-multi-drive.html#minio-mnmd)
+
+**Sana:** 2024.02.16(2024-yil 16-fevral)
+
+**Oxirgi yangilanish:** 2024.02.16(2024-yil 16-fevral)
+
+**Muallif: Otabek Ismoilov**
+
+| [Telegram](https://t.me/Otabek_Ismoilov) | [GitHub](https://github.com/ismoilovdevml) | [LinkedIn](https://www.linkedin.com/in/otabek-ismoilov/) |
+| - | - | - |
+
+</Callout>

@@ -1,0 +1,66 @@
+---
+image: https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/network/openvpn-subnet.jpg
+description: "OpenVPN orqali subnetlarga ulanish"
+---
+
+import { Callout } from "nextra/components";
+
+# OpenVPN orqali subnetlarga ulanish
+
+![openvpn-subnet](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/network/openvpn-subnet.jpg)
+
+Bundan avvalroq **[OpenVPN tunnel orqali dinamik IPdagi serverga reverse proxy qilish](https://devops-journey.uz/guides/network/dinamik-to-static)** haqida yozgandim. Bugun esa xuddi shuni davom ettiramiz. 
+
+Uyda azaldan home server ishlataman, faqat yaqin oradan buyon Desktop PCni server qilish o'rniga real server qurilmalaridan foydalanishni boshladim (albatta bu juda qimmatli xarajat). Bu menda asosan kattaroq yuklamali ishlarni o'zimning kompyuterimda emas balkim serverda qilish imkonini yaratadi (masalan sourcedan compile qilish, yoki biror boshqa background process).
+
+Ayni damda menda bir nechta server va uning ichida virtual mashina orqali o'nlab loyihalar ishga tushirilgan. **Reverse proxy** qilish uchun esa har bir virtual mashina ichini sozlab chiqish kerak. Bu albatta bosh og'riq muammo. Undan ko'ra to'laqonli subnetga ulanishchi?
+
+Masalan uyda `192.168.30.0` serverlar uchun ajratilgan tarmoq. `192.168.0.0` va `1.0` esa odatiy qurilmalar. Demak men OpenVPNning boshqa clientlari orqali **30.0** subnetga ulana olishim kerak. Bugun uchun esa OpenVPNni quyidagicha sozlaymiz:
+
+**->** Serverda
+
+```bash
+nano /etc/openvpn/server.conf
+```
+Orqali fayl ichiga quyidagilarni qo'shamiz (**ccd** odatda bo'ladiyam)
+
+```filename="/etc/openvpn/server.conf"
+client-config-dir /etc/openvpn/ccd
+push "route 192.168.30.0 255.255.255.0"
+```
+
+Yuqorida ko'rsatilgan papka ichiga routerga ulangan config nomi bilan yangi fayl qo'shamiz:
+```
+nano /etc/openvpn/ccd/client1
+```
+```filename="/etc/openvpn/ccd/client1"
+ifconfig-push 10.8.0.2 255.255.255.0
+iroute 192.168.30.0 255.255.255.0
+```
+
+Openvpn servisni qayta ishga tushiramiz:
+
+```bash
+systemctl restart openvpn@server
+```
+
+Client 1:
+
+Firewall sozlamalarni OpenVPN tunnelidan boshqa subnetlargacha kirish huquqi uchun sozlaymiz.
+
+Bu metod va bitta **DNS** resolver orqali butun **Nginx**ni subnetga yo'naltirsayam bo'ladi)
+
+## Qo'shimcha
+
+<Callout type="info" emoji="">
+
+**Sana:** 2024.03.13(2024-yil 13-mart)
+
+**Oxirgi yangilanish:** 2024.04.08(2024-yil 8-aprel)
+
+**Muallif: Manuchehr Usmonov**
+
+| [Telegram](https://t.me/yetimdasturchi) | [Github](https://github.com/yetimdasturchi) | [Blog](https://diary.manu.uz/) |
+| - | - | - |
+
+</Callout>

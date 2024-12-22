@@ -1,0 +1,208 @@
+---
+image: https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/mongo_db.png
+description: "MongoDB nima va undan nima uchun foydalaniladi?"
+---
+
+import { Callout } from "nextra/components";
+
+# MongoDB nima va undan nima uchun foydalaniladi?
+
+![mongodb](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/mongo_db.png)
+
+**MongoDB** - bu document-oriented ma'lumotlar bazasi va an'anaviy Relational DataBase Management System (RDBMS) ilovalariga muqobil. MongoDB - bu ma'lumotlarni yanada moslashuvchan va kamroq tuzilgan tarzda saqlaydigan NoSQL ma'lumotlar bazasi. Ushbu qo'llanma MongoDB ga kirishni ta'minlaydi va u qanday ishlashini tasvirlaydi. Shuningdek, u MongoDB SQL-ga asoslangan ma'lumotlar bazalaridan, shu jumladan MySQL-dan qanday farq qilishini tushuntiradi va uning asosiy foydalanish holatlarini sanab o'tadi.
+
+### MongoDB nima?
+
+**MongoDB** manbaga asoslangan(source-available) document-oriented ma'lumotlar bazasi bo'lib, dastlab **MongoDB Inc** tomonidan ishlab chiqilgan. Undan [Server Side Public License (SSPL)](https://en.wikipedia.org/wiki/Server_Side_Public_License) ostida foydalanish bepul. MongoDB ko'pgina operatsion tizimlar, jumladan Windows, macOS va ko'pgina Linux distributivlari uchun mavjud. Bepul `MongoDB Community Edition` kichikroq tashkilotlar uchun mo'ljallangan, tijorat(commercial) `MongoDB Enterprise Server `esa ilg'or xususiyatlar bilan to'ldirilgan va mijozlarni qo'llab-quvvatlashni o'z ichiga oladi. `MongoDB Atlas` cloud ichida ishlaydigan to'liq boshqariladigan xizmatdir.
+
+<Callout type="info" emoji="">
+**Eslatma:**
+MongoDB SSPL tafsilotlari juda muhokama qilindi. SSPLga muvofiq, SSPL litsenziyalangan texnologiyani o'z ichiga olgan mahsulotni taklif qiladigan har bir kishi o'z dasturiy ta'minotini ham chiqarishi kerak. Ba'zi sanoat mutaxassislari bu ochiq kodli litsenziya mezonlariga to'liq javob bermaydi, deb hisoblashadi. MongoDB asosidagi har qanday dasturiy ta'minotni ishlab chiqishdan oldin shartnoma shartlarini yaxshilab o'rganib chiqish yaxshiroqdir.
+</Callout>
+
+MongoDB relatiom ma'lumotlar bazasi emas. U ma'lumotlarni ma'lumotlar bazasi tablelari(jadval) ichidagi rowlar(qator) sifatida saqlamaydi. Buning o'rniga, u documentlarda ma'lumotlarni saqlaydi. Bu uning NoSQL ilovasi sifatida tasniflanganligini anglatadi. Bu foydalanuvchilarga o'z ma'lumotlarini moslashuvchan va erkin shaklda saqlash imkonini beradi. Foydalanuvchilar o'zlarining ichki ma'lumotlari va dasturlash tuzilmalari bilan moslashish uchun o'zlarining ma'lumotlar bazasi sxemasini belgilashlari mumkin. MongoDB documentlari ob'ektga yo'naltirilgan dasturlash tillarining sinflari va ob'ektlari bilan yaqindan bog'langan strategiya yordamida tashkil etilishi mumkin. Bu unga mijoz ilovalari bilan samarali ishlash imkonini beradi.
+
+Har bir MongoDB document o'z tuzilishiga ega bo'lishi mumkin va documentlarni istalgan vaqtda osongina o'zgartirish mumkin. Ko'pgina RDBMS tizimlaridan farqli o'laroq, document schemasi(sxemasi) oldindan belgilanishi shart emas. MongoDB documentlari binary JSON (BSON) nomli industry-standartidagi JavaScript Object Notation (JSON) fayl formatining o'zgarishidan foydalanadi. JSON open-standard fayl formati bo'lib, maʼlumotni inson o'qiy oladigan matnda atribut-qiymat juftlari(attribute-value pair) sifatida saqlaydi. BSON binary kodlash yordamida ma'lumotlarni zichlashtiradi va soddalashtiradi. Saqlash maydoni bo'yicha u JSONga qaraganda samaraliroq, chunki uni osonroq tahlil qilish mumkin. Biroq, uni o'qish mumkin emas va odatda dekodlanishi kerak. MongoDB hali ham JSON documentlarini saqlashi yoki BSON maʼlumotlarini JSON formatida olishi mumkin. CSV yoki JSON formatidagi ma'lumotlarni MongoDB-ga osongina import qilish mumkin.
+
+MongoDB querilar(so'rov) uchun Structured Query Language (SQL) foydalanmaydi. Buning o'rniga u documentlarni insert(kiritish), update(yangilash) yoki delete(o'chirish) va ma'lumotlarni olish(retrieve) uchun `MongoDB Query API`-dan foydalanadi. API qo'shimcha ravishda bulk write operatorini o'z ichiga oladi. APIdan qanday foydalanish haqida qo'shimcha ma'lumot olish uchun [MongoDB Query API hujjatlariga](https://docs.mongodb.com/manual/crud/#std-label-crud) murojaat qiling.
+
+![mongodb](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/1.svg)
+
+MongoDB-ni o'z serverlaringizda o'rnatish uchun [Ubuntu 20.04 serverga MongoDB o'rnatish va sozlash](https://devops-journey.uz/guides/database/install-mongodb) qo'llanmasini o'qib chiqishingiz mumkin
+
+### MongoDB vs SQL
+
+Ma'lumotlar bazasining eng mashhur turi Relational DataBase Management System (RDBMS) hisoblanadi. RDBMS ilovalari ma'lumotlarni saqlash va olish va ma'lumotlar bazasini boshqarish uchun SQL dasturlash tilidan foydalanadi. RDBMS yoki SQL-ga asoslangan ma'lumotlar bazasi tablelar(jadvallar), rowlar(qatorlar) va column(ustun)lardan quyidagi tarzda foydalanadi:
+
+* Har bir ma'lumotlar bazasi tablelar to'plami uchun repository(ombordir).
+
+* Table columnlar to'plami sifatida aniqlanadi. Har bir column ma'lum bir ma'lumot turi bilan bog'langan. Turga misol `VARCHAR` bo'lib, u o'zgaruvchan uzunlikdagi qatorni anglatadi. Column yozuvning(record) o'ziga xos atributini ifodalaydi.
+
+* Table rowlar bilan to'ldirilgan. Tabledagi har bir row ma'lumotlar bazasidagi har xil yozuvdir.
+
+* Ma'lumotlar bazasi table two-by-two matrixsaga o'xshaydi. Matritsa ichidagi har bir kvadrat rowning bitta columnni ifodalaydi va ma'lumotlar qismini o'z ichiga oladi.
+
+Bundan farqli o'laroq, MongoDB document-based ma'lumotlar bazasi bo'lib, u NoSQL ma'lumotlar bazasi turidir. Nomidan ko'rinib turibdiki, NoSQL ma'lumotlar bazalari SQL dan foydalanmaydi. Ular xususiy API yoki shunga o'xshash boshqa usul yordamida ma'lumotlarga kirishadi. MongoDB ma'lumotlari RDBMS ilovasidan farqli atamalar yordamida tavsiflanadi. Tablelar, rowlar va columnlardan foydalanish o'rniga MongoDB documentlarni collectionlar ichida saqlaydi. Har bir documentda key-value pair(kalit-qiymat juftligi) mavjud bo'lgan maydonlar ro'yxati mavjud. MongoDB ning ichki tuzilishi haqida ko'proq ma'lumot olish uchun quyidagi bo'limlarga qarang. 
+
+Tizim darajasida(system level) MongoDB odatiy RDBMS dan bir necha asosiy jihatlari bilan farq qiladi. NoSQL va SQL ma'lumotlar bazasini tanlashda to'g'ri qaror qabul qilish uchun quyidagi fikrlarni ko'rib chiqing:
+
+* RDBMS ma'lumotlar bazalari relationdir. Ma'lumotlar bazasi tablelar va columnlar o'rtasidagi munosabatlar atrofida tuzilgan. NoSQL ma'lumotlar bazalari, shu jumladan MongoDB, aloqador emas. Foydalanuvchilar turli documentlar yoki collectionlar o'rtasida hech qanday aloqani belgilashlari shart emas.
+
+* RDBMS ilovalari har doim table-based(jadvalga asoslangan). Ma'lumotlar tablening multi-columnli rowlarida saqlanadi. NoSQL ma'lumotlar bazalari ma'lumotlarni saqlash uchun tablelardan foydalanmaydi. Ma'lumotlar documentlarda, key-value pairlarida, graphlarda yoki wide columnlarda saqlanadi.
+
+* SQL ma'lumotlar bazalari yozuvlar bir xil maydonlarni o'z ichiga olgan yaxshi tuzilgan ma'lumotlar uchun juda mos keladi. MongoDB va boshqa NoSQL ma'lumotlar bazalari tuzilmagan(unstructured) yoki o'zgaruvchan ma'lumotlar uchun yaxshiroqdir.
+
+* SQL ma'lumotlar bazalari bir vaqtning o'zida bir nechta rowlarni yangilash(update) uchun mo'ljallangan. NoSQL ma'lumotlar bazalari bir vaqtning o'zida bir nechta yangilanishlarni boshqarishi mumkin bo'lsa-da, bir vaqtning o'zida bitta documentni yangilashda eng samarali hisoblanadi.
+
+* SQL ma'lumotlar bazalari odatda vertikal ravishda kengaytiriladi(vertically scalable). Server admini tezlikni oshirish yoki ko'proq ma'lumotlarni qayta ishlash uchun server xotirasini yoki protsessorini oshirishi kerak. NoSQL ma'lumotlar bazalari ko'pincha gorizontal ravishda kengaytiriladi(horizontally scalable). Clusterga ko'proq serverlar qo'shish va load balancerini sozlash orqali sig'im oshiriladi. Shunday qilib, NoSQL clusterlarining ko'pchiligi bitta serverli relation ma'lumotlar bazasiga qaraganda ko'proq ma'lumotlarni qayta ishlashga qodir.
+
+* RDBMS tizimlari yaxshi tashkil etilgan va juda ishonchli. Relation ma'lumotlar bazalari uchun resurslar keng tarqalgan va sanoat bilimlari juda chuqur. NoSQL ma'lumotlar bazalari unchalik yaxshi tashkil etilmagan va u qadar katta hamjamiyatga ega emas.
+
+* NoSQL ma'lumotlar bazalari relation ma'lumotlar bazalari kabi ma'lumotlarning takrorlanishini kamaytirmaydi. Shunday qilib, NoSQL ma'lumotlar bazasi odatda ekvivalent RDBMSga qaraganda ko'proq saqlash joyini talab qiladi.
+
+SQL va NoSQL ma'lumotlar bazalarining juda xilma-xil modellari tufayli ular ko'pincha turli senariylarda qo'llaniladi. MongoDB ma'lumotlar bazasini loyihalash va undan foydalanishda quyidagi fikrlarni, ayniqsa RDBMS bilan farqlarni yodda tuting.
+
+* SQL bilan ma'lumotlar bazasi sxemasi(database schema) oldindan ishlab chiqilishi kerak. Har qanday ma'lumotlarni saqlashdan oldin ma'lumotlar bazalari va tablelar yaratilishi kerak. RDBMS ilovalari ma'lum miqdorda oldindan rejalashtirishni amalga oshiradi. MongoDB ob'ektlari ma'lumotlar qo'shilganda yaratilishi mumkin va ularni oldindan sozlash shart emas.
+
+* RDBMSda columnlar va ularning ma'lumotlar turlari(data type) table definitionda ko'rsatilgan. Tabledagi har bir yangi row ushbu definitionga mos kelishi kerak. MongoDB-da bir xil collectiondagi turli documentlar bir xil maydonlar, keylar yoki sxemalarga ega bo'lishi shart emas. Maydonning ma'lumotlar turi turli documentlarda farq qilishi mumkin. Biroq, ko'pgina haqiqiy deploymentlarda collectiondagi documentlar o'xshash tuzilishga ega. MongoDB foydalanuvchilarga ma'lumotlar izchilligini saqlashga yordam berish uchun tekshirish qoidalarini(validation rule) qo'shish imkonini beradi.
+
+* Relation ma'lumotlar bazasidan foydalanganda, agar table SQL buyruqlari yordamida o'zgartirilsa, columnlarni qo'shish yoki olib tashlash mumkin. Tableni o'zgartirish har bir rowdagi columnlarni o'zgartiradi. Ammo MongoDB-da documentdagi maydonlar collectiondagi boshqa documentlarni yangilamasdan yangilanishi mumkin.
+
+* MongoDB ma'lumotlarni ierarxik tarzda formatlash imkonini beradi. Maydonning qiymati boshqa maydonlar to'plami bo'lishi mumkin. Relation ma'lumotlar bazalari odatda bunday turdagi tuzilishga ruxsat bermaydi. Table columnlari skalyar ma'lumotlarni saqlaydi.
+
+* MongoDB ob'ektga yo'naltirilgan tillar bilan tandemda ishlash uchun belgilangan. Document shunday tuzilishi mumkinki, uning maydonlari(field) class atributlariga mos keladi. Bu dasturga ma'lumotlarni ilovadan ma'lumotlar bazasiga va aksincha osongina uzatish imkonini beradi. SQL-ga asoslangan ma'lumotlar bazalarida ob'ektlar tushunchasi yo'q. Bu shuni anglatadiki, developerlar uchun MongoDB bilan o'zaro aloqada bo'lgan dasturni loyihalash odatda osonroq.
+
+* MongoDB-da cross-referencelar bir documentdan boshqasiga referencelar orqali ko'rsatiladi. Bir documentdagi maydonning qiymati boshqa documentning identifikatori bo'lishi mumkin. SQLda boshqa tablelarga tashqi keylar yordamida reference qilinadi. Masalan, Account tablesidagi clientID Customer tablega ishora qiluvchi foreign key bo'lishi mumkin.
+
+MongoDB erkinligi juda jozibali, ammo arxitektura haqida oldindan o'ylash uchun biroz vaqt sarflash muhimdir. Hech qanday muvofiqlashtirish yoki rejalashtirishsiz qabul qilingan qarorlar tushunish va ulardan foydalanish qiyin bo'lgan ma'lumotlarga olib kelishi mumkin.
+
+MongoDB va SQL ma'lumotlar bazalari atomicityligi, performance(ishlash samaradorligi) va reliability(ishonchliligi) jihatidan ham farqlanadi.
+
+* **Atomicity** Ma'lumotlar bazasi terminologiyasida atomic operatsiyasi bo'linmas operatsiya hisoblanadi. Bu butunlay sodir bo'ladi yoki umuman bo'lmaydi. Bitta documentga MongoDB yozish operatsiyasi, hatto o'rnatilgan documentlarni yangilashda ham har doim atomik bo'ladi. Query API bir xil operatsiyada bir nechta documentlarni yangilashga ruxsat beradi, ammo bu atomik bo'lishi kafolatlanmaydi. RDBMSda ma'lumotlar bazasi va saqlash mexanizmiga qarab tranzaktsiyalar atomik bo'lishi mumkin. Misol uchun, MySQL InnoDB saqlash qurilmasi bilan foydalanilganda atomiklikni kafolatlaydi. MongoDB ning atomligi haqida ko'proq ma'lumot olish uchun [MongoDB tranzaksiyalari hujjatlariga](https://docs.mongodb.com/manual/core/transactions/) qarang.
+
+* **Performance** MongoDB juda yaxshi performancega ega. Buni asosiy va ikkilamchi indekslar va boshqa optimallashtirishlar yordamida yanada yaxshilash mumkin. Turli ma'lumotlar bazasi ilovalari o'rtasidagi performanceni ba'zan solishtirish qiyin. Biroq, NoSQL ma'lumotlar bazalari odatda SQL-ga asoslangan ma'lumotlar bazalariga qaraganda ancha tezroq. Buning sababi shundaki, ular joinlarni bajarishlari yoki indekslar va foreign keylarni tekshirishlari shart emas. MongoDB ning aniq ishlashi ma'lumotlar qanday saqlanishiga va bir nechta documentlarga kirish kerakligiga bog'liq.
+
+* **High-availability(Yuqori mavjudlik)** Replica setlariga asoslangan mustahkam yuqori mavjudlik(high-availability) imkoniyatlari MongoDB-ga o'rnatilgan. Replikatsiya to'plami ma'lumotlarning kamida ikkita va afzalroq uchta nusxasidan va arbiter daemonidan iborat. Barcha read(o'qish) va writelar(yozish) birlamchi primary replicada amalga oshiriladi, ikkinchi darajali(secondary) relicalar esa o'z nusxalarini saqlaydi. Start-up timeda yoki primary replika muvaffaqiyatsizlikka uchraganda, arbiter saylov jarayoni orqali yangi primaryni replicani tanlaydi. Secondary replika  read-only(faqat o'qish) uchun amallarni bajarishi ham mumkin, ammo secondary replikalarning to'liq yangilanishi kafolatlanmaydi. RDBMS tizimlari ushbu xususiyatni hisobga olgan holda ishlab chiqilmagan, ammo ba'zi ilovalar ushbu funksiyani ta'minlashi mumkin. Aksariyat relation ma'lumotlar bazalari zahira nusxalarisiz(backup) ham juda ishonchli hisoblanadi.
+
+Ko'pgina relatiom ma'lumotlar bazalarida bo'lgani kabi, MongoDB ham command-line yordam dasturi bilan paketlangan. `mongosh` tooli CSV yoki JSON fayllaridan ma'lumotlarni import qilish va boshqaruv vazifalarini, shu jumladan xavfsizlikni bajarish uchun ishlatilishi mumkin. SQL dasturlash tilidagi ko'pgina statementlar MongoDB Query API uchun ekvivalent shakllarga tarjima qilinishi mumkin. Masalan, SQL `INSERT INTO <table_name>` buyrug'i APIda `<collection_name>.insertOne` metodi chaqiruviga aylanadi.
+
+SQL buyrug'i orasidagi o'zgarishlarga e'tibor bering,
+
+```sql
+INSERT INTO xodimlar(xodim_id, yosh, department) VALUES ("b5007", 32, "Marketing")
+```
+
+MongoDB Query API versiyasiga nisbatan:
+
+```json
+
+db.xodimlar.insertOne(
+    { xodim_id: "b5007", age: 32, department: "Marketing" }
+)
+```
+MongoDB texnik hujjatlarida siz murojaat qilishingiz mumkin bo'lgan [SQL to MongoDB Mapping Chart](https://www.mongodb.com/docs/manual/reference/sql-comparison/) qo'llanmasi bor.
+
+#### Documentlar and Collectionlar
+
+MongoDB arxitekturasi relation ma'lumotlar bazasidan farqli atamalar bilan tavsiflanadi. Table, row, column, join atamalari o'rniga document, collection, field so'zlari ishlatiladi.
+
+SQL ham, MongoDB ham top-level containerga murojaat qilish uchun database atamasidan foydalanadi. Yagona(single) database odatda ma'lum bir maqsadga xizmat qiladi yoki individual mijoz tomonidan qo'llaniladi va ushbu misol uchun ma'lumotlarning butun majmuasini o'z ichiga oladi. MongoDB birinchi marta foydalanilganda avtomatik ravishda ma'lumotlar bazasini(database) yaratadi. Bu ma'lumotlar bazasini ishlatishdan oldin yaratilishi kerak bo'lgan relation ma'lumotlar bazalaridan farq qiladi.
+
+Har bir MongoDB ma'lumotlar bazasida bir yoki bir nechta collection mavjud. MongoDB collectionni yaratadi va collection birinchi marta ishlatilganda unga o'zgarmas `UUID`ni tayinlaydi. Collection fayl jildiga o'xshaydi. MongoDB collectioniga default structure berilmagan va aniq definition yoki template bilan bog'lanmagan. Biroq, collectionni aniq yaratish va unga bir qator ixtiyoriy parametrlarni, jumladan, maksimal o'lcham(maximum size) va tekshirish qoidalarini(validation rule) belgilash mumkin. RDBMS ilovasining bir xil darajasida har bir ma'lumotlar bazasida tablelar to'plami mavjud. Biroq, tableni ishlatishdan oldin uning columnlari bilan birga aniqlanishi kerak.
+
+MongoDB document-orientedligi sababli, har bir collectionda bir qator documentlar mavjud. Documentni ma'lumotlar bazasidagi yozuv sifatida ko'rish mumkin. MongoDB documentlarida ma'lumotlarni saqlash uchun ishlatiladigan variable number fieldlar mavjud. Har bir field(maydon) key-value pairidan iborat. Vergullar fieldlarni ajratib turadi, qavslar esa `{}` documentning butun mazmunini qamrab oladi. Collectiondagi turli documentlar bir xil format yoki sxemani bo'lishishi shart emas. Field keyining nomlari va ma'lumotlar turlari documentlar orasida farq qilishi mumkin. RDBMS ilovasi ma'lumotlar yozuvini table ichidagi row sifatida saqlaydi. Relation ma'lumotlar bazasida har bir row alohida yozuvni ifodalaydi. Tabledagi har bir row bir xil formatda bo'lishi va bir xil columnlarni o'z ichiga olishi kerak.
+
+MongoDB avtomatik ravishda har bir documentga `_id` nomli fieldni qo'shadi. `_id` fieldi documentning internal ID(ichki IDsini) saqlaydi va uning unique primary keyy(agona asosiy kaliti) sifatida ishlaydi.
+
+MongoDB-da collectionlar va documentlarga ma'lum darajada bog'liq bo'lgan `cursor` nomli ob'ekt mavjud. cursor ma'lumotlar bazasi so'rovidan(database query) qaytariladigan documentlar ro'yxatiga  pointerdir(ko'rsatgich).
+
+Xulosa qilib aytadigan bo'lsak, MongoDB ma'lumotlar bazasida bir qator collectionlar mavjud va collectionda documentlar clusteri mavjud. Har bir document nol yoki undan ko'p fieldlarni o'z ichiga oladi. Har bir field key-value pairidan iborat. Quyidagi jadvalda RDBMS terminologiyasi MongoDB ekvivalentlari bilan taqqoslanadi.
+
+
+| RDBMS       | MongoDB     |
+| ----------- | ----------- | 
+| Database	  | Database    |
+| Table	      | Collection  |
+| Row	      | Document    |
+| Column	  | Field       |
+
+
+#### Key-Value Pairlar
+
+Har bir MongoDB documenti filedlar ro'yxatidan iborat. Bu key-value pairlariga teng. Fied sintaktik jihatdan yaroqli bo'lishi uchun `:` belgisi bilan ajratilgan key va valueni o'z ichiga olishi kerak. MongoDB-da barcha ma'lumotlar fieldlarda saqlanishi kerak, shuning uchun key-value pairlari birgalikda ma'lumotlar bazasining butun tarkibini ifodalaydi.
+
+Keylarning nomlari documentlar va filedlar soni ham farq qilishi mumkin. Tur muvofiqligi(type consistency) tatbiq etilmaydi. Shu sababli, bitta collectiondagi ikkita document tubdan farq qilishi mumkin. Field sxemasi oldindan belgilanishi shart emas. Foydalanuvchilar istalgan vaqtda collectionning qolgan qismidan qat'i nazar, yangi fieldlarni qo'shishlari yoki mavjudlarini o'chirishlari va o'zgartirishlari mumkin. SQL-ga asoslangan ma'lumotlar bazasidagi table columi ancha cheklangan. Relation  ma'lumotlar bazasida columnlar tablening barcha rowlari bo'ylab mos keladi. Bundan tashqari, columnning mazmuni har bir rowda bir xil turga ega bo'lishi kerak.
+
+Key-valuelar BSON formatida yozilgan. Tajribali foydalanuvchilar BSON ma'lumotlarini qisman dekodlashi mumkin, ammo ular odatda to'liq tushunarli bo'lishi uchun JSONga dekodlanishi kerak. Har bir document juda ko'p sonli filedlarni o'z ichiga olishi mumkin.
+
+Quyidagi MongoDB namunaviy documenti Xodimlar collectionidagi individual xodimni ifodalaydi. Document to'rtta fileddan iborat. Birinchi field MongoDB tomonidan yaratilgan internal document IDsini saqlaydi. Ushbu field uchun keyning nomi `_id` va value unique document IDsidir. Birinchi foydalanuvchi belgilagan field(maydon) `Asilbek` qiymatiga ega bo'lgan `ism` keyidan iborat. Har bir field, oxirgisidan tashqari, vergul qo'yiladi. Key va value ikki nuqta belgisi yordamida ajratiladi `:`, qavslar esa fieldlar ro'yxatini o'rab oladi.
+
+```json
+{
+    _id: <ObjectID>,
+    ism: "Asilbek",
+    familiya: "Ashurov",
+    Group: "Marketing"
+}
+```
+
+Relation ma'lumotlar bazasidan farqli o'laroq, MongoDB ichki o'rnatilgan fieldlarga ruxsat beradi. Har qanday key-value pairi boshqa key-value pairlari to'plami bo'lgan qiymatga ega bo'lishi mumkin. Bu documentlarga ierarxik ma'lumotlarni taqdim etish imkonini beradi. Top-layer keyi uchun value(qiymat) bo'lib xizmat qiluvchi key-value pairlarining ichki o'rnatilgan to'plami embedded document deb ataladi. Embedded document foydalanuvchilarga documentga o'xshash ikkinchi darajali(second level) ma'lumotlarni asosiy document ichiga joylashtirish imkonini beradi. Buni "document ichidagi document(document inside a document)" deb hisoblash mumkin. Ushbu turdagi ma'lumotlar normalizatsiya qilingan ma'lumotlar deb ataladi. Ko'pgina hollarda, bu ma'lumotlarni taqdim etishning eng aniq usuli bo'lishi mumkin.
+
+Bu RDBMSda ierarxik munosabatlar qanday amalga oshirilishidan farq qiladi. SQL-ga asoslangan tableda tabledagi columnlar diskret ma'lumotlar elementlarini saqlaydi. Ular sub-recordlar yoki arraylarni saqlash uchun mo'ljallanmagan. Ancillary relationshiplar foreign keylar orqali aniqlanadi va boshqa table bilan birlashtiriladi. MongoDB ancha moslashuvchan, chunki u har bir documentga boshqa ierarxiyani saqlashga imkon beradi va foreign yoki compound keylarni talab qilmaydi. Embedded documentlar relation  ma'lumotlar bazasida joinlar o'rnini egallaydi. Biroq, RDBMS tablelari bilan solishtirganda MongoDB ma'lumotlarining turli embedded documentlarda takrorlanishi ehtimoli ancha yuqori.
+
+Ushbu misolda `pochtaManzili` nomli key-value uchun embedded documentga ega. Ushbu embedded document `tuman`, `viloyat`, `davlat` va `pochtaIndeksi` to'rtta ichki key-value pairidan iborat. Ushbu maxsus embedded document quyida ko'rsatilganidek tuzilgan bo'lishi mumkin.
+
+```json
+pochtaManzili: {
+    tuman: "Olot",
+    viloyat: "Buxoro",
+    davlat: "O'zbekiston",
+    pochtaIndeksi: 10221
+},
+```
+
+Embedded documentlar va sxema dizayni haqida qo'shimcha ma'lumot olish uchun [ma'lumotlar modeli dizayni](https://docs.mongodb.com/manual/core/data-model-design/) bo'yicha MongoDB texnik hujjatlariga murojaat qiling.
+
+### Nima uchun MongoDB dan foydalanish kerak?
+
+MongoDB moslashuvchanlikni talab qiladigan vaziyatlarda semi-structured datalardan(yarim tuzilgan ma'lumotlar) foydalanish uchun ajoyib tanlovdir. Document-oriented ma'lumotlar bazasi sifatida u yuqori darajada kengaytiriladi va ob'ektga yo'naltirilgan tillarda yozilgan dasturlar bilan yaxshi ishlaydi. NoSQL ma'lumotlar bazalarining tabiiy xususiyatlaridan tashqari, MongoDB quyidagi afzalliklarga ega:
+
+* Bu foydalanuvchiga ma'lumotlarni har qanday usulda tartibga solish va tuzish uchun to'liq moslashuvchanlikni taklif qiladi. Collectiondagi documentlarni ilovadagi aniq ob'ektlar va classlar bilan moslashtirish oson.
+
+* U filedlar va regular expressionlar asosidagi maxsus querylarni qo'llab-quvvatlaydi. Bu so'rovlar(query) shaxsiylashtirilgan(personalized) JavaScript funksiyalarini ham o'z ichiga olishi mumkin. Querylar SQL statementlariga qaraganda ancha ochiq va moslashuvchan.
+
+* MongoDB katta hajmli(high-volume) ma'lumotlar to'plamlari(data set) uchun optimallashtirilgan va yuqori darajada kengaytirilishi mumkin. U shardlar yordamida bir nechta serverlarda load balancingni amalga oshirishi mumkin. Foydalanuvchi tomonidan belgilangan shard keyi ma'lumotlar diapazonlar bo'yicha serverlar bo'ylab qanday taqsimlanishini aniqlaydi.
+
+* MongoDB yuqori darajada mavjudligini(high availability) hisobga olgan holda ishlab chiqilgan. U juda mustahkam va kuchli replikatsiya va zaxira(backup) mexanizmlarini o'z ichiga oladi. Turli xil workloadlari bir xil clusterda ajratilishi mumkin va ma'lumotlar global yoki local miqyosda saqlanishi mumkin.
+
+* U yuqori unumdorlikni(high performance) taklif etadi va relation ma'lumotlar bazalariga qaraganda sezilarli darajada tezroq, ayniqsa ma'lumotlarni yozishda.
+
+* MongoDB foydalanuvchilarga ma'lum bir atribut yoki funksiya chaqiruvi natijasi asosida documentlarni tanlash va guruhlash imkonini beruvchi unique aggregation toollarini o'z ichiga oladi.
+
+* MongoDB dasturchilar uchun o'rganish va ulardan foydalanish oson. Bu RDBMS ilovalariga qaraganda kamroq murakkab va texnik tafsilotlarga ega.
+
+* Infratuzilma komponentlari nuqtai nazaridan, MongoDB ma'lumotlar bazasini himoya qilish uchun ko'plab built-in xususiyatlarni taqdim etadi. Bu juda portable, platforma va cloud-agnostic. Bu foydalanuvchilarga o'z ma'lumotlarini boshqa muhitlarga ko'chirish yoki cloudlar yoki sotuvchilarni o'zgartirish imkonini beradi. MongoDB o'ndan ortiq tillar uchun drayverlarni taqdim etadi.
+
+* MongoDB fayl tizimi sifatida ishlash uchun `GridFS` komponentidan foydalanishi mumkin. Fayllar ko'paytirilishi va bir nechta serverlarda yukni muvozanatlashi(load balancing) mumkin.
+
+* Capped collectionlar funksiyasidan unumdorlikni(performance) oshirish uchun foydalanish mumkin. Bu xususiyat collection hajmini cheklaydi, insertion orderni(insert tartibi) saqlaydi va circular queue(navbat) vazifasini bajaradi.
+
+### Xulosa
+
+Ushbu qo'llanma **MongoDB nima?** degan savolga javob beradi. MongoDB - bu relatiom ma'lumotlar bazasi emas, balki document-oriented NoSQL ma'lumotlar bazasi. U o'z ma'lumotlarini document sifatida saqlaydi. Har bir MongoDB bir nechta collectionlardan iborat va har bir collectionda documentlar to'plami mavjud. MongoDB documentining sintaksisi JSON fayl formatining o'zgarishiga asoslangan. U har bir field(maydon) key va valuega ega bo'lgan fieldlar to'plamidan iborat. Fieldlar bir-birining ichiga joylashtirilishi mumkin. Nested field embedded document(o'rnatilgan document) deb ataladi.
+
+SQL bilan taqqoslaganda, MongoDB unstructured datalar(tuzilmagan ma'lumotlar) bilan samaraliroq ishlaydi va ko'proq moslashuvchanlikni taklif qiladi. Collection ichidagi documentlar bir xil fieldlar yoki ma'lumotlar turlariga ega bo'lishi shart emas va alohida documentilar osongina o'zgartirilishi mumkin. MongoDB RDBMS-ga qaraganda ancha tezroq va gorizontal masshtablashdan(horizontal scaling) foydalangan holda osonlik bilan o'lchaydi. MongoDB advanced high-availability tizimni taqdim etish uchun replikalardan foydalanadi va muntazam definationlar va JavaScript funksiyalarini o'z ichiga oladigan kuchli ad-hoc querylarga ega. MongoDB haqida qo'shimcha ma'lumot olish uchun [MongoDB texnik hujjatlariga](https://docs.mongodb.com/) qarang.
+
+
+### Qo'shimcha
+
+<Callout type="info" emoji="">
+Ushbu mavzu bo'yicha qo'shimcha ma'lumot olish uchun quyidagi manbalarga murojaat qilishingiz mumkin. 
+
+* [MongoDB asoslari bo'yicha qo'llanma](https://university.mongodb.com/courses/M001/about)
+* [MongoDB texnik hujjatlari](https://docs.mongodb.com/)
+
+**Foydalanilgan manbalar:** [www.linode.com](https://www.linode.com/docs/guides/)
+
+**Sana:** 2023.11.18(2023-yil 18-noyabr)
+</Callout>

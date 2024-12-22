@@ -1,0 +1,81 @@
+---
+image: https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/cloud/aws-ecs-ecr/banner.png
+description: "Amazon ECS + ECR + Code Pipeline deployment"
+---
+
+import { Callout } from "nextra/components";
+
+## Amazon ECS + ECR + Code Pipeline deployment
+
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/cloud/aws-ecs-ecr/banner.png)
+
+Assalom aleykum
+**Amazon Web Service**larini birga ishlatgan holatda web dasturimizni deploy qilishni birma-bir aytib ketish bilan tushuntirib bermoqchiman. Biz qiladigan birinchi ish bu o'zimiz ishlatayotgan servicelarni qanday ishlashi va nimalar bilan ishlay olishi haqida o'rganib chiqish. Quyidagi mavzuda biz **ECS, ECR, Code (Commit , Build, Pipeline)** service lariga chuqurroq kirishamiz.
+
+**ECS** — bu **E**lastic **C**ontainer **S**ervice bu service . Asosiy 3 qismdan iborat bo'lgan bu service sizdan ketma-ketlik talab qiladi.
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/cloud/aws-ecs-ecr/1.webp)
+
+**1->** **Cluster** - 3 xildagi serverlarda ishlashi mumkin **1-EC2, 2-FARGATE, 3-EXTERNAL**(AWS da bo'lmagan boshqa server). Uni o'zining alohida deployment qismida **“Failure detection”** bor. Bu shunday ishlaydi — (**“Turned on, rollback on failures turned on for circuit breaker”**) va unga Service qo'shiladi.
+
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/cloud/aws-ecs-ecr/2.webp)
+
+**2->** Vaziyat va talabga qarab tanlov qilishingiz mumkin. Service — bu ham Cluster kabi 3 xil server turida va **Capacity provider**da ishlaydi, buni service ochayotganda berib ketiladi va unga qanday Task ishlatishi tanlanadi.
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/cloud/aws-ecs-ecr/3.webp)
+
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/cloud/aws-ecs-ecr/4.webp)
+
+**3->** **Task Definition** yozib olinadi va unda siz qaysi va nechta container ishlatmoqchi bo'lganingiz, ularga serverdan qancha **CPU** va **Memory** berishingizni yozib qo'ysangiz bo'ladi.Albatta buni ham qaysi Infrastructurada ishlatishingiz berilishi kerak **(EC2, Fargate, External)**. Bunga keyinroq yana to'xtalib o'tamiz. Agar loyiha kichkina va oddiy bo'ladigan bo'lsa bularni default holatda qoldirsa ham bo'ladi . Agar unga miqdoriy cheklov bermoqchi bo'lsangiz siz u container qanday turdagi server (EC2 , Fargate, External) da turganini bilishingiz kerak. Agar Server CPUsi 4 bo'lib siz container ga 6 beradigan bo'lsangiz service qulashi ham mumkin
+
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/cloud/aws-ecs-ecr/5.webp)
+
+Task definition ikki xil usul bilan ochsa bo'ladi, Json bu ancha mukammal va tez bo'ladigani. Agar yangi foydalanuvchi bo'lsangiz UI qismi bilan qilish tafsiya beriladi.
+
+Task definition da yozilgan struktura sizni servicengiz yoki cluster da ishlashida muammo chiqishi mumkin, qachonki siz ularni Infrastructurasini har xil qilgan bo'lsangiz. Nega deysizmi ? Chunki bu container va uni qanday qurilma (OS) da build qilishingizga qarab ishlaydi.
+
+Masalan siz bironta narsani Docker bilan Windowsda build qilib keyin uni Linux da yoki Mac **(ARM)** da run qilib ko'ring. AWS dagi EC2,FARGATE ham huddi shunday. Albatta EC2 ning ham **g** type — **Graviton** turi bor. bu sizdan ECS da build qiladigan containerni ECR dan keladigan container image ga qo'yiladigan sharti. Ko'p odamlar shu masalada xato qilishadi va tushunmaslikdan vaqt yo'qotiladi. Agar bu narsalarni ochishda bironta mayda detallariga tushunmasangiz **AWS workshop**ga kirib o'rganishingizni tafsiya beraman.
+
+
+**ECR** — bu **E**lastic **C**ontainer **R**egistry, ha bu AWS ga kirmasdan oldin ishlatgan Gitlab Container registery yoki alohida serverga qo'ygan Registery, unchalik ham qiyin emas, ishlash arxitekturasi deyarli bir xil. Nega aynan AWS dagi registery dan foydalanishimiz kerak o'zimizni tayyor registery turganda ? Bunga javob AWS o'zini servise larini ko'pini faqat o'zining servislari bilan ishlatishishni talab qiladi, Albatta hozir qo'shimcha xizmatlari ham qo'shilmoqda — Gitlab, Github, Bitbucketlar ham bor va ularga integratsiya qilsangiz ham bo'ladi. Lekin muammo sizning **SCM(SourceCodeManager)**ning verisyasi — Agar alohida kampaniya uchun ko'tarilgan bo'lsa, va unga har bir repositoriyani ulab chiqish vaqtingiz va ba'zida tushunarsiz muammolar chiqishi bilan bog'liq. Umuman olganda hohishingizga qarab.
+
+**Code Pipeline** — Bu service turi sizga 2 yoki unda ko'p service larni bir-biri bilan o'rtasida qandaydur doimiy ishni bajarish uchun ishlatiladi,buni Workshop yoki Docslar orqali kerak bo'lgan toollardan foydalansangiz bo'ladi. Bu mavzu uchun **ECR + ECS** . Pipeline structurasi oddiy lekin har bir Pipeline dagi Stage larni bir biriga bog'lovchi ya'ni Artifact lar ni tushunish kerak. Code Pipeline ochishda sizdan 4 ta qadam talab qilinadi. Birinchisi bu Source ya'ni Pipeline qandaydur vazifa bajarish uchun uning o'sha vazifada aytilgan qadamlarni qaysi narsa ustida bajarishi . Masalan siz kitoblaringizni taklash uchun shkaf kerak bo'lganidek. Keyingi Qadam Deploy, ya'ni loyihani ECS ga deploy qilish. Lekin bu 2 Stage bilan ish bitmaydi. Aytganimdek Code Pipeline har bitta qadam o'rtasida kirish va chiqish Artifact talab qiladi.
+
+**Artifact** — bu 2 xil ko'rinishda (**zip** va **archive**) bo'lib u o'zini ichida har bir qadamda ishlatilgan strukturani qandaydur fayl turida saqlab ketadi va u **S3 bucket**larni ichiga qo'yiladi.
+
+Har bir Code Pipeline dagi Stagedan Input va Output artifact berilishi talab qilinadi, bu aytganimdek bitta oldingi yoki boshlanish nuqtasi qanday va qaysi holatda amalga oshirishi talab qilinganidek.Bu holatda nima qilamiz ?
+
+Biz 2 ta Stage ya'ni qadam bilan biz hohlagan natijani ololmaymiz ? Agar ECR dagi imageni ECS ga deploy qilish kerak bo'lsa ) .
+Chunki ECS bizdan `.json` formatdagi struktura shakllanga fayl so'raydi, ECR dan chiqgan artifact ham `.json` lekin boshqa sxemadagi. Bir .json ichidagi sxema `{}` bundan qavslar bilan boshlangan bo'lsa bittasi `[]` bundan. Bunda biz nima qilamiz ?
+
+Stagelar soni ko'paytiramiz. Unga **Code Commit** hamda **CodeBuild** qo'shamiz. Shu bilan bizda 4 ta stage(qadam) paydo bo'ladi . Bu ikki service bizga `{ }` bu turdagi `.json` faylni `[ ]` bu turdagisiga convert qilishimiz uchun. hohlasangiz o'zingiz ishlatadigan CI/CD bilan S3 credentiallarini olib upload qiling, hohlasangiz Code Build orqali.
+
+Code Commit bu o'zida Fayllar saqlovchi bir repository, unda bizdagi `.yml` fayllar va boshqa hohlagan vazifa uchun fayllar qo'ysangiz bo'ladi va ularni build qilish uchun CodeBuilddan **buildproject** ochiladi.
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/cloud/aws-ecs-ecr/6.webp)
+va bundan chiqgan natija S3 bucketga tashlanishini shu qadamlar orasida berib ketishingiz mumkin.
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/cloud/aws-ecs-ecr/7.webp)
+
+Shu ketma-ketlikda biz **CodePipeline**dagi Build Stagega Commit stagedan chiqgan artifactni Deploy stagega artifact sifatida Builddan chiqaradigna artifactimizni beramiz, unga hohlagan nom berishingiz mumkin.
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/cloud/aws-ecs-ecr/8.webp)
+
+Hozircha hammasi shu . Agar hamma qadamlar to'g'ri bajarilsa siz hohlagan natijani olasiz )
+
+Bu mavzu haqida savol va takliflarni Telegram orqali ham fikr bildirsangiz bo'ladi [**LINK**](https://t.me/nurilloh_an)
+
+Hammaga rahmat !
+
+## Qo'shimcha
+<Callout type="info" emoji="">
+Qo'shimcha Resurslar
+
+ * [**Azure Virtual Network documentation**](https://learn.microsoft.com/en-us/azure/virtual-network/)
+ * [**GCP Network sozlash**](https://devops-journey.uz/guides/cloud/gcp-network-sozlash)
+
+**Sana:** 2023.08.25(2023-yil 25-avgust)
+
+**Oxirgi yangilanish:** 2024.06.25(2024-yil 25-iyun)
+
+**Muallif: Nurilloh Anvarjonov**
+
+| [Telegram](https://t.me/nurilloh_anv) | [Github](https://github.com/nurilloh-an) | [LinkedIn](https://www.linkedin.com/in/nurilloh-anvarjonov/) |
+| - | - | - |
+
+</Callout>

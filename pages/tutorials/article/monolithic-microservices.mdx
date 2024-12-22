@@ -1,0 +1,152 @@
+---
+image: https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/monolithic-microservices/1.webp
+description: "Monolithic vs Microservices Architecture"
+---
+
+import { Callout } from "nextra/components";
+
+# Monolithic vs Microservices Architecture
+
+![monolithic-vs-microservices](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/monolithic-microservices/1.webp)
+
+Monolit va Mikroservis arxitekura bu application yaratishdagi ikki xil yondoshuv bo'lib har ikkala arxitekturaning o'ziga yarasha yutuq va kamchiliklari mavjud. Maqolada bu arxitekturalarning ba`zi bir asosiy farqlari, qiyinchiliklari va afzalliklarini ko'rib chiqamiz.
+
+Oxirgi yillarda mikroservis arxitektura ancha ommalashdi, ko'p projectlar mikroservis da yaratilishni boshladi. Oddiy qilib aytadigan bo'lsak, mikroservis trendga chiqdi ))).Mikroservis yaxshi yechim, lekin notog'ri foydalanilgan arxitektura bu kompaniya uchun balo yoki tuzatib bo'lmas yara bo'lishi mumkin. Shuning uchun arxitekturani to'g'ri tanlash juda muhim hisoblanadi. Ba`zi projectlar noto'g'ri tanlangan arxitektura sabab fail bo'ladi. Qaysi holatlarda qanday arxitekturani tanlashni yaxshilab bilib olish kerak.
+
+## Monolit Arxitektura
+
+***Birinchi bo'lib Monolit arxitekrurani ko'rib chiqsak.***
+
+Monolit arxitektura an`anaviy va eng ko'p ishlatilgan arxitekturalardan biri bo'lib, odatda application single code base asosida yaratilgan bo'ladi. Misol uchun siz spring framework da application yaratsangiz, barcha yechimlar application ichidagi filelarda bo'ladi va yagona bazaga ulanadi. Shuning uchun Single code base appicationlarni tushunish anchayin oson. Bu arxitekturadan deyarli barcha kompaniyalar foydalanadi yani yangi yaratilayotgan startup lar yoki yangi ish boshlayotgan kompaniyalar shu arxitekturani ishlatadi. Chunki bu usul mikroservislarga qaraganda boshqarish va ishlab chiqish ancha oson va ortiqcha resurs talab qilmaydi.
+
+![monolithic-vs-microservices](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/monolithic-microservices/2.webp)
+
+Asosiy layerlar taxminan shunday bo'ladi, baiki layerlar soni ham ko'p bo'lishi mumkin lekin database ga ulanish doim o'xshash bo'ladi.
+
+**Monolit arxitekturaning ba`zi bir kamchilik va yutuqlarini ko'rib chiqsak**
+
+* **Oddiylik** — Barcha kodlar bitta yechimda. Agar sizga biror bir o'zgarish kerak bo'lsa hamma kodlar bitta joyda joylashgan bo'ladi. Agar applicationni run local qilmoqchi bo'lsangiz faqat bitta applicationni run qilasiz.
+
+* **Oson deploy** — Oson deploy bo'ladi chunki siz faqat bitta applicationni deploy qilishingiz kerak xalos. Har doim yangi qo'shimchalar qo'shsangiz yoki bug fix qilsangiz yagona applicationni deoplay qilasiz.
+
+* **Tushunish oson** — Deyarli barcha dasturchilar monolit application bilan ishlagan, shuning uchun projectga tez kirishib, boshlab keta oladi.
+
+* **Oson debug** — Debug qilish oson barcha biznes mantiqlar bitta applicationda joylashganligi sabab qo'shimcha konfiguratsiyalarsiz oson dubug qilish mumkin.
+
+* **Test qilish oson** — hamma kodlar va konfiguratsiyalar bitta applicationda bo'lganligi sabab qo'shimcha konfiguratsiylar, boshqa servicelarni holatini(ishlayotganligini) va boshqa qo'shimcha ishlarni bajarish shart emas. Qo'shimchasiga end-to-end testlarni oson implementatsiya qilinadi.
+
+* **Oson Monitoring** — tizimda qandaydir xatoliklar yoki nosozliklar yuzaga kelsa aniqlash juda oson bo'ladi.
+
+Har bir narsaning afzalilari bo'lgani kabi bu arxitekturaning ham kamchilikari bor:
+
+**Monolit arxitekturaning kamchiliklari;**
+
+* **Tizim kattalashganda xizmat ko'rsatish qiyinlashishi** — Loyiha boshlanganida uni boshqarish anchayin oson bo'ladi lekin yillar o'tib kattalashgai sari uni boshqarish qiyinlashib boradi. Monolit applicationlar kichik va o'rta tizimlar uchun ideal yechim hisoblanadi.
+
+* **Deploy payti ishlamay turishi** — application update paytida butun boshli tizim ishlamaydi, toki tizimi ishga tushmagunicha.
+
+* **Jamoa kattalashgan sari ishlash qiyinlashib boradi** — Tasavvur qiling, katta jamoada bitta Monolit application bilan ishlayapti, har bir kichik team o'ziga biriktirilgan turli xil task larni yoki buglarni fix qiladi. Jamolar ishini tugatganidan so'ng bilamizki, kodlar bitta branchga marge qilinadi va bu marge jarayonida juda ko'plab conflict lar chiqish ehtimolligi katta, chunki jamolar umumiy fayllarda ishlashlari mumkin. Bilamizki, kodlar conflict bo'lishi anchayin katta muammo hisoblanadi.
+
+* **Qisman Mahstablash(scalability) imkoni yo'q** — Bilamizki, Monolitni ham mashtablash mumkin. Lekin aynan ko'p request bo'layotgan qisminigina mashtablay olmaymiz, faqatgina to'liq mashtablashimiz mumkin. Bundan tashqari har doim ham gorizontal scale(mashtablash) dan foydalana olmaymiz. Natijada vertikal scale dan foydalanishga majbur bo'lamiz. Bu esa qimmat va chegaralangan scale hisoblanadi.
+
+* **Texnologiyalarni cheklangaligi** — Monolit application bitta texnologiyada yaratilganiligi uchun boshqa bir texnologiyani yoki tilni qo'shish juda qiyin. Misol uchun javada yaratilgan application ga python ni qo'shish juda qiyin.
+
+* **Butun tizimni o'chib qolishi** — Application o'chib qolsa mikroservisdan farqli o'laroq butun tizim o'chib qoladi. mikroservis da esa bitta qisimgina ishlamay turishi mumkin bo'ladi.
+
+**Monolit arxitekturadan qachon foydalanish kerak?**
+
+**Monolit** arxitektura ko'plab ssenariylar uchun juda qo'lay hisoblanadi:
+
+* **1. Loyihamiz katta bo'lmasligini bilsangiz,**
+* **2. Loyiha qanday bo'lishini bilmasangiz masalan talablar aniq ko'rsatilmagan bo'lsa yoki qilinayotgan ish jamoa uchun yangilik bo'lsa,**
+* **3. Loyiha konsepsiyalari aniq bo'lsa ,**
+* **4. Jamoa kichik bo'lsa yoki jamoa yangi bo'lsa ,**
+* **5. Loyiha kichik biznes logikalardan iborat va CRUD dan iborat bo'lsa**
+
+## Mikroservis Arxitektura
+
+![monolithic-vs-microservices](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/monolithic-microservices/3.webp)
+
+Mikroservis arxitektura, applicationni kichik servicelarga ajratib, har bir service bir-biridan mustaqil bo'lgan, texnoligik agnostik va har bir servicening o'zining mustaqil ma'lumotlar bazasiga ega bo'lgan service hisoblanadi. Ushbu turdagi arxitektura juda ko'p afzalliklarga ega va yuqorida aytganimizdek yutuqlar bilan birga ko'plab kamchiliklar va murakkabliklarga ega. Mikroservislar bilan ishlash jamoadan ko'proq tajriba talab qiladi. Agar jamoa yetarlicha mikroservis bilan tajribaga ega bo'lmasa, kelajakda ko'plab muammolar kelib chiqishi mumkin.
+
+Yuqoridagi rasmda sodda mikroservis tasvirlagan. UI bir necha servicelarga ulanib ishlayapti har bir service synchronous yoki asynchronous bo'lishi mumkin. O'z navbatida har bir servicening o'zining mustaqil database bor. Bu uslubdagi arxitekturaning kamchiligi- har bir servicening hostini bilishimiz va service hosti o'zgarsa kodda qo'shimcha o'zgarishlar qilishimiz kerak bo'ladi.
+
+Bu muammoni hal qilishimiz uchun [**Api Gateway**](https://devops-journey.uz/tutorials/article/api-gateway-nima) dan foydalanishimiz mumkin bo'ladi. Bunda barcha so'rovlar gateway ga yuboriladi. Gateway so'rovlarni tegishli servicelarga yo'naltiradi. Bu usul juda qulay bo'lib UI faqat bitta API Gatewayga ulanadi.
+
+![monolithic-vs-microservices](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/monolithic-microservices/4.webp)
+
+**Mikroservislar qanchalik kichik bo'lishi kerak?**
+
+Bu eng ko'p beriladigan savol bo'lib, ko'pchilik mikroservice larda ishlashni boshlayotganda shunday savolga duch keladi. Mikroservis qanchalik katta yoki kichik bo'lishi kerakligi haqida hech qanday qoidalar yo'q. Bu servicelarni murakkabligi, uning funksionalligining va dasturga qo'yilayotgan talabga qarab aniqlanadi.
+
+**Mikroservis arxitekturasining ba'zi afzalliklari:**
+
+* **Flexible scaling** — Har bir microservie boshqa servicelardan mustaqil ravishda masshtablanishi mumkin. Shunday qilib, ilovaning bir qismi ko'p so'rovlarni qabul qilganda, masalan, butun dasturni masshtablash o'rniga, faqat ma'lum bir mikroservisni masshtablash mumkin. mikroservislar applicationning yuqori darajada mavjudligi(ishlab turishi) zarur bo'lgan hollarda qulaydir.
+
+* **Deploy independently** — Har bir service bir biridan mustaqilligi uchun biror bir mikroservisni deploy(yangilash) qilish uchun butun boshli applicationi o'chirib turish shart emas.
+
+* **Applicationni o'chib qolish riskini kamaytiradi** — Agar biror bir mikroservis qanaydir nosozlik bo'lsa, bu holat boshqa servicelarga ta`sir qilmaydi. Applicationni boshqa qisimlari ishlashda davom etadi.
+
+* **Oson yangilanish** — Mikroservis katta application bo'lmaganligi sabab serviceni o'zgartirish, yoki butun boshli frameworkni almashtirish oson bo'ladi.
+
+* **Tushunish oson** — Kichik application bo'lganligi sabab tizimni tushunish uchun katta vaqt talab qilmaydi.
+
+* **Turli xil jamoalar bilan ishlash oson** — Biz bilamizki, har bir til va texnologiyani qulaylik va kamchiliklari mavjud. Agar biz mikroservis lardan foydalansak qo'yilgan masalaga qarab qulay til va frameworkni ishlatishimiz va turli xil jamolar bilan ishlash imkoniyatiga ega bo'lamiz.
+
+* **Eliminate the single point of failure** — Ilovani ko'plab kichik servicelarga bo'lish, ilovadagi “yagona nosozlik nuqtasini” yo'q qiladi.
+
+* **Turli ma'lumotlar bazalariga ega bo'lishi mumkin** — Har bir mikroservis uchun alohida ma'lumotlar bazasini tanlash mumkin. Bitta mikroservisda relyatsion ma'lumotlar bazasi eng yaxshi variant bo'lishi mumkin, boshqa mikroservis uchun esa NoSQL ma'lumotlar bazasi yaxshiroq mos keladi va mikroservis bilan ishlash orqali bunga erishish mumkin. Har bir jamoa qaysi ma'lumotlar bazasi mikroservis uchun eng yaxshi variant ekanligini aniqlashi mumkin.
+
+* **Texnologik agnostik** - Har bir mikroservis turli texnologiyalarda yaratilish mumkin, masalan .NET , Java, Node.js, Go. Shunday qilib, har bir jamoa mikroservisda qaysi texnologiyadan foydalanishni o'zlari hal qilishlari mumkin.
+
+**Mikroservis arxitekturasining kamchiliklari**
+
+Mikroservis arxitekturasida ishlashi monolit ilovada ishlashga qaraganda ancha murakkabroq. Albatta, mikroservislar arxitekturasi juda ko'p foyda keltiradi, lekin ayni paytda juda ko'p qiyinchiliklarni ham keltirib chiqaradi.
+
+**Mikroservislarning ba'zi kamchiliklari:**
+
+* **Development productivity** — Tasavvur qiling: 20 ta mikroservisingiz bor, ulardan birida o'zgarish qilishingiz kerak. Boshqa mikroserviselarga ulanish uchun local servicelarni yoqish kerak yoki serverdagi dev versiyasiga ulanish kerak bo'ladi.
+
+* **Debug qilish qiyin bo'lishi mumkin** — Mikroservice arxitekturani dubug qilish qiyin bo'lishi mumkin. Tasavvur qiling servicega yangi future qo'shyapsiz va qilingan ishni test yoki xatolikni topish uchun boshqa servicelarni ham ishga tushirish kerak bo'ladi.
+
+* **Mikroservislar o'rtasidagi aloqa** — Mikroservislar o'rtasidagi aloqa ham ushbu turdagi arxitektura bilan ishlashda e'tiborga olinishi kerak bo'lgan narsadir. Sinxron aloqadan foydalanishi mumkin bo'lgan ba'zi mikroservislar mavjud (masalan, foydalanuvchi autentifikatsiyasi), lekin boshqalarda RabbitMQ, Kafka, Azure Service Bus yoki boshqalar kabi ba'zi turdagi message broker texnologiyasidan foydalangan holda asinxron aloqadan foydalanish yaxshiroqdir. Bu ham ilovaning murakkabligini oshiradi.
+
+* **Xatolar bilan ishlov berish** — Mikroservis arxitekturasida xatolar bilan ishlash monolit applicationga qaraganda ancha murakkab. Tasavvur qiling, ikki yoki undan ortiq mikroservislar yordamida so'rov qayta ishlanadi, agar birinchi mikroservisda so'rov success bo'lsa, lekin ikkinchi mikroservisga so'rovda biror narsa noto'g'ri ketsa, jarayonni avvalgi holatga qaytarilishi kerak bo'ladi.
+
+* **Automated deployment**- Mikroservisni deploy qilish monolit arxitekturadan farq qiladi. Ya`ni monolitda bitta serviceni deploy qilinsa Mikroservisda ko'plab servislarni deploy qilinadi. Shuning uchun Mikroservis arxitekturada deployni avtomatlashtirilmasa deploy juda murakkablashib ketadi.
+
+* **Monitoring** — Monitoringga ega bo'lish uchun loglarni tekshirish va mikroservisda sodir bo'lgan barcha xatolar yoki muammolarni kuzatish mumkin bo'lgan markazlashtirilgan joyga ega bo'lish yaxshi yondashuvdir. Bu ilovada qandaydir error/bug sodir bo'lganligini aniqlashni biroz osonlashtiradi. Muammolar va xatolarni monitoring qilish uchun loglarga ega bo'lish va Kibana, ELK yoki boshqa shunga o'xshash monitoring vositalaridan foydalanish muhimdir.
+
+**Mikroservislar arxitekturasidan qachon foydalanishim kerak?**
+
+Mikroserviss arxitekturasi ko'plab ssenariylarda foydalanish mumkin :
+
+* Ilova juda ko'p o'sishini va haqiqatan ham katta bo'lishini bilsangiz,
+* Agar siz dasturiy ta'minot domeni va biznes qoidalari haqida bilsangiz yoki talablar aniq belgilangan bo'lsa va bu murakkab dastur bo'lishini aniqlash mumkin bo'ladi,
+* Jamoa katta va murakkab eski ilovani qayta yozayotganda,
+* Ilova uchun yuqori mavjudlik talab qilinganda,
+* Moslashuvchan masshtablash dastur uchun talab bo'lganda,
+* Bir nechta jamoalar bilan ishlashda va domen yaxshi ma'lum,
+* Ilovani yaratish uchun bir nechta texnologiyalar kerak bo'lganda (ya'ni turli dasturlash tillari va turli framework bilan ishlaydigan bir nechta jamoalar)
+
+## Xulosa
+
+Arxitekturaning har bir turi o'zining afzalliklari va kamchiliklariga ega va loyihangiz uchun to'g'ri arxitekturani tanlash uchun tushuntirilgan fikrlarni hisobga olish yaxshidir. Aytilganidek, “kumush o'q yo'q — universal tool yo'q”, shuning uchun har bir yondashuv ijobiy va salbiy tomonlarini olib keladi.
+
+Loyihangizda qaysi arxitekturadan foydalanish kerakligini hal qilish uchun har doim quyidagi savollarga javoblarni aniqlashga harakat qiling: Ilova katta va murakkab bo'ladimi? Men yoki mening jamoam domen haqida yaxshi bilimga egami? Moslashuvchan miqyoslilik va yuqori mavjudlik ilova uchun talabmi? Mening jamoam mikroservislar bilan ishlash tajribasiga egami? Shuningdek, jamoaning bilimi va tizimning murakkabligini hisobga olish muhimdir. Agar siz ushbu savollarning aksariyatiga “ha” deb javob bersangiz, ehtimol Mikroservis arxitekturasi loyihangiz uchun yaxshi variant bo'lishi mumkin. Agar siz ilova unchalik katta bo'lmasligini bilsangiz va sizda 99% vaqt mavjud bo'lsa, hamda domen qoidalari yaxshi aniqlanmagan, ilova unchalik katta bo'lmaydigan yoki juda murakkab bo'lmaydigan oddiy dastur bo'lsa, monolit ilovasi siz uchun eng yaxshi variant bo'lishi mumkin.
+
+Monolit arxitektura soddaroq va amalga oshirish osonroq, lekin dastur haddan tashqari kattalashib ketganda va loyiha ustida ko'proq developerlar ishlayotgan bo'lsa, loyihani boshqarish biroz qiyin bo'lishi mumkin. Mikroservislar arxitekturasi sizga kichikroq va ajratilgan ilovalarga ega bo'lish imkonini beradi. Bu esa har bir mikroservisda turli texnologiyalardan foydalanish, moslashuvchan scaling va turli jamoalar bilan ishlashni osonlashtirish imkonini beradi. Lekin bu ham loyihani ancha murakkablashtiradi. Ushbu fikrlarning barchasini bilish sizning ilovangiz uchun qaysi arxitektura yaxshiroq mos kelishini aniqlashga yordam beradi.
+
+
+<Callout type="info" emoji="">
+
+**Sana:** 2024.01.14(2024-yil 14-yanvar)
+
+**Oxirgi yangilanish:** 2024.08.04(2024-yil 4-avgust)
+
+**Muallif: Gayratjon Rayimjonov**
+
+| [Telegram](https://t.me/gayratjon_rayimjonov) | [GitHub](https://github.com/gayratjonr) | [LinkedIn](https://www.linkedin.com/in/gayratjonr/) |
+| - | - | - |
+
+</Callout>

@@ -1,0 +1,268 @@
+---
+image: https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlabci-release-integrations/banner.png
+description: "Gitlab CI | Releaselar va Integrationlar"
+---
+
+import { Callout } from "nextra/components";
+
+# Gitlab CI | Releaselar va Integrationlar
+
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlabci-release-integrations/banner.png)
+
+Tashkilotlarda loyiha kodlarni samarali saqlash va boshqarish asosiy vazifalardan biri hisoblanadi. Bugungi amaliyotimizda biz loyiha kodlarini qanday qilib versiyalash va roolback(ortga qaytish)ni yo'lga qo'yamiz. Jamoa bilan ishlash uchun bir nechta integratsiyalarni ko'rib chiqamiz, bu amaliyotda asosan notification integrationlarni ko'rib chiqamiz.
+
+## Gitlab Releaselar
+
+Loyihalarni versiyalash va rollback qilish uchun biz **Gitlab Release**lardan foydalanamiz. Loyiha kodlarini samarali boshqarishning bir nechta usullari bor, barcha tashkilotlarning o'z kod saqlash srategiyalari bor, keling bu amalaiyotda bir loyiha kodlarini samarali manage qilishning bir usulini ko'rib chiqamiz.
+
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlabci-release-integrations/git-architecture.png)
+
+Rasmdagi loyiha kodlarini samarali saqlash va boshqarish qarashini ko'rib chiqamiz:
+
+* Barcha loyihlarda environmentga qarab asosiy branchlar bo'ladi misol uchun: **dev,test,prod**
+* Barcha Dasturchilar guruhi loyihaning **dev** branchida ishlashadi va **dev** branch uchun **DEV** environmentga deploy bo'ladi.
+* Loyihaning **TEST(yoki STAGE)** va **PROD** branchlariga to'gridan to'gri o'zgartirish kiritish mumkin bo'lmaydi, faqat **DEV -> TEST -> PROD** qilib qadamma qadam prodga chiqish mumkin bo'ladi, ya'ni PROD chiqish uchun birinchi **dev** branchdan kodlar **test** branchga **test** branchdan esa **prod** branchga o'tkiziladi.
+*  Stabil production kod **prod** yoki **main** branchda saqlanadi va shu branchlarda Release qilib kod versiyalanadi.
+* Bugungi amalaiyotda bizda **main(prod)** va **dev,stage** branchlar bo'ladi.
+
+
+Keling loyiha kodlarini versiyalashni ko'rib chiqamiz. Biz misol uchun **main** branchga o'zgarish bo'lganda Gitlab release qilib loyiha kodlarini versiyalaydigan Gitlab CI yozamiz.
+
+
+<Callout type="info" emoji="">
+Ushbu amaliyotda biz [gitlab.com/ismoilovdev/devops-journey](https://gitlab.com/ismoilovdev/devops-journey) loyihasi misolida ko'rib chiqamiz.
+</Callout>
+Keling birinchi navbatda branchlar ochib chiqamiz.
+
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlabci-release-integrations/gitlab1.png)
+
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlabci-release-integrations/gitlab2.png)
+
+Rasmda ko'rsatilganidek **dev** va **stage** branchlar ochib olamiz **main** branchimiz esa prod chiqadigan branchimiz bo'ladi.
+
+Loyihamiz branchlar ro'yxati, bu yerda main branch default branch hisoblanadi. 
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlabci-release-integrations/gitlab3.png)
+
+
+## Gitlab CI
+
+Loyihamiz Repositoriyasini sozlab olganimizdan keyin keling ikkita bosqichli Gitlab CI yozamiz yani **build** va **release**. Qachonki loyihamiz **main** branchida o'zgarish bo'lsa Gitlab CI pipelienmiz avtomatik ishga tushadi va loyihani build qilib keyin loyihani pipeline ID'si bilan versiyalab Release chiqaradi.
+
+Gitlab CI yozish uchun loyihamiz papkasida `.gitlab-ci.yml` CI pipeline fayl ochib olamiz. Mana bizning `gitlab-ci.yml` konfiguratsiyamiz.
+
+```bash filename=".gitlab-ci.yml"
+stages:
+  - build
+  - release
+
+variables:
+  NODE_VERSION: "20.x"
+
+cache:
+  key: "$CI_COMMIT_REF_SLUG"
+  paths:
+    - node_modules/
+
+before_script:
+  - |
+    if [[ "$CI_JOB_NAME" != *"release_job"* ]]; then
+      apt-get update -qy
+      apt-get install -y curl
+      curl -sL https://deb.nodesource.com/setup_20.x | bash -
+      apt-get install -y nodejs
+      npm install -g pnpm
+    fi
+
+build:
+  stage: build
+  image: node:20
+  script:
+    - pnpm install
+    - pnpm next build
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+
+release_job:
+  stage: release
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
+  script:
+    - echo "Running release_job for $TAG"
+  release:
+    tag_name: "v0.$CI_PIPELINE_IID"
+    description: "v0.$CI_PIPELINE_IID"
+    ref: "$CI_COMMIT_SHA"
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+``` 
+
+Keling loyihamizda **.gitlab-ci.yml** konfigiga shu **Gitlab CI** konfiguratsiyani qo'shib **main** branchga push qilamiz va bizda loyihamiz **main** branchiga o'tganimizda Gitlab CI pipeline ishlayotganini ko'rishimiz mumkin.
+
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlabci-release-integrations/ci.png)
+
+Repositoriyamizdan **-> Build -> Pipelines**ga o'tib jarayonni kuzatishimiz mumkin.
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlabci-release-integrations/ci1.png)
+
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlabci-release-integrations/ci4.png)
+
+Okeyyy bizda Gitlab Ci pipelinemiz muvaffiqiyatli ishga tushdi, keling loyihani versiyalab reliz chiqarganini ko'rib chiqamiz.
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlabci-release-integrations/ci5.png)
+
+Repositoriyamizga o'tib **Release** bo'limiga o'tamiz.
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlabci-release-integrations/gitlab5.png)
+
+**Release**ga kirganimizda loyihamizda bitta **v0.1** tag bilan reliz chiqganini ko'rishimiz mumkin.
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlabci-release-integrations/gitlab6.png)
+
+Okeyy keling endi bu Gitlab CI pipelineni va vazifalarini ko'rib chiqamiz.
+
+Bu qism ikkita stage bo'lishini belgilaydi ya'ni **build** va **release**
+```bash
+stages:
+  - build
+  - release
+```
+
+Bu qismda **variables** ga Nodejs **20.x** belgilanadi yani bu loyihani Nodejs **20.x** da ishga tushirishni bildiradi. **cache** qismi esa Nodejs loyihani ya'ni **node_modules/** papkani keshlashni bildiradi bu keyingi CI larni tezlashtirishga yordam beradi.
+```bash
+variables:
+  NODE_VERSION: "20.x"
+ 
+cache:
+  key: "$CI_COMMIT_REF_SLUG"
+  paths:
+    - node_modules/
+```
+Bu qismda esa **before_script** Gitlab CI pipeline joblari ishga tushmasidan oldin ishga tushadigan qism hisoblanadi va NoeJS loyihani build qilish uchun runnerga NodeJS o'rnatib, pnpm ham o'rnatib loyihani build qilishga tayyor bo'ladi.
+```bash
+before_script:
+  - |
+    if [[ "$CI_JOB_NAME" != *"release_job"* ]]; then
+      apt-get update -qy
+      apt-get install -y curl
+      curl -sL https://deb.nodesource.com/setup_20.x | bash -
+      apt-get install -y nodejs
+      npm install -g pnpm
+    fi
+```
+
+Bu esa **build** bosqich hisoblanadi bu bosqichda **pnpm install** va **pnpm next build** buyruqlari yordamida **main** branchdagi Nodejs loyiha build qilinadi.
+```bash
+build:
+  stage: build
+  image: node:20
+  script:
+    - pnpm install
+    - pnpm next build
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+```
+
+Ushbu bosqich **release** bosqich hisoblanadi. Bu bosqichda `registry.gitlab.com/gitlab-org/release-cli:latest` docker imagedan foydalangan holda Release chiqariladi. Release faqat **main** branchda o'zgarish bo'lganidagina **main** branchdagi kodlardan foydalanib ishlaydi.
+```bash
+release_job:
+  stage: release
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
+  script:
+    - echo "Running release_job for $TAG"
+  release:
+    tag_name: "v0.$CI_PIPELINE_IID"
+    description: "v0.$CI_PIPELINE_IID"
+    ref: "$CI_COMMIT_SHA"
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+```
+
+## Integrationlar
+
+Tashkilotda loyihalarni samarali boshqarish va jamoa bilan ishlashni yaxshilash uchun har xil usullardan foydalaniladi, bulardan eng keng tarqagani Repositoriyalarga notification integratsiyalar hisoblanadi. Bugun biz Loyihalarimizga notification uchun **Discord** bilan inetgegratsiya qilamiz.
+
+
+Keling birinchi o'rinda **Discord** sozlab olamiz.
+Discord kirib **Add a Server** bosib Server yaratib olamiz
+
+>![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/jenkins-docker/discord1.png)
+
+>![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/jenkins-docker/discord2.png)
+
+>![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/jenkins-docker/discord3.png)
+
+Serverga nom berib **Create** bosamiz.
+
+>![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/jenkins-docker/discord4.png)
+
+Discord Server yaratib olganimzidan keyin Serverimizda channel yaratib olamiz. **Create Channel**
+
+>![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/jenkins-docker/discord6.png)
+
+Channel nomini yozamiz masalan **merge-requests** -> **Create Channel**
+> ![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlabci-release-integrations/discord.png)
+
+Channel ochib olganimzidan keyin **Integrations** bo'limga kirib **Webhooks**dan **Create Webhook** bosamiz
+> ![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlabci-release-integrations/discord2.png)
+
+**Webhook** yaratib olganimizdan keyin uni nusxalab **Copy Webhook URL** olib qo'yamiz va Gitlab **Discord Notification**da ishlatish  uchun olib qo'yamiz.
+> ![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlabci-release-integrations/discord3.png)
+
+
+Discord Server ochib channellar ochib olganimizdan keyin Gitlabda Repositoriyamizga o'tamiz va 
+
+**-> Settings -> Integrations -> Discord Notifications** bo'limiga o'tamiz.
+
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlabci-release-integrations/gitlab7.png)
+ 
+Integrations bo'limidan **Discord Notifications** bo'limiga o'tamiz va **Configure** bosib konfiguratsiya bo'limiga o'tamiz.
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlabci-release-integrations/discord4.png)
+
+Bu qismda Discord serverimizda yaratib olgan **Webhook**ni qo'shib qo'yamiz.
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlabci-release-integrations/discord5.png)
+
+**Trigger** qismidan o'zimizga keraklisini sozlab olamiz. Bu holda yaxshi amaliyot bu har bir event uchun alohida Discord channel ochib uni webhookini Triggerga qo'shib chiqish kerak, Masalan Discord Serverda Merge Requests, Issue, Deployment status kabi Discord channellar ochib olinadi va quyidagi Trigger bo'limida kerakli joylarga kerakli Discord channel webhook urllari qo'yib chiqiladi, shunda har bir event alohida Discord channelga keladi va ularni kuzatib manage qilish osonroq bo'ladi.
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlabci-release-integrations/discord7.png)
+
+Bu qismda qaysi branchlar uchun notification kelishini belgilaymiz bu holda **All branches**. Konfiguratsiyani to'grilab chiqganimizdan keyin **Test settings** bosib konfiguratsiya ishlashini tekshirib olamiz.
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlabci-release-integrations/discord6.png)
+
+Konfiguratsiyamiz to'gri bo'lsa bizga Discord channelimizga quyidagicha test Notification keladi.
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlabci-release-integrations/discord8.png)
+
+Keling endi **main** branchdagi kodga o'zgartirish kiritib commit qilamiz, bu holda yani Release chiqishi va Discordga Notification kelishi kerak.
+
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlabci-release-integrations/discord9.png)
+
+Okeyy biz Repositoriyamizni muvaffiqiyatli ravishda Discord bilan integratsiya qildik. 
+
+
+Email bilan integratsiya ham oddiy, o'zingizga moslab konfiguratsiya qilasiz va kimlarni emailiga notification yuborish kerakligi belgilanadi.
+
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlabci-release-integrations/email.png)
+
+Emailga quyidagicha notification keladi.
+![gitlab-ci](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlabci-release-integrations/email1.png)
+
+
+## Qo'shimcha
+
+<Callout type="info" emoji="">
+
+<Callout type="info" emoji="">
+Amaliyotda ishlatilgan [gitlab.com/ismoilovdev/devops-journey](https://gitlab.com/ismoilovdev/devops-journey) repositoriya. Gitlab CI pipeline namuna fayllarni [**ismoilovdevml/devops-tools**](https://github.com/ismoilovdevml/devops-tools/blob/master/Gitlab/release.yml)dan topishingiz mumkin.
+</Callout>
+Qo'shimcha Resurslar
+ * [**Gitlab Server o'rnatish va sozlash**](https://devops-journey.uz/guides/ci-cd/gitlab-server)
+ * [**Github Actions CI/CD**](https://devops-journey.uz/guides/ci-cd/github-actions-ci-cd)
+ * [**Github Actions bilan Anroid CI/CD**](https://devops-journey.uz/guides/ci-cd/android-github-actions)
+ * [**Github Actions bilan Flutter CI/CD**](https://devops-journey.uz/guides/ci-cd/flutter-github-action)
+ * [**Linux Serverlarga Jenkins o'rnatish**](https://devops-journey.uz/guides/ci-cd/jenkins-ornatish)
+ * [**Koddan Servergacha: Jenkins bilan Docker CI/CD va Discord bilan integratsiya**](https://devops-journey.uz/guides/ci-cd/jenkins-docker-ci-cd)
+ * [**Kubernetes CI/CD | GitHub Actions + Argo CD | GitOps**](https://devops-journey.uz/guides/ci-cd/github-actions-argocd-cicd)
+
+**Sana:** 2024.04.26(2024-yil 26-aprel)
+
+**Oxirgi yangilanish:** 2024.04.26(2024-yil 26-aprel)
+
+**Muallif: Otabek Ismoilov**
+
+| [Telegram](https://t.me/Otabek_Ismoilov) | [GitHub](https://github.com/ismoilovdevml) | [LinkedIn](https://www.linkedin.com/in/otabek-ismoilov/) |
+| - | - | - |
+
+</Callout>

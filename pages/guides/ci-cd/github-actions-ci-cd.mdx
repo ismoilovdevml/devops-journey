@@ -1,0 +1,915 @@
+---
+image: https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/github-actions/banner.png
+description: "Github Actions CI/CD"
+---
+
+import { Callout } from "nextra/components";
+
+# Github Actions CI/CD
+
+![github](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/github-actions/banner.png)
+
+[**Github Actions**](https://github.com/features/actions) bu Github bilan integratsiya qilinga Githubning **CI/CD** va avtomatlashtirish dasturi hisoblanadi. Github Actions orqali Githubdagi loyihalaringizni oson avtomatlashtirishingiz, CI/CD'lar yozish juda qulay, sodda, tez yoziladigan tez ishga tushadigan hisoblanadi.  Github Actions YAML sintaksisida yoziladi va repositoriya root directoriyasida **./github/workflows** jildida yoziladi. Githubning yana bir qulaylikalridan biri loyihalaringiz uchun mo'ljallangan **GHCR**(Github Container Registry)si hisoblanadi. Loyihalaringizni konteynerda ishga tushirsangiz bu sizga yaxshi qulaykik beradi, yani siz bepul Container Registry ishlatasiz bu juda qulay.
+
+
+## Ishni boshlash
+
+Ushbu amaliyotda biz Github Actions va Github Container Registrydan foydalangan holda loyilarimizga CI/CD yozib deploymentni avtomlashtiramiz. Container Registry sifatida faqat Github Container Registry emas, balki Dockerhub va GCR(Google Container Registry)dan foydalanish uchun ham namuna Github Actionslar yozamiz. Amaliyotimiz soddaroq hech qanday testlarsiz va kod analizlarsiz ishga tushiramiz siz ularni o'zingiz kengaytirib qo'shib olasiz. Bugungi amaliyotimiz arixtekturasi tuzulishi quyidagicha **main** branchga o'zgarish bo'lganida avtomatik ishga tushadi va repositoriyani checkout qilib oladi loyidagi Dockerfile orqali loyiha docker imageni build qilib keshlab Container Registryga push qiladi keyingi CD bosqichida esa ssh orqali serverga kirib ynagi docker imageni pull qilib tortib olib eski shu nomli containerni to'xtatib o'chirib yangi containerni ishga tushirib qo'yadi va bu haqida discordga notification keladi.
+
+<Callout type="info" emoji="">
+Amaliyotda ishlatilgan [**devops-journey-github-actions**](https://github.com/devops-journey-uz/devops-journey-github-actions) va [**github-actions-dotnet**](https://github.com/devops-journey-uz/github-actions-dotnet) repositoriyalar. Github Actions namuna fayllarni [**ismoilovdevml/devops-tools**](https://github.com/ismoilovdevml/devops-tools/tree/master/Github-Actions)dan topishingiz mumkin.
+</Callout>
+
+
+## Github Actions CI
+
+Amaliyotni boshlasak ham bo'ladi. Loyiahmiz root directoriyasida  Github Actions uchun **.github/workflows** papka ochib **ci-cd.yml** nomli yaml konfiguratsiya faylini ochib olamiz.
+
+![github](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/github-actions/github.png)
+
+Loyihalar har xil bo'ladi yani bitta repositoriyada bitta loyiha bo'ladi va unda bitta Dockerfile bo'ladi lekin ba'zi loyihalar bor ular bitta repositoriyada bir nechta loyihalar joylashgan bo'ladi masalan .NET(dotnet) loyihalar. Ushbu amaliyotda biz ikkala holat uchun Github Actionsda CI/CD yozamiz.
+
+### Bitta Container
+
+Bitta containerli uchun [**devops-journey**](https://github.com/ismoilovdevml/devops-journey) loyihasini tanladik, bu holda bizda bitta repositoriyada butun loyihani o'zi va bitta Dockerfile bo'lib bitta Docker container orqali ishlaydi. keling ushbu amaliyotni boshlaymiz
+
+Monorepo, bitta containerli loyihalar uchun **ci-cd.yml** configuratsiyamizning **CI** qismi quyidagicha bo'ladi.
+
+```yaml
+name: Github Actions CI/CD
+ 
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+ 
+env:
+  REPO_NAME: ${{ github.repository }}
+  CONTAINER_NAME: devops-journey
+  REGISTRY: ghcr.io
+ 
+jobs:
+  build_and_push:
+    runs-on: ubuntu-latest
+    permissions:
+        contents: read
+        packages: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: "${{ env.REGISTRY }}/${{ env.REPO_NAME }}:${{ github.sha }}"
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.REPO_NAME }}:buildcache
+          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.REPO_NAME }}:buildcache,mode=max
+```
+
+Keling ushbu Github actionni analiz qilib chiqamiz.
+
+```yaml {3-7}
+name: Github Actions CI/CD
+ 
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+```
+
+**name** Bu Github Actionsga berilgan nom. Koddagi belgilangan qism esa **Trigger** deb nomlanadi vazifasi **main** branchga commit push qilinsa yoki pull request tushsa Github Actionsni avtomatik ishga tushirib beradi.
+
+```yaml
+env:
+  REPO_NAME: ${{ github.repository }}
+  CONTAINER_NAME: devops-journey
+  REGISTRY: ghcr.io
+```
+Ushbu qism **Environment** qismi hisoblanadi bu qismga environmentlarimizni yozamiz.
+
+* **REPO_NAME->** Docker image nomi bu holda repositoriya nomi olinadi.
+* **CONTAINER_NAME->** Loyihamiz containeri nomi.
+* **REGISTRY->** Bu qismda Container Registry url manzili beriladi GHCR uchun **ghcr.io**
+
+
+```yaml
+jobs:
+  build_and_push:
+    runs-on: ubuntu-latest
+    permissions:
+        contents: read
+        packages: write
+```
+Workflow Ubuntu-ning latest versiyasida ishlaydigan **build_and_push** nomli bitta jobga ega. Ya'ni **build_and_push** nomli job **ubuntu:latest**da ishlaydi. **permissions** repositoriyani o'qishga va packagelarga yozish huquqini beradi.
+
+```yaml
+- name: Checkout code
+  uses: actions/checkout@v3
+```
+Ushbu bosqich [actions/checkout@v3](https://github.com/actions/checkout)dan foydalanib repositoriyani checkout qilib klon qilib oladi.
+
+```yaml
+- name: Set up Docker Buildx
+  uses: docker/setup-buildx-action@v3
+```
+
+Ushbu qadam **Docker Buildx**-ni o'rnatadi, bu Moby BuildKit builder toolkit tomonidan taqdim etilgan xususiyatlarni qo'llab-quvvatlash uchun Docker imkoniyatlarini kengaytiruvchi CLI plaginidir [docker/setup-buildx-action@v3](https://github.com/docker/setup-buildx-action)
+
+```yaml
+- name: Log in to the Container registry
+  uses: docker/login-action@v3
+  with:
+    registry: ${{ env.REGISTRY }}
+    username: ${{ github.actor }}
+    password: ${{ secrets.GITHUB_TOKEN }}
+```
+
+Ushbu bosqichda **REGISTRY**ga **github.actor**ning **GITHUB_TOKEN**'ni bilan [docker/login-action@v3](https://github.com/docker/login-action)dan foydalanaib login qilib kiradi.
+
+```yaml
+- name: Build and push Docker image
+  uses: docker/build-push-action@v5
+  with:
+    context: .
+    push: true
+    tags: "${{ env.REGISTRY }}/${{ env.REPO_NAME }}:${{ github.sha }}"
+    cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.REPO_NAME}}:buildcache
+    cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.REPO_NAME}}:buildcache,mode=max
+```
+
+Ushbu bosqichda applicationimizdagi Dockerfile orqali applicationimiz docker image build qiladi va **github.sha** bilan tag qo'yib belgilangan Container Registryga push qiladi bu holda GHCRga. Ushbu bosqichda keshlash ham yoqilgan [docker/build-push-action@v5](https://github.com/docker/build-push-action)
+
+Keling actoinimizni ishga tushirib sinab ko'raylik shunchaki ushbu o'zgarishlarni ushbu configuratsiyamizni main branchga push qilamiz va Github repositoriyamizdan **Actions** bo'limiga o'tib ko'rishimiz mumkin.
+
+**Actions** bo'limidan Github Actionimiz ishlayotganini ko'rishimiz mumkin.
+![github](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/github-actions/github2.png)
+![github](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/github-actions/github3.png)
+Okeyyy bizda Github Actionimiz muvaffaqiyat o'z ishini yakunladi.
+![github](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/github-actions/github4.png)
+
+Github Repositoriyamizdan **Packages** bo'limiga o'tsak build qilgan docker imageyimizni ko'rishimiz mumkin.
+![github](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/github-actions/github5.png)
+
+### Multi-container
+
+Shunday applicationlar borki ular bitta repositoriydan ikkidan ortiq application bo'ladi masalan API va UI. Ushbu loyihlar uchun biz ikkita Dockerfile yozamiz ya'ni API.Dockerfile va UI.Dockerfile. Ushbu amaliyot uchun namuna sifatida **.NET 7** da yozilgan [devops-journey-uz/github-actions-dotnet](https://github.com/devops-journey-uz/github-actions-dotnet) applicationni tanlab oldik. Bunda API uchun **API.Dockerfile** va UI uchun **UI.Dockerfile** yozilgan
+
+Ushbu loyiha uchun Girthub Actionimiz quyidagicha o'zgaradi.
+
+```yaml {10-13,38,42,48,52}
+name: Github Actions CI/CD
+
+on:
+    push:
+      branches: [ main ]
+    pull_request:
+      branches: [ main ]
+
+env:
+  API_IMAGE_NAME: github-api
+  API_CONTAINER_NAME: github-api
+  UI_IMAGE_NAME: github-ui
+  UI_CONTAINER_NAME: github-ui
+  
+  REPO_NAME: ${{ github.repository }}
+  REGISTRY: ghcr.io
+
+jobs:
+  build_and_push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push API Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./API.Dockerfile
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.REPO_NAME}}/${{ env.API_IMAGE_NAME }}:${{ github.sha }}
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.REPO_NAME}}/${{ env.API_IMAGE_NAME }}:buildcache
+          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.REPO_NAME}}/${{ env.API_IMAGE_NAME }}:buildcache,mode=max
+
+      - name: Build and push UI Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./UI.Dockerfile
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.REPO_NAME}}/${{ env.UI_IMAGE_NAME }}:${{ github.sha }}
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.REPO_NAME}}/${{ env.UI_IMAGE_NAME }}:buildcache
+          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.REPO_NAME}}/${{ env.UI_IMAGE_NAME }}:buildcache,mode=max
+```
+
+Ushbu konfiguratsiyamizda **file** ga Dockerfaylarimizni ko'rsatamiz. Shunga o'xshash loyihalar ko'pincha **.NET** bo'lgani uchun **.NET** loyiha tanlandi.
+
+Keling Actionimizni ishga tushirib sinab ko'ramiz.
+
+![github](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/github-actions/github6.png)
+
+Repositoriyamizdan **Pacakages** bo'limiga o'tsak ikkita containerni ko'rishimiz mumkin
+![github](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/github-actions/github7.png)
+
+Hammasi zo'r Github Actionimiz muvaffaqiyat o'z ishini yakunladi endi CD serverga deploy qismini boshlasak bo'ladi
+
+## Github Actions CD
+
+Nihoyat biz so'ngi bosqich CD qismiga yetib keldik. Yuqorida biz bitta containerli va multi containerli applicationlarga CI qisqmini yozib tugadik. CI bosqichida Github Action berilgan Dockerfayllar orqali applicationlarimiz Docker imageni build qilib Github Container Registryga push qilib qo'ydi endi keyingi bosqichga o'tamiz. CD bosqichida berilgan `SERVER_IP`, `SERVER_USERNAME` va `SSH_PRIVATE_KEY` orqali serverga ssh orqali CI tomonidan push qilib joylab qo'yilgan Docker imagelarni pull qilib tortib oladi va eski shu nom bilan ishlab turgan containerlarni to'xtatib, o'chirib pull qilib olingan yangi docker containerni berilgan nom bilan, berilgan portda ishga tushirib qo'yadi va o'z ishini yakunlaydi. Keyingi bosqichda Notificationlar uchun Discord bilan integratsiya qilamiz.
+
+### Bitta Container
+[**devops-journey**](https://github.com/ismoilovdevml/devops-journey) loyihasi uchun yani bitta containerli loyihalar uchun CD qism quyidagicha bo'ladi.
+
+
+```yaml {13-16,48-66}
+name: Github Actions CI/CD
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  REPO_NAME: ${{ github.repository }}
+  CONTAINER_NAME: devops-journey
+  REGISTRY: ghcr.io
+  SSH_HOST: ${{ secrets.SERVER_IP }}
+  SSH_USER: ${{ secrets.SERVER_USERNAME }}
+  SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+  PORT: 3000:3000
+
+jobs:
+  build_and_push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: "${{ env.REGISTRY }}/${{ env.REPO_NAME }}:${{ github.sha }}"
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.REPO_NAME }}:buildcache
+          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.REPO_NAME }}:buildcache,mode=max
+
+  
+  deploy:
+    needs: build_and_push
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Executing remote SSH commands to deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: "${{ env.SSH_HOST }}"
+          username: "${{ env.SSH_USER }}"
+          key: "${{ env.SSH_KEY }}"
+          script: |
+            echo ${{ secrets.GITHUB_TOKEN }} | docker login -u ${{ github.actor }} --password-stdin ${{ env.REGISTRY }}
+            docker pull "${{ env.REGISTRY }}/${{ env.REPO_NAME }}:${{ github.sha }}"
+            docker stop "${{ env.CONTAINER_NAME }}" || true
+            docker rm "${{ env.CONTAINER_NAME }}" || true
+            docker run -d --name "${{ env.CONTAINER_NAME }}" -p "${{ env.PORT }}" "${{ env.REGISTRY }}/${{ env.REPO_NAME }}:${{ github.sha }}"
+```
+
+
+### Server sozlash
+Keling ushbu o'zgarishlarnin o'rganib chiqamiz.
+
+Environment qismiga quyidagi o'zgarishlarni qo'shdik.
+
+```yaml {5-8}
+env:
+  REPO_NAME: ${{ github.repository }}
+  CONTAINER_NAME: devops-journey
+  REGISTRY: ghcr.io
+  SSH_HOST: ${{ secrets.SERVER_IP }}
+  SSH_USER: ${{ secrets.SERVER_USERNAME }}
+  SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+  PORT: 3000:3000
+```
+
+Github Actions serverimizga ssh bilan kira olish uchun server static IP manzili, server useri va ssh-private key kerak bo'ladi. Buning uchun biz Github repositoriyamizga secretlarni qo'shib qo'yishimiz kerak. 
+
+**1->** Repositoriyaga kirib Settings bo'limiga o'tib **-> Secrets and variables -> Actions -> New repository secret**ga o'tib secretlar yaratib olamiz.
+
+**-> Repository -> Settings -> Secrets and variables -> Actions -> New repository secret**
+
+![k8s](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/k8s/gitops1.png)
+
+* **SERVER_IP->** Bunga serverimiz static IP manzilini yozamiz. `0.0.0.0` o'rniga static IP manzil yozing
+
+![github](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/github-actions/github8.png)
+* **SERVER_USERNAME->** Ushbu secretga serverimiz usernameni yozishimiz kerak bo'ladi, server usernamesin bilish uchun `whoami` buyrug'idan foydalanishingiz mumkin.
+![github](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/github-actions/github9.png)
+
+* **SSH_PRIVATE_KEY->** Bu secetga esa serverimizda ssh-key generatsiya qilib ssh private keyni qo'yamiz github actions ssh orqali serverimizga kira olishi uchun.
+
+**1->** Serverimizda ssh-key generatsiya qilib olamiz.
+
+```bash
+ssh-keygen -f ~/.ssh/github_actions
+```
+![github](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/github-actions/ssh.png)
+ushbu buyruq **~/.ssh** papkada `github_actions` nomli ssh-key generatsiya qiladi bunda ikita key bo'ladi `github_actions` bu private key va `gihub_actions.pub` bu public key hisoblanadi. Github Actionsda ishlatish uchun public keyimizni `authorized_keys`ga qo'shib qo'yishimiz kerak. Buning uchun quyidagi buyruqdan foydalanamiz.
+
+```bash
+cat github_actions.pub >> authorized_keys
+```
+**2->** `github_actions` private keyimizni cat bilan ochib uni nusxalab Github Secretsga `SSH_PRIVATE_KEY`ga qo'shib qo'yamiz.
+
+Private keyni olish uchun.
+```bash
+cat github_actions
+```
+![github](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/github-actions/ssh1.png)
+
+Private keyni joylashtiramiz.
+![github](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/github-actions/github10.png)
+
+
+Serverga ssh-key generatsiya qilib Github Actions kira oladigan qilib sozlab olinganidan keyin Serverimizga Docker o'rnatib olishimiz kerak bo'ladi chunki applicationlarimiz Docker containerlarda ishlaydi. [**Linux serverlarga Docker o'rnatish**](https://devops-journey.uz/guides/konteyner/docker-ornatish) qo'llanmasidan foydalanib serveringizga Docker o'rnatib oling.
+
+Github Actionimiz CD qismini ko'rib chiqadigan bo'lsak.
+
+```yaml
+deploy:
+    needs: build_and_push
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+```
+
+Ushbu `deploy` bosqichi `build_and_push` bosqichidan keyin ishga tusshadi va ubuntu-latest versiyali runnerda ishlaydi. Github Packagelarga yozish va o'qish ruxsatlari bor.
+
+```yaml
+steps:
+  - name: Executing remote SSH commands to deploy
+    uses: appleboy/ssh-action@master
+    with:
+      host: "${{ env.SSH_HOST }}"
+      username: "${{ env.SSH_USER }}"
+      key: "${{ env.SSH_KEY }}"
+```
+
+Ushbu qadamda [appleboy/ssh-action@master](https://github.com/appleboy/ssh-action) bilan berilgan SSH_HOST, SSH_USER va SSH_KEY bilan ssh orqali severga kiradi.
+
+```yaml
+script: |
+    echo ${{ secrets.GITHUB_TOKEN }} | docker login -u ${{ github.actor }} --password-stdin ${{ env.REGISTRY }}
+    docker pull "${{ env.REGISTRY }}/${{ env.REPO_NAME }}:${{ github.sha }}"
+    docker stop "${{ env.CONTAINER_NAME }}" || true
+    docker rm "${{ env.CONTAINER_NAME }}" || true
+    docker run -d --name "${{ env.CONTAINER_NAME }}" -p "${{ env.PORT }}" "${{ env.REGISTRY }}/${{ env.REPO_NAME }}:${{ github.sha }}"
+```
+
+Ushbu bosqich endi serverda bajariladi yuqorida [appleboy/ssh-action@master](https://github.com/appleboy/ssh-action) orqali Github Actionimiz serverimizga kirgandi endi serverimizda quyidagi buyruqlarni ishga tushiradi.
+
+
+Ushbu buyruq GITHUB_TOKEN bilan GHCR'ga docker login qilib Container Registryga kiradi.
+```bash
+echo ${{ secrets.GITHUB_TOKEN }} | docker login -u ${{ github.actor }} --password-stdin ${{ env.REGISTRY }}
+```
+
+```bash
+docker pull "${{ env.REGISTRY }}/${{ env.REPO_NAME }}:${{ github.sha }}"
+```
+Bui buyruq GHCRdagi CI tomonidan build bo'lib Container Registryga push qilib qo'yilgan Docker imageni pull qilib tortib oladi.
+
+```bash
+docker stop "${{ env.CONTAINER_NAME }}" || true
+docker rm "${{ env.CONTAINER_NAME }}" || true
+```
+Bu ikki buyruq berilgan container nomi bilan ishlab turgan containerni yani eski containerni to'xtatib o'chirib tozalaydi.
+
+```bash
+docker run -d --name "${{ env.CONTAINER_NAME }}" -p "${{ env.PORT }}" "${{ env.REGISTRY }}/${{ env.REPO_NAME }}:${{ github.sha }}"
+```
+Ushbu buyruq esa berilgan CONTAINER_NAME va PORT bilan yuqorida pull qilib tortib olingan Docker imageni ishga tushiradi.
+
+Menimcha hammaga tushunarli bo'ldi keling CD qismini ham qo'shgan holda Github Actionimizga ishga tushiramiz.
+
+Okeey bizda Github Actionimiz muvaffaqiyat ishga tushdi keling endi serverimizni tekshirib ko'ramiz.
+![github](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/github-actions/github11.png)
+
+Serverimizga kirib **docker container ls** va **docker images** buyruqlarini ishga tushirib ko'rsak bizning applicationimiz berilgan nom, berilgan port va docker image bilan ishlab turibti.
+![github](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/github-actions/server.png)
+
+Biz application **3000** portda ishlashini Github Actionda yozib ketgandik keling serverimiz static IP manzili bilan **3000** portga kirib ko'ramiz.
+
+![github](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/github-actions/server1.png)
+
+
+**Huuuhh Ferfectionn** mazzami silaga. Biz yozgan Github Actiomiz to'liq ishga tushdi Github repositoriyaga yangi commit tashlab sinab ko'rishingiz mumkin. 
+
+Tabriklation 
+
+### Multi-container
+
+Yuqorida biz bitta containerli loyihalar uchun to'liq CI/CD yozib muvaffaqiyatli ishga tushirdik. Bu bo'limda bir nechta containerli loyihalar uchun CD qismini yozib to'liq ishga tushiramiz. Ushbu amaliyot uchun namuna sifatida **.NET 7** da yozilgan [devops-journey-uz/github-actions-dotnet](https://github.com/devops-journey-uz/github-actions-dotnet) applicationni tanlab olgandik. Ushbu loyiha uchun CD qismi quyidagicha bo'ladi.
+
+
+```yaml {14-15,19-21,63-85}
+name: Github Actions CI/CD
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  API_IMAGE_NAME: github-api
+  API_CONTAINER_NAME: github-api
+  UI_IMAGE_NAME: github-ui
+  UI_CONTAINER_NAME: github-ui
+  UI_PORT: 4000:4000
+  API_PORT: 4001:4001
+  
+  REPO_NAME: ${{ github.repository }}
+  REGISTRY: ghcr.io
+  SSH_HOST: ${{ secrets.SERVER_IP }}
+  SSH_USER: ${{ secrets.SERVER_USERNAME }}
+  SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+
+jobs:
+  build_and_push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push API Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./API.Dockerfile
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.REPO_NAME}}/${{ env.API_IMAGE_NAME }}:${{ github.sha }}
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.REPO_NAME}}/${{ env.API_IMAGE_NAME }}:buildcache
+          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.REPO_NAME}}/${{ env.API_IMAGE_NAME }}:buildcache,mode=max
+
+      - name: Build and push UI Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./UI.Dockerfile
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.REPO_NAME}}/${{ env.UI_IMAGE_NAME }}:${{ github.sha }}
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.REPO_NAME}}/${{ env.UI_IMAGE_NAME }}:buildcache
+          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.REPO_NAME}}/${{ env.UI_IMAGE_NAME }}:buildcache,mode=max
+  
+  deploy:
+    needs: build_and_push
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Executing remote SSH commands to deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: "${{ env.SSH_HOST }}"
+          username: "${{ env.SSH_USER }}"
+          key: "${{ env.SSH_KEY }}"
+          script: |
+            echo ${{ secrets.GITHUB_TOKEN }} | docker login -u ${{ github.actor }} --password-stdin ${{ env.REGISTRY }}
+            docker pull "${{ env.REGISTRY }}/${{ env.REPO_NAME}}/${{ env.API_IMAGE_NAME }}-${{ github.sha }}"
+            docker pull "${{ env.REGISTRY }}/${{ env.REPO_NAME}}/${{ env.UI_IMAGE_NAME }}-${{ github.sha }}"
+            docker stop "${{ env.UI_CONTAINER_NAME }}" || true
+            docker stop "${{ env.API_CONTAINER_NAME }}" || true
+            docker rm "${{ env.UI_CONTAINER_NAME }}" || true
+            docker rm "${{ env.API_CONTAINER_NAME }}" || true
+            docker run -d --name "${{ env.API_CONTAINER_NAME }}" -p "${{ env.API_PORT }}" "${{ env.REGISTRY }}/${{ env.REPO_NAME}}/${{ env.API_IMAGE_NAME }}:${{ github.sha }}"
+            docker run -d --name "${{ env.UI_CONTAINER_NAME }}" -p "${{ env.UI_PORT }}" "${{ env.REGISTRY }}/${{ env.REPO_NAME}}/${{ env.UI_IMAGE_NAME }}:${{ github.sha }}" 
+```
+
+Ushbu multi container ham yuqoridagi bitta containerlidek bir xil ishlaydi faqat bir nechta container bilan birga. Ushbu Github Actions ikkita docker image build qilib push qiladi va serverda eski ikkita containerni to'xtatib o'chirib yangi Container Registrydagi ikkita containerni berilgan portda berilgan nom bilan ishga tushirib qo'yadi.
+
+
+Keling buni ishga tushirib sinab ko'ramiz.
+
+Github Actiomiz muvaffaqiyat ishga tushgan.
+![github](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/github-actions/github11.png)
+
+Serverimizda ikkita containerimiz ishga tushganini tekshirib ko'ramiz.
+
+![github](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/github-actions/server2.png)
+
+Okey yaxshi bizda ikkita container belgilangan portda belgilan nom bilan ishlab turibti. Ushbu **.NET 7** qilingan oddiy namuna loyiha edi, ya'ni bu loyihada oddiy namuna UI va API yozilgan bo'lib UI `4000` portda API esa `4001` portda ishga tushadi. Keling ushbu portlarga brauzer orqali kirib applicationlarimiz ishlab turganini tekshirib olamiz.
+
+Serverimiz IP manzili va 4000 portni yozib kirganimzida bizda namuna Blazor UI ochiladi. Bizni UI applicationimiz ishlab turibti
+![github](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/github-actions/server3.png)
+
+
+API'ni ko'rish uchun 4001/swagger da bizni API'miz ochiladi.
+![github](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/github-actions/server4.png)
+
+
+Huuuh multi containerli applicationllarni ham muvaffaqiyat ishga tushirdik va shu yerda biz Github Actions + GHCR amaliyotimiz muvaffaqiyatli tugatdik.
+
+## Discord bilan integratsiya.
+
+Github Repositoiyamizni Discord bilan integratsiya qilish uchun [ushbu video qo'llanmadan](https://youtu.be/-KDQqWNK3Tw?si=RWraLtFe7UxovDti) foydalanashingiz mumkin. 
+
+## Container Registry
+
+Yuqoridagi amaliyotda biz GHCR Github Container Registry ishlatdik. Kirish qismida aytilganidek keling boshqa Container Registrylar uchu ham yozamiz, ya'ni Dockerhub va GCR Google Container Registry uchun.
+ 
+### Dockerhub
+
+#### Bitta Container
+
+Github Secretsga qo'shiladigan secretlar
+
+* **DOCKERHUB_USERNAME->** Dockerhub username yozasiz
+* **DOCKERHUB_TOKEN->** Dockerhubga login qilib kirish uchun Accsess Token. Dockerhubdan ro'yxatdan o'tib Access Token olish [bo'yicha qo'llanma](https://devops-journey.uz/guides/ci-cd/jenkins-docker-ci-cd#dockerhub).
+
+```yaml {11-12,29-33,40,54-55,58}
+name: Github Actions CI/CD
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  CONTAINER_NAME: devops-journey
+  DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+  DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+  SSH_HOST: ${{ secrets.SERVER_IP }}
+  SSH_USER: ${{ secrets.SERVER_USERNAME }}
+  SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+  PORT: 3000:3000
+
+jobs:
+  build_and_push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ env.DOCKERHUB_USERNAME }}
+          password: ${{ env.DOCKERHUB_TOKEN }}
+      
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ env.DOCKERHUB_USERNAME }}/${{ env.CONTAINER_NAME }}:${{ github.sha }}
+
+  deploy:
+    needs: build_and_push
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Executing remote SSH commands to deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ env.SSH_HOST }}
+          username: ${{ env.SSH_USER }}
+          key: ${{ env.SSH_KEY }}
+          script: |
+            docker login -u ${{ env.DOCKERHUB_USERNAME }} -p ${{ env.DOCKERHUB_TOKEN }}
+            docker pull ${{ env.DOCKERHUB_USERNAME }}/${{ env.CONTAINER_NAME }}:${{ github.sha }}
+            docker stop ${{ env.CONTAINER_NAME }} || true
+            docker rm ${{ env.CONTAINER_NAME }} || true
+            docker run -d --name ${{ env.CONTAINER_NAME }} -p ${{ env.PORT }} ${{ env.DOCKERHUB_USERNAME }}/${{ env.CONTAINER_NAME }}:${{ github.sha }}
+```
+
+#### Multi-container
+
+```yaml
+name: Github Actions CI/CD
+ 
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+ 
+env:
+  API_CONTAINER_NAME: github-api
+  UI_CONTAINER_NAME: github-ui
+  DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+  DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+  SSH_HOST: ${{ secrets.SERVER_IP }}
+  SSH_USER: ${{ secrets.SERVER_USERNAME }}
+  SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+  UI_PORT: 4000:4000
+  API_PORT: 4001:4001
+ 
+jobs:
+  build_and_push:
+    runs-on: ubuntu-latest
+ 
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+ 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+ 
+      - name: Log in to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ env.DOCKERHUB_USERNAME }}
+          password: ${{ env.DOCKERHUB_TOKEN }}
+      
+      - name: Build and push API Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./API.Dockerfile
+          push: true
+          tags: ${{ env.DOCKERHUB_USERNAME }}/${{ env.API_CONTAINER_NAME }}:${{ github.sha }}
+      - name: Build and push UI Docker image
+        uses: docker/build-push-action@v5
+        with:
+            context: .
+            file: ./UI.Dockerfile
+            push: true
+            tags: ${{ env.DOCKERHUB_USERNAME }}/${{ env.UI_CONTAINER_NAME }}:${{ github.sha }}
+ 
+  deploy:
+    needs: build_and_push
+    runs-on: ubuntu-latest
+ 
+    steps:
+      - name: Executing remote SSH commands to deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ env.SSH_HOST }}
+          username: ${{ env.SSH_USER }}
+          key: ${{ env.SSH_KEY }}
+          script: |
+            docker login -u ${{ env.DOCKERHUB_USERNAME }} -p ${{ env.DOCKERHUB_TOKEN }}
+            docker pull ${{ env.DOCKERHUB_USERNAME }}/${{ env.API_CONTAINER_NAME }}:${{ github.sha }}
+            docker pull ${{ env.DOCKERHUB_USERNAME }}/${{ env.UI_CONTAINER_NAME }}:${{ github.sha }}
+            docker stop ${{ env.API_CONTAINER_NAME }} || true
+            docker stop ${{ env.UI_CONTAINER_NAME }} || true
+            docker rm ${{ env.API_CONTAINER_NAME }} || true
+            docker rm ${{ env.UI_CONTAINER_NAME }} || true
+            docker run -d --name ${{ env.API_CONTAINER_NAME }} -p ${{ env.API_PORT }} ${{ env.DOCKERHUB_USERNAME }}/${{ env.API_CONTAINER_NAME }}:${{ github.sha }}
+            docker run -d --name ${{ env.UI_CONTAINER_NAME }} -p ${{ env.UI_PORT }} ${{ env.DOCKERHUB_USERNAME }}/${{ env.UI_CONTAINER_NAME }}:${{ github.sha }}
+```
+
+### GCR Google Container Registry
+
+#### Bitta Container
+
+GCR uchun konfiguratsiyamiz quyidagicha.
+
+GCR uchun Actionsga qo'shiladigan secretlar:
+
+* **GCP_PROJECT_ID->** Bu Google Cloud project IDsi
+* **GCP_SERVICE_ACCOUNT_KEY->** Bu GCR uchun Service Account secret keyi hisoblanadi.
+
+`GCP_SERVICE_ACCOUNT_KEY` olish `GCP_PROJECT_ID` ni bilish  [bo'yicha qo'llanma](https://devops-journey.uz/guides/ci-cd/jenkins-docker-ci-cd#gcrgoogle-container-registry). 
+
+```yaml
+name: Github Actions CI/CD
+
+on:
+    push:
+      branches: [ main ]
+    pull_request:
+      branches: [ main ]
+
+env:
+  CONTAINER_NAME: devops-journey
+  GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  GCP_SERVICE_ACCOUNT_KEY: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+  SSH_HOST: ${{ secrets.SERVER_IP }}
+  SSH_USER: ${{ secrets.SERVER_USERNAME }}
+  SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+  PORT: 3000:3000
+
+jobs:
+  build_and_push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Setup Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v0.2.1
+        with:
+          service_account_key: ${{ env.GCP_SERVICE_ACCOUNT_KEY }}
+          project_id: ${{ env.GCP_PROJECT_ID }}
+
+      - name: Configure Docker to use the gcloud command-line tool as a credential helper
+        run: |
+          gcloud --quiet auth configure-docker
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: gcr.io/${{ env.GCP_PROJECT_ID }}/${{ env.CONTAINER_NAME }}:latest
+
+  deploy:
+    needs: build_and_push
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Executing remote SSH commands to deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ env.SSH_HOST }}
+          username: ${{ env.SSH_USER }}
+          key: ${{ env.SSH_KEY }}
+          script: |
+            echo '${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}' > keyfile.json
+            cat keyfile.json | docker login -u _json_key --password-stdin https://gcr.io
+            docker pull gcr.io/${{ env.GCP_PROJECT_ID }}/${{ env.CONTAINER_NAME }}:latest
+            docker stop ${{ env.CONTAINER_NAME }} || true
+            docker rm ${{ env.CONTAINER_NAME }} || true
+            docker run -d --name ${{ env.CONTAINER_NAME }} -p ${{ env.PORT }} gcr.io/${{ env.GCP_PROJECT_ID }}/${{ env.CONTAINER_NAME }}:latest
+            rm keyfile.json
+```
+
+#### Multi-Conntainer
+
+```yaml
+name: Github Actions CI/CD
+
+on:
+    push:
+      branches: [ main ]
+    pull_request:
+      branches: [ main ]
+
+env:
+  API_CONTAINER_NAME: github-api
+  UI_CONTAINER_NAME: github-ui
+  GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  GCP_SERVICE_ACCOUNT_KEY: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+  SSH_HOST: ${{ secrets.SERVER_IP }}
+  SSH_USER: ${{ secrets.SERVER_USERNAME }}
+  SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+  UI_PORT: 4000:4000
+  API_PORT: 4001:4001
+
+jobs:
+  build_and_push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Setup Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v0.2.1
+        with:
+          service_account_key: ${{ env.GCP_SERVICE_ACCOUNT_KEY }}
+          project_id: ${{ env.GCP_PROJECT_ID }}
+
+      - name: Configure Docker to use the gcloud command-line tool as a credential helper
+        run: |
+          gcloud --quiet auth configure-docker
+
+      - name: Build and push API Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./API.Dockerfile
+          push: true
+          tags: gcr.io/${{ env.GCP_PROJECT_ID }}/${{ env.API_CONTAINER_NAME }}:${{ github.sha }}
+          
+      - name: Build and push UI Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./UI.Dockerfile
+          push: true
+          tags: gcr.io/${{ env.GCP_PROJECT_ID }}/${{ env.UI_CONTAINER_NAME }}:${{ github.sha }}
+
+  deploy:
+    needs: build_and_push
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Executing remote SSH commands to deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ env.SSH_HOST }}
+          username: ${{ env.SSH_USER }}
+          key: ${{ env.SSH_KEY }}
+          script: |
+            echo '${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}' > keyfile.json
+            cat keyfile.json | docker login -u _json_key --password-stdin https://gcr.io
+            docker pull gcr.io/${{ env.GCP_PROJECT_ID }}/${{ env.API_CONTAINER_NAME }}:${{ github.sha }}
+            docker pull gcr.io/${{ env.GCP_PROJECT_ID }}/${{ env.UI_CONTAINER_NAME }}:${{ github.sha }}
+            docker stop ${{ env.API_CONTAINER_NAME }} || true
+            docker stop ${{ env.UI_CONTAINER_NAME }} || true
+            docker rm ${{ env.API_CONTAINER_NAME }} || true
+            docker rm ${{ env.UI_CONTAINER_NAME }} || true
+            docker run -d --name ${{ env.API_CONTAINER_NAME }} -p ${{ env.API_PORT }} gcr.io/${{ env.GCP_PROJECT_ID }}/${{ env.API_CONTAINER_NAME }}:${{ github.sha }}
+            docker run -d --name ${{ env.UI_CONTAINER_NAME }} -p ${{ env.UI_PORT }} gcr.io/${{ env.GCP_PROJECT_ID }}/${{ env.UI_CONTAINER_NAME }}:${{ github.sha }}
+            rm keyfile.json
+```
+
+
+## Qo'shimcha
+
+<Callout type="info" emoji="">
+
+<Callout type="info" emoji="">
+Amaliyotda ishlatilgan [**devops-journey-github-actions**](https://github.com/devops-journey-uz/devops-journey-github-actions) va [**github-actions-dotnet**](https://github.com/devops-journey-uz/github-actions-dotnet) repositoriyalar. Github Actions namuna fayllarni [**ismoilovdevml/devops-tools**](https://github.com/ismoilovdevml/devops-tools/tree/master/Github-Actions)dan topishingiz mumkin.
+</Callout>
+Qo'shimcha Resurslar
+ * [**Gitlab Server o'rnatish va sozlash**](https://devops-journey.uz/guides/ci-cd/gitlab-server)
+ * [**Github Actions bilan Anroid CI/CD**](https://devops-journey.uz/guides/ci-cd/android-github-actions)
+ * [**Github Actions bilan Flutter CI/CD**](https://devops-journey.uz/guides/ci-cd/flutter-github-action)
+ * [**Linux Serverlarga Jenkins o'rnatish**](https://devops-journey.uz/guides/ci-cd/jenkins-ornatish)
+ * [**Koddan Servergacha: Jenkins bilan Docker CI/CD va Discord bilan integratsiya**](https://devops-journey.uz/guides/ci-cd/jenkins-docker-ci-cd)
+ * [**Gitlab CI | Releaselar va Integrationlar**](https://devops-journey.uz/guides/ci-cd/gitlab-ci-release-integrations)
+ * [**Kubernetes CI/CD | GitHub Actions + Argo CD | GitOps**](https://devops-journey.uz/guides/ci-cd/github-actions-argocd-cicd)
+
+**Sana:** 2024.02.04(2024-yil 4-fevral)
+
+**Oxirgi yangilanish:** 2024.02.05(2024-yil 5-fevral)
+
+**Muallif: Otabek Ismoilov**
+
+| [Telegram](https://t.me/Otabek_Ismoilov) | [GitHub](https://github.com/ismoilovdevml) | [LinkedIn](https://www.linkedin.com/in/otabek-ismoilov/) |
+| - | - | - |
+
+</Callout>

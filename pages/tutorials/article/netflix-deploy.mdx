@@ -1,0 +1,1435 @@
+---
+image: https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/banner.png
+description: "DevSecOps Project: Neftlix"
+---
+
+import { Callout } from "nextra/components";
+
+## DevSecOps Project: Neftlix
+
+![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/banner.png)
+
+DevOps va monitoringda ilg'or texnologiyalardan foydalangan holda Netflix klonini deploy qilish bo'yicha texnik qo'llanmaga xush kelibsiz. Ushbu qo'llanmada biz **Jenkins**-dan **CI/CD** dasturi sifatida, konteynerlashtirish uchun **Docker**, monitoring uchun va **Grafana**, **Prometheus** va **Node Exporter** kabi monitoring dasturlaridan foydalangan holda keng qamrovli DevOps sayohatini boshlaymiz.
+
+Bizning maqsadimiz: **Netflix**-ga o'xshash streaming platformasining funksionalligini takrorlash, shu bilan birga mustahkam deployment amaliyotlari, qat'iy xavfsizlik choralari va tizim ishlashini sinchkovlik bilan kuzatish.
+
+Ushbu qo'llanma davomida biz zaifliklarni skanerlash uchun **Trivy**, kod sifatini tahlil qilish uchun **SonarQube** va xavfsizlikni baholash uchun **OWASP Dependency Check** kabi dasturalarning uzluksiz integratsiyasini(CI continuous integration) ta'minlab, ushbu ilovani ishga tushirish va deploy qilish uchun zarur bo'lgan murakkab bosqichlarni ko'rib chiqamiz.
+
+Ushbu loyiha Ubuntu servernini sozlashdan boshlanadi. U yerda biz **Jenkins**, **Docker** va **Node.js**, **SonarQube Scanner** va **JDK** kabi muhim plaginlarni o'rnatamiz va sozlaymiz. Bundan tashqari, biz kino va teleko'rsatuv ma'lumotlarini olish uchun asosiy komponent bo'lgan **TMDB API** integratsiyasini o'rganamiz.
+
+Deployment'ni kuchaytirish uchun biz **Prometheus** va **Grafana**-ni o'rnatish, **Jenkins** ichida **Prometheus** plaginlarini o'rnatish va tuzilish holati va tizim ogohlantirishlari haqida tezkor xabardor bo'lishni ta'minlash uchun elektron pochta xabarnomalarini o'rnatish orqali monitoringga kirib boramiz.
+
+Doimiy takomillashtirish va xavfsizlikka e'tibor qaratgan holda, biz ilovamizdagi har qanday zaifliklarni aniqlash va yumshatishni kafolatlaydigan **OWASP Dependency Check** dasturini qo'shish bo'yicha sizni sinchkovlik bilan yo'naltiramiz.
+
+Va nihoyat, biz Netflix klonimiz uchun kengaytiriladigan va bardoshli infratuzilmani ta'minlab, Docker image'larini yaratish, ularni docker registryga push qilish va serverimizda ilovamizni deploy qilish va domen ulash orqali sayohatimizni yakunlaymiz.
+
+Ushbu qo'llanma zamonaviy DevOps muhitida murakkab ilovalarni qo'llashni amaliy tushunishga intilayotgan ishqibozlar va mutaxassislar uchun keng qamrovli rejani taqdim etishga qaratilgan. **CI/CD**, konteynerlashtirish va ishonchli monitoringning eng yaxshi amaliyotlarini qamrab olgan holda ushbu deploymentni muvaffaqiyatli takrorlash imkonini berish uchun har bir qadam diqqat bilan batafsil bayon etilgan.
+
+Keling, ushbu texnik sayohatni birgalikda boshlaymiz va Netflix-ga o'xshash striming platformangizni jonlantiramiz. U eng yaxshi deployment amaliyoti va mustahkam monitoring ekotizimiga ega.
+
+<Callout type="info" emoji="">
+**Mundarija**
+
+* [Ubuntu 20.04 server sozlash.](#ubuntu-2004-server-sozlash)
+
+* [Jenkins o'rnatish, sozlash va domen ulash.](#jenkins-ornatish-sozlash-va-domen-ulash)
+
+* [Docker, Trivy o'rnatish va SonarQubeni docker orqali o'rnatish, domen ulash.](#docker-trivy-ornatish-va-sonarqubeni-docker-orqali-ornatish-domen-ulash)
+
+* [TMDB API key olish.](#tmdb-api-key-olish)
+
+* [Prometheus va Grafana o'rnatish, tizimni monitoring qilish.](#prometheus-va-grafana-ornatish-tizimni-monitoring-qilish)
+
+* [Jenkinsga prometheus plaginini o'rnatish va monitoring qilish.](#jenkinsga-prometheus-plaginini-ornatish-va-monitoring-qilish)
+
+* [Jenkins'ga email(gmail) integratsiya qilish.](#jenkinsga-emailgmail-integratsiya-qilish)
+
+* [SonarQube'ni Jenkins uchun sozlash.](#sonarqubeni-jenkins-uchun-sozlash)
+
+* [Jenkins'ga OWASP Dependency Check, JDK va Node.js plaginlarini o'rnatish va sozlash.](#jenkinsga-owasp-dependency-check-jdk-va-nodejs-plaginlarini-ornatish-va-sozlash)
+
+* [Jenkins'da birinchi CI pipeline yozish.](#jenkinsda-birinchi-ci-pipeline-yozish)
+
+* [Jenkins pipeline'ga Docker image yaratish va Docker Registryga push qiladigan bosqich qo'shish.](#jenkins-pipelinega-docker-image-yaratish-va-docker-registryga-push-qiladigan-bosqich-qoshish)
+
+* [Finish. To'liq jarayonni avtomatlashtirish uchun Jenkins pipeline yozamiz va Netflix loyihamizni production uchun tayyorlaymiz.](#finish-toliq-jarayonni-avtomatlashtirish-uchun-jenkins-pipeline-yozamiz-va-netflix-loyihamizni-production-uchun-tayyorlaymiz)
+
+Ushbu loyiha GitHub repositoriyasi: [github.com/devops-journey-uz/netflix](https://github.com/devops-journey-uz/netflix)
+</Callout>
+
+## Ubuntu 20.04 server sozlash
+
+Loyihani boshlash uchun bizga minimum 1 ta server, maksimum 3 ta server kerak bo'ladi.
+
+Minimum Server talabi:
+
+<Callout type="info" emoji="">
+**Minimum Server talabi**
+
+| OS            | RAM            | CPU           | Xotira       | Static IP |
+| ------------- | -------------- | ------------- |------------- | --------- |
+| Ubuntu 20.04  | 8GB            | 4vCPU 2 core  | 150GB        | Ha kerak  |
+
+Eslatib o'tamiz ushbu loyihani o'zingizda sinab test qilib ko'rish uchun bu minumum server talabi. Agar siz buni production uchun ishlatmoqchi bo'lsangiz, sizning talablaringizga qarab bu ko'satkichlar o'zgaradi.
+
+</Callout>
+
+Server olganingizdan keyin `ssh` bilan serverga kirib yangilab olamiz.
+
+```bash
+sudo apt update && sudo apt upgrade -y
+```
+
+Kerakli dasturlarni o'rnatib olamiz:
+
+```bash
+sudo apt install git nano zip unzip wget apt-transport-https gnupg lsb-release -y
+```
+Serverni yangilab, kerakli dasturlarni o'rnatib olganimizdan keyin keyingi bosqichga Jenkins o'rnatishga o'tsak bo'ladi.
+
+## Jenkins o'rnatish, sozlash va domen ulash
+
+**Jenkins**-ni o'rnatish sizning loyihangiz uchun Continuous Integration/Continuous Deployment **(CI/CD)** pipeline o'rnatishda muhim qadamdir. **Jenkins** - bu ilovalarni yaratish, sinovdan o'tkazish va deployment uchun ishlatiladigan mashhur avtomatlashtirish serveri.
+
+Jenkins o'rnatish bo'yicha to'liq ma'lumotlarni [Linux Serverlarga Jenkins o'rnatish](https://devops-journey.uz/guides/ci-cd/jenkins-ornatish) qo'llanmasida topishingiz mumkin. Yoki keling qisqacha o'rnatishni ko'rib chiqamiz.
+
+
+#### 1. Java o'rnatish
+
+Jenkins ishga tushishi uchun Java-ni talab qiladi, ammo ba'zi distributivlar standart bo'yicha buni o'z ichiga olmaydi va ba'zi Java versiyalari Jenkins bilan mos kelmaydi. Siz foydalanishingiz mumkin bo'lgan bir nechta Java ilovalari mavjud. **OpenJDK** hozirda eng ommabop. Biz undan ushbu qo'llanmada foydalanamiz. Debian apt repositoriyalarini yangilang, OpenJDK 17 ni o'rnating va buyruqlar bilan o'rnatishni tekshiring:
+
+```bash
+sudo apt update
+sudo apt install fontconfig openjdk-17-jre -y
+java -version
+```
+
+#### 2. LTS versiyali Jenkinsni o'rnatish
+
+LTS (**L**ong-**T**erm **S**upport) versiyasi har 12 haftada muntazam releaselar oqimidan o'sha vaqt uchun barqaror release sifatida tanlanadi. U debian-stable apt repositorydan o'rnatilishi mumkin.
+
+```bash
+sudo wget -O /usr/share/keyrings/jenkins-keyring.asc \
+  https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
+echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] \
+  https://pkg.jenkins.io/debian-stable binary/ | sudo tee \
+  /etc/apt/sources.list.d/jenkins.list > /dev/null
+sudo apt-get update
+sudo apt-get install jenkins -y
+```
+
+#### 3. Jenkinsni ishga tushirish
+
+Jenkinsni service'ni yoqish, start berish va ishlayotgan statusni ko'rish uchun quyidagi buyruqlardan foydalaning.
+
+```bash
+sudo systemctl enable jenkins
+sudo systemctl start jenkins
+sudo systemctl status jenkins
+```
+#### 4. Jenkins qulfini ochish
+
+Yangi Jenkins misoliga birinchi marta kirganingizda, uni avtomatik ravishda yaratilgan parol yordamida qulfdan chiqarish so'raladi. http://localhost:8080 (yoki uni o'rnatishda Jenkins uchun qaysi portni sozlagan bo'lsangiz) sahifasini ko'rib chiqing va **Unlock Jenkins** sahifasi paydo bo'lguncha kuting.
+
+![jenkins](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/jenkins-ornatish/1.jpg)
+
+Parolni ko'rish uchun Jenkins parol qayerda turganini ko'rsatib, parol fayliga yo'l ko'rstaib qo'yadi ya'ni `/var/lib/jenkins/secrets/initialAdminPassword`. Parolni olish uchun quyidagi buyruqdan foydalanamiz.
+
+```bash
+sudo cat /var/lib/jenkins/secrets/initialAdminPassword
+```
+Bu buyruq `sudo cat /var/lib/jenkins/secrets/initialAdminPassword` parolni konsolda chop etadi. Terminaldan 32 belgidan iborat alphanumeric paroldan nusxa oling va uni Administrator paroli maydoniga joylashtiring, so'ng `Continue` tugmasini bosing. Keyingi ekranda tavsiya etilgan plaginlarni o'rnatish yoki maxsus plaginlarni tanlash imkoniyati mavjud:
+
+![jenkins](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/jenkins-ornatish/2.png)
+
+Biz `Install suggested plugins` opsiyasini bosamiz, bu darhol o'rnatish jarayonini boshlaydi.
+
+![jenkins](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/jenkins-ornatish/3.png)
+
+O'rnatish tugallangach, sizdan birinchi `Admin User` o'rnatish so'raladi. Bu bosqichni o'tkazib yuborish va yuqoridagi boshlang'ich parol yordamida administrator sifatida davom etish mumkin, lekin foydalanuvchi yaratishga biroz vaqt ajratamiz.
+
+![jenkins](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/jenkins-ornatish/4.png)
+
+Siz Jenkins instance uchun afzal qilingan URL manzilini tasdiqlashingizni so'raydigan Instance Configuration sahifasini olasiz. Serveringiz uchun domen nomini yoki serveringizning IP manzilini tasdiqlang:
+
+![jenkins](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/jenkins-ornatish/5.png)
+
+Tegishli ma'lumotlarni tasdiqlaganingizdan so'ng, `Save and Finish` tugmasini bosing. Siz `"Jenkins is Ready!"` degan tasdiqlash sahifasini olasiz:
+
+![jenkins](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/jenkins-ornatish/6.png)
+
+Asosiy Jenkins boshqaruv paneliga tashrif buyurish uchun `Start using Jenkins` tugmasini bosing:
+
+![jenkins](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/jenkins-ornatish/8.png)
+
+
+Shu nuqtada siz Jenkins-ni muvaffaqiyatli o'rnatdingiz. Keyingi qismga o'tamiz.
+
+#### 5. NGINX, certbot o'rnatish va domen ulab ssl sertifikat olish
+
+Serverimizga Jenkins o'rnatdik va uni dastlablki holat uchun sozlab oldik, lekin biz har doim Jenkinsga kirganimizda serverimiz IP mazili va Jenkins portini kiritib yozishimiz kerak bu yaxshi emas lekin bunga kirish oson bo'lishi va xavfsiz bo'lishi uchun domen ulab SSL sertifikat olamiz.
+
+#### 6.NGINX va certbot o'rnatish uchun quyidagi buyruqdan foyalanasiz.
+
+```bash
+sudo apt update
+sudo apt install nginx -y
+sudo apt install certbot python3-certbot-nginx -y
+```
+Jenkinsga domen ulash uchun NGINX configuratsiya qilishimiz kerak. `/etc/nginx/sites-available/` jildida domenimiz uchun konfiguratsiya fayl ochamiz. Masalan, domenimiz `jenkins.xilol.uz`.
+
+```bash /jenkins.xilol.uz/
+sudo nano /etc/nginx/sites-available/jenkins.xilol.uz
+```
+Fayl `nano` matn muhrarrida ochilganidan keyin quyidagi NGINX konfiguratsiyani joylashtiring.
+
+```bash filename="/etc/nginx/sites-available/jenkins.xilol.uz" {3,6}
+server {
+    listen 80;
+    server_name jenkins.xilol.uz;
+
+    location / {
+        proxy_pass http://localhost:8080;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+**NGINX**dagi ushbu konfiguratsiya bloki `80`-portda `jenkins.xilol.uz` domeni orqali Jenkinsga kirish uchun `reverse proxy-`serverni o'rnatish uchun zarur. Ushbu NGINX konfiguratsiyani qismlarga bo'lib ko'rib chiqamiz.
+
+```bash /server/ /listen/ /server_name/
+server {
+    listen 80;
+    server_name jenkins.xilol.uz;
+```
+* `server` Bu blok NGINX-da server konfiguratsiya blokining boshlanishini bildiradi.
+
+* `listen 80` NGINX standart **HTTP** porti bo'lgan **80**-portda tinglaydi (listen).
+
+* `server_name jenkins.xilol.uz;` Ushbu server blokiga mos keladigan domen nomi yoki nomlarini belgilaydi. Bu holda, u `jenkins.xilol.uz` ga o'rnatiladi.
+
+```bash /proxy_set_header/ /location/ /proxy_pass/
+    location / {
+        proxy_pass http://localhost:8080;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+```
+* `location /` Bu blok - ushbu server bloki boshqaradigan joyni belgilaydi. Bunday holda, u ildiz(root) `/` ga o'rnatiladi, shuning uchun `jenkins.xilol.uz` saytiga har qanday so'rov ushbu blok tomonidan ko'rib chiqiladi.
+
+* `proxy_pass http://localhost:8080;` Bu qator Jenkins ishlayotgan server backend serverini belgilaydi. NGINX `jenkins.xilol.uz` saytiga kelgan so'rovlarni Jenkins ishlashi kutilayotgan `http://localhost:8080` manziliga yo'naltiradi.
+
+* `proxy_set_header` Bu qatorlar proksi-server so'rovi bilan birga uzatiladigan **header**larni o'rnatadi. Ular asl client IP, host, protokol va boshqalar haqidagi ma'lumotlarni o'z ichiga oladi. Bu Jenkinsga NGINX orqali kelgan so'rovlarni to'g'ri bajarishga yordam beradi.
+
+Ushbu konfiguratsiya **NGINX**-ni **Jenkins** uchun reverse proxy-server sifatida o'rnatadi. **80**-portda `jenkins.xilol.uz` manziliga NGINX tomonidan qabul qilingan har qanday so'rov(request) **8080**-portda local ravishda ishlaydigan Jenkins serveriga yo'naltiriladi. Shuningdek, so'rov Jenkinsga yetib kelganida client ma'lumotlari yaxlitligini saqlash uchun zarur headerlar o'rnatilishini ta'minlaydi.
+
+#### 7. SSL sertifikat olish va HTTP trafikni HTTPS ga yo'naltirish
+
+NGINX konfiguratsiya uchun symbolic link yaratish
+```bash
+sudo ln -s /etc/nginx/sites-available/jenkins.xilol.uz /etc/nginx/sites-enabled/jenkins.xilol.uz
+```
+Bu buyruq `/etc/nginx/sites-available` jildida Jenkins uchun yaratgan konfiguratsiya fayli (jenkins.xilol.uz) va `/etc/nginx/sites-enabled` jildi o'rtasida symbolic link hosil qiladi. Ushbu ulanishning maqsadi NGINX serveriga siz Jenkins uchun o'rnatgan konfiguratsiyani saytlar faollashtirilgan jildda mavjud qilish orqali o'qish va foydalanish imkonini berishdir.
+
+**NGINX konfiguratsiya sintaksisini tekshirish**
+```bash
+sudo nginx -t
+```
+Ushbu buyruq hech qanday sintaksis xatosi yo'qligiga ishonch hosil qilish uchun NGINX konfiguratsiya fayllari sintaksisini tekshiradi. Bu NGINX-ning noto'g'ri konfiguratsiyalar tufayli ishga tushmasligining oldini olish uchun muhim qadamdir.
+
+#### SSL sertifikatini olish uchun Certbot-dan foydalanish.
+
+```bash
+sudo certbot
+```
+Bu buyruq Certbot ilovasini ishga tushiradi. U bepul Sertifikat organi **Let's Encrypt**'dan **SSL/TLS** sertifikatini olish uchun bir qator takliflar orqali foydalanuvchi bilan o'zaro aloqada bo'ladi. Certbot sizdan SSL sertifikatini olmoqchi bo'lgan NGINX server blokini tanlashni taklif qiladi. Bunday holda, u `jenkins.xilol.uz` saytini domen konfiguratsiyasi sifatida aniqlaydi va sertifikat berish jarayoni bo'yicha sizga yo'l ko'rsatadi. Ko'rsatmalar xizmat shartlariga rozi bo'lishni, yangilash bildirishnomalari uchun elektron pochta manzilini taqdim etishni va **HTTP** trafigini **HTTPS**ga yo'naltirishni tanlashni o'z ichiga oladi.
+
+## Docker, Trivy o'rnatish va SonarQube'ni docker orqali o'rnatish, domen ulash
+
+**Docker**-ni o'rnatish infratuzilmangizda bir nechta maqsadlarga xizmat qiladi, ayniqsa SonarQube-ni o'rnatish va uni domen orqali ulashda, applicationlarimizda deploy qilshimizda va ishga tushirishimizda.
+
+
+Docker o'rnatish uchun [**Linux serverlarga Docker o'rnatish**](https://devops-journey.uz/guides/konteyner/docker-ornatish) qo'llanmasidan foydalanishingiz mumkin
+
+Docker o'rnatganingzidan keyin docker o'rnatilgani tekshirib ko'rishingiz mumkin. Docker muvaffaqiyatli o'rnatilganidan keyin **SonarQube Community** ni docker orqali o'rnatamiz.
+
+SonarQube-ni o'rnatish avtomatlashtirilgan tahlilni ishlab chiqish jarayoniga integratsiyalash orqali kod sifati va xavfsizligiga proaktiv yondashuvni taqdim etadi. Bu dasturchilar guruhlariga kod bilan bog'liq muammolarni erta aniqlash, tushunish va tuzatish imkoniyatini beradi, ishonchli, xavfsiz va yuqori sifatli dasturiy mahsulotlarni yetkazib berishni ta'minlaydi. Bundan tashqari, u dasturchilar guruhida doimiy takomillashtirish, hamkorlik qilish va kodlash standartlariga rioya qilish madaniyatini rivojlantiradi.
+
+**SonarQube**'ni docker orqali quyidagi buyruq bilan o'rnatib olamiz:
+
+```bash
+docker run -d --name sonar -p 9000:9000 sonarqube:lts-community
+```
+Ushbu buyruq SonarQube LTS Community versiyasini `9000` portda ishga tushiradi. Serveringiz IP maznilida `9000` portga kirsangiz quyidagi SonarQube oynasi ochilishi kerak:
+
+![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/sonar1.png)
+
+Ushbu oynada siz **Login**ga `admin` **Passowrd**ga `admin` yozib kiramiz. Keyin bizdan oldingi parolni yozishimizni va ynagi parol qo'yishimizni so'raydi va yangi parol qo'yib sozlaymiz. Sizda quyidagi oyna ochilishi kerak:
+
+![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/sonar2.png)
+
+Parolni yangilaganizdan keyin quyidagi SonarQube dashboardi ochilishi kerak:
+
+![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/sonar3.png)
+
+SonarQubega domen ulab SSL sertifat olish, Jenkinsga domen ulab ssl olganimizdek bir xil, SonarQube `9000` portda ishlab turibdi NGINX bilan `proxy_pass` reverse-proxy qilib expose qilib domen ulaymiz.
+
+```bash
+nano /etc/nginx/sites-available/sonarqube.xilol.uz
+```
+Ushbu faylga quyidagi NGINX configuratsiyani joylashtiramiz.
+
+```nginx filename="/etc/nginx/sites-available/sonarqube.xilol.uz" /proxy_pass/ /9000/ /sonarqube.xilol.uz/ {3,6}
+server {
+    listen 80;
+    server_name sonarqube.xilol.uz;
+
+    location / {
+        proxy_pass http://localhost:9000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+NGINX konfiguratsiya to'g'riligini tekshiramiz:
+
+```bash
+sudo nginx -t
+```
+Symbolic link yaratamiz:
+
+```bash /sonarqube.xilol.uz/
+sudo ln -s /etc/nginx/sites-available/sonarqube.xilol.uz /etc/nginx/sites-enabled/sonarqube.xilol.uz
+```
+**Let's Encrypt**, **certboot** yordamida **SSL** sertifikat olamiz:
+
+```bash
+sudo certbot --nginx -d sonarqube.xilol.uz
+```
+
+### Trivy o'rnatish
+
+**Trivy** - dasturiy ta'minotni ishlab chiqish jarayonida xavfsizlik choralarini kuchaytirish uchun o'rnatilgan. Bu konteynerlar uchun maxsus ishlab chiqilgan, konteyner imagelari va fayl tizimlaridagi xavfsizlik muammolari va zaifliklarni aniqlaydigan zaiflik skaneri(vulnerability scanner). **Trivy** konteynerlashtirilgan ilovalarning ma'lum zaifliklardan holi bo'lishini ta'minlash, xavfsizlik xatarlarini kamaytirish va deploy qilingan dasturiy ta'minotning umumiy xavfsizlik holatini yaxshilashga yordam beradi.
+
+Keling **Trivy**ni bash script yordamida o'rnatamiz. `nano` matn muharriri yordamida `trivy.sh` fayl ochib olamiz:
+
+```bash
+nano trivy.sh
+```
+
+`nano` matn muharriri ochilganidan keyin quyidagi scriptni joylashtiramiz:
+
+```bash filename="trivy.sh"
+#!/bin/bash
+sudo apt-get install wget apt-transport-https gnupg lsb-release
+wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
+echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee -a /etc/apt/sources.list.d/trivy.list
+sudo apt-get update
+sudo apt-get install trivy -y
+```
+
+Scriptni ishga tushiramiz:
+
+```bash
+sudo chmod +x trivy.sh
+./trivy.sh
+```
+
+## TMDB API key olish
+
+**TMDB** API KEY Kino ma'lumotlar bazasidan (**The Movie Database - TMDB**) kino va teleko'rsatuv ma'lumotlariga kirish va olish uchun zarurdir. Bu ilovalarga filmlar xulosalari, translatsiya ma'lumotlari, reytinglar va Netflix'ga o'xshash keng qamrovli filmlar streaminng platformasini yaratish uchun zarur bo'lgan boshqa metama'lumotlar kabi tafsilotlarni olish imkonini beradi.
+
+TMDB API key olish uchun uning saytiga kirishimiz kerak: [themoviedb.org](https://www.themoviedb.org/)
+
+![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/tmdb1.png)
+
+**TMDB**da akkountingiz bo'lsa akkountingizga kirasiz yoki akkount ochib olasiz. Quyidagi oynadan `Settings` bo'limiga o'tib keyin `API` bo'limga kirasiz:
+
+![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/tmdb2.png)
+
+`API` bo'limga kiramiz:
+![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/tmdb3.png)
+
+`Create` dan API key generatsiya qilib olamiz:
+![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/tmdb4.png)
+
+Shartlarni qabul qilishingiz kerak. `Accept`
+![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/tmdb7.png)
+
+Ma'lumotlarni to'ldirib chiqamiz:
+
+![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/tmdb6.png)
+
+Ma'lumotlarni to'ldirib chiqganimizdan keyin quyidagi oynada bizga API key beradi. `API Key`
+![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/tmdb5.png)
+
+API Keyni nusxalab olib qo'yamiz loyihamizda ishlatamiz. TMDB API KEYni olganimizdan keyin uni Jenkins credentials'ga qo'shib qo'yishimiz kerak.
+
+**->** `Manage Jenkins` **->** `Credentials`
+
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/secret8.png)
+
+## Prometheus va Grafana o'rnatish, tizimni monitoring qilish
+
+Prometheus va Grafana'ni monitoring va vizualizatsiya uchun o'rnatamiz. Prometheus turli tizimlardagi ko'rsatkichlarni(metrikalarni) to'playdi va saqlaydi. Grafana esa ushbu ko'rsatkichlarni vizualizatsiya qilish va tahlil qilish uchun foydalanuvchilarga qulay interfeysni taqdim etadi. Birgalikda ular deploy qilingan ilovalar va infratuzilmani samarali monitoring qilish, muammolarni bartaraf etish va ish faoliyatini tahlil qilish imkonini beradi.
+
+**Prometheus** va **Grafana**'ni o'rnatish bo'yicha batafsil qo'llanma oldinroq yozilgan, shu qo'llanmadan foydalangan holda **Prometheus**, **Garafana** va **node_exporter**ni o'rnatib sozlashingiz mumkin. 
+
+<Callout type="info" emoji="">
+
+Prometheus, Grafana, Node Exporter o'rnatish sozlash integratsiya qilish uchun quyidagi qo'llanmadan foydalanasiz.
+
+**Prometheus:** [Prometheus nima?](https://devops-journey.uz/guides/monitoring/gnp-monitoring#prometheus-nima), [Prometheus o'ratish va sozlash](https://devops-journey.uz/guides/monitoring/gnp-monitoring#prometheus-oratish-va-sozlash), [Client Nodelarini kuzatish uchun Prometheusni sozlash](https://devops-journey.uz/guides/monitoring/gnp-monitoring#client-nodelarini-kuzatish-uchun-prometheusni-sozlash), [Grafana va Prometheusni integratsiya qilish](https://devops-journey.uz/guides/monitoring/gnp-monitoring#grafana-va-prometheusni-integratsiya-qilish)
+
+**Grafana:** [Grafana nima?](https://devops-journey.uz/guides/monitoring/gnp-monitoring#grafana-nima), [Grafana serverini qanday o'rnatish va sozlash
+](https://devops-journey.uz/guides/monitoring/gnp-monitoring#grafana-serverini-qanday-ornatish-va-sozlash), [Grafana Dashboardni import qilish](https://devops-journey.uz/guides/monitoring/gnp-monitoring#grafana-dashboardni-import-qilish)
+
+**Node Exporter:** [Node Exporter-ni o'ratish va sozlash](https://devops-journey.uz/guides/monitoring/gnp-monitoring#node-exporter-ni-oratish-va-sozlash)
+
+![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/grafana-dashboard1.png)
+
+Rasmdagi **Node Exporter Full** Dashboardi `ID`si `1860` havola [Node Exporter Full](https://grafana.com/grafana/dashboards/1860-node-exporter-full/)
+
+Node Exporter uchun Prometheus configuratsiyasi
+```yaml filename="/etc/prometheus/prometheus.yml"
+  - job_name: "node_exporter"
+    static_configs:
+      - targets: ["localhost:9100"]
+```
+</Callout>
+
+Serverga garafana o'rnatganingizdann keyin keling unga domen ulab NGINX konfiguratsiya qilamiz.
+
+Mana qisqa qo'llanma.
+
+Ilovamiz uchun NGINX konfiguratsiyasi quyidagicha:
+
+```bash /grafana/
+sudo nano /etc/nginx/sites-available/grfaana.xilol.uz
+```
+
+Grafana `3000` portda ishlab turadi bizni reverse-proxy proxy_pass qilib expose qilamiz.
+
+```bash filename="/etc/nginx/sites-available/grafana.xilol.uz" /grafana.xilol.uz/ /3000/ {3,6}
+server {
+    listen 80;
+    server_name grafana.xilol.uz;
+ 
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+
+```bash /grafana.xilol.uz/
+sudo ln -s /etc/nginx/sites-available/grafana.xilol.uz /etc/nginx/sites-enabled/grafana.xilol.uz
+```
+NGINX konfiguratsiyamiz to'grilinini tekshiramiz:
+
+```bash
+sudo nginx -t
+```
+HTTP dan HTTPSga o'tish uchun certboot bilan SSL sertifikat olamiz:
+
+```bash
+sudo certbot --nginx -d grafana.xilol.uz
+```
+
+## Jenkinsga prometheus plaginini o'rnatish va monitoring qilish
+
+![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/grafana-dashboard2.png)
+
+**Jenkins**-ga Prometheus plaginini o'rnatish va monitoring qilish, Jenkinsga xos ko'rsatkichlarni(metrics) to'plash va kuzatish imkonini beradi. Bu Jenkinsning ishlashi, resurslardan foydalanish va ish holatini kuzatishga yordam beradi, Jenkinsning salomatligini yaxshiroq ko'rish imkonini beradi va CI/CD pipelinedagi muammolarni aniqlash va hal qilishda yordam beradi.
+
+Jenkinsga Prometheus plaginini o'rnatish uchun Jenkinsda **->** `Manage Jenkins` **->** `Plugins` bo'limga kiramiz.
+
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/jenkins1.png)
+
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/jenkins2.png)
+
+Prometheus plagini o'rnatilganidan keyin **->** `Manage Jenkins` **->** `System` ga kirib Prometheus bo'limini topamiz va quyidagicha to'ldirib `Apply` bosib `Save` qilamiz.
+
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/jenkins3.png)
+
+Plaginni o'rnatib sozlab bo'lganimzidan keyin Prometheus'ga jenkins exporterni qo'shib sozlaymiz. `/etc/prometheus/prometheus.yml` fayliga quyidagi konfiguratsiyani qo'shib qo'yamiz.
+
+```yaml
+nano /etc/prometheus/prometheus.yml
+```
+
+```yaml filename="/etc/prometheus/prometheus.yml" /8080/ /prometheus/ /jenkins/
+  - job_name: 'jenkins'
+    metrics_path: '/prometheus'
+    static_configs:
+      - targets: ['0.0.0.0:8080']
+```
+
+`0.0.0.0:8080` bu yerda siz jenkins o'rnatilgan serveringiz **IP** manzilini kiritasiz. Quyida `prometheus.yml` faylining to'liq ko'rinishi.
+
+```yaml filename="/etc/prometheus/prometheus.yml" /static_configs/ /targets/ {28-29, 32-34, 36-39}
+# my global config
+global:
+  scrape_interval: 15s # Set the scrape interval to every 15 seconds. Default is every 1 minute.
+  evaluation_interval: 15s # Evaluate rules every 15 seconds. The default is every 1 minute.
+  # scrape_timeout is set to the global default (10s).
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          # - alertmanager:9093
+
+# Load rules once and periodically evaluate them according to the global 'evaluation_interval'.
+rule_files:
+  # - "first_rules.yml"
+  # - "second_rules.yml"
+
+# A scrape configuration containing exactly one endpoint to scrape:
+# Here it's Prometheus itself.
+scrape_configs:
+  # The job name is added as a label `job=<job_name>` to any timeseries scraped from this config.
+  - job_name: "prometheus"
+
+    # metrics_path defaults to '/metrics'
+    # scheme defaults to 'http'.
+
+    static_configs:
+      - targets: ["localhost:9090"]
+
+
+  - job_name: "node_exporter"
+    static_configs:
+      - targets: ["localhost:9100"]
+
+  - job_name: 'jenkins'
+    metrics_path: '/prometheus'
+    static_configs:
+      - targets: ['0.0.0.0:8080']
+```
+
+Konfiguratsiyani yozib sozlab bo'lganimzidan keyin uni `promtool` bilan tekshirib ko'ramiz:
+
+```bash
+promtool check config /etc/prometheus/prometheus.yml
+```
+
+```txt filename="Natija"
+Checking /etc/prometheus/prometheus.yml
+ SUCCESS: /etc/prometheus/prometheus.yml is valid prometheus config file syntax
+```
+Konfiguratsiya to'gri yozilgan bo'lsa sizda quyidagi natija chiqishi kerak, agar xato chiqsa konfiguratsiyani yana bir bor ko'rib chiqing.
+**Prometheus**ni restart qilib qayta ishga tushirishimiz kerak.
+
+```bash
+sudo systemctl restart prometheus
+```
+
+`http://0.0.0.0:9090/targets` quyida siz IP manzilingiz bilan prometheusga kirib targets bo'limga kirsangiz `job="jenkins"` chiqishi kerak.
+
+Grafana orqali Jenkins metrikalarni vizualizatsiya qilish uchun Jenkins dashboard import qilamiz. 
+
+![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/grafana-dashboard2.png)
+
+Rasmdagi Dashboard `ID`si `9964` [Jenkins: Performance and Health Overview](https://grafana.com/grafana/dashboards/9964-jenkins-performance-and-health-overview/)
+Grafanaga dashboard import qilish bo'yicha yozilgan [Grafana Dashboardni import qilish](https://devops-journey.uz/guides/monitoring/gnp-monitoring#grafana-dashboardni-import-qilish) qo'llanmasidan foydalanasiz.
+
+## Jenkinsga email(gmail) integratsiya qilish
+
+**Jenkins** va plaginlarni sozlash bilan elektron pochta integratsiyasi avtomatik bildirishnomalar(notification) va build statusi, nosozliklar yoki tizim muammolari haqida ogohlantirishlarga imkon beradi. Bu ishlab chiqish guruhi bilan o'z vaqtida aloqa o'rnatishni ta'minlaydi, CI/CD pipelinedagi mumkin bo'lgan muammolarga tezkor javob beradi va jamoa a'zolari o'rtasida samarali hamkorlikni osonlashtiradi.
+
+**Jenkinsni** **Gmail** bilan integratsiyalash **Trivy** statusi va loglarni elektron pochta orqali bildirishnomalar(notification) sifatida yuborish imkonini beradi. Ushbu sozlash jamoaga **Trivy** skanerlashlari, shu jumladan holat(status) yangilanishlari va batafsil loglarni bevosita **Gmail** pochta qutisiga zudlik bilan olishini ta'minlaydi. U aloqani soddalashtiradi va jamoani **Trivy** tomonidan aniqlangan xavfsizlik skanerlari va zaifliklar haqida real vaqt rejimida xabardor qiladi, bu esa yuzaga kelishi mumkin bo'lgan muammolarga faol javob berishga yordam beradi.
+
+Jenkinsni email bilan inetgratsiya qilishimiz uchun `Email Extension Template` plagini o'rnatib olishimiz kerak. **->** `Manage Jenkins` **->** `Plugins` **->** `Available plugins`.  Plaginlardan [`Email Ext Recipients Column`](https://plugins.jenkins.io/email-ext-recipients-column/) plagini o'rnatib olamiz:
+
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/jenkins4.png)
+
+[myaccount.google.com](https://myaccount.google.com/security)-dan `Security` bo'limga o'ting va **2-Step Verification** yoqilganligini tekshiring yoqilmagan bo'lsa yoqing. **2-Step Verification**-ni yoqganizdan keyin qidiruvdan `app` deb qidiring quyidagicha ko'rinishi kerak, `App passwords` ga kiring.
+
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/gmail1.png)
+
+**App passwords**ga kirganimzidan keyin `App name`-ga ilovalamiz nomini kiritamiz: `Jenkins`. Kiritganimizdan keyin `Create` bosib parol app password yaratib olamiz va nusxalab olib qo'yamiz.
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/gmail2.png)
+
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/gmail3.png)
+
+Jenkinsga E-mail notification uchun gmail bilan integratsiya qilamiz. Birinchi navbatda credentialslarni qo'shib olamiz. **->** `Manage Jenkins` **->** `Credentials`-ga kirib  `Add credentials`ga o'tamiz.
+
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/secret1-new.png)
+
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/secret2-new.png)
+
+Ushbu qismni rasmda ko'rsatilgandek konfiguratsiya qilib olamiz. 
+
+* **Kind:** username with password
+* **Username:** mygmail.com(hozir 2 step verification yoqib app paswword olgan emailimiz)
+* **Password:** bu yerga Google bergan app passwordni qo'yamiz.
+
+Hammasini to'gri to'ldirib chiqganimzidan keyin `Create` bosib credentials yartatib olamiz. Mail credentials yaratib olganimizdan keyin **->** `Manage Jenkins` **->** `System` bo'limga o'tib **E-mail Notification** qismini topib olamiz va rasmdagidek konfiguratsiya qilamiz.
+
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/gmail4-new.png)
+
+* **SMTP Server->** smtp.gmail.com (Gmail bilan integratsiyta qilayotganimiz uchun gmail SMT serveridan foydalanamiz)
+* **Use SMTP Authentication->** ga emailimiz va parolini yozamiz
+* **SMTP Port->** 465(gmail SMTP severi standart porti)
+
+`System` dan **Extented E-mail Notification** qismini topib olamiz va quyidagicha konfiguratsiya qilamiz:
+
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/gmail5-new.png)
+
+Triggerga **Always**
+
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/gmail6-new.png)
+
+Hammasini rasmda ko'rsatilganidek o'zingizga moslab sozlab olganingizdan keyin `Apply` va `Save` bosamiz.
+
+Email Notificationni sozlab olganimizdan keyin Jenkins pipelineda email notificationdan quyidagicha foydalanamiz:
+
+```groovy filename="Jenkinsfile" {8-9}
+post {
+     always {
+        emailext attachLog: true,
+            subject: "'${currentBuild.result}'",
+            body: "Project: ${env.JOB_NAME}<br/>" +
+                "Build Number: ${env.BUILD_NUMBER}<br/>" +
+                "URL: ${env.BUILD_URL}<br/>",
+            to: 'mygmail@gmail.com',
+            attachmentsPattern: 'trivyfs.txt,trivyimage.txt'
+        }
+    }
+```
+
+## Jenkinsga OWASP Dependency Check, JDK va Node.js plaginlarini o'rnatish va sozlash
+
+**JDK**, **Sonarqube Scanner**, **Node.js** va **OWASP Dependency Check** kabi plaginlarni o'rnatish Jenkins ichidagi muayyan funksiyalarni yoqish uchun juda muhimdir. Ushbu plaginlar kod kompilyatsiyasi (**JDK**), kod sifati tahlili (**Sonarqube Scanner**), JavaScript-ga asoslangan buildlar (**Node.js**) va xavfsizlik zaifligini tekshirish (**OWASP Dependency Check**) kabi vazifalarni osonlashtiradi. Ushbu plaginlarni integratsiyalash **CI/CD** jarayonini soddalashtiradi, kod sifatini, xavfsizligini va dasturiy ta'minotni ishlab chiqishda umumiy samaradorlikni oshiradi.
+
+**->** `Manage Jenkins` **->** `Plugins` **->** `Available plugins` ga o'tib `Eclipse Temurin Installer`, `SonarQube Scanner` va `NodeJS` o'rnatib jenkinsga restart berishingiz kerak.
+
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/tools1-new.png)
+
+Plaginlar o'rnatilgandan keyin **Global Tool Configuration**-da Java va NodeJS konfiguratsiya qilib olishimiz kerak.
+
+**->** `Manage Jenkins` **->** `Tools`. Java JDK o'rnatish uchun **JDK Installtions** bo'limidan  quyidagicha to'ldiramiz.
+
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/tools2.png)
+
+**NodeJs Installtion** bo'limi quyidagicha  to'ldiramiz:
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/tools3.png)
+
+Jenkins pipelineda SonarQube ishlatish uchun SonarQube'da token va ilovamiz uchun webhook yaratib olamiz. [SonarQube o'rnatish](https://devops-journey.uz/tutorials/article/netflix-deploy#docker-trivy-ornatish-va-sonarqubeni-docker-orqali-ornatish-domen-ulash) qismida siz SonarQube o'rnatgan bo'lishingiz va domen ulangan bo'lishingiz kerak. Jenkins pipelineda SonarQube ishlatish uchun TOKEN generatsiya qilib olamiz.
+
+## SonarQubeni Jenkins uchun sozlash
+
+SonarQube kirib **->** `Administration` **->** `Security` **->** `Users` **->** `Tokens`
+
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/sonar6.png)
+
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/sonar7.png)
+
+SonarQubedan Token generatsiya qilib olganimzidan keyin uni Jenkins Credentialsga qo'shib qo'yishimiz kerak.
+
+**->** `Manage Jenkins` **->** `Credentials`
+
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/secret3.png)
+
+* **Kind:** Secret text
+* **Secret:** bu yerda SonarQube-dan olgan tokenimizni joylashtiramiz.
+* **ID:** sonar-token
+
+SonarQube uchun token olib Jenkins credentialsga qo'shganimizdan keyin SonarQube serverni Jenkinsga ulashimiz kerak. 
+
+**->** `Manage Jenkins` **->** `System` **->** `SonarQube servers`
+
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/secret4.png)
+
+Rasmda ko'rsatilganidek konfiguratsiya qilib olamiz.
+
+* **Server URL->**  sonarqube.xilol.uz(SonaQube serveringiz manzili)
+
+* **Server authentication token->** hozir qo'shgan tokenimiz(`Sonar-token`)ni ko'rsatib qo'yamiz shunda Jenkins pipelineda SonarQubega ulana olamiz. `Apply` va `Save` ni bosib chiqamiz. 
+
+**Global Tool Configuration**dan SonarQube Scanner o'rnatamiz. 
+
+**->** `Manage Jenkins` **->** `Tools` **->** `SonarQube Scanner installations`
+
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/sonar8.png)
+
+Rasmda ko'rsatilganidek konfiguratsiya qilib olamiz. `Apply` va `Save` ni bosib chiqamiz va SonarQube serverimizga kirib ilovamiz uchun **webhook** yaratib olamiz.
+
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/sonar4.png)
+
+**->** `Administration` **->** `Configuration` **->** `Webhooks`
+
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/sonar5.png)
+
+`Create` bosib Webhook yaratib olamiz, sizda quyidagi oyna ochilishi kerak:
+
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/sonar9.png)
+
+SonarQubeda endi loyihamizni analiz qilishi uchun loyihamizni qo'shamiz. SonarQube bosh sahifasiga kirsangiz sizda quyiagi oyna ochilishi kerak siz **Manually** tanlaysiz.
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/sonar10.png)
+
+keyin sizda quyidagi  oyna ochilishi kerak:
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/sonar11.png)
+
+Bu yerda loyihamizni nomini kiritamiz rasmda ko'rsatilganidek va **Set Up** bosib keyingi bosqichga o'tamiz.
+
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/sonar12.png)
+
+Sizda yuqoridagi kabi oyna ochilishi kerak bu yerdan **Locally**-ni tanlab sozlashni davom etamiz.
+
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/sonar13.png)
+
+Bu yerdan **use existing token**ni tanlab bundan oldinroq generatsiya qilib olgan tokenimizni joylashtiramiz va **Continue** bosib davom etamiz.
+
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/sonar14.png)
+
+Bu yerdan siz ilovangiz qaysi dasturlash tilida yozilganligini va qaysi **OS**(Operatsion Tizim)da ishga tushishini tanlaymiz(bizni holatimizda **Linux**).
+
+SonarQubeda ilovamiz uchun webhook, token va project yaratib olganizdan keyin Jenkinsda birinchi **CI/CD pipelineni** yozsak bo'ladi. 
+
+
+## Jenkinsda birinchi CI pipeline yozish
+
+Jenkinsdagi birinchi pipeline odatda asosiy continuous integration(**CI**) jarayonini o'rnatishga qaratilgan. Bu versiyani boshqarish tizimidan (masalan, **Git**) manba kodini olish, dasturni yaratish, testlarni o'tkazish va ehtimol sinov muhitiga joylashtirish bosqichlarini o'z ichiga olgan oddiy ish jarayonini aniqlashni o'z ichiga oladi. Ushbu dastlabki pipeline build qilish va sinov bosqichlarini avtomatlashtirish, kod sifatini ta'minlash va kelajakda yanada murakkab **CI/CD** pipelinelari uchun zamin yaratish uchun asos bo'lib xizmat qiladi. Ushbu Jenkins pipeline skripti **GitHub** repositoriyadan kodni oladi, unda SonarQube tahlilini amalga oshiradi, sifat nazoratini kutadi(quality gate check), loyihaga dependencilarni o'rnatadi va build tugagandan so'ng elektron pochtaga loglar va natija yuboradi. U JDK va Node.js ning maxsus versiyalaridan foydalanish uchun tuzilgan, bu esa build qilish muhitida izchillikni ta'minlaydi.
+
+**GitHub**dan private(yopiq) repositoriyadagi kodlarga Jenkins kira olishi va ishlatishi uchun `GitHub Token(personal access token)` olishimiz kerak. Open Source repositoriyalar uchun bu shart emas. Ushbu GitHub qo'llanmasida qanday qilib [personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) olish haqida batafsil yozilgan. GitHub Token olganingizdan keyin undan nusxa olib qo'ying. Olingan GitHub Tokenni Jenkins Credentialsga qo'shib qo'yishimiz kerak pipelineda undan foydalanish uchun. 
+
+**->** `Manage Jenkins` **->** `Credentials`-ga kirib  `Add credentials`ga o'tamiz.
+
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/secret5.png)
+
+Credentialsni rasmdagidek qilib to'ldirib olamiz. 
+
+* **Username:** mygithubuser(github usernamengizni kiritasiz)
+
+* **Password:** bu yerga GitHubdan olgan personal access tokeningizni joylashtirasiz.
+
+* **ID:** pipelineda qanday ID bilan ishlatish uchun nom
+
+`Create` bosib `github-token` crdentials yaratib olamiz. Bu credentials bilan GitHub private repositorilarga Jenkins pipeline foydalana oladi.
+
+Deyarli hammasi tayyor keling endi Jenkinsda birinchi **CI** pipeline yozib ishlatamiz. Jenkinsga kirib CI/CD pipeline uchun project ochib olamiz. 
+
+**->** `Jenkins` **->** `New Item`
+
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/pipeline1.png)
+
+ushbu oynadan `New Item` bosib ilovamiz uchun job ochib olamiz. Undan keyin sizda quyidagi oyna ochilishi kerak.
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/pipeline2.png)
+
+Bu yerda siz itemga nom berasiz masalan **Netflix** keyin **Pipline**-ni tanlab **OK** bosib item yaratib olamiz, keyin sizda quyidagi oyna ochilishi kerak. 
+
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/pipeline3.png)
+
+Ushbu `Pipeline` qismida biz **CI/CD** pipelinemizni yozamiz u quyidagicha.
+
+```groovy {8-12,15, 20,25,33,40}
+pipeline {
+    agent any
+    tools {
+        jdk 'jdk17'
+        nodejs 'node16'
+    }
+    environment {
+        GIT_URL = 'https://github.com/ismoilovdevml/netflix.git'
+        GITHUB_TOKEN = credentials('github-token')
+        API_KEY = credentials('tmdb-api-key')
+        BRANCH_NAME = 'main'
+        SCANNER_HOME = tool 'sonar-scanner'
+    }
+    stages {
+        stage('Clean Workspace') {
+            steps {
+                cleanWs()
+            }
+        }
+        stage('Clone Repository') {
+            steps {
+                git branch: BRANCH_NAME, url: GIT_URL, credentialsId: 'github-token'  
+            }
+        }
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('sonar-server') {
+                    sh """$SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=Netflix \
+                        -Dsonar.projectKey=Netflix"""
+                }
+            }
+        }
+        stage('Quality Gate') {
+            steps {
+                script {
+                    waitForQualityGate abortPipeline: false, credentialsId: 'Sonar-token'
+                }
+            }
+        }
+        stage('Installing Dependencies') {
+            steps {
+                sh "npm install"
+            }
+        }
+    }
+    post {
+        always {
+            emailext attachLog: true,
+                subject: "'${currentBuild.result}'",
+                body: "Project: ${env.JOB_NAME}<br/>" +
+                    "Build Number: ${env.BUILD_NUMBER}<br/>" +
+                    "URL: ${env.BUILD_URL}<br/>",
+                to: 'myemail@gmail.com',
+                attachmentsPattern: 'trivyfs.txt,trivyimage.txt'
+        }
+    }
+}
+```
+
+Keling ushbu **CI** pipelineni ko'rib chiqamiz.
+
+* `pipeline {}` Bu pipeline blokining boshlanishi va oxirini belgilaydi, butun pipeline konfiguratsiyasini qamrab oladi.
+
+* `agent any` Bu pipeline har qanday mavjud agentda ishlashi mumkinligini bildiradi.
+
+* `tools {}` Bu bo'lim **JDK** va **Node.js** ning maxsus versiyalari kabi pipeline uchun zarur bo'lgan toollarni aniqlash uchun ishlatiladi.
+
+* `environment {}` pipeline ichida ishlatiladigan environment o'zgaruvchilarini belgilaydi. Bu yerda u **GIT_URL**, **GITHUB_TOKEN**, **API_KEY**, **BRANCH_NAME** va **SCANNER_HOME** kabi o'zgaruvchilarni o'rnatadi.
+
+* `stages {}`  Ushbu bo'lim bir nechta **stage**larni aniqlash uchun ishlatiladi, ularning har biri pipelinedagi muayyan vazifa yoki bosqichni ifodalaydi.
+
+* 1. `stage('Clean Workspace') {}` 'Clean Workspace' stageni belgilaydi. `steps {}` Ushbu bosqichda bajariladigan amallar yoki qadamlarni o'z ichiga oladi, bu yerda workspaceni tozalash uchun `cleanWs()` dan foydalaniladi.
+
+* 2. `stage('Clone Repository') {}` 'Clone Repository' bosqichini ifodalaydi. `steps {}`  Bu qadam berilgan **GIT_URL** va **BRANCH_NAME**dagi o'zgaruvchilarni olib git repostiroyani clone qiladi(manba kodini yuklab oladi).
+
+* 3. `stage('SonarQube Analysis') {}` 'SonarQube tahlili' bosqichini ifodalaydi. `steps {}` Muayyan loyiha tafsilotlari bilan belgilangan `sonar-scanner tooli yordamida SonarQube tahlilini amalga oshiradi.
+
+* 4. `stage('Quality Gate') {}` 'Sifat darvozasi' bosqichini ifodalaydi. SonarQube quality gate tekshiruvi tugashini kutish uchun skriptli blokdan foydalanadi.
+
+* 5. `stage('Installing Dependencies') {}` 'Dependencylarni o'rnatish' bosqichini ifodalaydi. Loyiha dependencilarini o'rnatish uchun shell buyrug'ini **(npm install)** bajaradi.
+
+* 6. `post {}` Bu bo'lim pipeline ishga tushirilgandan keyin bajariladigan post-build amallarini belgilaydi.
+
+* `always {}` Build natijasidan qat'iy nazar bajarilishi kerak bo'lgan amallarni belgilaydi.
+* `emailext {}` Email Extensioni plagini yordamida elektron pochta xabarini yuboradi.
+* `attachLog: true` Build qilish jarayonidagi logllarini elektron pochtaga biriktiradi.
+* `subject` Joriy build natijasi bilan elektron pochta mavzusini o'rnatadi.
+* `body` Loyiha va build ma'lumotlari bilan elektron pochta asosiy mazmunini belgilaydi.
+* `to` Qabul qiluvchining elektron pochta manzilini belgilaydi.
+* `attachmentsPattern` Elektron pochtaga biriktiriladigan fayllar uchun patternlarni belgilaydi, bu yerda **"trivyfs.txt"** va **"trivyimage.txt".**
+
+Ushbu pipeline konfiguratsiyasi workspaceni tozalash, repositoryani klonlash, SonarQube tahlilini o'tkazish, Quality Gate tekshirish va dependencilarni o'rnatish bosqichlarini belgilaydi. Bunga qo'shimcha ravishda, u jarayon tafsilotlari bilan elektron pochta xabarini yuboradi. Umuman olganda, ushbu pipeline **GitHub**'dan kodni clon qilib oladi, **SonarQube** yordamida uni tahlil qiladi, kod sifatini tekshiradi, dependencilarni o'rnatadi, **Trivy** fayl tizimini skanerlashni amalga oshiradi va build bo'lish jarayoni tafsilotlari va tugallangandan so'ng Trivy skanerlash natijalari bilan elektron pochta xabarini yuboradi.
+
+Jenkinsda Projectni yozib yuqoridagi pipeline yozib kirganingizda quyidagi oyna chiqishi kerak, bu yerdan `Build Now` bosib pipelineni ishga tushiramiz agar sizda hech qanday xatolik va kamchililar bo'lmasa u mufaqqiyatli ishlashi kerak.
+
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/jenkins5.png)
+
+Sizda pipeline muvaffaqiyatli ishga tushsa tabariklaymiz siz Jenkinsda birinchi **CI** pipelineni yozib ishga tushirdingiz.
+
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/pipeline4.png)
+
+Sizda **SonarQube** quyidagi ko'rinishda ochilishi kerak.
+
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/sonar15.png)
+
+Nihoyat biz Jenkinsda birinchi CI pipelineni muvaffaqiyatli ishga tushirdik endi CIni CD(continuous deployment) qismini yozib loyihani to'liq Jenkinsda avtomatlashtirshimiz kerak. 
+
+## Jenkins pipelinega Docker image yaratish va Docker Registryga push qiladigan bosqich qo'shish
+
+Bu bosqichda biz **OWASP Dependency Check** plagini jenkinsga o'rnatamiz va sozlaymiz. Loyihamizni konteynerda(docker) ishga tushiramiz. Docker image yaratish va serverda ishga tushirishni avtomatlashtirish uchun **Docker Registry** dan foydalanib pipelineni kengaytiramiz.
+
+**OWASP Dependency Check** plaginlarini o'rnatish loyihaga dependencilardagi ma'lum zaifliklarni aniqlash va bartaraf etish uchun juda muhimdir. U uchinchi tomon kutubxonalari(library) va komponentlarini skanerlaydi, ilovada ishlatiladigan har qanday zaif versiyalarni belgilab beradi. Ushbu proaktiv yondashuv potentsial xavfsizlik xatarlarini kamaytirishga yordam beradi, yanada xavfsizroq va ishonchli dasturiy ta'minotni yaratishni ta'minlaydi.
+
+**OWASP Dependency Check** plagini Jenkinsga o'rnatish uchun **->** `Manage Jenkins` **->** `Plugins` bo'limga kiramiz
+
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/owasp.png)
+
+OWASP Dependency Check plaigini o'rnatib olganimzidan keyin konfiguratsiya qilib olishimiz kerak.
+
+**->** `Manage Jenkins` **->** `Tools` **->** `Dependency-Check installations`
+
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/owasp1.png)
+
+Rasmda ko'rsatilgandek konfiguratsiya qilib olamiz.
+
+OWASP Dependency Check'ni o'rnatib sozlab olganimizdan keyin pipelinemizga `OWASP FS SCAN` bosqichini(stage) qo'shsak bo'ladi.
+
+```groovy
+stage('OWASP FS SCAN') {
+    steps {
+        dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit', odcInstallation: 'DP-Check'
+        dependencyCheckPublisher pattern: '**/dependency-check-report.xml'  
+    }
+}
+```
+Pipelinega ushbu bosqichni qo'shib qaytadan ishga tushiramiz. Pipelineni to'gri yozgan bo'lsangiz pipeline mufaqqiyatli ishga tushishi kerak.
+
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/owasp2.png)
+
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/owasp3.png)
+
+Hammasi yaxshi hamma bosqichlarda muvaffaqiyatli o'tdi endi, ilovamizni dockerda konteynerda ishga tushirishimiz va serverga avatomatik deploy bosqichlarini qo'shishimiz kerak. Undan oldin keling Jenkinsda kerakli plaginlarni o'rnatib olamiz.
+
+**->** `Manage Jenkins` **->** `Plugins`
+
+Pipelinemizda Docker bilan ishlash uchun quyidagi plaginlarni o'rnatib olishimiz kerak.
+
+`Docker`, `Docker Common`, `Docker Pipeline`, `Docker API`, `docker-build-step`
+
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/docker1.png)
+
+Plaginlarni o'rnatib bo'lganingizdan keyin sozlab chiqish kerak. 
+
+**->** `Manage Jenkins` **->** `Tools` **->** `Docker installations`
+
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/docker2.png)
+
+Ushbu loyida **Docker Registry** uchun **Dockerhub** ishlatamiz shuning uchun Dockerhubdan ro'yxatdan o'tgan bo'lishingiz  va Access token olgan bo'lishingiz kerak.
+Agar Ro'yxatdan o'tmagan bo'lsangiz ro'yxatdan o'tishingiz kerak
+
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/docker3.png)
+
+`Sign up` bosib ro'yxatdan o'tasiz 
+
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/docker4-new.png)
+
+Ro'yxatdan o0'tib olganingizdan keyin **Email Verification** talab qilinadi. Email verifatsiya qilganingizdan keyin 
+
+**->** `Account Settings` **->** `Security` **->** bo'limga o'tib `Access Token` yaratib olamiz.
+
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/docker5.png)
+
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/docker6.png)
+
+Access Tokenga nom berib unga **Read,Write,Delete** permisonlarni beramiz **`Generate`** qilamiz.
+
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/docker7.png)
+
+Sizga access token generatsiya qilib berialdi va siz undan nusxa olib qo'yishingiz kerak, aks holda uni qaytib ololmaysiz. Sizga docker login qilish uchun namuna CLI command ham beriladi 
+
+```bash
+docker login -u devsecopsuser4732
+```
+Jenkins pipelineda DockerHub Registrydan foydalanishimiz uchun Jenkins crdentialsga DockerHub user va tokenni qo'shib qo'yamiz.
+
+**->** `Manage Jenkins` **->** `Credentials`-ga kirib  `Add credentials`ga o'tamiz.
+
+
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/secret6.png)
+
+**Username**ga DockerHub usernamengizni yozasiz **Password**ga esa yuqorida yaratib olgan access tokenimizni joylashtiramiz.
+
+Dockerhubdan ro'yxatdan o'tdik, access token oldik hammasini Jenkins credentialsga **dockerhub** ID bilan saqladik endi Jenkins pipelinega **CD**(continuous delivery)qismini qo'shsak bo'ladi.
+
+Jenkins pipelenimizga quyidagi bosqichni qo'shamiz. Bu bosqich ilovamizdan docker image yaratib, build qilib, Docker Registyga push qiladi ya'ni DockerHubga.
+
+Pipelinega yangi environmentlar qo'shib olamiz:
+
+```groovy /DOCKERHUB_CREDENTIALS/ /REGISTRY_URL/ /CONTAINER_NAME/ {4-6}
+environment {
+    GIT_URL = 'https://github.com/ismoilovdevml/netflix.git'
+    GITHUB_TOKEN = credentials('github-token')
+    DOCKERHUB_CREDENTIALS = credentials('dockerhub')
+    CONTAINER_NAME = 'netflix'
+    REGISTRY_URL = 'dockerhub'
+    API_KEY = credentials('tmdb-api-key')
+    BRANCH_NAME = 'main'
+    SCANNER_HOME = tool 'sonar-scanner'
+}
+```
+* **GIT_URL ->** Loyihamiz git urli(manzili).
+* **GITHUB_TOKEN ->** Bu credentialsdan `github-token`ni olib keladi yani private repositoriyalarni clon qilib olish uchun
+* **DOCKERHUB_CREDENTIALS ->** credentialsdandan DockerHub username va access tokenni olib keladi.
+* **CONTAINER_NAME ->** Bu loyihamizni containerda ishga tushirishda unga beriladigan nom
+* **REGISTRY_URL ->** Dokcer Registry URL. Bizni holatimizda yani Dockerhubda bu yerda Dockerhub username yoziladi.
+* **API_KEY ->** TMDB API Key
+* **BRANCH_NAME->** Gitdagi loyihamiz branchi
+* **SCANNER_HOME** SonarQube Scanner
+
+```groovy
+stage('Build Application') {
+    steps {
+        withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+            script {
+                def dockerlogin = "docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}"
+                sh dockerlogin
+                sh """
+                    docker build --build-arg TMDB_V3_API_KEY=${API_KEY} . -t ${REGISTRY_URL}/${CONTAINER_NAME}:${BUILD_NUMBER} -f Dockerfile
+                    docker tag ${REGISTRY_URL}/${CONTAINER_NAME}:${BUILD_NUMBER} ${REGISTRY_URL}/${CONTAINER_NAME}:latest
+                    docker push ${REGISTRY_URL}/${CONTAINER_NAME}:latest
+                    docker push ${REGISTRY_URL}/${CONTAINER_NAME}:${BUILD_NUMBER}
+                    docker image rm -f ${REGISTRY_URL}/${CONTAINER_NAME}:latest
+                    docker image rm -f ${REGISTRY_URL}/${CONTAINER_NAME}:${BUILD_NUMBER}
+                """
+            }
+        }    
+    }
+}
+```
+
+Pipelinedagi ushbu maxsus bosqich Docker konteynerli ilovasini yaratish va deploymentni amalga oshiradi.
+
+* **Credentialsdan foydalanish ->** DockerHub hisob ma'lumotlarini xavfsiz boshqarish uchun `withCredentials `dan foydalanadi `(credentialsId: 'dockerhub')`. Yani bu Jenkins credentialsdan secretlarni olib pipelineda xavfsiz ishlatadi. `dockerhub` credentialsdan user va parol ajratib olinib unga 2ta variable(o'zgaruvchi)ga beriladi va ishlatiladi. 
+Koddagi qism `[usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]`
+
+* **Docker Login ->** Taqdim etilgan hisob ma'lumotlari (`DOCKER_USERNAME` va `DOCKER_PASSWORD`) yordamida Docker login buyrug'ini bajaradi va Docker Registryga kiradi.
+
+* **Docker Build ->** `docker build` buyrug'i yordamida Docker imageni yaratadi: **TMDB_V3_API_KEY** build argumentini **API_KEY** qiymati bilan o'rnatadi. Docker Imageni belgilangan `${REGISTRY_URL}/${CONTAINER_NAME}:${BUILD_NUMBER}` bilan teg qo'yiladi va loyihamizdagi Dockerfile ko'rsatib build qilinadi.
+
+Loyihamizdagi Dockerfile
+
+```bash filename="Dockerfile" /TMDB_V3_API_KEY/ {7-8}
+FROM node:16.17.0-alpine as builder
+WORKDIR /app
+COPY ./package.json .
+COPY ./yarn.lock .
+RUN yarn install
+COPY . .
+ARG TMDB_V3_API_KEY
+ENV VITE_APP_TMDB_V3_API_KEY=${TMDB_V3_API_KEY}
+ENV VITE_APP_API_ENDPOINT_URL="https://api.themoviedb.org/3"
+RUN yarn build
+
+FROM nginx:stable-alpine
+WORKDIR /usr/share/nginx/html
+RUN rm -rf ./*
+COPY --from=builder /app/dist .
+EXPOSE 80
+ENTRYPOINT ["nginx", "-g", "daemon off;"]
+```
+
+* **Docker Push ->**  Docker image build tag qo'tib tayyorlanganidan keyin Docker Registryga push qilinadi `docker push ${REGISTRY_URL}/${CONTAINER_NAME}:latest`
+
+* **Docker Imageni tozalash ->** Docker image Docker Registryga push qilinganidan keyin build qilingan docker image tozalanadi va shu bilan bosqich tugaydi. `docker image rm -f ${REGISTRY_URL}/${CONTAINER_NAME}:latest`
+
+Hozirgi holat uchun to'liq Jenkins pipeline uni Jenkinsda yangilab qayta ishga tushiring.
+
+```groovy filename="Jenkins" {10-12,48-53,59-77}
+pipeline {
+    agent any
+    tools {
+        jdk 'jdk17'
+        nodejs 'node16'
+    }
+    environment {
+        GIT_URL = 'https://github.com/ismoilovdevml/netflix.git'
+        GITHUB_TOKEN = credentials('github-token')
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub')
+        CONTAINER_NAME = 'netflix'
+        REGISTRY_URL = 'devsecopsuser732' // DockerHub username
+        API_KEY = credentials('tmdb-api-key')
+        BRANCH_NAME = 'main'
+        SCANNER_HOME = tool 'sonar-scanner'
+    }
+    stages {
+        stage('Clean Workspace') {
+            steps {
+                cleanWs()
+            }
+        }
+        stage('Clone Repository') {
+            steps {
+                git branch: BRANCH_NAME, url: GIT_URL, credentialsId: 'github-token'  
+            }
+        }
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('sonar-server') {
+                    sh """$SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=Netflix \
+                        -Dsonar.projectKey=Netflix"""
+                }
+            }
+        }
+        stage('Quality Gate') {
+            steps {
+                script {
+                    waitForQualityGate abortPipeline: false, credentialsId: 'Sonar-token'
+                }
+            }
+        }
+        stage('Installing Dependencies') {
+            steps {
+                sh "npm install"
+            }
+        }
+        stage('OWASP FS SCAN') {
+            steps {
+              dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit', odcInstallation: 'DP-Check'
+              dependencyCheckPublisher pattern: '**/dependency-check-report.xml'  
+            }
+        }
+        stage('TRIVY FS SCAN') {
+            steps {
+                sh "trivy fs . > trivyfs.txt"
+            }
+        }
+        stage('Build Application') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                    script {
+                        def dockerlogin = "docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}"
+                        sh dockerlogin
+                        sh """
+                            docker build --build-arg TMDB_V3_API_KEY=${API_KEY} . -t ${REGISTRY_URL}/${CONTAINER_NAME}:${BUILD_NUMBER} -f Dockerfile
+                            docker tag ${REGISTRY_URL}/${CONTAINER_NAME}:${BUILD_NUMBER} ${REGISTRY_URL}/${CONTAINER_NAME}:latest
+                            docker push ${REGISTRY_URL}/${CONTAINER_NAME}:latest
+                            docker push ${REGISTRY_URL}/${CONTAINER_NAME}:${BUILD_NUMBER}
+                            docker image rm -f ${REGISTRY_URL}/${CONTAINER_NAME}:latest
+                            docker image rm -f ${REGISTRY_URL}/${CONTAINER_NAME}:${BUILD_NUMBER}
+                        """
+                    }
+                }    
+            }
+        }
+    }
+    post {
+        always {
+            emailext attachLog: true,
+                subject: "'${currentBuild.result}'",
+                body: "Project: ${env.JOB_NAME}<br/>" +
+                    "Build Number: ${env.BUILD_NUMBER}<br/>" +
+                    "URL: ${env.BUILD_URL}<br/>",
+                to: 'myemail@gmail.com',
+                attachmentsPattern: 'trivyfs.txt,trivyimage.txt'
+        }
+    }
+}
+```
+
+Jenkins pipelineni **Netflix** project ichiga kirib `Configure` dan pipelineni topib yangilab olamiz.
+
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/pipeline5.png)
+
+Jenkins pipelineni yangilab ishga tushirsangiz agar hech qanday xato qilmagan bo'lsangiz va secretlarni to'gri kiritgan bo'lsangiz u muvaffaqiyatli ishlashi kerak.
+
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/pipeline6.png)
+
+DockerHubga kirib ko'rsangiz `netflix` nomli repositoriya ochilib loyihamiz docker imagesi joylashtirilganini ko'rishingiz mumkin.
+
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/docker9.png)
+
+Nihoyat Biz bu boqichni ham tugatdik **OWASP Dependency Check** plagini Jenkinsga o'rnatdik, sozladik va `OWASP FS SCAN` stage(bosqich) qo'shdik. Loyihamizda konteyrnerlashtirish uchun dockerdan foydalandik. Dockerdan foydalanish uchun Jenkinsga kerakli Docker plaginlarini o'rnatib sozladik. Docker Registy sifatida DockerHub'dan foydalandik. DockerHub'dan akkount ochib access token olib Jenkins credentialsga qo'shdik. Docker image yaratish va Docker Registryga push qilish uchun `Build Application` stage(bosqich) qo'shdik. Nihoyat biz keyingi boqichga o'tsak bo'ladi, keyingi boqich Docker imageni Serverga avtomatik deploy qilish bosqichi.
+
+## Finish. To'liq jarayonni avtomatlashtirish uchun Jenkins pipeline yozamiz va Netflix loyihamizni production uchun tayyorlaymiz.
+
+Nihoyat biz eng oxirgi bosqichga yetib keldik. Bu bosqichda pipelineda **ssh** bilan serverga ulanimiz va Docker imageni Docker registrydan pull qilib uni ishga tushiradigan stage(bosqich) qo'shamiz. Loyihamizni productionga tayyorlaymiz. Loyihamizni ishga tushirib, serverga NGINX o'rnatib, domen olib SSL sertifikat olamiz.
+
+Loyihamizni serverimizda ishga tushirishimiz uchun Jenkins pipeline serverga kira olishi kerak. Biz buning uchun SSH(ssh-agent) dan foydalanamiz. ssh-agent plagini Jenkinsga o'rnatib olishimiz kerak. 
+
+**->** `Manage Jenkins` **->** `Plugins`
+
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/ssh.png)
+
+**SSH Agent** plagini Jenkinsga o'rnatganimizdan keyin Serverimizda ssh key generatsiya qilib Jenkins credentialsga qo'shib qo'yishimiz kerak.
+
+Hozir esa serverimizga kirib ssh-key generatsiya qilib olamiz.
+
+```bash
+ssh-keygen -f ~/.ssh/netflix
+```
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/ssh2.png)
+
+`ssh-keygen` buyrug'i tizimlar orasidagi xavfsiz aloqa uchun SSH (Secure Shell) kalit juftlarini yaratish uchun Unix-ga o'xshash operatsion tizimlarda qo'llaniladigan tooldir. `ssh-keygen`-ni ishga tushirganingizda, siz bir juft kalit yaratasiz: public key va private key. 
+
+* `ssh-keygen` Bu SSH kalitlarini yaratish uchun ishlatiladigan buyruq.
+* `-f ~/.ssh/netflix` Bu yerda `-f` yaratilgan kalit faylning fayl nomini bildiradi. `~/.ssh/netflix` kalitlar saqlanadigan jild va fayl nomini bildiradi. `~` foydalanuvchining home jildini ifodalaydi (masalan, Linuxda /home/username), `~/.ssh `esa SSH kalitlarini saqlash uchun umumiy jilddir.
+Bu buyruq `ssh-keygen`-ga yangi SSH kalit juftligini yaratish va uni foydalanuvchining home jildidagi `.ssh` jildida netflix sifatida saqlashni aytadi.
+
+Buyruq bajarilgandan so'ng siz odatda ikkita faylni olasiz:
+
+* `netflix` Bu boshqa tizimlarga ulanishda o'zingizni autentifikatsiya qilish uchun foydalaniladigan shaxsiy(private) kalit fayli.
+* `netflix.pub` Bu public kalit fayli. Siz ushbu faylni ushbu kalitdan foydalanishga ruxsat bermoqchi bo'lgan boshqa tizimlar/xizmatlar bilan baham ko'rishingiz mumkin.
+
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/ssh1.png)
+
+```bash
+cat netflix.pub >> authorized_keys
+```
+`cat netflix >> authorized_keys` Ushbu buyruq `netflix.pub` faylining mazmunini `authorized_keys` faylining oxiriga qo'shadi.
+
+* `cat` - fayl mazmunini ko'rsatish uchun ishlatiladigan buyruq.
+* `>>` - faylga chiqish qo'shish uchun ishlatiladigan qayta yo'naltirish operatori.
+
+`authorized_keys` public kalit autentifikatsiyasi uchun SSH da qo'llaniladigan fayldir. SSH serveri ulanish so'rovini olganida, kirish public kaliti u yerda sanab o'tilgan kalitlardan biriga mos kelishini tekshirish uchun `authorized_keys` faylini ko'rib chiqadi. Agar shunday bo'lsa, kirish huquqi beriladi.
+Ushbu buyruqlar ketma-ketligining maqsadi `netflix.pub` faylida saqlangan public kalitni avtorizatsiya qilingan kalitlar ro'yxatiga (authorized_keys) qo'shishi. Kimda tegishli private kalit (netflix) bo'lsa, endi ushbu private kalit yordamida ushbu tizim bilan autentifikatsiya qilish mumkin. U autentifikatsiya qilish uchun o'rnatilgan public-private kalit juftligidan foydalanib, parol talab qilmasdan kirish imkonini beradi. Bu pipeline orqali serverga kirishga imkon beradi.
+
+```bash
+cat ~/.ssh/netflix
+```
+Ushbu buyruq netflix nomli ssh keyimizni private keyni ko'rstadi biz undan nusxa olib qo'yamiz.
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/ssh3.png)
+
+Serverda ssh-key generatsiya qilib oldik endi Jenkins credentialsga qo'shsak bo'ladi.
+
+**->** `Manage Jenkins` **->** `Credentials`
+
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/ssh4.png)
+
+* `Kind ->` SSH Userame with private key 
+* `ID->` server-ssh(ssh keyni pipelineda xavfsiz quyidagi ID bilan ishlatamiz)
+* `Username->` server username kiritiladi(server usernameni bilish uchun buyruq)
+```bash
+whoami
+```
+`Private Key->` netflix private keyni joylashtiramiz.
+
+SSh key generatsiya qilib sozlab oldik endi Serverga kirib Docker registyrdan imageni pull qilib olib uni run qiladigan bosqich qo'shishimiz kerak.
+
+Jenkins pipeleni Serverga kira olishi uchun 2 ta Jenkins credentials yaratish kerak bular: Server username'si va Server IP manzilidir.
+
+**->** `Manage Jenkins` **->** `Credentials`
+
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/secret7.png)
+
+Bu qismda `Secret`ga serverimiz username'si yoziladi(whoami buyrug'i bilan bilib olishingiz mumkin)
+
+> ![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/secret9.png)
+
+Bu qismda esa `Secret`ga Serverimiz IP manzilini yozishimiz kerak.
+
+Endi Serverimizga kerakli `environment`larni qo'shib chiqishimiz kerak.
+
+```groovy {8-10}
+environment {
+    GIT_URL = 'https://github.com/ismoilovdevml/netflix.git'
+    GITHUB_TOKEN = credentials('github-token')
+    DOCKERHUB_CREDENTIALS = credentials('dockerhub')
+    CONTAINER_NAME = 'netflix'
+    REGISTRY_URL = 'devsecopsuser732'
+    API_KEY = credentials('tmdb-api-key')
+    SERVER_USERNAME = credentials('server-username')
+    SERVER_IP = credentials('server-ip')
+    PORT = 80:8081
+    BRANCH_NAME = 'main'
+    SCANNER_HOME = tool 'sonar-scanner'
+}
+```
+
+```groovy
+stage('Deploy Server') {
+    steps {
+        withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+            script {
+                sshagent (credentials: ['server-ssh']) {
+                    sh """
+                        ssh -o StrictHostKeyChecking=no ${SERVER_USERNAME}@${SERVER_IP} '\
+                        docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD} && \
+                        docker pull ${REGISTRY_URL}/${CONTAINER_NAME}:latest && \
+                        docker stop ${CONTAINER_NAME} || true && \
+                        docker rm ${CONTAINER_NAME} || true && \
+                        docker run -d -p ${PORT}--name ${CONTAINER_NAME} --restart always ${REGISTRY_URL}/${CONTAINER_NAME}:latest '
+                    """
+                }
+            }
+        }  
+    }
+}
+```
+
+Ushbu bosqichda `dockerhub` credentialsdan Dockerhub username va password ajratib olinib alohida variable qilinadi. `server-sh` credential bilan server ssh orqali kiriladi va Dockerhubga lofin qiladi va Dockerhub Container Registryga push qilingan oxirgi imageni push qilib tortib olib eski shu nom bilan ishlab turgan containerni to'xtatib o'chirib yangi containerni ishga tushiradi.
+
+Pipelineni yangilab uni ishga tushiramiz agar sizda hammasi to'gri qilingan bo'lsa u muvaffaqiyatli ishlashi kerak.
+
+![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/pipeline7.png)
+
+Sizga emaildan bildirishnoma(notification) kelgan bo'lishi kerak.
+
+
+![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/gmail7.png)
+
+![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/gmail9.png)
+
+Pipeline ishini muvaffaqiyatli tugatganidan keyin serverga kirib ishlab turgan docker konteynerlar ro'yxatini ko'rsangiz, loyihamiz docker konteynerini ko'rishingiz kerak.
+
+![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/server.png)
+
+Server IP manizli bilan `8081` portga kirib ko'rsangiz loyihamiz ishlab turgani ko'rishingiz mumkin
+
+![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/netflix.png)
+![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/netflix1.png)
+
+Nihoyat biz Jenkins bilan to'liq avtomatlashtirilgan `CI/CD` pipelineni yozib bo'ldik va muvaffaqiyatli ishlayapti. Keyingi bosqich ilovamiz uchun NGINX konfiguratsiya qilib, domen ulab, SSL sertifikat olishdir. Buning uchun biz yuqorida Jenkins uchun NGINX konfiguratsiya qilib, domen ulab, SSL Sertifikat olganimizdek bir xildir. 
+
+Jenkinsga domen ulashda hammasi tushintirilgan, mana havola: [NGINX va certboot o'rnatish, domen ulash va SSL Sertifikat olish](#6nginx-va-certbot-ornatish-uchun-quyidagi-buyruqdan-foyalanasiz)
+
+Ilovamiz uchun NGINX konfiguratsiya quyidagicha.
+
+```bash /netflix/
+sudo nano /etc/nginx/sites-available/netflix.xilol.uz
+```
+
+```bash filename="/etc/nginx/sites-available/netflix.xilol.uz" /netflix.xilol.uz/ {3,6}
+server {
+    listen 80;
+    server_name netflix.xilol.uz;
+ 
+    location / {
+        proxy_pass http://localhost:8081;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+
+```bash /netflix.xilol.uz/
+sudo ln -s /etc/nginx/sites-available/netflix.xilol.uz /etc/nginx/sites-enabled/netflix.xilol.uz
+```
+NGINX konfiguratsiyamiz to'g'riligini tekshiramiz.
+
+```bash
+sudo nginx -t
+```
+HTTP dan HTTPSga o'tish uchun certboot bilan SSL Sertifikat olamiz.
+
+```bash
+sudo certbot --nginx -d netflix.xilol.uz
+```
+Brauzer orqali domen bilan ilovangizga kirganingizda u https bilan ishlashi kerak.
+
+Mana loyihaning to'liq Jenkins pipeline:
+
+```groovy
+pipeline {
+    agent any
+    tools {
+        jdk 'jdk17'
+        nodejs 'node16'
+    }
+    environment {
+        GIT_URL = 'https://github.com/ismoilovdevml/netflix.git'
+        GITHUB_TOKEN = credentials('github-token')
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub')
+        CONTAINER_NAME = 'netflix'
+        REGISTRY_URL = 'devsecopsuser732'
+        API_KEY = credentials('tmdb-api-key')
+        SERVER_USERNAME = credentials('server-username')
+        SERVER_IP = credentials('server-ip')
+        PORT = 80:8081
+        BRANCH_NAME = 'main'
+        SCANNER_HOME = tool 'sonar-scanner'
+    }
+    stages {
+        stage('Clean Workspace') {
+            steps {
+                cleanWs()
+            }
+        }
+        stage('Clone Repository') {
+            steps {
+                git branch: BRANCH_NAME, url: GIT_URL, credentialsId: 'github-token'  
+            }
+        }
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('sonar-server') {
+                    sh """$SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=Netflix \
+                        -Dsonar.projectKey=Netflix"""
+                }
+            }
+        }
+        stage('Quality Gate') {
+            steps {
+                script {
+                    waitForQualityGate abortPipeline: false, credentialsId: 'Sonar-token'
+                }
+            }
+        }
+        stage('Installing Dependencies') {
+            steps {
+                sh "npm install"
+            }
+        }
+        stage('OWASP FS SCAN') {
+            steps {
+              dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit', odcInstallation: 'DP-Check'
+              dependencyCheckPublisher pattern: '**/dependency-check-report.xml'  
+            }
+        }
+        stage('TRIVY FS SCAN') {
+            steps {
+                sh "trivy fs . > trivyfs.txt"
+            }
+        }
+        stage('Build Application') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                    script {
+                        def dockerlogin = "docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}"
+                        sh dockerlogin
+                        sh """
+                            docker build --build-arg TMDB_V3_API_KEY=${API_KEY} . -t ${REGISTRY_URL}/${CONTAINER_NAME}:${BUILD_NUMBER} -f Dockerfile
+                            docker tag ${REGISTRY_URL}/${CONTAINER_NAME}:${BUILD_NUMBER} ${REGISTRY_URL}/${CONTAINER_NAME}:latest
+                            docker push ${REGISTRY_URL}/${CONTAINER_NAME}:latest
+                            docker push ${REGISTRY_URL}/${CONTAINER_NAME}:${BUILD_NUMBER}
+                            docker image rm -f ${REGISTRY_URL}/${CONTAINER_NAME}:latest
+                            docker image rm -f ${REGISTRY_URL}/${CONTAINER_NAME}:${BUILD_NUMBER}
+                        """
+                    }
+                }    
+            }
+        }
+        stage('Deploy Server') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                    script {
+                        sshagent (credentials: ['server-ssh']) {
+                            sh """
+                                ssh -o StrictHostKeyChecking=no ${SERVER_USERNAME}@${SERVER_IP} '\
+                                docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD} && \
+                                docker pull ${REGISTRY_URL}/${CONTAINER_NAME}:latest && \
+                                docker stop ${CONTAINER_NAME} || true && \
+                                docker rm ${CONTAINER_NAME} || true && \
+                                docker run -d -p ${PORT}--name ${CONTAINER_NAME} --restart always ${REGISTRY_URL}/${CONTAINER_NAME}:latest '
+                            """
+                        }
+                    }
+                }  
+            }
+        }
+    }
+    post {
+        always {
+            emailext attachLog: true,
+                subject: "'${currentBuild.result}'",
+                body: "Project: ${env.JOB_NAME}<br/>" +
+                    "Build Number: ${env.BUILD_NUMBER}<br/>" +
+                    "URL: ${env.BUILD_URL}<br/>",
+                to: 'iotabek101@gmail.com',
+                attachmentsPattern: 'trivyfs.txt,trivyimage.txt'
+        }
+    }
+}
+```
+
+Loyihamizni monitoring qilish uchun sozlagandik, keling uni holatini ko'ramiz:
+
+![netflix](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/netflix/server1.png)
+
+## Xulosa
+<Callout type="info" emoji="">
+
+Nihoyat biz Netflix loyihamizni tugatdik. Ushbu loyihada ko'plab texnologiyalarni ishlatdik va o'rgandik. Bir ko'rishda bu murakkabga o'xshab ko'rinishi mumkin, aslida bu boshlanishi hali hammasi oldinda biz endi boshladik )
+
+Ushbu loyiha GitHub repositoriyasi: [github.com/devops-journey-uz/netflix](https://github.com/devops-journey-uz/netflix)
+
+**Sana:** 2023.12.15 (2023-yil 15-dekabr)
+
+**Oxirgi yangilanish:** 2024.02.05(2024-yil 5-fevral)
+
+**Muallif: Otabek Ismoilov**
+
+| [Telegram](https://t.me/Otabek_Ismoilov) | [GitHub](https://github.com/ismoilovdevml) | [LinkedIn](https://www.linkedin.com/in/otabek-ismoilov/) |
+| - | - | - |
+
+
+</Callout>

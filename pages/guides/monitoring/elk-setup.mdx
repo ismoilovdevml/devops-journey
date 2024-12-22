@@ -1,0 +1,796 @@
+---
+image: https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-setup/banner.png
+description: "ELK Stack Cluster o'rnatish va sozlash"
+---
+
+import { Callout } from "nextra/components";
+
+# ELK Stack Cluster o'rnatish va sozlash
+
+![elk-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-setup/banner.png)
+
+Oldingi [**ELK Stackga kirish**](https://devops-journey.uz/tutorials/article/elk-stack) mavzusida biz ELK nimaga ishlatilishi uning arxitekturasi va componentlari, qanday ishlashini ko'rib chiqgan edik. Bugungi amaliyotimizda biz **ELK stack Cluster** sozlashni ko'rib chiqamiz.
+<Callout type="info" emoji="">
+**Diqqat!** 
+* Ushbu amaliyotni boshlash uchun [**ELK Stackga kirish**](https://devops-journey.uz/tutorials/article/elk-stack) qo'llanmasini o'qib chiqgan bo'lishingiz kerak bo'ladi!
+* Ushbu amaliyotda biz **Elasticsearch** `7.17` versiyasidan foydalanamiz!
+</Callout>
+
+## Arxitektura
+
+Ushbu amaliyotda biz kichik ELK stack cluster o'rnatib sozlaymiz. ELK stack uchun minimum 3-ta server va ELK stack bilan ishlash uchun bitta app-server(application server) kerak bo'ladi. Clusterdagi barcha serverlar bitta subnetda bo'lishi kerak bo'ladi chunki ELK componentlar bir bir bilan Internal IPlar bilan bo'glanib ishlaydi. ELK stack componentari uchun 3-ta alohida serverda sozlanadi **Elasticsearch, Kibana va Logstash**. Boshqa serverlarga **Beats**lar o'ratiladi, ba'zi beatslar loglarni logstashga yuboradi va logstash ular ustida ishlab uni elasticsearchga yuboradi, elasticsearchdan esa Kibana UI Dashboard orqali vizualizatsiya qilib monitoring va analiz qilamiz. Ba'zi beatlar va Integrationlar esa to'gridan-to'gri malumotlarni elasticsearchga yuboradi.  
+
+Bugungi amaliyotda rasmda ko'rsatilgan ELK clusterni o'rnatib sozlaymiz.
+
+![elk-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-setup/architecture.png)
+## Ishni boshlash
+
+Ushbu amaliyotni amalga oshirish uchun bizga quyidagi minimum server talablaridagi server kerak bo'ladi.
+
+<Callout type="info" emoji="">
+**Minimum Server talabi**
+
+| Host        | OS            | RAM            | CPU           | Xotira       | IP          |
+| ----------- | ------------- | -------------- | ------------- |------------- | ----------- |
+|  elk        | Ubuntu 20.04  | 16GB           | 4vCPU,2 core  | 100GB        | 10.128.0.9  |
+|  kibana     | Ubuntu 20.04  | 4GB            | 2vCPU,1 core  | 50GB         | 10.128.0.10 |
+|  logstash   | Ubuntu 20.04  | 16GB           | 2vCPU,1 core  | 50GB         | 10.128.0.11 |
+|  app-server | Ubuntu 20.04  | 16GB           | 2vCPU,1 core  | 50GB         | 10.128.0.12 |
+
+![elk-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-setup/vm.png)
+</Callout>
+
+## Elasticsearch o'rnatish
+
+Elasticsearcni Debian based serverlarga o'rnatish, Ubuntuga ham mos keladi.
+
+**1->** `elk`(10.128.0.9) serverimizni yangilab kerakli dasturlarni o'rnatib olamiz.
+
+```bash
+sudo apt update && sudo apt upgrade -y
+sudo apt-get install apt-transport-https
+```
+
+**2->** Elasticsearch PGP Keyini import qilib olamiz.
+
+```bash
+wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo gpg --dearmor -o /usr/share/keyrings/elasticsearch-keyring.gpg
+```
+
+**3->** `/etc/apt/sources.list.d`ga elasticsearchni qo'shib qo'yamiz.
+
+```bash
+echo "deb [signed-by=/usr/share/keyrings/elasticsearch-keyring.gpg] https://artifacts.elastic.co/packages/7.x/apt stable main" | sudo tee /etc/apt/sources.list.d/elastic-7.x.list
+```
+
+**4->** Elasticsearcni o'rnatib olamiz.
+
+```bash
+sudo apt-get update && sudo apt-get install elasticsearch
+```
+
+`elasticsearch.yml` konfiguratsiyadan elasticsearchni tashqariga ochamiz, bu bizga boshqa serverlar elasticsearchga ulana olishi uchun kerak bo'ladi.
+
+```bash
+sudo nano /etc/elasticsearch/elasticsearch.yml
+```
+
+```bash {6,11,24}
+# ---------------------------------- Network -----------------------------------
+#
+# By default Elasticsearch is only accessible on localhost. Set a different
+# address here to expose this node on the network:
+#
+network.host: 0.0.0.0
+#
+# By default Elasticsearch listens for HTTP traffic on the first free port it
+# finds starting at 9200. Set a specific HTTP port here:
+#
+http.port: 9200
+#
+# For more information, consult the network module documentation.
+#
+# --------------------------------- Discovery ----------------------------------
+#
+# Pass an initial list of hosts to perform discovery when this node is started:
+# The default list of hosts is ["127.0.0.1", "[::1]"]
+#
+#discovery.seed_hosts: ["host1", "host2"]
+#
+# Bootstrap the cluster using an initial set of master-eligible nodes:
+#
+cluster.initial_master_nodes: ["127.0.0.1"]
+```
+
+**5->** Elasticsearchni ishga tushiramiz.
+
+daemonni reload qilamiz.
+
+```bash
+sudo systemctl daemon-reload
+```
+
+Elasticsearchni **systemd** yordamida avtomatik ishga tushishini yoqamiz, agar serverimiz o'chib qayta yonganida elasticsearch avtomatik ishga tushadi.
+
+```bash
+sudo systemctl enable elasticsearch.service
+```
+Elasticsearchni ishga tushiramiz va statusini ko'ramiz.
+
+```bash
+sudo systemctl start elasticsearch.service
+sudo systemctl status elasticsearch.service
+```
+![elk-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-setup/systemd.png)
+
+Keling resurs ishlatilishini ko'ramiz.
+
+```bash
+htop
+```
+![elk-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-setup/htop.png)
+
+hahaaa resurs RAM usage 8.53GB ))
+
+**6->** Elasticsearch ishlayotganini va boshqa serverdan ulanish borligini bilish uchun elasticsearch ishlab turgan subnetdagi birorta serverdan  elasticsearch serverga `10.128.0.9:9200`ga HTTP request yuborib ko'ramiz. Masalan logstash serverdan.
+
+```bash
+curl -X GET "10.128.0.9:9200"
+```
+
+![elk-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-setup/curl.png)
+Sizda yuqoridagidek natija chiqsa Elasticsearch ishlamoqda.
+
+## Kibana o'rnatish
+
+[Rasmiy texnik hujjatlarga](https://www.elastic.co/guide/en/elastic-stack/current/installing-elastic-stack.html#install-order-elastic-stack) ko'ra , siz **Kibana**-ni faqat **Elasticsearch**-ni o'rnatganingizdan so'ng o'rnatishingiz kerak. Ushbu tartibda o'rnatish har bir productga bog'liq bo'lgan komponentlarning to'g'ri o'rnatilishini ta'minlaydi.
+
+
+
+**1->** `kibana`(10.128.0.10) serverimizni yangilab kerakli dasturlarni o'rnatib olamiz.
+
+```bash
+sudo apt update && sudo apt upgrade -y
+sudo apt-get install apt-transport-https
+```
+
+**2->** Elasticsearch PGP Keyini import qilib olamiz.
+
+```bash
+wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo gpg --dearmor -o /usr/share/keyrings/elasticsearch-keyring.gpg
+```
+
+**3->** `/etc/apt/sources.list.d`ga elasticsearchni qo'shib qo'yamiz.
+
+```bash
+echo "deb [signed-by=/usr/share/keyrings/elasticsearch-keyring.gpg] https://artifacts.elastic.co/packages/7.x/apt stable main" | sudo tee /etc/apt/sources.list.d/elastic-7.x.list
+```
+
+**4->** Kibanani o'rnatib olamiz.
+
+```bash
+sudo apt-get update && sudo apt-get install kibana
+```
+
+**2->** Kibanani ishga tushiramiz.
+
+daemonni reload qilamiz.
+
+```bash
+sudo systemctl daemon-reload
+```
+Kibanani systemd yordamida avtomatik ishga tushishini yoqamiz.
+
+```bash
+sudo systemctl enable kibana.service
+```
+Kibanani ishga tushiramiz va statusini ko'ramiz.
+
+```bash
+sudo systemctl start kibana.service
+sudo systemctl status kibana.service
+```
+![elk-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-setup/systemd1.png)
+
+**3->** Kibananini o'rnatib olganimizdan keyin tashqaridan brauzer orqali kirish uchun `/etc/kibana/kibana.yml`ni konfiguratsiya qilishimiz kerak va Elasticsearchga ulana olishi uchun `elasticsearch.hosts`ga elasticsearch hostni belgilashimiz kerak.
+
+```bash
+sudo nano /etc/kibana/kibana.yml
+```
+
+```bash {2,7,9} filename="/etc/kibana/kibana.yml"
+# Kibana is served by a back end server. This setting specifies the port to use.
+server.port: 5601
+
+# Specifies the address to which the Kibana server will bind. IP addresses and host names are both valid values.
+# The default is 'localhost', which usually means remote machines will not be able to connect.
+# To allow connections from remote users, set this parameter to a non-loopback address.
+server.host: "0.0.0.0"
+# The URLs of the Elasticsearch instances to use for all your queries.
+elasticsearch.hosts: ["http://10.128.0.9:9200"]
+```
+Kibanaga restart beramiz.
+
+```bash
+sudo systemctl restart kibana.service
+```
+
+**4->** Kibana default `:5601` portda ishlaydi brauzerdan server IP adresi va `:5601` portga kirsak bizda Kibana dashboard ochilishi kerak.
+
+![elk-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-setup/kibana.png)
+
+Kibana dashboard statusini `:5601/status` pageda ko'rish mumkin.
+![elk-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-setup/kibana-status.png)
+
+## Logstash o'rnatish
+
+**Beats** to'g'ridan-to'g'ri Elasticsearch ma'lumotlar bazasiga ma'lumotlarni yuborishi mumkin bo'lsa-da, ma'lumotlarni qayta ishlash uchun **Logstash**-dan foydalanish odatiy holdir. Bu sizga turli manbalardan ma'lumotlarni to'plash, ularni umumiy formatga aylantirish va boshqa ma'lumotlar bazasiga eksport qilish uchun ko'proq moslashuvchanlikni beradi.
+
+**1->** `logstash`(10.128.0.11) serverimizni yangilab kerakli dasturlarni o'rnatib olamiz.
+
+```bash
+sudo apt update && sudo apt upgrade -y
+sudo apt-get install apt-transport-https
+```
+
+**2->** Elasticsearch PGP Keyini import qilib olamiz.
+
+```bash
+wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo gpg --dearmor -o /usr/share/keyrings/elasticsearch-keyring.gpg
+```
+
+**3->** `/etc/apt/sources.list.d`ga elasticsearchni qo'shib qo'yamiz.
+
+```bash
+echo "deb [signed-by=/usr/share/keyrings/elasticsearch-keyring.gpg] https://artifacts.elastic.co/packages/7.x/apt stable main" | sudo tee /etc/apt/sources.list.d/elastic-7.x.list
+```
+
+**4->** Logstashni o'rnatib olamiz.
+
+```bash
+sudo apt-get update && sudo apt-get install logstash
+```
+Logstashni o'rnatib bo'lganingizdan keyin sozlashga o'tishingiz mumkin. Logstash konfigursatsiya fayli `/etc/logstash/conf.d` joylashgan bo'ladi bu konfiguratsiya sintaksisi haqida [quyidagi havola](https://www.elastic.co/guide/en/logstash/current/configuration-file-structure.html) orqali ko'rib chiqishingiz mumkin.
+
+Logstashni ma'lumotlarni bir tomondan qabul qiladigan, u yoki bu tarzda qayta ishlab belgilangan joyga jo'natadigan pipeline deb tassavur qilsangiz bo'ladi. Logstash asosiy elementlari ikkita `input` va `output` qo'shimcha `filter`. `input` plaginlari manbadan ma'lumotlarni oladi, `filter` plaginlarini uni qayta ishlaydi va `output` plaginlari esa ma'lumotlarni belgilangan joyga yuboradi.
+
+![elk-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-setup/logstash.png)
+
+**2->** `02-beats-input.conf` nomli Filebeat inputni o'rnatadigan konfiguratsiya faylini yaratib olamiz.
+
+```bash
+sudo nano /etc/logstash/conf.d/02-beats-input.conf
+```
+Quyidagi konfiguratsiyani kiriting. Bu konfiguratsiya input konfiguratsiya hisoblanadi va `beats` TCP `5044` portga kirishni bildiradi.
+```bash filename="/etc/logstash/conf.d/02-beats-input.conf"
+input {
+  beats {
+    port => 5044
+  }
+}
+```
+
+**3->** Logstash beatslardan kelgan ma'lumotlarni Elasticsearch(`10.128.0.9:9200`) ga yuborishi uchun output konfiguratsiyani qo'shing. Bu Filebeat uchun.
+
+```bash
+sudo nano /etc/logstash/conf.d/30-elasticsearch-output.conf
+```
+
+```conf /10.128.0.9:9200/ filename="/etc/logstash/conf.d/30-elasticsearch-output.conf"
+output {
+  if [@metadata][pipeline] {
+	elasticsearch {
+  	hosts => ["10.128.0.9:9200"]
+  	manage_template => false
+  	index => "%{[@metadata][beat]}-%{[@metadata][version]}-%{+YYYY.MM.dd}"
+  	pipeline => "%{[@metadata][pipeline]}"
+	}
+  } else {
+	elasticsearch {
+  	hosts => ["10.128.0.9:9200"]
+  	manage_template => false
+  	index => "%{[@metadata][beat]}-%{[@metadata][version]}-%{+YYYY.MM.dd}"
+	}
+  }
+}
+```
+
+**4->** Logstash konfiguratsiyani quyidagi buyruq bilan tekshirib ko'ring.
+
+```bash
+sudo -u logstash /usr/share/logstash/bin/logstash --path.settings /etc/logstash -t
+```
+
+Ushbu buyruq yozilgan konfiguratsiyani tekshirib chiqadi.
+
+Agar sintaksis xatosi bo'lmasa sizda **"Config Validation Result: OK. Exiting Logstash"** natija chiqsa demak hammasi yaxshi. Agar konfiguratsiya testingiz muvaffaqiyatli o'tgan bo'lsa **Logstash**ni ishga tushirishingiz mumkin.
+
+```bash
+sudo systemctl start logstash
+sudo systemctl enable logstash
+```
+Statusini ko'ramiz.
+
+```bash
+sudo systemctl status logstash
+```
+
+Logstash to'g'ri ishlayapti va to'liq sozlangan bo'lsa, **Filebeat**-ni o'rnatamiz.
+
+## Filebeat o'rnatish va sozlash
+
+**Elastic Stack** turli manbalardan ma'lumotlarni to'plash va ularni **Logstash** yoki **Elasticsearch**-ga o'tkazish uchun [**Beats**](https://www.elastic.co/beats) deb nomlangan bir nechta lightweight data shipperlardan foydalanadi.
+
+Hozirda Elastic-dan mavjud bo'lgan Beatslar:
+
+* [**Filebeat**](https://www.elastic.co/beats/filebeat) Log fayllarni to'playdi va jo'natadi.
+* [**Metricbeat**](https://www.elastic.co/beats/metricbeat) Tizimlar va servicelar metrikalarni to'playdi va jo'natadi.
+* [**Packetbeat**](https://www.elastic.co/beats/packetbeat) Tarmoq ma'lumotlarini to'playdi va jo'natadi.
+* [**Auditbeat**](https://www.elastic.co/beats/auditbeat) Linux audit framework ma'lumotlarini to'playdi va jo'natadi
+* [**Heartbeat**](https://www.elastic.co/observability/aiops) Servicelaringiz availability(mavjudligi)ni tekshirib turish orqali va nazorat qiladi.
+* [**Winlogbeat**](https://www.elastic.co/beats/winlogbeat) Windows event loglarini to'playdi.
+
+**Beats**lar haqida [ba'tafsil.](https://www.elastic.co/guide/en/beats/libbeat/8.13/getting-started.html)
+
+
+Hozir biz  app-server(10.128.0.12) serverimizga Filebeat o'rnatib **Filebeat** yordamida local loglarni Elastik stackga yo'naltiramiz.
+
+**1->** `app-server`(10.128.0.12) serverimizni yangilab kerakli dasturlarni o'rnatib olamiz.
+
+```bash
+sudo apt update && sudo apt upgrade -y
+sudo apt-get install apt-transport-https
+```
+
+**2->** Elasticsearch PGP Keyini import qilib olamiz.
+
+```bash
+wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo gpg --dearmor -o /usr/share/keyrings/elasticsearch-keyring.gpg
+```
+
+**3->** `/etc/apt/sources.list.d`ga elasticsearchni qo'shib qo'yamiz.
+
+```bash
+echo "deb [signed-by=/usr/share/keyrings/elasticsearch-keyring.gpg] https://artifacts.elastic.co/packages/7.x/apt stable main" | sudo tee /etc/apt/sources.list.d/elastic-7.x.list
+```
+
+**4->** Filebeatni o'rnatib olamiz.
+
+```bash
+sudo apt-get update && sudo apt-get install filebeat -y
+```
+
+**2->** Filebeat Logstashga ulanishi uchun `filebeat.yml` ni sozlab olamiz.
+
+**Filebeat** ko'p chiqishlarni qo'llab quvvatlaydi lekin biz eventlarga qo'shimcha ishlov berish uchun Elasticsearch yoki Logstashga ma'lumotlarni yuboramiz. Bu qo'llanmada biz Filebeatdan yuborayotgan ma'lumotlarni to'gridan-to'gri Elasticsearch yubormaymiz, biz Filebeat yuborayotgan ma'lumotlarni boyitish va yaxshilash uchun Logstashga yuboramiz. Shuning uchun biz `filebeat.yml` konfiguratsiya faylidan ma'lumotlarni elasticsearchga yuborishni o'chirib qo'yib Logstashga yuborishni yoqib qo'yamiz.
+
+
+Elasticsearchga ma'lumotlarni yuborishni o'chirib qo'yamiz. `output.elasticsearch:` va `hosts`ni commentga olib qo'yamiz.
+
+```bash
+sudo nano /etc/filebeat/filebeat.yml
+```
+
+```bash {2,4}
+# ---------------------------- Elasticsearch Output ----------------------------
+#output.elasticsearch:
+  # Array of hosts to connect to.
+#  hosts: ["localhost:9200"]
+```
+
+Filebeat ma'lumotlarni logstashga yuborish uchun Logstashga yuborishni yoqamiz. `output.logstash:` va `hosts`ni commentdan ochib qo'yamiz.
+
+
+```bash {2,4}
+# ------------------------------ Logstash Output -------------------------------
+output.logstash:
+  # The Logstash hosts
+  hosts: ["10.128.0.11:5044"]
+```
+
+```bash {5,11}
+# =================================== Kibana ===================================
+
+# Starting with Beats version 6.0.0, the dashboards are loaded via the Kibana API.
+# This requires a Kibana endpoint configuration.
+setup.kibana:
+
+  # Kibana Host
+  # Scheme and port can be left out and will be set to the default (http and 5601)
+  # In case you specify and additional path, the scheme is required: http://localhost:5601/path
+  # IPv6 addresses should always be defined as: https://[2001:db8::1]:5601
+  host: "10.128.0.10:5601"
+```
+
+Filebeatni kengaytirish uchun bir nechta [Filebeat modullari](https://www.elastic.co/guide/en/beats/filebeat/7.6/filebeat-modules.html) bor. Biz bu amaliyotda Filebeat **system** modulidan foydalanamiz, system moduli linux tizimining loglari va servicelar tomonidan yaratilgan loglarni to'playdi va analiz qiladi.
+
+```bash
+sudo filebeat modules enable system
+```
+
+Ushbu buyruq orqali yoqilgan va o'chirilgan modullar ro'yxatini ko'rishingiz mumkin.
+
+```bash
+sudo filebeat modules list
+```
+Quyidagicha natija chiqishi kerak.
+
+```txt
+Enabled:
+system
+
+Disabled:
+activemq
+apache
+auditd
+aws
+awsfargate
+azure
+barracuda
+bluecoat
+cef
+checkpoint
+cisco
+.........
+```
+
+Logstash Elasticsearchga ma'lumotlarni yuborishdan oldin Filebeatdan kelgan ma'lumotlarlarni tahlil qiladigan **Filebeat ingest pipeline** o'rnatishimiz kerak. **system** module uchun quyidagi buyruq orqali o'rantishingiz mumkin.
+
+```bash
+sudo filebeat setup --pipelines --modules system
+```
+
+Keyin esa index templateni Elasticsearchga qo'shish kerak.
+
+Templateni qo'shish uchun quyidagi buyruqdan foydalaning.
+
+```bash /10.128.0.9:9200/
+sudo filebeat setup --index-management -E output.logstash.enabled=false -E 'output.elasticsearch.hosts=["10.128.0.9:9200"]'
+```
+
+```bash
+Output
+Index setup finished.
+```
+
+Filebeat o'zida Kibanada ma'lumotlarni ko'rish uchun Kibana dashboard bilan birga keladi. Dashboarddan foydalanishdan oldin index pattern yaratishimiz va Dashboardni Kibanaga o'rnatishimiz kerak bo'ladi.
+
+Dashboard yoqilganda Filebeat versiya ma'lmotlarini tekshirish uchun Elasticsearchga ulanadi. Logstash yoqilganda dashboardni yuklash uchun Logstash chiqishini o'chirishingiz va Elasticsearch chiqishini yoqishingiz kerak. Bu bir necha daqiqa vaqt oladi.
+
+```bash /10.128.0.9:9200/ /10.128.0.10:5601/
+sudo filebeat setup -E output.logstash.enabled=false -E output.elasticsearch.hosts=['10.128.0.9:9200'] -E setup.kibana.host=10.128.0.10:5601
+```
+
+Endi Filebeatni ishga tushirishimiz mumkin.
+
+```bash
+sudo systemctl start filebeat
+sudo systemctl enable filebeat
+```
+Statusini tekshiramiz.
+```bash
+sudo systemctl status filebeat
+```
+
+Agar siz Elastic Stack-ni to'g'ri sozlagan bo'lsangiz, Filebeat tizim logi va avtorizatsiya loglarini Logstash-ga jo'natishni boshlaydi, keyin esa bu ma'lumotlarni Elasticsearch-ga yuklaydi.
+
+Elasticsearch haqiqatan ham ushbu ma'lumotlarni olayotganligini tekshirish uchun Filebeat indeksini ushbu buyruq bilan tekshirishingiz mumkin.
+
+```bash
+curl -XGET 'http://10.128.0.9:9200/filebeat-*/_search?pretty'
+```
+
+```txt
+{
+  "took" : 18,
+  "timed_out" : false,
+  "_shards" : {
+    "total" : 2,
+    "successful" : 2,
+    "skipped" : 0,
+    "failed" : 0
+  },
+  "hits" : {
+    "total" : {
+      "value" : 5416,
+      "relation" : "eq"
+    },
+    "max_score" : 1.0,
+    "hits" : [
+      {
+        "_index" : "filebeat-7.17.20-2024.05.02",
+        "_type" : "_doc",
+        "_id" : "T_btOI8BKEKmsIHkns4z",
+        "_score" : 1.0,
+        "_source" : {
+          "agent" : {
+            "hostname" : "app-server",
+            "name" : "app-server",
+            "id" : "7af24e65-2346-4c13-ba75-1554f9880bbc",
+            "ephemeral_id" : "5fc50b9f-887a-4f72-b0a5-c614b74d3f6e",
+            "type" : "filebeat",
+            "version" : "7.17.20"
+          },
+          "process" : {
+            "name" : "filebeat",
+            "pid" : 2511
+          },
+............
+```
+Agar sizning natijangiz 0 jami hitsni ko'rsatsa, Elasticsearch siz qidirgan indeks ostida hech qanday logni yuklamayapti va siz xatolar uchun sozlamalaringizni ko'rib chiqishingiz kerak bo'ladi. Agar siz kutilgan natijani olgan bo'lsangiz, keyingi bosqichga o'tishingiz mumkin, unda biz Kibana dashbolard bilan ishlashni ko'rib chiqamiz.
+
+
+## Kibana Dashboard bilan ishlash
+
+Kibana serveringiz IP manzili `:5601` portiga brauzer orqali kirganingizda sizda Kibananing asosiy sahifasi ochilishi kerak.
+
+![elk-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-setup/kibana3.png)
+
+Kibana Dashboardan chap tomondagi bo'limga o'tib **Discover** bo'limiga o'tsak bizda **"filebeat-*"** ochilishi kerak.
+
+![elk-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-setup/kibana1.png)
+
+![elk-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-setup/kibana2.png)
+
+**Dashboard** bo'limga o'tib Filebeat system module uchun dashboardlarni qidirib ularni ko'rib chiqishimiz mumkin.
+
+![elk-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-setup/syslog.png)
+
+Ushbu Dashboardlardan syslogni analiz qilishingiz mumkin.
+
+**[Filebeat System] Syslog dashboard ECS**
+![elk-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-setup/syslog1.png)
+
+**[[Filebeat System] SSH login attempts ECS**
+![elk-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-setup/syslog2.png)
+
+Biz hozir ELK stack bilan  `app-server`(10.128.0.12) serverimizga Filebeat o'rnatib system moduledan foydalanib serverimiz loglarini analiz qilishni ko'rib chiqdik. Lekin app-serverimizni to'liq analiz qilishimiz va monitoring qilishimiz uchun asosiy **Beats**larni o'rnatamiz. Beatslarni analiz va monitoing qilmoqchi bo'lgan serverlarimizga o'rnatamiz.
+
+Biz quyidagi Beatslarni o'rnatamiz va sozlaymiz.
+
+* [**Filebeat**](https://www.elastic.co/beats/filebeat) Log fayllarni to'playdi va jo'natadi.
+* [**Metricbeat**](https://www.elastic.co/beats/metricbeat) Tizimlar va servicelar metrikalarni to'playdi va jo'natadi.
+* [**Packetbeat**](https://www.elastic.co/beats/packetbeat) Tarmoq ma'lumotlarini to'playdi va jo'natadi.
+* [**Auditbeat**](https://www.elastic.co/beats/auditbeat) Linux audit framework ma'lumotlarini to'playdi va jo'natadi
+
+
+## Metricbeat o'rnatish va sozlash
+
+**Metricbeat** - bu operatsion tizim va serverda ishlaydigan servicelardan metrikalarni vaqti-vaqti bilan yig'ish uchun serverlaringizga o'rnatishingiz mumkin bo'lgan yengil data shipper(lightweight shipper). Metricbeat CPUdan foydalanish, RAMan foydalanish, disk I/O, tarmoq trafigi va boshqalarni o'z ichiga olgan turli xil metrikalarni to'playdi. Metricbeat-ning asosiy afzalliklaridan biri bu uning yengil ishlashidadir. U yengil bo'lgani uchun serverlaringizga katta yuklamalarsiz metrikalarni to'plashi mumkin. Operatsion tizimdan metrikalarni yig'ishdan tashqari, Metricbeat Apache, MySQL, PostgreSQL, Nginx, Docker va Kubernetes kabi turli servicelar va applicationlardan metrikalarni to'plash imkonini beruvchi modullarga ega. Ushbu modullar bitta interfeysdan butun stackingizning ishlashini kuzatishni osonlashtiradi.
+
+* Monitoring qilmoqchi bo'lgan serverlarga Metricbeat o'rnating
+* Yig'moqchi bo'lgan metrikalarni belgilang
+* Metrikalarni Elasticsearchga yuboring
+* Kibanada vizualizatsiya qiling
+
+**1->** Biz analiz va monitoring qilmoqchi bo'lgan sereverlarimizga **Metricbeat** o'rnatib olamiz.
+
+```bash
+curl -L -O https://artifacts.elastic.co/downloads/beats/metricbeat/metricbeat-7.17.20-amd64.deb
+sudo dpkg -i metricbeat-7.17.20-amd64.deb
+```
+
+**2->** Metricbeatni Elastic stackga ulab olishimiz kerak, buning uchun biz `metricbeat.yml` konfiguratsiya faylida Kibana va Elasticsearch manzillarini ko'rsatishimiz kerak bo'ladi.
+
+```bash
+sudo nano /etc/metricbeat/metricbeat.yml
+```
+
+```bash {3,7} filename="/etc/metricbeat/metricbeat.yml"
+# =================================== Kibana ===================================
+setup.kibana:
+  host: "10.128.0.10:5601"
+# ---------------------------- Elasticsearch Output ----------------------------
+output.elasticsearch:
+  # Array of hosts to connect to.
+  hosts: ["10.128.0.9:9200"]
+```
+
+**3->** Metricbeatda bir nechta ma'lumotlarni yig'adigan modullari bor ulardan o'zimiz uchun kerakli modulni yoqib shu orqali analiz va monitoring qilishimiz mumkin.
+
+Metricbeat modullarini quyidagicha ko'rish mumkin.
+
+```bash
+sudo metricbeat modules list
+```
+Agar siz hech qanday modulni yoqmasangiz metadata default **system** modulini yoqilgan bo'ladi keling misol uchun **nginx** modulini yoqamiz.
+
+```bash
+sudo metricbeat modules enable nginx
+```
+Metricbeat ma'lumotlaringizni tahlil qilish, indekslash va vizualizatsiya qilish uchun oldindan belgilangan assetslar bilan birga keladi. Ushbu aasetslarni load qilishimiz kerak bo'ladi. Bu biroz vaqt oladi.
+
+```bash
+sudo metricbeat setup -e
+```
+
+**4->** Metricbeatni ishga tushiramiz
+
+```bash
+sudo systemctl start logstash
+sudo systemctl enable logstash
+```
+
+Statusini ko'ramiz
+
+```bash
+sudo systemctl status logstash
+```
+
+**5->** Kibana Dashboardga o'tib Metricbeat dashboardlarini qidirib modullari bo'yicha ko'rib chiqishimiz mumkin.
+
+![elk-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-setup/metric-kibana.png)
+![elk-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-setup/metric-kibana2.png)
+
+system module uchun Kibana Dashboardlar
+
+**[Metricbeat System] Overview ECS**
+![elk-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-setup/metric-dashboard.png)
+
+**[[Metricbeat System] Host overview ECS**
+![elk-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-setup/metric-dashboard2.png)
+
+**Observability** bo'limga kirib ham ko'rishimiz mumkin
+![elk-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-setup/obs.png)
+
+![elk-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-setup/obs1.png)
+![elk-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-setup/obs2.png)
+
+
+## Auditbeat o'rnatish va sozlash
+
+**Auditbeat** Elastik stackdagi yana bir lightweight shipper bo'lib, tizim auditi ma'lumotlarini yig'ish va kuzatish uchun mo'ljallangan. Bu, ayniqsa, xavfsizlik monitoringi va muvofiqlik maqsadlarida foydalidir.
+
+Auditbeat ishlayotgan operatsion tizimga qarab, Linux audit tizimidan yoki Windows event loglaridan ma'lumotlarni to'playdi. U file access,process execution, user authentication, va system-leveldagi boshqa activitilar kabi keng ko'lamli eventlarni yozib olishi mumkin.
+
+**1->** Biz analiz va monitoring qilmoqchi bo'lgan sereverlarimizga **Auditbeat** o'rnatib olamiz.
+
+```bash
+curl -L -O https://artifacts.elastic.co/downloads/beats/auditbeat/auditbeat-7.17.21-amd64.deb
+sudo dpkg -i auditbeat-7.17.21-amd64.deb
+```
+
+**2->** Auditbeatni Elastic stackga ulab olishimiz kerak, buning uchun biz `auditbeat.yml` konfiguratsiya faylida Kibana va Elasticsearch manzillarini ko'rsatishimiz kerak bo'ladi.
+
+```bash
+sudo nano /etc/auditbeat/auditbeat.yml 
+```
+
+```bash {3,7} filename="/etc/auditbeat/auditbeat.yml "
+# =================================== Kibana ===================================
+setup.kibana:
+  host: "10.128.0.10:5601"
+# ---------------------------- Elasticsearch Output ----------------------------
+output.elasticsearch:
+  # Array of hosts to connect to.
+  hosts: ["10.128.0.9:9200"]
+```
+
+**3->** Auditbeat ma'lumotlaringizni tahlil qilish, indekslash va vizualizatsiya qilish uchun oldindan belgilangan assetslar bilan birga keladi. Ushbu aasetslarni load qilishimiz kerak bo'ladi. Bu biroz vaqt oladi.
+
+```bash
+sudo auditbeat setup -e
+```
+
+**4->** Auditbeatni ishga tushiramiz
+
+```bash
+sudo systemctl start auditbeat
+sudo systemctl enable auditbeat
+```
+
+Statusini ko'ramiz
+
+```bash
+sudo systemctl status auditbeat
+```
+
+**5->** Kibana Dashboardga o'tib Auditbeat dashboardlarini ko'rib chiqishimiz mumkin.
+
+![elk-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-setup/auditbeat1.png)
+
+**[Auditbeat Auditd] Overview ECS**
+![elk-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-setup/auditbeat.png)
+
+
+## Packetbeat o'rnatish va sozlash
+
+**Packetbeat** - bu real-time rejimida trafikni kuzatuvchi lightweight network paket analizatori. U tarmoq ma'lumotlarini ushlaydi, tahlil qiladi va HTTP requestlari, ma'lumotlar bazasi querilari va boshqa protokollar kabi tegishli ma'lumotlarni chiqaradi. Packetbeat tarmoq trafigini passiv sniffing orqali dastur ishlashi, tarmoq harakati va xavfsizlik tahdidlari haqida tushuncha beradi.
+
+**1->**  Ko'pgina platformalarda **Packetbeat** `libpcap` paketlarni yozib olish kutubxonasini talab qiladi. Operatsion tizimingizga qarab, uni o'rnatishingiz kerak bo'ladi:
+
+```bash
+sudo apt-get install libpcap0.8
+```
+**2->** Biz analiz va monitoring qilmoqchi bo'lgan sereverlarimizga **Packetbeat** o'rnatib olamiz.
+
+```bash
+curl -L -O https://artifacts.elastic.co/downloads/beats/packetbeat/packetbeat-7.17.21-amd64.deb
+sudo dpkg -i packetbeat-7.17.21-amd64.deb
+```
+
+**3->** Packetbeatni Elastic stackga ulab olishimiz kerak, buning uchun biz `packetbeat.yml` konfiguratsiya faylida Kibana va Elasticsearch manzillarini ko'rsatishimiz kerak bo'ladi.
+
+```bash
+sudo nano /etc/packetbeat/packetbeat.yml 
+```
+
+```bash {3,7} filename="/etc/packetbeat/packetbeat.yml "
+# =================================== Kibana ===================================
+setup.kibana:
+  host: "10.128.0.10:5601"
+# ---------------------------- Elasticsearch Output ----------------------------
+output.elasticsearch:
+  # Array of hosts to connect to.
+  hosts: ["10.128.0.9:9200"]
+```
+
+**4->** `packetbeat.yml`dan trafikni olish uchun tarmoq qurilmalari(network device) va protokollarini sozlash kerak bo'ladi. **Sniffer** turini o'rnating. default holda, Packetbeat `pcaplibpcap` kutubxonasidan foydalanadi va ko'pgina platformalarda ishlaydi. Linuxda, `af_packet` memory-mapped sniffingdan foydalanish uchun sniffer turini o'rnating. Ushbu parametr `libpcap`-dan tezroq va kernel modulini talab qilmaydi, lekin u Linux-ga xosdir:
+
+```bash
+packetbeat.interfaces.type: af_packet
+```
+
+Trafikni olish uchun network deviceni belgilang, masalan:
+
+```bash
+packetbeat.interfaces.device: eth0
+```
+Mavjud network devicelarni ko'rish uchun.
+
+```bash
+sudo packetbeat devices
+```
+
+**4->** Packetbeat ma'lumotlaringizni tahlil qilish, indekslash va vizualizatsiya qilish uchun oldindan belgilangan assetslar bilan birga keladi. Ushbu aasetslarni load qilishimiz kerak bo'ladi. Bu biroz vaqt oladi.
+
+```bash
+sudo packetbeat setup -e
+```
+
+**5->** Packetbeatni ishga tushiramiz
+
+```bash
+sudo systemctl start packetbeat
+sudo systemctl enable packetbeat
+```
+
+Statusini ko'ramiz
+
+```bash
+sudo systemctl status packetbeat
+```
+
+**6->** Kibana Dashboardga o'tib Packetbeat dashboardlarini ko'rib chiqishimiz mumkin.
+
+![elk-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-setup/packetbeat-dash.png)
+
+**[Packetbeat] Overview ECS**
+![elk-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-setup/packetbeat-dash1.png)
+**[Packetbeat] Flows ECS**
+![elk-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-setup/packetbeat-dash2.png)
+
+ ## Qo'shimcha
+
+<Callout type="info" emoji="">
+
+Qo'shimcha Resurslar
+ * [**ELK Stackga kirish**](https://devops-journey.uz/tutorials/article/elk-stack)
+ * [**APM Server Sozlash**](https://devops-journey.uz/tutorials/article/apm-server-sozlash)
+ * [**Installing the Elastic Stack**](https://www.elastic.co/guide/en/elastic-stack/current/installing-elastic-stack.html)
+ * [**Serverlarni monitoring qilish yoxud Grafana, Prometheus, Node Exporter o'rnatish va sozlash**](https://devops-journey.uz/guides/monitoring/gnp-monitoring)
+ * [**PostgreSQL Monitoring**](https://devops-journey.uz/guides/database/postgres-monitoring)
+
+Qo'llanma uchun foydalanilgan resurslar
+ * [**How To Install Elasticsearch, Logstash, and Kibana (Elastic Stack) on Ubuntu 20.04**](https://www.digitalocean.com/community/tutorials/how-to-install-elasticsearch-logstash-and-kibana-elastic-stack-on-ubuntu-20-04)
+
+**Sana:** 2024.05.13(2024-yil 13-may)
+
+**Oxirgi yangilanish:** 2024.05.13(2024-yil 13-may)
+
+**Muallif: Otabek Ismoilov**
+
+| [Telegram](https://t.me/Otabek_Ismoilov) | [GitHub](https://github.com/ismoilovdevml) | [LinkedIn](https://www.linkedin.com/in/otabek-ismoilov/) |
+| - | - | - |
+
+</Callout>

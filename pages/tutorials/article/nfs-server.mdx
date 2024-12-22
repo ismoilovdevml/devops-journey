@@ -1,0 +1,183 @@
+---
+image: https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/nfs-server/banner.png
+description: "NFS Server sozlash"
+---
+
+import { Callout } from "nextra/components";
+
+# NFS Server sozlash
+![nfs-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/nfs-server/banner.png)
+
+**NFS** (**N**etwork **F**ile **S**ystem) tarmoqda fayl almashinuvi uchun ishlatiladigan ommabop texnologiyalardan biri hisoblanadi. U bir nechta serverlar va mijoz(client) tizimlar orasida ma'lumotlarni samarali ravishda ulashish(share) va boshqarish imkonini beradi. Ushbu texnik qo'llanmada biz Ansible Playbook yordamida bir necha turdagi operatsion tizimlarda (Ubuntu, CentOS, RHEL va boshqalar) NFS serverini o'rnatish va sozlash jarayonini avtomatlashtirishni ko'rib chiqamiz.
+
+
+**NFS** (**N**etwork **F**ile **S**ystem) — **Sun Microsystems** tomonidan **1984**-yilda yaratilgan tarmoq fayl tizimi protokoli. NFS'ning yaratilishidagi asosiy maqsad, UNIX tizimlari orasida tarmoq orqali fayllarni ulashish va boshqarishni osonlashtirish edi. Uning yaratilishi Sun Microsystems'ning muhandisi **Russel Sandberg, Bob Lyon, Bill Joy, Steve Kleiman** va boshqa dasturchilarning sa'y-harakatlari natijasida amalga oshirildi.
+
+### NFS'ning Maqsadlari:
+
+* **Tarmoq orqali fayllarni ulashish:** Serverdagi fayllarni clientlar orasida share qilish imkonini yaratish. Bu serverda saqlanadigan fayllarni boshqa tizimlarga ham foydalanuvchi uchun local disk kabi foydalanish imkonini beradi.
+* **Multi-platforma ko'magi:** NFS UNIX asosidagi tizimlarda ishlash uchun ishlab chiqilgan, ammo keyinchalik boshqa operatsion tizimlarga ham kengaytirildi.
+* **Tizimni markazlashtirish:** NFS orqali bir serverda fayllarni markazlashtirilgan holda saqlash va ulardan tarmoqdagi boshqa tizimlar tomonidan foydalanish imkoniyati taqdim etildi. Bu, ayniqsa, katta miqdordagi ma'lumotlarni saqlash va boshqarish kerak bo'lgan korxona muhitlari uchun foydali bo'ldi.
+
+NFS dan Kubernetes clusterda ham faol foydalanish mumkin. Kubernetesda NFS odatda bir nechta podlarda persistent storageni ta'minlash uchun ishlatiladi, bu esa uni stateful applicationlarni boshqarishda asosiy komponentga aylantiradi. NFS tez-tez Kubernetesda Persistent Volumes (PV) sifatida ishlatiladi. Persistent Volume administrator tomonidan taqdim etilgan storage resource boʻlib, foydalanuvchilar tomonidan Persistent Volume Claim (PVC) bilan bogʻlanishi mumkin. Bu konteynerlarga qayta ishga tushirish(restart), rescheduling yoki hatto bir nechta podlarda bir xil ma'lumotlarga kirish imkonini beradi. NFS-ga asoslangan PV-lar, ayniqsa, bir nechta podlar o'rtasida fayllarni almashish uchun foydalidir. Kubernetesdagi NFS ham stateful, ham stateless applicationlar uchun shared va persistent storageni boshqarishning moslashuvchan, kengaytiriladigan va ishonchli usulini taklif etadi. **Ceph** yoki **GlusterFS** kabi zamonaviy storage solutionlari yanada ilg'or xususiyatlarni taklif qilsa-da, NFS Kubernetes klasterlarida soddaligi va keng mosligi uchun ko'proq ishlatiladi.
+
+<Callout type="info" emoji="">
+Ushbu qo'llanmada biz open-source **[github.com/ismoilovdevml/infra-as-code](https://github.com/ismoilovdevml/infra-as-code)** Ansible playbooklardan foydalanib ishladik. Bu loyiha ustida hozir aktiv ishlanmoqda, loyihaning asosiy maqsadi infrastruktura boshqaruvini Ansible va Terraform orqali avtomatlashtirishdir bu repositoriya orqali siz o'z infrastrukturangizni avtomatlashtirishda foydalanshingiz mumkin. 
+
+
+Hozirda mavjud Ansible playbooklar:
+![nfs-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/nfs-server/6.png)
+
+Ushbu loyihaga siz ham o'z hissangizni qo'shishingizni hohlardim hech bo'lmasa bitta stars bozib qo'yarsizlar :)
+
+</Callout>
+
+## NFS Server o'rnatish
+
+Yuqorida aytilganidek bu qo'llanmada biz ansibledan foydalanamiz va ushbu ansible playbokni ishga tushirmoqchi bo'lgan desktop kompyuteringiz yoki serveringizda ansible o'rnatilgan bo'lishi kerak. 
+
+Ushbu amaliyotni amalga oshirish uchun bizga quyidagi minimum server talablaridagi server kerak bo'ladi.
+
+<Callout type="info" emoji="">
+**Minimum Server talabi**
+
+| OS            | RAM            | CPU           | Xotira       | Static IP  |
+| ------------- | -------------- | ------------- |------------- | ---------- |
+| Farqi yo'q    | 4GB            | 2 core        | 50GB         | Ha kerak   |
+
+Qo'llanmada foydalanadigan ansible playbook  multiple OSni support qiladi RHEL, CenOS, Fedora, Oracle, Almalinux, Rocky Linux, Debian,Ubuntu OSlarda ishlaydi.
+
+**Talablar**
+ * Ansible playbok ishga tushiriladigan desktop yoki serverda ansible o'rnatilgan bo'lishi (2.15 dan past bo'lmagan)
+ * Ansible playbok ishga tushiriladigan desktop yoki serverda nfs o'rnatiladigan serverga ssh ulanish borligi
+</Callout>
+
+**1->** Kerakli ansible playbookni yuklab olishimiz kerak, bunda biz **[infra-as-code](https://github.com/ismoilovdevml/infra-as-code)** repositoriyadan foydalanamiz.
+
+```bash
+git clone https://github.com/ismoilovdevml/infra-as-code
+```
+
+**2->** NFS o'rnatmoqchi bo'lgan serverlarimizga ssh ulanishni ishga tushirishimiz kerak buning uchun masalan desktop kompyuterimizda ssh-key generatsiya qilishimiz va public keyni kerakli serverlar `authorized_keys` fayliga qo'shib chiqishimizdir.
+
+ushbu buyruqni ishga tushiramiz va hammasiga **ENTER** bosib ssh-key generatsiya qilib olamiz.
+
+```bash
+ssh-keygen -f ~/.ssh/ansible
+```
+
+![nfs-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/nfs-server/1.png)
+
+Yaratilgan ssh keyni ulanmoqchi bo'lgan serverlarimziga qo'yib chiqamiz, va ssh ulanishni tekshirib olamiz.
+
+```bash
+# ssh-copy-id usuli orqali
+ssh-copy-id -i ~/.ssh/ansible.pub root@server_ip
+# yoki public keyni olib server authorized_keys ga qo'shish
+cat ~/.ssh/ansible.pub
+```
+
+**3->** Agar serverlarda hali update/upgrade bo'lmagan bo'lsa quyidagi playbokni ishga tushish kerak bo'ladi.
+
+```bash
+cd infra-as-code/tree/main/Ansible/update-upgrade
+```
+Bu playbokdan `invnetory.ini` faylini o'zimizga moslab olamiz, yan'ni update/upgrade qilmoqchi bo'lgan serverlarizmi belgilaymiz
+
+```bash filename="inventory.ini"
+[all]
+server1 ansible_host=34.69.104.233 ansible_user=root
+server2 ansible_host=34.27.32.115 ansible_user=root
+server3 ansible_host=34.170.180.55 ansible_user=root
+```
+
+update/upgrade ansible playbokni ishga tushiramiz.
+
+```bash
+ansible-playbook -i inventory.ini ./update_upgrade_tools.yml
+```
+![nfs-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/nfs-server/7.png)
+
+**3->** Playboklardan nfs ga o'tamiz va `inventory.ini` fayliga NFS seerverlarimizni ulab chiqamiz.
+
+
+```bash
+cd infra-as-code/tree/main/Ansible/nfs
+sudo nano inventory.ini
+```
+
+```bash filename="inventory.ini"
+server1 ansible_host=34.69.104.233 ansible_user=root
+server2 ansible_host=34.27.32.115 ansible_user=root
+server3 ansible_host=34.170.180.55 ansible_user=root
+```
+**4->** `nfs_setup.yml` faylini nano yoki vimda ochib olib kerakli configlarni **vars** ichida sozlaymiz.
+
+```yaml filename="nfs_setup.yml" {2,5-6}
+---
+- hosts: nfs_server
+  become: yes
+  vars:
+    nfs_export_path: /srv/nfs
+    nfs_allowed_hosts: "*"
+    nfs_service_name:
+      RedHat: nfs-server
+      Debian: nfs-kernel-server
+```
+Bu konfigda **hosts** variablega **nfs_server** qo'yilgan bu `inevntory.ini` dagi **nfs_server** ichidagi serverlarda ishga tushirishni bildiradi va **nfs_export_path** bu qaysi papkani nfs uchun share qilish ishlatishni belgilaydigan joy bizning holatimizda **/srv/nfs** unda keyin esa **nfs_export_path** ga **"*"** berilgan bu qism ushbu NFS server hammaga ochiq ekanligini hamma ishlata olishini bildira agar siz malum bir IP yoki subnet kira olishini ham berishingiz mumkin.
+
+**5->** Hammasi o'zimizga moslab to'grilab olganimzidan keyin NFS server o'rnatishni boshlaymiz
+
+
+```bash
+ansible-playbook -i inventory nfs_setup.yml
+```
+
+Ansible playbook muvaffaqiyatli ishga tushganida quyidagicha bo'lishi kerak.
+
+![nfs-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/nfs-server/2.png)
+
+**6->** NFS ishlayotganini tekshirish uchun keling NFS serverimizga kirib statusini ko'ramiz.
+
+```bash
+systemctl status nfs-server
+exportfs -v
+```
+
+![nfs-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/nfs-server/3.png)
+
+Okey hammasi yaxshi
+
+**7->** Keling buni test qilib ko'raylik menda linux desktop kompyuterim bor unda `/mnt/nfs` papka ochib uni NFS serverga mount qilamiz va local kompyuterimizda `/mnt/nfs` papkaga fayl yoki papkalarni ko'chirganimizda u NFS serverimiz shared papakasida bo'lishi kerak bizning holatda `srv/nfs`
+
+```bash
+sudo mkdir -p /mnt/nfs
+sudo mount 35.188.79.26:/srv/nfs /mnt/nfs
+```
+Test uchun bitta fayl ko'chiraman cp yordamida 
+
+```bash
+sudo cp configuration.mix /mnt/nfs/
+ls -la /mnt/nfs/
+```
+![nfs-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/nfs-server/5.png)
+
+Okey hzoir biz NFS uchun bitta papka ochib(/mnt/nfs) unga NFS serverimizni mount qildik va test uchun bitta fayl ko'chirdik keling endi buni NFS serverimizda tekshirib ko'ramiz unda shared papkada bu config bo'lishi kerak
+
+![nfs-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/nfs-server/4.png)
+
+Okey hammasi ishlayapti biz uddaladik. Keyingi bosqichlarda Kubernetesda NFS bilan ishlashni ko'rib chiqamiz :)
+
+
+<Callout type="info" emoji="">
+
+**Sana:** 2024.10.04(2024-yil 4-oktabr)
+
+**Oxirgi yangilanish:** 2024.10.04(2024-yil 4-oktabr)
+
+**Muallif: Otabek Ismoilov**
+
+| [Telegram](https://t.me/Otabek_Ismoilov) | [GitHub](https://github.com/ismoilovdevml) | [LinkedIn](https://www.linkedin.com/in/otabek-ismoilov/) |
+| - | - | - |
+
+</Callout>

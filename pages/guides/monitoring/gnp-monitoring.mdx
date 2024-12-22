@@ -1,0 +1,480 @@
+---
+image: https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/monitoring/banner.png
+description: "Serverlarni monitoring qilish yoxud Grafana/Prometheus Stack"
+---
+
+
+import { Callout } from "nextra/components";
+
+# Serverlarni monitoring qilish yoxud Grafana/Prometheus Stack
+
+![monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/monitoring/banner.png)
+
+
+Aksariyat sysadminlar o'z serverlari qanday ishlashi haqida to'liq ma'lumotga ega bo'lishni xohlashadi. Server protsessorlari, xotirasi va I/O statistikasining ko'rinishi ularga muammolarni yuzaga kelishidan oldin aniqlash va ajratishga yordam beradi. Prometheus client nodelaridan foydali statistik ma'lumotlarni yig'ish uchun robust node monitoringi yechimini taklif etadi. Grafana vizualizatsiya yechimi bilan birgalikda Prometheus foydalanuvchilarga serverning asosiy statistikasini vizual kuzatish imkonini beradi.
+
+## Prometheus nima?
+
+Prometheus - bu muntazam ravishda server metriclarini(metrikalarini) to'playdigan open source tizim monitoringi ilovasi. U o'zining xost-serverini hamda tashqi clientlarni kuzatishi mumkin. Prometheus barcha clientlar uchun tashqi ish faoliyatini nazorat qilish imkonini beradi, bu mumkin bo'lgan xatolar yoki kutilmagan xatti-harakatlarni erta aniqlash imkonini beradi. Har bir client o'zining ichki statistikasini to'plash va oshkor qilish uchun exporter sifatida tanilgan metrics collation vositasini ishga tushirishi kerak. Xavfsizlik nuqtai nazaridan, Prometheus shu tarzda ma'lumotlarni yig'maydigan external nodeni kuzata olmaydi.
+
+Prometheus serveri talab qilinadigan ma'lumotlar uchun client serverlarini so'rash uchun HTTP protokolidan foydalanadi. U har bir clientni oldindan belgilangan vaqt oralig'ida so'rov qilib, natijalarning time-seriali ma'lumotlar bazasini saqlaydi. Prometheus statistik ma'lumotlar qachon olinganligini ko'rsatadigan timestamplari bilan birga discrete snapshotlarni saqlaydi. Prometheus o'zi to'plagan metricalarni saqlab qoladi, bu esa clientning uzoq muddatli faoliyatining umumiy ko'rinishini yaratishga imkon beradi.
+
+Client nodelarida turli statistik collectorlardan foydalanish mumkin bo'lsa-da, Prometheus o'zining Node Exporter tool tavsiya qiladi. Prometheus Node Exporter ko'p sonli hardware va kernel metriclarini, jumladan CPU va xotiradan foydalanishni to'playdi. To'plangan mavjud metriclarning to'liq ro'yxatini [Node Exporter GitHub sahifasida](https://github.com/prometheus/node_exporter) topish mumkin. Node Exporter Prometheus bilan chambarchas integratsiyalashgan va bir xil ma'lumotlar formatini baham ko'radi. Node Exporter va Prometheusni birgalikda ishlatish uchun hech qanday konversiya yoki dastlabki ishlov berish talab etilmaydi. Node Exporter monitoring qilish uchun har bir clientga o'rnatilishi kerak. Node Exporter 9100 portidan, Prometheus esa 9090 portidan foydalanadi. Prometheus haqida qo'shimcha ma'lumot olish uchun [Prometheus texnik hujjatlariga](https://prometheus.io/docs/introduction/overview/) qarang.
+
+Prometheusning ba'zi qo'shimcha xususiyatlari quyidagilardir.
+
+* Bu open source va har qanday kompaniyadan mustaqil
+* Har bir Prometheus serveri avtonomdir va taqsimlangan xotira(distributed storage) yoki markaziy serverni(central server) talab qilmaydi
+* Bu juda ishonchli va o'rnatish oson
+* Turli xil clientlarni turli vaqt oralig'ida so'rash mumkin
+* Time-seriyali ma'lumotlar va key-value pairlarini qo'llab-quvvatlaydigan moslashuvchan ko'p o'lchovli ma'lumotlar modelidan foydalanadi
+* Ma'lumotlarni olish va tahlil qilish uchun `PromQL` so'rovlar tilini(query language) qo'llab-quvvatlaydi
+* U AlertManger komponentini o'z ichiga oladi. AlertManager clientlardan ogohlantirishlarni(slerts) oladi va ularni turli obunachilarga yuboradi
+* Prometheus o'z metrikalarini Grafana kabi vizualizatsiya vositalariga kiritishi mumkin
+* Ixtiyoriy Prometheus PushGateway push-ga asoslangan metrik to'plamni qo'llab-quvvatlaydi
+* U sozlanishi va uchinchi tomon kutubxonalarini qo'llab-quvvatlaydi
+* U Docker konteynerlashtirish va Kubernetes-ni qo'llab-quvvatlaydi
+* Prometheus katta va faol ishlab chiquvchilar va foydalanuvchilar hamjamiyatiga ega
+
+## Grafana nima?
+
+Grafana - bu open source va korporativ relizlarda mavjud vizualizatsiya ilovasi. Grafana clientlardan hech qanday metrikalarni yig'maydi va hech qanday ma'lumotlarni saqlamaydi. Buning o'rniga, Grafana foydalanuvchi interfeysi Prometheus yoki boshqa ma'lumotlar manbasi tomonidan to'plangan metrikalarni intuitiv va vizual tarzda chiroyli formatda namoyish etadi. Grafana dashboard yordamida ma'lumotlarni taqdim etadi. Dashboard ko'rsatiladigan qiymatlarni va ularni qanday ko'rsatishni aniqlash uchun shablondir. Aksariyat dashboard foydalanuvchilarga taqdimotni ko'proq nazorat qilish imkonini beruvchi qo'shimcha imkoniyatlarni taqdim etadi.
+
+Grafana keng doiradagi dashboardni, jumladan Prometheus Node Exporter boshqaruv panelini qo'llab-quvvatlaydi. Grafana-da  [Grafana Dashboard Library](https://grafana.com/grafana/dashboards/) tasdiqlangan dashboard mavjud. Shuningdek, u foydalanuvchilarga o'z panellarini yaratish va ma'lumotlar manbasida o'z querylarini bajarish imkonini beradi. Grafana shuningdek, SQL yoki NoSQL ma'lumotlar bazalariga va Jira va GitLab kabi ilovalariga ulanishi mumkin. Bir xil boshqaruv panelida bir nechta ma'lumotlar manbalari birlashtirilishi mumkin.
+
+
+Grafana ogohlantirishlar(alerts), annotationlar, dashboard variablelari, plaginlar va autentifikatsiyani qo'llab-quvvatlaydi. Shuningdek, u ma'lumotlarni yanada dekonstruksiya qilish uchun bir qator tahliliy vositalarni taqdim etadi. Grafana veb-interfeysiga xost-serverning `3000`-porti yordamida kirish mumkin. Eng yaxshi natijalarga erishish uchun Prometheus va Grafana-ni bitta serverda ishga tushiring. Qo'shimcha ma'lumot olish uchun Grafanaga [texnik hujjatlariga](https://grafana.com/docs/grafana/latest/introduction/) qarang.
+
+<Callout type="info" emoji="">
+Butun qo'llanma bo'yicha asosiy tushuncha
+
+Prometheus va Grafana ikkalasini bitta serverga o'rnating va sozlang. Node Exporterni esa kuzatmoqchi yani monitoring qilmqochi bo'lgan serverlaringizga o'rnatib chiqing. Grafanaga o'zingizga mos tayyor Dashboardni import qiling yoki o'zingiz yasab oling. `prometheus.yml` konfigratsiya fayliga Node Exporter o'rnatilgan serverlaringiz IP addresi va portini qo'shib qo'ying. Bu qo'llanmani oxirigachga o'qib chiqsangiz yaxshi tushunasiz ))
+</Callout>
+
+
+### Talablar
+* Prometheus 4 GB RAM va 20 GB disk xotira talab qiladi va kamida ikkita CPU core bilan yaxshi ishlaydi.
+
+
+## Prometheus, Grafana va Node Exporter-ni o'rnatish va sozlash
+
+Ushbu ko'rsatmalarda Prometheus serveriga ega tizim "monitoring serveri" deb ataladi. Kuzatilayotgan tizim "client" hisoblanadi. Prometheus va Grafana yordamida juda murakkab maxsus exporterlar va dashboardni ishlab chiqish mumkin. Biroq, ushbu qo'llanma clientning eng muhim tafsilotlarini, jumladan CPU, xotira va I/O-dan foydalanishni kuzatish uchun yanada sodda yechimni tasvirlaydi. Bu PromQL haqida hech qanday ma'lumotni yoki Prometheus yoki Grafana uchun past darajadagi tafsilotlarni talab qilmaydi.
+
+#### Sozlash uchun quyidagi amallarni bajarish talab etiladi.
+
+* 1.Monitoring serverga Prometheusni yuklab olish va o'rnatish
+* 2.Prometheusni service sifatida ishlatish uchun sozlash.
+* 3.Node Exporter dasturini barcha clientlarga o'rnatish.
+* 4.Clientlarni kuzatish uchun Prometheusni sozlash.
+* 5.Grafana serverini o'rnatish va joylashtirish.
+* 6.Grafana va Prometheusni birlashtirish.
+* 7.Node Exporter statistikasi uchun dashboardni import qilish.
+
+## Prometheus o'ratish va sozlash
+
+Prometheusni GitHub repositoriyadan oldindan kompilyatsiya qilingan binary(ikkilik) fayl sifatida yuklab olish mumkin.  [Prometheus Downloads](https://prometheus.io/download/) repositoriyada Prometheusning eng so'nggi relizlari ro'yxati keltirilgan. [Prometheus GitHub sahifasida](https://github.com/prometheus/prometheus), shuningdek, Prometheusni source kodidan(manba kodi) build qilish yoki uni Docker konteyneri sifatida ishga tushirish bo'yicha ko'rsatmalar mavjud. Prometheusni yuklab olish uchun quyidagi amallarni bajaring.
+
+**1->** [Prometheus downloads](https://prometheus.io/download/) sahifasiga tashrif buyuring va eng so'nggi versiyani yozib oling. Eng so'nggi LTS versiyasi saytda aniq ko'rsatilgan.
+
+**2->** Monitoring serveriga Prometheusni yuklab olish uchun `wget` dan foydalaning. Maqsadli havola https://github.com/prometheus/prometheus/releases/download/v[release]/prometheus-[release].linux-amd64.tar.gz formatiga ega. Yuklab olish uchun [release] qatorini haqiqiy reliz bilan almashtiring. Masalan, quyidagi yuklash buyruqlari 2.54.1 versiyasini chiqaradi.
+
+```bash
+wget https://github.com/prometheus/prometheus/releases/download/v2.54.1/prometheus-2.54.1.linux-amd64.tar.gz
+```
+**3->** Arxivlangan Prometheus fayllarini arxivdan chiqarib oling.
+
+```bash
+tar xvfz prometheus-*.tar.gz
+```
+**4->** (Ixtiyoriy) Fayllar arxivdan chiqarilgandan so'ng, arxivni o'chiring yoki saqlash uchun boshqa joyga ko'chiring.
+```bash
+rm prometheus-*.tar.gz
+```
+**5->** Prometheus foydalanishi uchun ikkita yangi jild yarating. `/etc/prometheus` jildi Prometheus konfiguratsiya fayllarini saqlaydi. `/var/lib/prometheus` jildi dastur ma'lumotlarini saqlaydi.
+
+```bash
+sudo mkdir /etc/prometheus /var/lib/prometheus
+```
+**6->** Arxivdan chiqarilgan Prometheus jildiga kiring
+
+```bash
+cd prometheus-2.54.1.linux-amd64
+```
+
+**7->** Prometheus va promtool jildlarini `/usr/local/bin/` jildiga o'tkazing. Bu Prometheusni barcha foydalanuvchilar uchun ochiq qiladi.
+
+```bash
+sudo mv prometheus promtool /usr/local/bin/
+```
+**8->** `prometheus.yml` YAML konfiguratsiya faylini `/etc/prometheus` jildiga o'tkazing.
+
+```bash
+sudo mv prometheus.yml /etc/prometheus/prometheus.yml
+```
+**9->** `consoles` va `console_libraries` jildlari moslashtirilgan konsollarni yaratish uchun zarur bo'lgan resurslarni o'z ichiga oladi. Bu xususiyat yanada rivojlangan va ushbu qo'llanmada yoritilgan. Biroq, agar kerak bo'lsa, bu fayllar `etc/prometheus` jildiga ko'chirilishi kerak.
+
+```bash
+sudo mv consoles/ console_libraries/ /etc/prometheus/
+```
+**10->** Quyidagi buyruq yordamida Prometheus muvaffaqiyatli o'rnatilganligini tekshiring:
+```bash
+prometheus --version
+```
+
+## Prometheusni service sifatida sozlash
+
+Prometheusni buyruq satridan(konsol) ishga tushirish va to'xtatish mumkin bo'lsa-da, uni `systemctl` yordam dasturidan foydalangan holda service sifatida ishga tushirish qulayroqdir. Bu backgrounda ishlashga imkon beradi.
+
+Prometheus har qanday tashqi tizimlarni kuzatishdan(monitoring) oldin `prometheus.yml` fayliga qo'shimcha konfiguratsiya qo'shilishi kerak. Biroq, Prometheus allaqachon o'zini o'zi nazorat qilish uchun konfiguratsiya qilingan. Prometheusni sozlash uchun quyidagi amallarni bajaring.
+
+**1->** Prometheus userini(foydalanuchi) yarating. Quyidagi buyruq tizim userini yaratadi.
+
+```bash
+sudo useradd -rs /bin/false prometheus
+```
+
+**2->** Oldingi bo'limda yaratilgan ikkita jildga egalik huquqini yangi prometheus foydalanuvchisiga topshiring.
+
+```bash
+sudo chown -R prometheus: /etc/prometheus /var/lib/prometheus
+```
+**3->** Prometheusga service sifatida ishlashga ruxsat berish uchun quyidagi buyruq yordamida `prometheus.service` faylini yarating:
+
+```bash
+sudo nano /etc/systemd/system/prometheus.service
+```
+Faylga quyidagi kodni kiriting:
+
+```bash filename="/etc/systemd/system/prometheus.service"
+[Unit]
+Description=Prometheus
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+User=prometheus
+Group=prometheus
+Type=simple
+Restart=on-failure
+RestartSec=5s
+ExecStart=/usr/local/bin/prometheus \
+    --config.file /etc/prometheus/prometheus.yml \
+    --storage.tsdb.path /var/lib/prometheus/ \
+    --web.console.templates=/etc/prometheus/consoles \
+    --web.console.libraries=/etc/prometheus/console_libraries \
+    --web.listen-address=0.0.0.0:9090 \
+    --web.enable-lifecycle \
+    --log.level=info
+
+[Install]
+WantedBy=multi-user.target
+```
+
+* `Wants` va `After` opsiyalari `network-online.target` ga o'rnatilishi kerak.
+* `User` va `Group` maydonlarining ikkalasi ham `prometheus`ga o'rnatilishi kerak.
+* `ExecStart` parametri bajariladigan(executeble) prometheusni qayerdan topish mumkinligini tushuntiradi va standart variantlarni belgilaydi.
+* `config.file` opsiyasi Prometheus konfiguratsiya faylining joylashuvini `/etc/prometheus/prometheus.yml` sifatida belgilaydi.
+* `storage.tsdb.path` Prometheusga dastur ma'lumotlarini `/var/lib/prometheus/` jildida saqlashni aytadi.
+* `web.listen-address` `0.0.0.0:9090` ga sozlangan, bu Prometheusga barcha tarmoq interfeyslarida ulanishlarni tinglash imkonini beradi.
+* `web.enable-lifecycle ` opsiyasi foydalanuvchilarga Prometheusni qayta ishga tushirmasdan konfiguratsiya faylini qayta yuklash imkonini beradi.
+
+**4->** systemctl daemoni reload qilish.
+
+```bash
+sudo systemctl daemon-reload
+```
+
+**5->** (Ixtiyoriy) Prometheus service tizim ishga tushganda avtomatik ishga tushirish uchun sozlash uchun `systemctl enable` dan foydalaning. Agar bu buyruq qo'shilmasa, Prometheus qo'lda ishga tushirilishi kerak. Yani bu server o'chib yonganda yoki restart bo'lib yonganda avtomatik ravishda prometheusni ishga tushuradi.
+
+```bash
+sudo systemctl enable prometheus
+```
+
+**6->** Prometheus serviceni ishga tushiring va faolligini tekshirish uchun `status` buyrug'ini ko'rib chiqing.
+
+```bash
+sudo systemctl start prometheus
+sudo systemctl status prometheus
+```
+**7->** Prometheus veb-interfeysi va dashboardga `http://ip_address:9090` orqali kiring. `ip_address` ni monitoring serverining IP manzili bilan almashtiring. Prometheus standart konfiguratsiya faylidan foydalanganligi sababli, u hali ko'p ma'lumotlarni ko'rsatmaydi.
+
+![monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/monitoring/2.png)
+
+**8->** Standart `prometheus.yml` fayli local hostni o'chirish uchun direktivani o'z ichiga oladi. Barcha `Target`larni ro'yxatga olish uchun `Status` va `Targets`-ni bosing. Prometheus local Prometheus serviceni yagona target sifatida ko'rsatishi kerak.
+
+![monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/monitoring/3.png)
+
+
+## Node Exporter-ni o'ratish va sozlash
+
+Masofaviy tizimni kuzatishdan oldin, statistikani yig'ish uchun u qandaydir clientga ega bo'lishi kerak. Bir nechta uchinchi tomon clientlari mavjud. Biroq, foydalanish qulayligi uchun Prometheus Node Exporter clientini tavsiya qiladi. Node Exporter clientga o'rnatilgandan so'ng, clientni `prometheus.yml` da kuzatish uchun serverlar ro'yxatiga qo'shish mumkin.
+
+Node Exporter dasturini o'rnatish uchun quyidagi amallarni bajaring. Ushbu ko'rsatmalarni har bir client(yani kuzatmoqchi(monitoring) qilmoqchi bo'lgan har bir serveringizda) uchun takrorlang.
+
+<Callout type="info" emoji="">
+* Eslatma
+Node Exporter ishlayotgan bo'lsa, uning statistik ma'lumotlar to'plami `9100` portda mavjud. Bu port internetda mavjud va Prometheusni boshqa joyda ishlatayotgan har bir kishi ularni to'plashi mumkin. Agar siz firewalldan foydalansangiz, `sudo ufw allow 9100` buyrug'i yordamida `9100` portini ochishingiz kerak.
+</Callout>
+
+**1->** [Prometheus downloads sahifasining Node Exporter bo'limiga](https://prometheus.io/download/#node_exporter) murojaat qiling va oxirgi versiyani aniqlang.
+**2->** Ushbu relizni yuklab olish uchun `wget` dan foydalaning. Fayl formati https://github.com/prometheus/node_exporter/releases/download/v[reliz_raqami]/node_exporter-[reliz_raqami].linux-amd64.tar.gz. [reliz_raqami] ni haqiqiy relizga mos keladigan raqam bilan almashtiring. Misol uchun, quyidagi misol Node Exporter `1.8.2` versiyasini qanday yuklab olishni ko'rsatadi.
+
+```bash
+wget https://github.com/prometheus/node_exporter/releases/download/v1.8.2/node_exporter-1.8.2.linux-amd64.tar.gz
+```
+**3->** Dasturni arxivdan chiqarib oling
+
+```bash
+tar xvfz node_exporter-*.tar.gz
+```
+**4->** Bajariladigan(executable) faylni `usr/local/bin`-ga o'tkazing, shunda u butun tizimda mavjud bo'ladi.
+
+```bash
+sudo mv node_exporter-1.8.2.linux-amd64/node_exporter /usr/local/bin
+```
+**5->** (Ixtiyoriy) Qolgan fayllarni o'chirib tashlang.
+
+```bash
+rm -r node_exporter-1.8.2.linux-amd64*
+```
+**6->** Node Exporterni ishga tushirishning ikki yo'li mavjud. Uni terminaldan `node_exporter` buyrug'i yordamida ishga tushirish mumkin. Yoki uni system service sifatida faollashtirish mumkin. Uni terminaldan ishga tushirish unchalik qulay emas. Ammo bu vosita faqat vaqti-vaqti bilan foydalanish uchun mo'ljallangan bo'lsa, bu muammo bo'lmasligi mumkin. Node Exporter dasturini qo'lda ishga tushirish uchun quyidagi buyruqdan foydalaning. Terminal statistik ma'lumotlarni yig'ish jarayoniga oid tafsilotlarni chiqaradi.
+
+```bash
+node_exporter
+```
+**7->** Node Exporterni service sifatida ishga tushirish qulayroq. Node Exporter dasturini shu tarzda ishga tushirish uchun avval `node_exporter` foydalanuvchisini(user) yarating.
+
+```bash
+sudo useradd -rs /bin/false node_exporter
+```
+**8->** `systemctl` foydalanishi uchun service faylini yarating. Fayl `node_exporter.service` deb nomlanishi va quyidagi formatga ega bo'lishi kerak. Maydonlarning ko'pchiligi oldingi bo'limda tasvirlanganidek, `prometheus.service` da topilgan maydonlarga o'xshaydi.
+
+```bash
+sudo nano /etc/systemd/system/node_exporter.service
+```
+
+Faylga quyidagi kodni kiriting:
+
+```bash filename="/etc/systemd/system/node_exporter.service" {2,7-8,12}
+[Unit]
+Description=Node Exporter
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+User=node_exporter
+Group=node_exporter
+Type=simple
+Restart=on-failure
+RestartSec=5s
+ExecStart=/usr/local/bin/node_exporter
+
+[Install]
+WantedBy=multi-user.target
+```
+**9->** (Ixtiyoriy) Agar clientni doimiy ravishda kuzatib(monitoring) borish niyatida bo'lsangiz, yuklash vaqtida Node Exporter dasturini avtomatik ravishda ishga tushirish uchun `systemctl enable` buyrug'idan foydalaning. Bu doimiy ravishda `9100`-portdagi tizim metrikalarini ochib beradi. Agar Node Exporter faqat vaqti-vaqti bilan foydalanish uchun mo'ljallangan bo'lsa, quyidagi buyruqdan foydalanmang.
+
+```bash
+sudo systemctl enable node_exporter
+```
+**10->** `systemctl` demonini reload qiling, Node Exporter dasturini ishga tushiring va uning statusini tekshiring. Xizmat faol bo'lishi kerak.
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl start node_exporter
+sudo systemctl status node_exporter
+```
+
+**11->** Client nodedagi `9100` portiga kirish uchun veb-brauzerdan foydalaning, masalan, http://ip_addres:9100. `Node Exporter` deb nomlangan sahifa `Metrics`ni o'qish havolasi bilan birga ko'rsatiladi. Metricalar havolasini bosing va statistik ma'lumotlar yig'ilayotganini tasdiqlang. Turli statistik ma'lumotlarning batafsil tushun tirishlari uchun [Node Exporter texnik hujjatlariga](https://prometheus.io/docs/guides/node-exporter/) qarang.
+
+![monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/monitoring/4.png)
+
+## Client Nodelarini kuzatish uchun Prometheusni sozlash.
+
+Client Nodelari endi monitoringga tayyor. Clientlarni `prometheus.yml` ga qo'shish uchun quyidagi amallarni bajaring:
+
+**1->** Prometheus ishlaydigan monitoring serverida tahrirlash uchun `prometheus.yml` ni oching.
+
+```bash
+sudo nano /etc/prometheus/prometheus.yml
+```
+
+**2->** Joblar ro'yxatini o'z ichiga olgan `scrape_configs` bo'limini toping. Unda hozirda prometheus nomli bitta job ro'yxati keltirilgan. Bu job `9090`-portdagi local Prometheus taskini nazorat qiladi. Prometheus taski ostiga `remote_collector` `job_name`ga ega ikkinchi jobni qo'shing. Quyidagi ma'lumotlarni kiriting.
+
+```bash filename="/etc/prometheus/prometheus.yml" /172.78.1.89:9100/
+...
+- job_name: "remote_collector"
+  scrape_interval: 10s 
+    static_configs:
+      - targets:
+          - "195.158.4.203:9100"
+# bu yerda client server yani kuzatmoqchi bo'lgan serveringiz IP addresini yozasiz
+```
+
+<Callout type="info" emoji="">
+Bitr nechta serverlarni monitoring qilish uchun `prometheus.yml` konfigrasiya fayli quyidagicha yoziladi.
+
+```bash filename="/etc/prometheus/prometheus.yml" /targets:/
+  - job_name: "node_exporter"
+    static_configs:
+      - targets:
+        - "10.128.0.32:9100"
+        - "10.128.0.33:9100"
+        - "10.128.0.34:9100"
+        - "10.128.0.35:9100"
+        - "10.128.0.36:9100"
+        - "10.128.0.37:9100"
+```
+Bu yerda 4 ta serverga node_exporter o'rnatilgan va biz bularni Prometheus o'rnatgan serverimizdagi `/etc/prometheus/prometheus.yml` konfigratsiya faylida biz kuzatmoqchi bo'lgan severlarimizni ro'yxatini qo'shib qo'yyapmiz. 
+</Callout>
+
+
+**3->** Prometheusni yangilash uchun prometheus serviceni qayta ishga tushiring.
+
+```bash
+sudo systemctl restart prometheus
+```
+
+**4->** Veb-brauzerdan foydalanib, monitoring serveridagi `9090` portdagi Prometheus veb-portaliga qayta kiring. `Status` va keyin `Targets`ni tanlang. remote_collector job uchun ikkinchi havola ko'rsatiladi, bu clientning 9100 portiga olib keladi. Statistikani ko'rib chiqish uchun havolani bosing.
+
+![monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/monitoring/5.png)
+
+## Grafana serverini qanday o'rnatish va sozlash
+
+Prometheus hozirda konfiguratsiya faylining `scrape_configs` bo'limida sanab o'tilgan clientlardan statistik ma'lumotlarni yig'moqda. Biroq, ma'lumotni faqat xom ma'lumotlar to'plami sifatida ko'rish mumkin. Statistikani o'qish qiyin va unchalik foydali emas. 
+
+Grafana Prometheus tomonidan to'plangan statistik ma'lumotlarni ko'rish uchun interfeysni taqdim etadi. Grafana-ni Prometheus bilan ishlaydigan bir xil serverga o'rnating va Prometheusni ma'lumotlar manbai(data source) sifatida qo'shing. Keyin ma'lumotlarni sharhlash uchun bir yoki bir nechta panelni o'rnating. Grafana-ni o'rnatish va sozlash uchun quyidagi amallarni bajaring.
+
+**1->** `apt` yordamida ba'zi kerakli yordamchi dasturlarni o'rnating.
+
+```bash
+sudo apt-get install -y apt-transport-https software-properties-common wget
+```
+**2->** Grafana GPG keyini import qiling.
+```bash
+sudo mkdir -p /etc/apt/keyrings/
+wget -q -O - https://apt.grafana.com/gpg.key | gpg --dearmor | sudo tee /etc/apt/keyrings/grafana.gpg > /dev/null
+```
+**3->** Grafana "stable releases" repositoriyani qo'shing.
+
+```bash
+echo "deb [signed-by=/etc/apt/keyrings/grafana.gpg] https://apt.grafana.com stable main" | sudo tee -a /etc/apt/sources.list.d/grafana.list
+```
+
+**4->** Repozitariyadagi paketlarni, jumladan, yangi Grafana paketini yangilang.
+
+```bash
+sudo apt-get update
+```
+
+**5->** Grafana-ning open-source versiyasini o'rnatish
+
+<Callout type="info" emoji="">
+Grafana'ning Enterprise relizini o'rnatish uchun uning o'rniga `sudo apt-get install grafana-enterprise` buyrug'idan foydalaning.
+</Callout>
+
+```bash
+sudo apt-get install grafana
+```
+**6->** `systemctl` daemoni qayta yuklash(reload).
+
+```bash
+sudo systemctl daemon-reload
+```
+**7->** Grafana serverini yoqing(enable) va ishga tushiring(start). `systemctl enable`-dan foydalanish serverni tizim yuklanganda Grafana-ni ishga tushirish uchun sozlaydi.
+```bash
+sudo systemctl enable grafana-server.service
+sudo systemctl start grafana-server
+```
+**8->** Grafana serverining statusini tekshiring va uning faol holatda ekanligiga ishonch hosil qiling.
+
+```bash
+sudo systemctl status grafana-server
+```
+
+## Grafana va Prometheusni integratsiya qilish
+
+Endi barcha tizim komponentlari o'rnatildi, lekin Grafana va Prometheuprometheus.ymls o'zaro ishlashi uchun sozlanmagan. Qolgan konfiguratsiya vazifalari, jumladan Prometheusni data source sifatida qo'shish va dashboard panelini import qilish Grafana veb-interfeysi yordamida bajarilishi mumkin.
+
+Grafana va Prometheusni integratsiya qilish uchun quyidagi amallarni bajaring:
+
+**1->** Veb-brauzerdan foydalanib, monitoring serverining 3000 portiga kiring. Misol uchun, http://172.168.1.46:3000 kiriting, `172.168.1.46`-ni o'zingizning haqiqiy IP manzilingiz bilan almashtiring. Grafana kirish sahifasini ko'rsatadi. Foydalanuvchi(username) nomiga `admin` parolga esa `admin` ni kiriting. Agar xavfsizroq parol so'ralsa, parolni xavfsizroq qiymatga o'zgartiring.
+
+
+![monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/monitoring/6.png)
+
+**2->** Parolni muvaffaqiyatli o'zgartirgandan so'ng, Grafana `Grafana Dashboard`ni ko'rsatadi.
+![monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/monitoring/7.png)prometheus.yml
+
+**3->** Prometheusni `data source` sifatida qo'shish uchun `Configuration` deb yozilgan tishli belgini bosing, so'ng `Data Sources`-ni tanlang.
+![monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/monitoring/8.png)
+**4->** Keyingi ekranda `Add data source` tugmasini bosing.
+![monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/monitoring/9.png)
+**5->** Data source sifatida Prometheusni tanlang.
+![monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/monitoring/9.png)
+**6->** Local Prometheus manbasi uchun, ushbu qo'llanmada tasvirlanganidek, URL manzilini `http://localhost:9090` ga o'rnating. Boshqa sozlamalarning aksariyati standart qiymatlarda qolishi mumkin. Biroq, bu erda standart bo'lmagan `Timeout` qiymati qo'shilishi mumkin.
+![monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/monitoring/11.png)
+**7->** Sozlamalardan qoniqsangiz, ekranning pastki qismidagi `Save & test` tugmasini bosing.
+![monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/monitoring/12.png)
+
+**8->** Agar barcha sozlamalar to'g'ri bo'lsa, Grafana `Data source is working` xabarni ko'rsatadi.
+![monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/monitoring/13.png)
+
+## Grafana Dashboardni import qilish 
+prometheus.yml
+Boshqaruv paneli(dashboard) yanada samaraliroq va standartlashtirilgan tartib yordamida client nodining statistikasini ko'rsatadi. Shaxsiy boshqaruv panelini yaratish, albatta, mumkin. Biroq, Prometheus allaqachon Node Exporter statistikasini qo'llab-quvvatlash uchun dashboardni(dashboard) yaratgan. `Node Exporter Full` dashboardi client nodelaridan to'plangan qiymatlarning ko'pini aniq tasvirlaydi. Maxsus panelni yaratishdan ko'ra, oldindan tayyorlangan dashboardni import qilish ancha qulaydir.
+
+Node Exporter dashboardni import qilish uchun quyidagi amallarni bajaring:
+
+<Callout type="info" emoji="">
+Maxsus dashboardni yaratish uchun to'rtta kvadratga o'xshash dashboard tugmasini bosing. Keyin + `New Dashboard`ni tanlang. Qo'shimcha ma'lumot uchun [Building a Dashboard](https://grafana.com/docs/grafana/latest/getting-started/build-first-dashboard/) Grafana qo'llanmasiga murojaat qiling.
+</Callout>
+
+**1->** [Grafana Dashboard Library](https://grafana.com/grafana/dashboards/)ga tashrif buyuring. Qidiruv so'zi sifatida `Node exporter`ni kiriting.
+![monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/monitoring/14.png)
+
+**2->** `Node Exporter Full`-ni tanlang.
+![monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/monitoring/14.png)
+**3->** ID raqamini yozib qo'ying yoki `Copy ID to clipboard` tugmani ishlating. Ushbu dashbaordning identifikatori hozirda `1860`.
+![monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/monitoring/16.png)
+**4->** Grafana boshqaruv paneliga qayting. To'rt kvadratdan iborat `Dashboard` ikonkasini tanlang va ` + Import`-ni tanlang.
+![monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/monitoring/17.png)
+**5->** `Import via grafana.com` maydoniga oldingi bosqichdagi ID `1860` ni kiriting. Keyin `Load` tugmasini tanlang.
+![monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/monitoring/18.png)
+**6->** Keyingi ekranda import ma'lumotlarini tasdiqlang. Data source sifatida `Prometheusn`i tanlang va `Import` tugmasini bosing.
+
+![monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/monitoring/19.png)
+
+**7->** `Node Exporter Full` dashbaordi darhol ishga tushadi. U client nodening performance metrikalari va holatini, jumladan Xotira, RAM va CPU tafsilotlarini ko'rsatadi. Ekranning yuqori qismidagi bir nechta ochiladigan menyular foydalanuvchilarga kuzatish uchun hostni va kuzatish uchun vaqt oralig'ini tanlash imkonini beradi.
+
+![monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/monitoring/20.png)
+
+Quyidagi rasmda [Node Exporter Dashboard EN 20201010-StarsL.cn](https://grafana.com/grafana/dashboards/11074-node-exporter-for-prometheus-dashboard-en-v20201010/) dashboardni ko'p serverlarni kuzatish uchun.
+
+![monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/monitoring/21.png)
+![monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/monitoring/22.png)
+
+## Xulosa
+
+Prometheus - bu asosiy ko'rsatkichlar(metrics) bo'yicha client tizimlarini(kuzatmoqchi bo'lgan server) so'roq qiluvchi tizim monitoringi ilovasi. Har bir client node so'ralgan ma'lumotlarni yig'ish va ochish uchun exporterdan foydalanishi kerak. Prometheus Grafana vizualizatsiya vositasi bilan birgalikda foydalanilganda eng samarali hisoblanadi. Grafana metrikalarni Prometheusdan import qiladi va ularni intuitiv boshqaruv paneli strukturasi yordamida taqdim etadi.
+
+Komponentlarni birlashtirish uchun Prometheusni markaziy serverga yuklab oling va o'rnating va Prometheusni service sifatida sozlang. Ma'lumotlarni to'plash va clientlarni so'rash uchun Prometheusni sozlash uchun har bir clientga Prometheus `Node Exporter` dasturini o'rnating. Grafana-ni Prometheus bilan bitta serverga o'rnating va Prometheusni data source sifatida sozlang. Nihoyat, clientdan metrikalarni ko'rsatish uchun dashboardni import qiling. Prometheus haqida ko'proq ma'lumot olish uchun [Prometheus Overview and Documentation](https://prometheus.io/docs/introduction/overview/) qarang. Grafanani eng yaxshi [Introduction to Grafana](https://grafana.com/docs/grafana/latest/introduction/)-ni o'qish orqali tushunish mumkin.
+
+## Qo'shimcha
+<Callout type="info" emoji="">
+Qo'shimcha Resurslar
+
+ * [**Kubernetes Monitoring**](https://devops-journey.uz/guides/k8s/kubernetes-monitoring)
+ * [**ELK Stackga kirish**](https://devops-journey.uz/tutorials/article/elk-stack)
+ * [**PostgreSQL Monitoring**](https://devops-journey.uz/guides/database/postgres-monitoring)
+
+**Sana:** 2023.08.29 (2023-yil 29-Avgust)
+
+**Oxirgi yangilanish:** 2024.09.09(2024-yil 9-sentabr)
+
+**Muallif: Otabek Ismoilov**
+
+| [Telegram](https://t.me/Otabek_Ismoilov) | [Github](https://github.com/ismoilovdevml) | [LinkedIn](https://www.linkedin.com/in/otabek-ismoilov/) |
+| - | - | - |
+
+</Callout>

@@ -1,0 +1,436 @@
+---
+image: https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgresql.png
+description: "Linux Serverlarga Postgresql o'rnatish"
+---
+
+import { Callout } from "nextra/components";
+
+# Linux Serverlarga Postgresql o'rnatish
+
+![postgresql-ornatish](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgresql.png)
+
+## Kirish
+
+PostgreSQL, shuningdek, Postgres nomi bilan ham tanilgan, kengaytirilishi(extensibility) va SQL muvofiqligini(compliance) ta'kidlaydigan bepul va open source relational database management system (RDBMS).
+
+U dastlab Berkeley Kaliforniya universitetida ishlab chiqilgan `Ingres` ma'lumotlar bazasining vorisi sifatida kelib chiqishiga ishora qilib, `POSTGRES` deb nomlangan.
+1996 yilda loyiha SQL-ni qo'llab-quvvatlashini aks ettirish uchun PostgreSQL deb o'zgartirildi. 2007 yilda ko'rib chiqilgandan so'ng, ishlab chiqish guruhi PostgreSQL nomini va Postgres taxallusini saqlab qolishga qaror qildi.
+
+PostgreSQL atomiklik(atomicity), mustahkamlik(consistency), izolyatsiya(isolation), chidamlilik(durability) (ACID) xususiyatlari, avtomatik yangilanadigan viewlar, materiallashtirilgan viewlar, triggerlar, tashqi kalitlar va saqlangan protseduralar bilan operatsiyalarni o'z ichiga oladi.
+
+U bitta mashinadan tortib ma'lumotlar ombori yoki bir vaqtning o'zida ko'plab foydalanuvchilar bilan veb-xizmatlarigacha bo'lgan bir qator ish yuklarini boshqarish uchun mo'ljallangan. Bu macOS Server uchun standart ma'lumotlar bazasi edi va Linux, FreeBSD, OpenBSD va Windows uchun ham mavjud.
+
+
+## Ubuntu serverlarga Postgres o'rnatish
+
+**1->** PostgreSQL Apt Repository
+
+Agar Ubuntu versiyangizga kiritilgan versiya siz xohlagan versiya bo'lmasa, PostgreSQL Apt Repository dan foydalanishingiz mumkin. Ushbu repositoriya sizning oddiy tizimlaringiz va patch management bilan integratsiyalanadi va PostgreSQL-ni qo'llab-quvvatlash muddati davomida PostgreSQL-ning barcha qo'llab-quvvatlanadigan versiyalari uchun avtomatik yangilanishlarni ta'minlaydi.
+
+PostgreSQL Apt Repository Ubuntuning joriy versiyalarini qo'llab-quvvatlaydi:
+
+* kinetic (22.10, LTS bo'lmagan)
+* jammy (22.04, LTS)
+* focal (20.04, LTS)
+* bionic (18.04, LTS)
+
+quyidagi arxitekturalar bo'yicha:
+
+* amd64
+* arm64 (18.04 va undan yangiroq; faqat LTS versiyalari)
+* i386 (18.04 va undan katta)
+* ppc64el (faqat LTS versiyalarida)
+
+Apt Repositorydan foydalanib PostgreSQLning latest versiyani o'rnatish:
+
+```bash
+sudo apt install curl ca-certificates
+sudo install -d /usr/share/postgresql-common/pgdg
+sudo curl -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc --fail https://www.postgresql.org/media/keys/ACCC4CF8.asc
+sudo sh -c 'echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+sudo apt update
+sudo apt -y install postgresql
+```
+
+## Debian serverlarga Postgres o'rnatish
+
+PostgreSQL apt repository Debianning hozirda qo'llab-quvvatlanadigan barqaror versiyalarini qo'llab-quvvatlaydi:
+
+* bookworm (12.x)
+* bullseye (11.x)
+* buster (10.x)
+* sid (unstable)
+
+quyidagi arxitekturalar bo'yicha:
+
+* amd64
+* arm64
+* i386 (buster va undan keyingilar)
+* ppc64el
+
+Postgresqlning latest versiyasini Debianga o'rnatish quyidagicha:
+
+```bash
+sudo apt install curl ca-certificates
+sudo install -d /usr/share/postgresql-common/pgdg
+sudo curl -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc --fail https://www.postgresql.org/media/keys/ACCC4CF8.asc
+sudo sh -c 'echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+sudo apt update
+sudo apt -y install postgresql
+```
+
+## Redhat oilasiga mansub linux serverlar
+
+Red Hat distributivlar oilasiga quyidagilar kiradi:
+
+* Red Hat Enterprise Linux
+* Rocky Linux
+* CentOS (faqat 7 va 6)
+* Fedora
+* Oracle Linux
+
+**Red Hat Enterprise, CentOS, Scientific yoki Oracle version 6(x86_64)**
+
+```bash
+sudo yum install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-6-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+sudo yum install -y postgresql16-server
+sudo service postgresql-16 initdb
+sudo chkconfig postgresql-16 on
+sudo service postgresql-16 start
+```
+
+**Red Hat Enterprise, CentOS, Scientific yoki Oracle version 7(x86_64)**
+
+```bash
+sudo yum install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+sudo yum install -y postgresql16-server
+sudo /usr/pgsql-16/bin/postgresql-16-setup initdb
+sudo systemctl enable postgresql-16
+sudo systemctl start postgresql-16
+```
+
+**Red Hat Enterprise, Rocky, Almalinux yoki Oracle version 8(x86_64)**
+
+```bash
+sudo dnf install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-8-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+sudo dnf -qy module disable postgresql
+sudo dnf install -y postgresql16-server
+sudo /usr/pgsql-16/bin/postgresql-16-setup initdb
+sudo systemctl enable postgresql-16
+sudo systemctl start postgresql-16
+```
+
+**Red Hat Enterprise, Rocky, Almalinux yoki Oracle version 9(x86_64)**
+
+```bash
+sudo dnf install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-9-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+sudo dnf -qy module disable postgresql
+sudo dnf install -y postgresql16-server
+sudo /usr/pgsql-16/bin/postgresql-16-setup initdb
+sudo systemctl enable postgresql-16
+sudo systemctl start postgresql-16
+```
+
+**Fedora 38(x86_64)**
+
+```bash
+sudo dnf install -y https://download.postgresql.org/pub/repos/yum/reporpms/F-38-x86_64/pgdg-fedora-repo-latest.noarch.rpm
+sudo dnf install -y postgresql16-server
+sudo /usr/pgsql-16/bin/postgresql-16-setup initdb
+sudo systemctl enable postgresql-16
+sudo systemctl start postgresql-16
+```
+**Fedora 39(x86_64)**
+
+```bash
+sudo dnf install -y https://download.postgresql.org/pub/repos/yum/reporpms/F-39-x86_64/pgdg-fedora-repo-latest.noarch.rpm
+sudo dnf install -y postgresql16-server
+sudo /usr/pgsql-16/bin/postgresql-16-setup initdb
+sudo systemctl enable postgresql-16
+sudo systemctl start postgresql-16
+```
+**Fedora 40(x86_64)**
+
+```bash
+sudo dnf install -y https://download.postgresql.org/pub/repos/yum/reporpms/F-40-x86_64/pgdg-fedora-repo-latest.noarch.rpm
+sudo dnf install -y postgresql16-server
+sudo /usr/pgsql-16/bin/postgresql-16-setup initdb
+sudo systemctl enable postgresql-16
+sudo systemctl start postgresql-16
+```
+
+## PostgreSQL rolelari va databasedan foydalanish
+
+Postgresql o'rnatganingizdan keyin uni serveringizda ishga tushirib statusini ko'rishingiz kerak
+
+```bash
+sudo systemctl start postgresql.service
+sudo systemctl enable postgresql.service
+sudo systemctl status postgresql.service
+```
+
+Odatda, Postgres autentifikatsiya va avtorizatsiyani boshqarish uchun "roles" deb nomlangan tushunchadan foydalanadi. Bular qaysidir ma'noda Unix uslubidagi oddiy foydalanuvchilar va guruhlarga o'xshaydi.
+
+O'rnatishdan so'ng Postgres identifikatsiyadan foydalanish uchun o'rnatiladi, ya'ni u Postgres rollarini mos keladigan Unix/Linux tizimi hisobi bilan bog'laydi. Agar Postgres ichida rol mavjud bo'lsa, xuddi shu nomga ega Unix/Linux foydalanuvchi nomi ushbu rol sifatida tizimga kirishi mumkin.
+
+O'rnatish jarayoni standart Postgres roli bilan bog'langan `postgres` deb nomlangan foydalanuvchi hisobini yaratdi. Sizda default `postgres` useri bo'ladi. Postgres-ga kirish uchun ushbu hisobdan foydalanishning bir necha yo'li mavjud. Buning bir usuli - quyidagi buyruqni ishga tushirish orqali serveringizdagi postgres useriga o'tish:
+
+```bash
+sudo -i -u postgres
+```
+
+Keyin Postgres promptga quyidagi yo'llar bilan kirishingiz mumkin:
+
+```bash
+psql
+```
+Bu sizni PostgreSQL promptga kiritadi va shu yerdan siz darhol ma'lumotlar bazasini boshqarish tizimi bilan o'zaro aloqada bo'lishingiz mumkin ya'ni SQL querylar bilan database bialn bemalol ishlay olasiz.
+PostgreSQL promptdan chiqish uchun quyidagi buyruqlardan foydalanasiz:
+
+```bash
+postgres=# \q
+```
+Bu sizni postgres Linux command promptga qaytaradi. Oddiy tizim foydalanuvchisiga qaytish uchun `exit` buyrug'ini bajaring:
+```bash
+postgres@server:~$ exit
+```
+Postgres promptga ulanishning yana bir usuli - psql buyrug'ini postgres useri sifatida to'g'ridan-to'g'ri sudo bilan ishga tushirish:
+
+```bash
+sudo -u postgres psql
+```
+
+Bu sizni to'g'ridan-to'g'ri Postgres-ga o'rtada vositachi bash shellsiz kiradi.
+
+Shunga qaramay, interaktiv Postgres seansidan quyidagi amallarni bajarish orqali chiqishingiz mumkin:
+
+```bash
+postgres=# \q
+```
+
+## PostgreSQL sozlash
+
+**1->** PostgreSQL o'rnatilganda default **postgres** user bilan parolsiz keladi. Xavfsizlik uchun **postgres** userga password qo'yib olamiz.
+
+```bash
+sudo -u postgres psql
+ALTER USER postgres WITH PASSWORD 'meningparolcham129c';
+\q
+```
+
+![postgresql-ornatish](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgresql1.png)
+
+**2->** Postgresql o'rnatilgan servermizga tashqi ulanishlarni yoqib chiqamiz. 
+
+Birinchi navbatda **postgresql.conf** kondiguratsiyadan **listen_addresses** qatorini izohdan chiqarib localhost o'rniga * qo'yib qo'yamiz yani barcha IP lar uchun.
+
+Debian based serverlar uchun `postgresql.conf` config fayli `/etc/postgresql/{postgres-versiyasi}/main/postgresql.conf` da joylashgan bo'ladi
+```bash
+sudo nano /etc/postgresql/17/main/postgresql.conf
+```
+Redhad based serverlar uchun `postgresql.conf` config fayli `/var/lib/pgsql/{postgres-versiyasi}/data/postgresql.conf` da joylashgan bo'ladi
+```bash
+sudo nano /var/lib/pgsql/17/data/postgresql.conf
+```
+
+```conf {2}
+# - Connection Settings -
+#listen_addresses = 'localhost'         # what IP address(es) to listen on;
+                                        # comma-separated list of addresses;
+                                        # defaults to 'localhost'; use '*' for all
+                                        # (change requires restart)
+port = 5432                             # (change requires restart)
+max_connections = 100                   # (change requires restart)
+#reserved_connections = 0               # (change requires restart)
+#superuser_reserved_connections = 3     # (change requires restart)
+unix_socket_directories = '/var/run/postgresql' # comma-separated list of directories
+                                        # (change requires restart)
+#unix_socket_group = ''                 # (change requires restart)
+#unix_socket_permissions = 0777         # begin with 0 to use octal notation
+```
+
+Quyidagicha o'zgartiramiz.
+
+```conf {2}
+# - Connection Settings -
+listen_addresses = '*'         # what IP address(es) to listen on;
+                                        # comma-separated list of addresses;
+                                        # defaults to 'localhost'; use '*' for all
+                                        # (change requires restart)
+port = 5432                             # (change requires restart)
+max_connections = 100                   # (change requires restart)
+#reserved_connections = 0               # (change requires restart)
+#superuser_reserved_connections = 3     # (change requires restart)
+unix_socket_directories = '/var/run/postgresql' # comma-separated list of directories
+                                        # (change requires restart)
+#unix_socket_group = ''                 # (change requires restart)
+#unix_socket_permissions = 0777         # begin with 0 to use octal notation
+```
+
+O'zgarishlarni saqlab chiqamiz.
+
+**3-> pg_hba.conf** konfiguratsiyamizga quyidagi konfiguratsiyani qo'shib qo'yamiz.
+
+Debian based serverlar uchun `pg_hba.conf` config fayli `/etc/postgresql/{postgres-versiyasi}/main/pg_hba.conf` da joylashgan bo'ladi
+```bash
+sudo nano /etc/postgresql/17/main/pg_hba.conf
+```
+Redhad based serverlar uchun `pg_hba.conf` config fayli `/var/lib/pgsql/{postgres-versiyasi}/data/pg_hba.conf ` da joylashgan bo'ladi
+```bash
+sudo nano /var/lib/pgsql/17/data/pg_hba.conf 
+```
+
+```conf
+# Database administrative login by Unix domain socket
+local   all             postgres                                peer
+# TYPE  DATABASE        USER            ADDRESS                 METHOD
+# "local" is for Unix domain socket connections only
+local   all             all                                     peer
+# IPv4 local connections:
+host    all             all             127.0.0.1/32            scram-sha-256
+# IPv6 local connections:
+host    all             all             ::1/128                 scram-sha-256
+# Allow replication connections from localhost, by a user with the
+# replication privilege.
+local   replication     all                                     peer
+host    replication     all             127.0.0.1/32            scram-sha-256
+host    replication     all             ::1/128                 scram-sha-256
+```
+Konfiguratsiyamizga quyidagi konfiglarni qo'shamiz.
+
+```conf {15-16}
+# Database administrative login by Unix domain socket
+local   all             postgres                                peer
+# TYPE  DATABASE        USER            ADDRESS                 METHOD
+# "local" is for Unix domain socket connections only
+local   all             all                                     peer
+# IPv4 local connections:
+host    all             all             127.0.0.1/32            scram-sha-256
+# IPv6 local connections:
+host    all             all             ::1/128                 scram-sha-256
+# Allow replication connections from localhost, by a user with the
+# replication privilege.
+local   replication     all                                     peer
+host    replication     all             127.0.0.1/32            scram-sha-256
+host    replication     all             ::1/128                 scram-sha-256
+host    all             all              0.0.0.0/0              md5
+host    all             all              ::/0                   md5
+```
+
+**4->** Ushbu konfiguratsiyada barcha iplar ushbu Postgresql bazaga ulanishi kiritilgan. Konfiglarni qo'shib chiqganimizdan keyin o'zgarishlarni saqlab postgresqlga restart beramiz.
+
+Debian based serverlarda quyidagicha:
+```bash
+sudo systemctl restart postgresql
+sudo systemctl status postgresql
+```
+
+Redhad based serverlarda quyidagicha:
+```bash
+sudo systemctl restart postgresql-17
+sudo systemctl status postgresql-17
+```
+
+PostgreSQLga restart berganimizdan keyin postgresql databazaga tashqaridan ulana olamiz.
+
+## Yangi rol yaratish
+
+Agar siz postgres useri sifatida kirgan bo'lsangiz, quyidagi buyruqni ishga tushirish orqali yangi rol yaratishingiz mumkin:
+
+```bash
+postgres@server:~$ createuser --interactive
+```
+Buning o'rniga userga kirib keyin ishlamasdan har bir buyruq uchun sudo dan foydalanishni afzal ko'rsangiz, quyidagilarni bajaring:
+
+```bash
+sudo -u postgres createuser --interactive
+```
+Qanday bo'lmasin, script sizni ba'zi tanlovlar bilan taklif qiladi va sizning javoblaringizga asoslanib, spetsifikatsiyalaringizga mos foydalanuvchi(user) yaratish uchun to'g'ri Postgres buyruqlarini bajaring.
+
+```txt
+Enter name of role to add: asilbek
+Shall the new role be a superuser? (y/n) y
+```
+
+## Yangi database yaratish
+
+Postgres autentifikatsiya tizimi standart bo'yicha amalga oshiradigan yana bir taxmin shundan iboratki, tizimga kirish uchun ishlatiladigan har qanday rol uchun ushbu rol o'zi kirishi mumkin bo'lgan bir xil nomdagi ma'lumotlar bazasiga ega bo'ladi. Yani `postgres` useri bo'lsa uni postgres nomli databasesi bo'ladi `asilbek` useri bo'lsa asilbek databasesi bo'lishi kerak.
+
+Bu shuni anglatadiki, agar siz oxirgi bo'limda yaratgan foydalanuvchi `asilbek` deb nomlangan bo'lsa, bu rol standart bo'yicha `asilbek` deb ataladigan databasega ulanishga harakat qiladi. `createdb` buyrug'i bilan tegishli ma'lumotlar bazasini yaratishingiz mumkin.
+
+Agar siz postgres user sifatida tizimga kirgan bo'lsangiz, quyidagi buyruqlarni yozasiz:
+
+```bash
+postgres@server:~$ createdb asilbek
+```
+
+postgres user bilan kirmasdan oddiy sudo bilan kirish uchun quyidagi buyruqni yozasiz:
+
+```bash
+sudo -u postgres createdb asilbek
+```
+
+## Yangi role bilan PostgreSQL Promptni ochish
+
+Identifikatsiyaga asoslangan autentifikatsiya bilan tizimga kirish uchun sizga Postgres rolingiz va ma'lumotlar bazasi bilan bir xil nomga ega Linux useri kerak bo'ladi.
+
+Agar sizda mos keladigan Linux useri(foydalanuvchisi) bo'lmasa, uni `adduser` buyrug'i bilan yaratishingiz mumkin. Buni `sudo` imtiyozlari bilan root bo'lmagan useringizdan qilishingiz kerak bo'ladi (ya'ni postgres foydalanuvchisi sifatida tizimga kirmagan):
+
+```bash
+sudo adduser asilbek
+```
+
+Ushbu yangi user mavjud bo'lgandan so'ng, siz quyidagini ishga tushirish orqali ma'lumotlar bazasiga o'tishingiz va ulanishingiz mumkin
+
+```bash
+sudo -i -u asilbek
+psql
+```
+
+Yoki buni bir qator buyruq bilan kirishingiz mumkin:
+
+```bash
+sudo -u asilbek psql
+```
+
+Ushbu buyruq barcha komponentlar to'g'ri sozlangan bo'lsa, avtomatik ravishda tizimga kiradi.
+
+Agar siz userchining boshqa ma'lumotlar bazasiga ulanishini istasangiz, buni quyidagi kabi ma'lumotlar bazasini belgilash orqali qilishingiz mumkin:
+
+```bash
+psql -d postgres
+```
+
+Tizimga kirganingizdan so'ng siz joriy ulanish ma'lumotlarini tekshirishingiz mumkin:
+
+```bash
+asilbek=# \conninfo
+```
+
+Siz quyidagicha chiqishni ko'rishingiz kerak:
+
+```txt
+You are connected to database "asilbek" as user "asilbek" via socket in "/var/run/postgresql" at port "5432".
+```
+
+<Callout type="info" emoji="">
+E'tibor bering birinchi marta postgres user bilan kirganimizda terminal `postgres=# ` edi hozir biz yangi role ochin yangi user ochib kirganimizdan keyin `asilbek=# ` ga o'zgardi
+</Callout>
+
+## Qo'shimcha
+
+<Callout type="info" emoji="">
+
+ * [**PostgreSQLga kirish**](https://devops-journey.uz/guides/database/postgresql-kirish)
+ * [**PostgreSQL Monitoring**](https://devops-journey.uz/guides/database/postgres-monitoring)
+
+**Sana:** 2023.08.17(2023-yil 17-avgust)
+
+**Oxirgi yangilanish:** 2024.11.30(2024-yil 30-noyabr)
+
+**Muallif: Otabek Ismoilov**
+
+| [Telegram](https://t.me/Otabek_Ismoilov) | [Github](https://github.com/ismoilovdevml) | [LinkedIn](https://www.linkedin.com/in/otabek-ismoilov/) |
+| - | - | - |
+
+</Callout>

@@ -1,0 +1,379 @@
+---
+image: https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/apm-server/banner.png
+description: "APM Server Sozlash"
+---
+
+import { Callout } from "nextra/components";
+
+# APM Server Sozlash
+
+![apm-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/apm-server/banner.png)
+
+<Callout type="info" emoji="">
+**Diqqat!** 
+* Ushbu amaliyotni boshlash uchun [**ELK Stackga kirish**](https://devops-journey.uz/tutorials/article/elk-stack) va  [**ELK Stack Cluster o'rnatish va sozlash**](https://devops-journey.uz/tutorials/article/elk-setup) qo'llanmasini o'qib chiqgan bo'lishingiz kerak bo'ladi!
+* Sizda ELK stack bo'lishi kerak!
+</Callout>
+
+**A**pplication **P**erformance **M**onitoring (**APM**)  zamonaviy dasturiy ta'minotni ishlab chiqish va IT operatsiyalarining hal qiluvchi jihati hisoblanadi. APM dasturiy ta'minot ilovalarining ishlashi, mavjudligi(availability) va user experienceni kuzatish va boshqarish uchun toollar va amaliyotlardan foydalanishni o'z ichiga oladi. U applicationlarning qanday ishlashini ko'rish imkonini beradi, ishlash muammolari, qiyinchiliklar va anomaliyalarni aniqlash va hal qilishga yordam beradi. **APM**'ning maqsadi optimal ishlash va ishonchlilikni saqlab qolish orqali applicationlarning foydalanuvchi kutganlari va biznes talablariga javob berishini ta'minlashdan iborat.
+
+APM bir nechta maqsadlar qo'llaniladi.
+
+* **Performance Monitoring->** Applicationlarning ishlash metrikalarini(metrics), jumladan response timelari, o'tkazish qobiliyati(throughput) va resurslardan foydalanishni doimiy ravishda kuzatib boradi. Bu samaradorlikning pasayishini aniqlashga va applicationlarning samarali ishlashini ta'minlashga yordam beradi.
+
+* **Error Tracking->** Applicationlardagi xatolar(error) va exceptionlarni aniqlaydi va logga yozadi, ildiz sabablari(root cause) haqida tushuncha beradi va tezkor hal qilish imkonini beradi.
+
+* **User Experience Monitoring->** Sahifani yuklash vaqtlari(page load time), tranzaksiya vaqtlari va foydalanuvchilarning o'zaro ta'siri kabi metrikalarni kuzatish orqali end-user experienceni nazorat qiladi. Bu foydalanuvchilar dasturning ishlashini qanday qabul qilishini tushunishga yordam beradi.
+
+* **Transaction Tracing->** Foydalanuvchi interfeysidan(user interface) tortib to backend servicelari va ma'lumotlar bazalarigacha bo'lgan applicationlar stackidagi tranzaktsiyalar yo'lini kuzatib boradi. Bu kechikishlar yoki nosozliklar sodir bo'lgan joyni aniqlashga yordam beradi.
+
+* **Infrastructure Monitoring->** Serverlar, ma'lumotlar bazalari, tarmoqlar va cloud servislarini o'z ichiga olgan applicationlarni qo'llab-quvvatlovchi asosiy infratuzilmani kuzatadi. Bu infratuzilma komponentlarining yaxshi ishlashini va dastur bilan bog'liq muammolarni keltirib chiqarmasligini ta'minlaydi.
+
+* **Analytics and Reporting->** Vaqt o'tishi bilan applicationlarning ishlash tendentsiyalari bo'yicha batafsil hisobotlar va tahlillarni taqdim etadi, bu jamoalarga ongli qarorlar qabul qilishda va kelajakdagi relizlarni yaxshilashda yordam beradi.
+
+## APM Componentlari
+
+APM keng qamrovli monitoring yechimini ta'minlash uchun birgalikda ishlaydigan bir nechta komponentlardan iborat.
+
+* **APM Server->** Turli agentlardan ishlash ma'lumotlarini to'playdigan va qayta ishlaydigan markaziy komponent. U ma'lumotlarni jamlaydi, saqlaydi va ma'lumotlarni so'rash va vizualizatsiya qilish uchun interfeyslarni taqdim etadi.
+
+* **APM Agentlar->** Application serverlarida yoki applicationlar ichida o'rnatilgan lightweight software modullar. Ushbu agentlar performance datalarni to'playdi va ularni APM serveriga yuboradi. Turli xil agentlar turli dasturlash tillari va environmentlar, jumladan **Java, Node.js, Python(Django, Flask), Ruby on Rails, Rack, Go, .NET, PHP** va boshqalar uchun mavjud.
+
+* **Data Collectorlar->** Logllar, tracelar va metrikalar kabi turli manbalardan ma'lumotlarni to'playdigan maxsus toollar. Ular application layerdan ham, infrastructure layeridan ham ma'lumotlarni to'plashlari mumkin.
+
+* **User Interface (UI)->** Foydalanuvchilarga ishlash ma'lumotlarini tasavvur qilish, ogohlantirishlarni(alert) o'rnatish va tendentsiyalarni tahlil qilish imkonini beruvchi boshqaruv paneli yoki veb-interfeys. Ushbu interfeys amaliy tushunchalarni taqdim etish va muammolarni bartaraf etishni osonlashtirish uchun juda muhimdir.
+
+* **Alerting va Notification System->** Foydalanuvchilarni ishlash muammolari yoki anomaliyalar haqida xabardor qiladigan sozlanishi mumkin bo'lgan ogohlantirishlar. Bu jamoalarning yuzaga kelishi mumkin bo'lgan muammolarga tezda javob berishini ta'minlaydi.
+
+
+## Ishni boshlash
+
+Ushbu amaliyotda biz APM server o'rnatib sozlaymiz va **Java, Node.js, Python(Django, Flask), Ruby on Rails, Rack, Go, .NET, PHP** environmentlarda APM agentni o'rnatib sozlashni ko'rib chiqamiz.
+
+APM ishlashi quyidagi rasmda tasvirlangan. Biz serverimizga APM Server o'rnatamiz va uni Elasticsearchga yo'naltiramiz. APM agentlarni esa har bir applicationimizga qo'shib chiqamiz. Applicationlarimiz ichidagi APM agent APM Serverga ma'lumotlarni yuborib turadi. APM Server esa uni ishlab Elasticsearchga yuboradi, Elasticsearchdan biz Kibana APM UI orqali uni vizualizatsiya qilib ko'rishimiz mumkin.
+
+![apm-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/apm-server/apm-architecture.png)
+![apm-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/apm-server/apm5.png)
+
+## APM Server o'natish va solzash
+
+Keling [**ELK Stack Cluster o'rnatish va sozlash**](https://devops-journey.uz/tutorials/article/elk-setup) qo'llanmasidagi app-server(`10.128.0.12`) ga APM Server o'rnatamiz.
+
+**1->** APM Server o'rnatamiz.
+
+```bash
+curl -L -O https://artifacts.elastic.co/downloads/apm-server/apm-server-7.17.20-amd64.deb
+sudo dpkg -i apm-server-7.17.20-amd64.deb
+```
+
+**2->** APM Server `apm-server.yml` konfiguratsiya faylidan Elasticsearchga ulanishni kiritamiz va APM Serverga tashqaridan ulanishni yoqamiz.
+
+```bash
+sudo nano /etc/apm-server/apm-server.yml
+```
+
+```bash {5,13} filename="/etc/apm-server/apm-server.yml"
+################################ APM Server ################################
+
+apm-server:
+  # Defines the host and port the server is listening on. Use "unix:/path/to.sock" to listen on a unix domain socket.
+  host: "0.0.0.0:8200"
+
+#-------------------------- Elasticsearch output --------------------------
+output.elasticsearch:
+  # Array of hosts to connect to.
+  # Scheme and port can be left out and will be set to the default (`http` and `9200`).
+  # In case you specify and additional path, the scheme is required: `http://localhost:9200/path`.
+  # IPv6 addresses should always be defined as: `https://[2001:db8::1]:9200`.
+  hosts: ["10.128.0.9:9200"]
+```
+
+**3->** APM Sererni ishga tushiramiz.
+
+```bash
+sudo systemctl start apm-server
+sudo systemctl enable apm-server
+```
+
+Statusini tekshiramiz.
+
+```bash
+sudo systemctl status apm-server
+```
+
+**4->** Kibanadan **Integrations** bo'limga o'tsak bizda **Elastic APM** chiqishi kerak.
+
+![apm-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/apm-server/integration.png)
+
+Elastic APM'ga o'tib **Check APM Server Status** bosganimizda **You have correctly setup APM Server** chiqsa demak bizni APM Serverni to'gri o'rnatib sozladik.
+![apm-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/apm-server/integration2.png)
+
+APM Serverni o'rnatib Elasticsearchga ulab olganimzidan keyin AMP agentlarni qo'shib chiqishimiz kerak bo'ladi. Application qaysi dasturlash tilida yozilganiga qarab APM agent qo'shish o'ziga xos bo'ladi.
+
+APM serverni loyihangizga integratsiya qilish uchun bir nechta agentlari bor.
+
+* **Android agent**
+* **Go agent**
+* **iOS agent**
+* **Java agent**
+* **.NET agent**
+* **Node.js agent**
+* **PHP agent**
+* **Python agent**
+* **Ruby agent**
+* **JavaScript Real User Monitoring (RUM) agent**
+
+Biz hozir ushbu agentlardan ba'zi birlarni integratsiya qilishni ko'rib chiqamiz.
+## Node.js
+
+Bu qismda biz Node.js loyihalarga APM agent qo'shishni ko'rib chiqamiz.
+
+**1->** Node.js loyihamizga [`elastic-apm-node`](https://www.npmjs.com/package/elastic-apm-node) Node.js APM agent paketini qo'shib olamiz.
+
+```bash
+#npm bilan
+npm install --save elastic-apm-node
+
+#pnpm bilan
+pnpm install --save elastic-apm-node
+```
+
+**2->** `package.json` konfiguratsiyaga quyidagi o'zgarishlarni kiritamiz. Namuna Next.js
+
+```js {2,4}
+  "scripts": {
+    "dev": "NODE_OPTIONS=--require=elastic-apm-node/start-next.js next dev",
+    "build": "next build",
+    "start": "NODE_OPTIONS=--require=elastic-apm-node/start-next.js next start",
+    "lint": "next lint"
+  },
+```
+
+**3->** `elastic-apm-node.js` nomli fayl ochib olamiz APM Server manzili kiritamiz.
+
+```js
+module.exports = {
+    serverUrl: 'http://10.128.0.12:8200' 
+  }
+```
+
+Boshqa Node.js fremworklarda ham ishlatish uchun [quyidagi rasmiy qo'llanmani](https://www.elastic.co/guide/en/apm/agent/nodejs/current/set-up.html) ko'rib chiqishingiz mumkin.
+
+## .NET
+
+Bu qismda biz .NET loyihalarga APM agent qo'shishni ko'rib chiqamiz.
+
+**Entity Framework Core** bilan **ASP.NET Core** application uchun [`Elastic.Apm.NetCoreAll`](https://www.nuget.org/packages/Elastic.Apm.NetCoreAll) paketini ishlatishingiz mumkin.
+
+Minimalizm uchun faqat **ASP.NET Core** monitoring uchun [`Elastic.Apm.AspNetCore`](https://www.nuget.org/packages/Elastic.Apm.AspNetCore) paketini ishlatishingiz mumkin.
+
+Faqat **Entity Framework Core** monitoring uchun [`Elastic.Apm.EntityFrameworkCore`](https://www.nuget.org/packages/Elastic.Apm.EntityFrameworkCore) aketini ishlatishingiz mumkin.
+
+**1->** .NET loyihamiz `.csproj` fayliga `Elastic.Apm.NetCoreAll` paketini qo'shib qo'yamiz.
+
+```cs {12}
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.13" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+    <PackageReference Include="Elastic.Apm.NetCoreAll" Version="1.27.0" />
+  </ItemGroup>
+
+</Project>
+```
+
+**2->** .NET loyiahmiz `Program.cs` fayliga quyidagi kodlarni qo'shamiz.
+
+```cs {1,23}
+using Elastic.Apm.NetCoreAll;
+var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container.
+builder.Services.AddControllers();
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+app.UseAuthorization();
+
+app.MapControllers();
+
+app.UseAllElasticApm(builder.Configuration);
+
+app.Run();
+```
+
+**4->** .NET loyihamiz `appsettings.json` konfiguratsiya fayliga APM Serverga ulanishni qo'shamiz. Ushbu konfiguratsiyada APM Server manzili, Environment(developement, staging, production) va service nomi yoziladi.
+
+```json {9-14}
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "AllowedHosts": "*",
+  "ElasticApm": {
+    "SecretToken": "",
+    "ServerUrls": "http://10.128.0.12:8200",
+    "ServiceName": "github-actions-api", 
+    "Environment": "development"
+    }
+}
+```
+Qo'shimcha uchun [.NET applicationlarga APM Agent qo'shish bo'yicha rasmiy qo'llanma](https://www.elastic.co/guide/en/apm/agent/dotnet/current/setup.html)
+## PHP
+
+Bu qismda biz PHP loyihalarga APM agent qo'shishni ko'rib chiqamiz.
+
+Serverimizga [`apm-agent-php`](https://github.com/elastic/apm-agent-php/releases)ni o'rnatib olamiz.
+
+**1->** Debian based serverlar uchun apm-php-agentni o'rntamiz.
+
+```bash
+sudo wget https://github.com/elastic/apm-agent-php/releases/download/v1.13.0/apm-agent-php_1.13.0_amd64.deb 
+sudo dpkg -i apm-agent-php_1.13.0_amd64.deb
+```
+Redhat based serverlar uchun
+
+```bash
+sudo wget https://github.com/elastic/apm-agent-php/releases/download/v1.13.0/apm-agent-php-1.13.0-1.x86_64.rpm
+sudo rpm -ivh apm-agent-php-1.13.0-1.x86_64.rpm
+```
+
+**2->** PHP loyihamizga APM Agent ulashning bir usuli bu `php.ini` fayliga quyidagi konfiguratsiyani qo'shishdir.
+
+```bash
+elastic_apm.server_url=http://10.128.0.12:8200
+elastic_apm.service_name="php-service"
+```
+Yoki loyiha `.env` fayliga qo'shish
+
+Yana bir usuli bu `export` orqali qo'shish
+
+```bash
+export elastic_apm.server_url=http://10.128.0.12:8200
+export elastic_apm.service_name="php-service"
+```
+Qo'shimcha uchun [PHP applicationlarga APM Agent qo'shish bo'yicha rasmiy qo'llanma](https://www.elastic.co/guide/en/apm/agent/php/current/intro.html)
+
+## Django
+
+Bu qismda biz Python Django loyihalarga APM agent qo'shishni ko'rib chiqamiz.
+
+**1->** Djnago loyihamizga pip orqali [`elastic-apm`](https://pypi.org/project/elastic-apm/) paketini o'rnatib olamiz.
+
+```bash
+pip install elastic-apm
+```
+
+**2->** `settings.py` faylimizga quyidagi konfiguratsiyalarni qo'shib chiqamiz.
+
+```py {4,12-21,32}
+# INSTALLED_APPS ga qo'shamiz
+INSTALLED_APPS = [
+    "django.contrib.admin",
+    'elasticapm.contrib.django',
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+]
+
+# ELASTIC_APM config qilamiz
+ELASTIC_APM = {
+'SERVICE_NAME': 'python-service',
+
+# 'SECRET_TOKEN': '',
+
+'SERVER_URL': 'http://35.238.168.75:8200',
+
+'ENVIRONMENT': 'production',
+}
+
+# MIDDLEWARE ga qo'shamiz
+MIDDLEWARE = [
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    'elasticapm.contrib.django.middleware.TracingMiddleware',
+]
+```
+
+Qo'shimcha uchun [Python django applicationlarga APM Agent qo'shish bo'yicha rasmiy qo'llanma](https://www.elastic.co/guide/en/apm/agent/python/current/django-support.html)
+
+
+## Kibana bilan ishlash
+
+Application va servicelaringizga apm-agent integratsiya qilib apm-serverga ulaganingizdan keyin Kibana Dashboarddan **Obervability -> APM** ga o'tamiz. 
+
+![apm-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/apm-server/ui.png)
+
+Bizda APM serverga ulangan application/servicelarimiz ro'yxati chiqishi kerak. 
+![apm-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/apm-server/ui5.png)
+
+
+Kuzatmoqchi bo'lgan application/servicega kirib ko'rishingiz mumkin. Har bir serviceni trace qilib analiz qilishingiz mumkin.
+![apm-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/apm-server/ui1.png)
+
+Application/Servicelar **Service Map**ni ko'rishingiz mumkin bu mikroservice qanday ishlab turgani tasavvur qilishingiz va analiz qilishingiz uchun kerak.
+![apm-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/apm-server/ui2.png)
+
+Machine learning va AIOps bilan anomaliyilarni tez aniqlashingiz mumkin.
+![apm-setup](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/apm-server/ui3.png)
+
+## Qo'shimcha
+
+Applicationlarni APM server bilan apm-agent orqali integratsiya qilish bo'yicha ba'tafsil rasmiy resurslar.
+
+* [**Android agent**](https://www.elastic.co/guide/en/apm/agent/android/current/intro.html)
+* [**Go agent**](https://www.elastic.co/guide/en/apm/agent/go/2.x/introduction.html)
+* [**iOS agent**](https://www.elastic.co/guide/en/apm/agent/swift/1.x/intro.html)
+* [**Java agent**](https://www.elastic.co/guide/en/apm/agent/java/1.x/intro.html)
+* [**.NET agent**](https://www.elastic.co/guide/en/apm/agent/dotnet/1.x/intro.html)
+* [**Node.js agent**](https://www.elastic.co/guide/en/apm/agent/nodejs/4.x/intro.html)
+* [**PHP agent**](https://www.elastic.co/guide/en/apm/agent/php/1.x/intro.html)
+* [**Python agent**](https://www.elastic.co/guide/en/apm/agent/python/6.x/getting-started.html)
+* [**Ruby agent**](https://www.elastic.co/guide/en/apm/agent/ruby/4.x/introduction.html)
+* [**JavaScript Real User Monitoring (RUM) agent**](https://www.elastic.co/guide/en/apm/agent/rum-js/5.x/intro.html)
+---------------
+* [**APM rasmiy resurslari**](https://www.elastic.co/observability/application-performance-monitoring)
+---------------
+* [**ELK Stackga kirish**](https://devops-journey.uz/tutorials/article/elk-stack)
+* [**ELK Stack Cluster o'rnatish va sozlash**](https://devops-journey.uz/tutorials/article/elk-setup)
+
+<Callout type="info" emoji="">
+
+
+**Sana:** 2024.05.13(2024-yil 13-may)
+
+**Oxirgi yangilanish:** 2024.06.21(2024-yil 24-iyun)
+
+**Muallif: Otabek Ismoilov**
+
+| [Telegram](https://t.me/Otabek_Ismoilov) | [GitHub](https://github.com/ismoilovdevml) | [LinkedIn](https://www.linkedin.com/in/otabek-ismoilov/) |
+| - | - | - |
+
+</Callout>

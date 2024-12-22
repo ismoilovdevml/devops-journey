@@ -1,0 +1,101 @@
+---
+image: https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-stack/banner.png
+description: "ELK Stackga kirish"
+---
+
+import { Callout } from "nextra/components";
+
+# ELK Stackga kirish
+
+![elk-stack](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-stack/banner.png)
+
+Ma'lumotlarni boshqarish va tahlil qilishning doimiy rivojlanayotgan landshaftida mustahkam, kengaytiriladigan va real-time yechimlarga talab kundan-kunga ortib bormoqda. Tashkilotlar o'zlarining katta ma'lumotlar to'plamidan amaliy tushunchalarni olishga intilishar ekan, ular loglarni samarali boshqarish, kuchli qidiruv imkoniyatlari va chuqur vizualizatsiya vositalariga ehtiyoj sezadilar. Bu vaziyatda bizga  **ELK stack** keladi - uzluksiz integratsiya va yuqori moslashuvchanlik bilan ushbu talablarni qondirish uchun mo'ljallangan **open-source** toollarning kuchli uchligi.
+
+**ELK** - [**E**lasticsearch](https://github.com/elastic/elasticsearch), [**L**ogstash](https://github.com/elastic/logstash) va [**K**ibana](https://github.com/elastic/kibana) so'zlarining qisqartmasi bo'lgan **ELK** ma'lumotlarni qabul qilish, saqlash, tahlil qilish va vizualizatsiya qilish muammolarini hal qilish uchun mo'ljallangan keng qamrovli toollar to'plamini ifodalaydi. Ushbu jarayonda stackning har bir komponenti hal qiluvchi rol o'ynaydi.
+
+* [**Elasticsearch:**](https://github.com/elastic/elasticsearch)  **ELK** stackining markazida Elasticsearch yotadi, **Apache Lucene** ustiga qurilgan, distributed, **RESTful** search(qidiruv) va analytics engine. Elasticsearch real-time rejimida katta hajmdagi ma'lumotlarni indekslash va so'rashda ustunlik qiladi, tezkor qidiruv imkoniyatlari va natijalarni bir zumda olish imkonini beradi.
+
+* [**Logstash:**](https://github.com/elastic/logstash) Logstash ko'p qirrali ma'lumotlarni qayta ishlash pipeline(data processing pipeline) sifatida ishlaydi, u bir nechta manbalardan(multiple source) ma'lumotlarni saqlash va tahlil qilish uchun **Elasticsearch**-ga yuborishdan oldin qabul qiladi, o'zgartiradi va boyitadi. Input, filter va output plaginlarining keng doirasi bilan **Logstash** turli xil ma'lumotlar formatlari va manbalarini boshqarishda yaxshi moslashuvchanlikni ta'minlaydi.
+
+* [**Kibana:**](https://github.com/elastic/kibana) Kibana **ELK** stackining vizualizatsiya qatlami bo'lib xizmat qiladi va foydalanuvchilarga o'z ma'lumotlarini moslashtirilgan dashboard, diagrammalar va grafiklar orqali o'rganish, tahlil qilish va vizualizatsiya qilish imkonini beradi. Oddiy logni o'rganishdan murakkab ma'lumotlarni tahlil qilishgacha, Kibana real-time rejimida tushunchalarni ochish va tizim ishlashini kuzatish uchun intuitiv interfeysni taklif etadi.
+
+Ma'lumotlarga asoslangan bugungi dunyoda log ma'lumotlarini samarali boshqarish, tahlil qilish va xulosalar olish qobiliyati barcha sohalardagi korxonalar uchun muhim ahamiyatga ega. ELK loglarni boshqarish, qidirish va vizualizatsiya qilish uchun yagona platformani taklif qilish orqali ushbu ehtiyojni hal qiladi va tashkilotlarga quyidagilarga imkon beradi:
+
+* **Loglarni boshqarishni markazlashtirish:** ELK turli xil manbalardan loglarni yig'ish vazifasini soddalashtiradi, applicationlar, serverlar, tarmoq qurilmalari va boshqalardan log ma'lumotlarini saqlash va indekslash uchun markazlashtirilgan omborni(centralized repository) taqdim etadi.
+
+* **Real-time ma'lumotlarni tahlil qilish:** Distributed arxitekturasi va real-time indekslash imkoniyatlari bilan ELK tashkilotlarga log ma'lumotlarini stream sifatida tahlil qilish imkonini beradi, bu esa anomaliyalarni, ishlash muammolarini va xavfsizlik tahdidlarini o'z vaqtida aniqlashni osonlashtiradi.
+
+* **Masshtablilik(Scalability) va Moslashuvchanlik(Flexibility):** Open source asosiga qurilgan ELK yuqori darajada kengaytiriladigan va moslashuvchan bo'lib, rivojlanayotgan biznes ehtiyojlariga moslashgan holda distributed environmentlarda katta hajmdagi ma'lumotlarni qayta ishlashga qodir.
+
+* **Aniq vizualizatsiya:** Kibana-ning boy vizualizatsiyasi foydalanuvchilarga ma'lumotlarga asoslangan qarorlar qabul qilish va tizim monitoringini osonlashtiradigan interaktiv boshqaruv panellari, diagrammalar va grafiklar orqali raw log ma'lumotlarini amaliy tushunchalarga aylantirish imkonini beradi.
+
+ELK stack ishlashini quyidagi rasmda ko'rishingiz mumkin.
+![elk-stack](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-stack/elk-architecture.png)
+
+Rasmda uchta bosqich tasvirlangan **Ingest, Store va Consume**.
+
+### Ingest
+
+ELK stekida **Ingest** ma'lumotlarni saqlash va tahlil qilish uchun **Elasticsearch**-ga indekslanmasdan oldin to'plash, o'zgartirish va boyitish jarayonini anglatadi. Ingest ma'lumotlarning hayot aylanishidagi muhim qadam bo'lib, tashkilotlarga raw(xom) ma'lumotlar oqimidan samarali tushunchalarni olish imkonini beradi. ELK stekidagi qabul qilish jarayonida ishtirok etadigan komponentlar va tushunchalarni ajratamiz:
+
+Agar siz ma'lumotlarni saqlashdan oldin uni o'zgartirmoqchi yoki boyitishni istasangiz, **Elasticsearch ingest pipelines** yoki **Logstash**-dan foydalanishingiz mumkin.
+
+* **Fleet va Elastic Agent->** Elastik agent - bu xostga loglar, metrikalar va boshqa turdagi ma'lumotlar uchun monitoring qo'shishning yagona usuli. Shuningdek, u xostlarni xavfsizlik tahdidlaridan himoya qilishi, operatsion tizimlar ma'lumotlarini so'rashi, masofaviy xizmatlar yoki hardware vositalaridan ma'lumotlarni uzatishi va hokazo. Har bir agentda yangi ma'lumotlar manbalari, xavfsizlik himoyasi va boshqalar uchun integratsiyalarni qo'shishingiz mumkin bo'lgan yagona policy mavjud.
+
+**Fleet** Elastik agentlar va ularning polislarini markazlashtirilgan tarzda boshqarish imkonini beradi. Barcha Elastik agentlaringiz holatini kuzatish, agent polislarini boshqarish va Elastic Agent binari yoki integratsiyalarini yangilash uchun Fleet-dan foydalaning.
+
+* **Elastic APM->**(**A**pplication **P**erformance **M**onitoring) - bu Elastik stackda o'rnatilgan dastur ishlashini monitoring qilish tizimi. U kiruvchi requestlar(incoming request), database querilari, keshlarga murojatlar, tashqi HTTP requestlari va boshqalar uchun response time haqida batafsil ishlash ma'lumotlarini to'plash orqali real-time rejimida dasturiy xizmatlar va applicationlarni kuzatish imkonini beradi. Bu ishlash muammolarini tezda aniqlash va tuzatishni osonlashtiradi.
+
+* **Beats->** - bu **Elasticsearch**-ga operatsion ma'lumotlarni yuborish uchun serverlaringizga agent sifatida o'rnatadigan ma'lumot jo'natuvchilar(data shippers). Beats ko'plab standart kuzatuv ma'lumotlari senariylari uchun mavjud, jumladan, audit data, loog fayllari va journallar, cloud data, availability(mavjudlik), metrikalar, tarmoq trafiği va Windows event loglari. Beatslarga misollar: **Filebeat, Metricbeat, Packetbeat, Heartbeat, Auditbeat, Winlogbeat** 
+
+
+* **Elasticsearch ingest pipelines->**
+Ingest pipelinelar ma'lumotlaringizni Elasticsearch-ga indekslashdan oldin umumiy o'zgarishlarni amalga oshirish imkonini beradi. Siz bir yoki bir nechta **"processor"** tasklarini Elasticsearch-da saqlashdan oldin documentlaringizga maxsus o'zgartirishlar kiritib, ketma-ket ishlashi uchun sozlashingiz mumkin.
+
+* **Logstash->** - real-time rejimida pipelinelarni o'tkazish qobiliyatiga ega ma'lumotlarni yig'ish mexanizmi(data collection engine). U turli xil manbalardan ma'lumotlarni dinamik ravishda birlashtirishi va ma'lumotlarni siz tanlagan manzillarga normallashtirishi mumkin. Logstash keng ko'lamli input, filter va coutput plaginlarini qo'llab-quvvatlaydi, ko'plab nativ codeclar qabul qilish jarayonini yanada soddalashtiradi.
+
+### Store
+
+**Elasticsearch** - bu Elastic Stack markazidagi distributed search va analitik engine. U barcha turdagi ma'lumotlar uchun real-time rejimida qidiruv va tahlilni ta'minlaydi. Sizda tuzilgan(structured) yoki tuzilmagan(unstructured) matn(text), raqamli ma'lumotlar yoki geospatial datalar bo'ladimi, Elasticsearch ularni tezkor qidiruvlarni qo'llab-quvvatlaydigan tarzda samarali saqlashi va indekslashi mumkin. Elasticsearch **REST API**-ni taqdim etadi, bu sizga Elasticsearch-da ma'lumotlarni saqlash va ularni olish imkonini beradi. REST API, shuningdek, Elasticsearch qidiruv va tahliliy imkoniyatlaridan foydalanish imkonini beradi
+
+### Consume
+
+Elasticsearch-da saqlangan ma'lumotlarni so'rash va vizualizatsiya qilish uchun Kibana-dan foydalaning.
+
+* **Kibana->** Kibana Elasticsearch ma'lumotlarini ishlatish va Elastic Stackni boshqarish toolidir. Undan Elasticsearch-da saqlangan ma'lumotlarni tahlil qilish va vizualizatsiya qilish uchun foydalaniladi. Kibana, shuningdek, **Elastic Enterprise Search, Elastic Observability** va **Elastic Security solution**lar uchun uydir.
+
+ELK stack ko'rinishi.
+
+![elk-stack](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-stack/elk-1.png)
+
+
+![elk-stack](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-stack/elk2.jpg)
+
+**Beatslar bilan**
+> ![elk-stack](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/elk-stack/elk-3.webp)
+
+
+ ## Qo'shimcha
+
+<Callout type="info" emoji="">
+
+Qo'shimcha Resurslar
+ * [**What is Elasticsearch?**](https://www.elastic.co/guide/en/elasticsearch/reference/current/elasticsearch-intro.html)
+ * [**ELK Stack Cluster o'rnatish va sozlash**](https://devops-journey.uz/tutorials/article/elk-setup)
+ * [**APM Server Sozlash**](https://devops-journey.uz/tutorials/article/apm-server-sozlash)
+ * [**Serverlarni monitoring qilish yoxud Grafana, Prometheus, Node Exporter o'rnatish va sozlash**](https://devops-journey.uz/guides/monitoring/gnp-monitoring)
+ * [**PostgreSQL Monitoring**](https://devops-journey.uz/guides/database/postgres-monitoring)
+
+Qo'llanma uchun foydalanilgan resurslar
+ * [**An overview of the Elastic Stack**](https://www.elastic.co/guide/en/starting-with-the-elasticsearch-platform-and-its-solutions/current/stack-components.html)
+
+**Sana:** 2024.04.28(2024-yil 28-aprel)
+
+**Oxirgi yangilanish:** 2024.04.28(2024-yil 28-aprel)
+
+**Muallif: Otabek Ismoilov**
+
+| [Telegram](https://t.me/Otabek_Ismoilov) | [GitHub](https://github.com/ismoilovdevml) | [LinkedIn](https://www.linkedin.com/in/otabek-ismoilov/) |
+| - | - | - |
+
+</Callout>

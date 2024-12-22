@@ -1,0 +1,51 @@
+---
+description: "PostgreSQL-da SQL querylar bilan ishlash"
+---
+
+import { Callout } from "nextra/components";
+
+# PostgreSQL-da SQL querylar bilan ishlash
+
+## Kirish
+
+Ma'lumotlar bazalari ko'plab veb-saytlar va ilovalarning asosiy komponenti bo'lib, Internetda ma'lumotlarni saqlash va almashishning asosini tashkil qiladi. Ma'lumotlar bazasini boshqarishning eng muhim jihatlaridan biri bu ma'lumotlar bazasidan ma'lumotlarni olish amaliyotidir, xoh u vaqtinchalik yoki dasturga kodlangan jarayonning bir qismi. Ma'lumotlar bazasidan ma'lumot olishning bir necha yo'li mavjud, ammo eng ko'p qo'llaniladigan usullardan konsol orqali querylarni yuborish orqali amalga oshiriladi.
+
+Relational ma'lumotlar bazasini boshqarish tizimlarida query(so'rov) tabledan(jadval) ma'lumotlarni olish uchun ishlatiladigan har qanday buyruqdir. Structured Query Language (SQL)-da querylar deyarli har doim `SELECT` statementi yordamida amalga oshiriladi.
+
+Ushbu qo'llanmada biz SQL querylarining asosiy sintaksisini, shuningdek, ko'proq qo'llaniladigan ba'zi funksiyalar va operatorlarni muhokama qilamiz. Shuningdek, biz PostgreSQL ma'lumotlar bazasidagi ba'zi namunaviy ma'lumotlardan foydalangan holda SQL querylarini bajarishni mashq qilamiz.
+
+PostgreSQL, ko'pincha "Postgres" deb qisqartiriladi, bu ob'ektga yo'naltirilgan yondashuvga ega bo'lgan ma'lumotlar bazasini boshqarish tizimi bo'lib, ma'lumot PostgreSQL sxemalarida ob'ektlar yoki sinflar sifatida taqdim etilishi mumkinligini anglatadi. PostgreSQL standart SQL bilan chambarchas mos keladi, garchi u boshqa relation ma'lumotlar bazasi tizimlarida uchramaydigan ba'zi xususiyatlarni ham o'z ichiga oladi.
+
+## Talablar
+
+Umuman olganda, ushbu qo'llanmada keltirilgan buyruqlar va tushunchalar har qanday SQL ma'lumotlar bazasi dasturlari bilan ishlaydigan Linux-ga asoslangan har qanday operatsion tizimda ishlatilishi mumkin.
+
+* PostgreSQL linux serveringizda o'rnatilgan bo'lishi kerak. PostgreSQLni o'rnatish uchun quyidagi qo'llanmani o'qib chiqing ["Linux Serverlarga Postgresql o'rnatish"](https://devops-journey.uz/guides/database/postgresql-ornatish)
+
+## Database(malumotlar bazasi) yaratish
+
+SQL-da querylar vilan ishlashni boshlashdan oldin, biz avval database va bir nechta tablelarni yaratamiz, so'ngra bu tablelarni bir nechta namunaviy ma'lumotlar(data) bilan to'ldiramiz. Bu sizga querylar bilan keyinroq ishlashni boshlaganingizda amaliy tajriba orttirish imkonini beradi.
+
+Biz ushbu qo'llanma davomida foydalanadigan namunaviy ma'lumotlar bazasi(database) uchun quyidagi senariyni tasavvur qiling:
+
+Siz va bir qancha do'stlaringiz tug'ilgan kuningizni bir-biringiz bilan nishonlaysiz. Har safar guruh a'zolari mahalliy bouling zaliga boradilar, do'stona turnirda qatnashadilar va keyin hamma sizning tug'ilgan kuningizning sevimli taomini tayyorlaydigan joyingizga boradi.
+
+Endi bu an'ana bir muncha vaqtdan beri davom etmoqda, siz ushbu turnirlardagi rekordlarni kuzatishni boshlashga qaror qildingiz. Bundan tashqari, kechki ovqatlarni rejalashtirishni osonlashtirish uchun siz do'stlaringizning tug'ilgan kunlari va ularning sevimli taomlari, fast-foodlari va shirinliklari haqida rekord yaratishga qaror qildingiz. Ushbu ma'lumotni jismoniy daftarda saqlash o'rniga, siz PostgreSQL ma'lumotlar bazasiga yozib olish orqali ma'lumotlar bazasi ko'nikmalaringizni mashq qilishga qaror qilasiz.
+
+Boshlash uchun postgres superuser sifatida PostgreSQL promptni oching:
+
+```bash
+sudo -u postgres psql
+```
+
+Keyin postgresni ishga tushirish orqali database(malumotlar bazasi)yarating:
+
+```bash
+postgres=# CREATE DATABASE bayramlar;
+```
+
+Keyin ushbu ma'lumotlar bazasini ichiga kiring;
+
+```bash
+postgres=# \c bayramlar;
+```

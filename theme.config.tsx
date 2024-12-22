@@ -60,7 +60,7 @@ const config: DocsThemeConfig = {
     light: 212,
   },
   footer: {
-    text: `GPL-3.0 Licensed | Hamma huquqlar himoyalangan ${new Date().getFullYear()} ©Uzbek Developers Consortium.`,
+    content: `GPL-3.0 Licensed | Hamma huquqlar himoyalangan ${new Date().getFullYear()} ©Uzbek Developers Consortium.`,
   },
   navbar: {
     extraContent: <GithubSponsors />,
@@ -77,6 +77,14 @@ const config: DocsThemeConfig = {
     return {
       titleTemplate: `%s - DevOps Journey`,
     };
+  },
+  color: {
+    hue: 156,
+    saturation: 100,
+    lightness: {
+      dark: 50,
+      light: 25
+    }
   },
   head() {
     // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -185,7 +193,6 @@ const config: DocsThemeConfig = {
       );
     },
   },
-  i18n: [{ locale: 'en-UZ', text: 'O\'zbek' }],
   gitTimestamp: ({ timestamp }) => (
     <>Last updated on {timestamp.toLocaleDateString()}</>
   ),

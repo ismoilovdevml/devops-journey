@@ -1,0 +1,29 @@
+---
+image: https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/rke2-setup/banner.png
+description: "HA RKE2 Kuberenetes Cluster o'rnatish va sozlash"
+---
+
+import { Callout } from "nextra/components";
+
+# HA RKE2 Kuberenetes Cluster o'rnatish va sozlash
+
+![k8s](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/k8s/rke2-setup/banner.png)
+
+
+**RKE2** (**R**ancher **K**ubernetes **E**ngine **2**) o'zining yuqori ishonchliligi (HA) va kengaytiriluvchanligi bilan tanilgan yengil Kubernetes distributionlaridan biri bo'lib, uni har xil o'lchamdagi infratuzilmalar uchun ideal tanlov qiladi. Ushbu texnik qo'llanmada, biz 1 ta HAProxy load balancer server va 3 ta master node, shuningdek, bir nechta worker node yordamida RKE2 clusterini o'rnatishni batafsil ko'rib chiqamiz. Shundan so'ng, Rancher UI-ni deploy qilib, ko'p clusterli boshqaruv (multi-cluster management) funksiyasini o'rganamiz. HA konfiguratsiyasini amalga oshirib, bu kabi klasterlarni katta production muhitlarida qanday qilib barqaror va ishonchli tarzda ishlatishni ko'ramiz.
+
+**RKE2** (**R**ancher **K**ubernetes **E**ngine **2**)  bu **Rancher** tomonidan ishlab chiqilgan, Kubernetes asosida yaratilgan yuqori darajada ishonchli va xavfsiz Kubernetes distribution. **RKE2** ning asosiy maqsadi Kubernetes klasterlarining oson boshqarilishi va keng ko'lamli infratuzilmalarda yuqori ishonchlilikni ta'minlashdir. U Kubernetesni xavfsiz va sodda qilib o'rnatishga yordam beradi. **RKE2 FIPS 140-2** xavfsizlik talablariga mos bo'lib, bu uni xavfsizlikning yuqori darajasini talab qiladigan muhitlarda ishlatish uchun ideal qiladi.
+
+RKE2 ning eng asosiy xususiyatlaridan biri bu uning avtomatik HAni ta'minlashidir. U bir nechta master nodelarni ishlatib, klaster ishonchliligini oshiradi va shu bilan birga, bir yoki bir nechta master node muvaffaqiyatsizlikka uchraganda ham klaster ishini davom ettiradi. Bundan tashqari, RKE2 klasterning xavfsizligini oshirish uchun ichki xavfsizlik modullarini qo'llaydi.
+
+**Rancher** — bu Kubernetes klasterlarini markazlashgan holda boshqarish uchun mo'ljallangan open-source platforma. Rancher bir nechta Kubernetes klasterlarini boshqarish imkonini beradi va ko'plab xususiyatlarni o'z ichiga oladi. Rancher foydalanuvchilarga oson interfeys orqali Kubernetes klasterlarini boshqarish, monitoring qilish va xavfsizlikni boshqarish imkoniyatlarini beradi.
+
+Rancher multi-cluster management imkoniyatiga ega bo'lib, bir nechta klasterlarni markazlashgan holda boshqarish imkonini beradi. Bu katta infratuzilmalar yoki yirik kompaniyalar uchun juda muhim bo'lib, har bir klasterni alohida boshqarish o'rniga bitta platformadan boshqarish samaradorlikni oshiradi.
+
+Rancher foydalanuvchilarga xavfsizlikni boshqarish uchun kuchli **Role-Based Access Control (RBAC)** tizimini taklif etadi, bu esa foydalanuvchilarni boshqarishni ancha osonlashtiradi. Bundan tashqari, Rancher Kubernetes platformasini turli xil monitoring va CI/CD tizimlariga integratsiya qilishni ta'minlaydi, bu esa DevOps jamoalari uchun ideal vosita hisoblanadi.
+
+**RKE2** va **Rancher** birgalikda ishlatilganda, ular Kubernetes klasterlarini boshqarishni osonlashtiradi, yuqori darajadagi xavfsizlikni ta'minlaydi va katta hajmdagi infratuzilmalarni samarali boshqarishga yordam beradi.
+
+**RKE2** (**R**ancher **K**ubernetes **E**ngine **2**) va **Rancher** ikkalasi ham **SUSE** kompaniyasi tomonidan ishlab chiqilgan. **SUSE** — open-source dasturiy ta'minot bo'yicha yetakchi kompaniyalardan biri bo'lib, ular open-source infratuzilma va cloud yechimlar sohasida keng miqyosda xizmat ko'rsatadi.
+
+SUSE **2020** yilda **Rancher Labs** kompaniyasini sotib oldi. **Rancher Labs** Kubernetes platformalarini boshqarish uchun ishlab chiqilgan dasturiy mahsulotlarni yaratishda katta tajribaga ega bo'lgan kompaniya edi. Rancher Labs tomonidan yaratilgan Rancher platformasi hozirda Kubernetesni keng ko'lamda boshqarish uchun eng mashhur softlardan biridir. Shu bilan birga, **RKE2** ham Rancher Labs tomonidan ishlab chiqilgan va SUSE tomonidan qo'llab-quvvatlanadigan mahsulot hisoblanadi.

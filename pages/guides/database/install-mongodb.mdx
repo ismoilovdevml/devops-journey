@@ -1,0 +1,401 @@
+---
+image: https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/mongo.png
+description: "Ubuntu 20.04 serverga MongoDB o'rnatish va sozlash"
+---
+
+import { Callout } from "nextra/components";
+
+# Ubuntu 20.04 serverga MongoDB o'rnatish va sozlash
+
+![mongodb](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/mongo.png)
+
+**[MongoDB](https://www.mongodb.com/)** - bu MySQL va MariaDB kabi Relational Database Management System (RDBMS) ilovalariga muqobil bo'lgan NoSQL ma'lumotlar bazasi. Ushbu qo'llanma MongoDB bilan tanishtiradi va Ubuntu 20.04 da latest versiyani qanday o'rnatishni tushuntiradi.
+
+### MongoDB nima?
+
+MongoDB - bu document-oriented(hujjatga yo'naltirilgan) ma'lumotlar bazasi. U ma'lumotlarni an'anaviy relational ma'lumotlar bazasiga qaraganda ancha moslashuvchan tarzda saqlaydi. U obyektga yo'naltirilgan modellar bilan yaxshi mos keladi va tuzilmagan(unstructured) yoki yarim tizimli(semi-structured) ma'lumotlar uchun yaxshi tanlovdir. MongoDB SQL-ga asoslangan ma'lumotlar bazalariga nisbatan o'rganish va ulardan foydalanish oson deb hisoblanadi. U oson scalability va qo'shimcha zaxiralash uchun taqsimlangan ma'lumotlar bazasi(distributed database) sifatida yaratilgan.
+
+MongoDB NoSQL ma'lumotlar bazasi hisoblanadi, chunki u ma'lumotlarni saqlash va olish uchun Structured Query Language (SQL) foydalanmaydi. Documentlarni o'zgartirish va document ma'lumotlarini olish uchun administratorlar odatda MongoDB Query API dan foydalanadilar. Ular, shuningdek, querylarni oddiy ifodalar yoki JavaScript funksiyalariga asoslashlari mumkin. Bundan tashqari, MongoDB yozuvni table(jadval) ichidagi row(qator) sifatida qo'shmaydi. Binary JSON (BSON) fayl formatidan foydalangan holda documentdagi ma'lumotlarni saqlaydi. BSON - JavaScript Object Notation (JSON) formatining o'zgarishi bo'lib, atribut-qiymat juftliklari ketma-ketligini ikkilik(binary) ma'lumotlarga kodlaydi. Ushbu format saqlash joyini qisqartiradi va o'qish qulayligi hisobiga samaradorlikni oshiradi.
+
+MongoDB documentlari formati nisbatan tuzilmagan(unstructured), shuning uchun har bir document boshqacha bo'lishi mumkin. Yagona haqiqiy cheklov shundan iboratki, document har bir key-value pairini o'z ichiga olgan maydonlar ro'yxatidan iborat bo'lishi kerak. Document sxemasi oldindan belgilanishi shart emas va foydalanuvchilar istalgan vaqtda formatni sozlashlari mumkin. MongoDB bir nechta documentlarni to'plamga birlashtirishi mumkin. MongoDB relational ma'lumotlar bazasi bo'lmaganligi sababli, documentlar yoki collectionlar(to'plam) o'rtasida ko'zda tutilgan aloqalar(connection) mavjud emas.
+
+Jismoniy shaxslar yoki kichik korxonalar uchun mo'ljallangan `MongoDB Community Edition` bepul foydalanish mumkin. Ilova Server Side Public License (SSPL) ostida ishlatilishi mumkin va manba kodi bepul mavjud. Biroq, SSPL standart open source litsenziyalardan farq qiladi va biroz cheklovchidir. Foydalanuvchilarga litsenziya atrofida biron bir dasturiy ta'minotni ishlab chiqishdan oldin uni yaxshilab tushunish tavsiya etiladi. MongoDB ko'pgina Linux distributivlari uchun Windows va macOS bilan birga mavjud.
+
+MongoDB bilan yanada chuqurroq tanishish, shu jumladan MongoDB va SQL o'rtasidagi taqqoslash uchun [MongoDB nima va undan nima uchun foydalaniladi?](https://devops-journey.uz/guides/database/start-mongodb) qo'llanmasiga qarang.
+
+### MongoDB o'rnatish
+
+MongoDB o'rnatish jarayoni juda oddiy. Avval rasmiy MongoDB paketini qo'shing va keyin ilovani o'rnatish uchun `apt` dan foydalaning. MongoDB-ni o'rnatish uchun quyidagi amallarni bajaring.
+
+<Callout type="info" emoji="">
+**Eslatma:**
+Standart Ubuntu repositoriyasi bilan ta'minlangan `mongodb` to'plami rasmiy paket emas va ko'pincha yangilanmaydi. Boshqa ilovalar bilan to'g'ri ishlamasligi mumkin. Ushbu bo'limdagi ko'rsatmalar rasmiy MongoDB paketini qanday o'rnatishni ko'rsatadi. Norasmiy `mongodb `to'plami o'rnatilganligini tekshirish uchun `which mongodb` buyrug'ini bajaring. Agar Ubuntu ilovaga yo'lni ko'rsatsa, uni `apt` yordamida o'chirib tashlang.
+</Callout>
+
+**1->** `gnupg` va `curl` utilitasini o'rnating.
+
+```bash /gnupg/ /curl/
+sudo apt-get install gnupg curl
+```
+**2->** Public MongoDB GPG imzo kalitini(signing key) import qiling. Kalit muvaffaqiyatli import qilinganligini tekshiring.
+
+```bash //
+curl -fsSL https://www.mongodb.org/static/pgp/server-7.0.asc | \
+   sudo gpg -o /usr/share/keyrings/mongodb-server-7.0.gpg \
+   --dearmor
+```
+
+**3->** Ubuntu paketlari ro'yxatiga rasmiy MongoDB repositoriyasi haqida ma'lumot qo'shing.
+
+```bash
+echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/7.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-7.0.list
+```
+
+**4->** `apt` yordamida paketlar ro'yxatini yangilang.
+
+```bash
+sudo apt-get update
+```
+**5->** MongoDB-ning so'nggi(latest) versiyasini o'rnating.
+
+```bash /mongodb-org/
+sudo apt-get install -y mongodb-org
+```
+
+<Callout type="info" emoji="">
+**Eslatma:**
+MongoDB-ning ma'lum bir versiyasini o'rnatish uchun, o'rnatish uchun chiqarilganni haqiqiy versiya bilan almashtirib, quyidagi buyruqdan foydalaning.
+
+```bash /7.0.3/
+sudo apt-get install -y mongodb-org=7.0.3 mongodb-org-database=7.0.3 mongodb-org-server=7.0.3 mongodb-mongosh=7.0.3 mongodb-org-mongos=7.0.3 mongodb-org-tools=7.0.3
+```
+`7.0.3` versiya o'rniga o'zingizga kerakli versiyani tanlab o'rnatib olishingiz mumkin
+</Callout>
+
+**6->** **Ixyiyoriy** Joriy konfiguratsiya bilan `apt-get` buyrug'i har doim yangi versiya mavjud bo'lganda MongoDB ni yangilaydi. Avtomatik yangilanishlarning oldini olish uchun quyidagi buyruqlarni bajaring.
+
+```bash
+echo "mongodb-org hold" | sudo dpkg --set-selections
+echo "mongodb-org-database hold" | sudo dpkg --set-selections
+echo "mongodb-org-server hold" | sudo dpkg --set-selections
+echo "mongodb-mongosh hold" | sudo dpkg --set-selections
+echo "mongodb-org-mongos hold" | sudo dpkg --set-selections
+echo "mongodb-org-tools hold" | sudo dpkg --set-selections
+```
+
+### MongoDB-ni ishga tushirish
+
+MongoDB vazifasi odatda `systemctl` vositalari yordamida boshqariladi. MongoDB-ni ishga tushirish va yoqish uchun quyidagi amallarni bajaring.
+
+**1->** `systemctl` demonini qayta yuklang.
+
+```bash
+sudo systemctl daemon-reload
+```
+**2->** `systemctl start` yordamida process ishga tushiring.
+
+```bash /mongod/
+sudo systemctl start mongod
+```
+**3->** MongoDB servisi holatini bilish uchun `systemctl status` dan foydalaning.
+
+```bash
+sudo systemctl status mongod
+```
+
+**4->** Ubuntu-ni tizimni yuklash vaqtida MongoDB-ni avtomatik ishga tushirishni sozlash uchun quyidagi buyruqni kiriting.
+
+```bash
+sudo systemctl enable mongod
+```
+
+```txt filename="Natija"
+Created symlink /etc/systemd/system/multi-user.target.wants/mongod.service → /lib/systemd/system/mongod.service.
+```
+
+**5->** Ixtiyoriy, agar kerak bo'lsa, quyidagi buyruqlar yordamida MongoDB-ni to'xtatib va qayta ishga tushiring.
+
+```bash
+sudo systemctl stop mongod
+sudo systemctl restart mongod
+```
+
+**6->** MongoDB to'g'ri ishlayotganini tasdiqlash uchun shelga kirish uchun `mongosh`-ni kiriting. Autentifikatsiya hali yoqilmaganligi sababli parol talab qilinmaydi.
+
+<Callout type="info" emoji="">
+**Eslatma:**
+Qo'shimcha parametrlarsiz ushbu buyruq local serverdagi default `27017` portida ishlaydigan MongoDB instancega ulanadi. Agar tarmoqqa kirish yoqilgan bo'lsa yoki MongoDB boshqa portga ko'chirilgan bo'lsa, buyruqqa `--host 127.0.0.1:27017` qo'shing.
+</Callout>
+
+```bash
+mongosh
+```
+
+```txt filename="Natija" /7.0.3/ /2.0.2/
+Current Mongosh Log ID:	655782d3c03672d6c9f0e9aa
+Connecting to:		mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+2.0.2
+Using MongoDB:		7.0.3
+Using Mongosh:		2.0.2
+
+For mongosh info see: https://docs.mongodb.com/mongodb-shell/
+```
+
+### MongoDB ni sozlash(konfiguratsiya qilsih)
+
+MongoDB uchun dastur sozlamalari `/etc/mongod.conf` faylida saqlanadi. Ushbu qiymatlarning aksariyati default qiymatlarda qolishi mumkin. Biroq, xavfsizlikni yaxshilash uchun foydalanuvchi autentifikatsiyasini yoqish muhimdir. MongoDB-dan masofadan foydalanish uchun qo'shimcha o'zgarishlar kiritilishi kerak. Konfiguratsiya fayli opsiyalarining to'liq ro'yxati uchun [MongoDB konfiguratsiya fayli texnik hujjatlariga](https://www.mongodb.com/docs/manual/reference/configuration-options/) qarang.
+
+#### MongoDB autentifikatsiyani yoqish
+
+Autentifikatsiyani yoqish uchun administrator yarating va keyin asosiy konfiguratsiya faylida autentifikatsiya sozlamasini sozlang. Ma'lumotlar bazasini himoya qilish uchun quyidagi amallarni bajaring.
+
+**1->** MongoDB shelga kiring.
+
+```bash
+mongosh
+```
+**2->** Administrator ma'lumotlar bazasiga o'ting.
+
+```bash
+use admin
+```
+```txt filename="Natija"
+switched to db admin
+```
+**3->** Administrator yaratish uchun `db.createUser` buyrug'idan foydalaning. Foydalanuvchi uchun foydalanuvchi nomini `user` va `pwd` uchun parolni kiriting. Yaxshiroq xavfsizlik uchun `pwd` maydonining qiymati sifatida `passwordPrompt()` buyrug'idan foydalaning. Bu MongoDB ga parolni so'rashni aytadi. Administratorga ikkita rol bering, `mongoadminAnyDatabase` va `readWriteAnyDatabase`. MongoDB sheldagi buyruqni quyidagi tarzda kiriting va `mongoadmin` o'rniga haqiqiy administrator nomini almashtiring.
+
+
+```json {3}
+db.createUser(
+    {
+        user: "mongoadmin",
+        pwd: passwordPrompt(),
+        roles: [
+            { role: "mongoadminAnyDatabase", db: "admin" },
+            { role: "readWriteAnyDatabase", db: "admin" }
+        ]
+    }
+)
+```
+
+**4->** Buyruqni kiritgandan so'ng, MongoDB admin parolni so'raydi. So'ralganda parolni kiriting. Agar parol qabul qilinsa, MongoDB `ok` deb qaytaradi.
+
+```txt filename="Natija"
+Enter password
+********{ ok: 1 }
+```
+**5->** mongod instanceni o'chirish uchun `db.adminCommand` buyrug'idan foydalaning.
+
+```json
+db.adminCommand( { shutdown: 1 } )
+```
+**6->** Shelldan chiqing
+
+```bash
+exit
+```
+**7->** Konfiguratsiya sozlamalarini qo'shish uchun `/etc/mongod.conf` konfiguratsiya faylini tahrirlang.
+
+```bash
+sudo nano /etc/mongod.conf
+```
+
+**8->** `security:` qatorini izohdan olib tashlang: va `authorization: enabled` qatorini qo'shing. Faylni saqlang va yoping.
+
+```conf filename="/etc/mongod.conf" /security:/ /authorization:/ /enabled/
+security:
+    authorization: enabled
+```
+**9->** Restart MongoDB
+
+```bash
+sudo systemctl restart mongod
+```
+**10->** MongoDB-ga kirish uchun keyingi barcha urinishlar foydalanuvchi va autentifikatsiya ma'lumotlar bazasi nomini ko'rsatishi kerak. `mongoadmin` o'rniga administrator hisobi nomini almashtiring va so'ralganda administrator parolini kiriting. MongoDB shellga kirish uchun quyidagi buyruqdan foydalaning.
+
+<Callout type="info" emoji="">
+**Sinov**
+xizmat kutilganidek ishlayotganligini tekshirib ko'ring. mongo shellga kiring
+
+```bash
+mongosh
+```
+Bu safar siz ogohlantirishlar yo'qolganini kuzatasiz.
+Biroq, agar siz ma'lumotlar bazalarini ko'rish kabi ma'lumotlar bazasi bilan bog'liq har qanday vazifani bajarishga harakat qilsangiz, autentifikatsiya zarurligini ko'rsatadigan ba'zi natijalarni olasiz.
+
+```bash
+show dbs
+```
+Autentifikatsiya bilan tizimga kirish uchun, avvalo, `exit` buyruqni ishga tushirish orqali Mongo Shell-dan chiqing. Keyin quyidagi sintaksisdan foydalanib, admin user  yordamida tizimga kiring.
+
+```bash
+mongosh  "mongodb://mongoadmin@127.0.0.1:27017"
+```
+
+```bash
+mongosh --authenticationDatabase "admin" -u "mongoadmin" -p
+```
+
+</Callout>
+
+#### MongoDB uchun masofaviy kirishni yoqish(Remote Access)
+
+Agar boshqacha ko'rsatilmagan bo'lsa, MongoDB faqat local kirishni ta'minlaydi. Ma'lumotlar bazasiga masofaviy kirishni yoqish uchun konfiguratsiya fayliga quyidagi o'zgartirishlarni kiriting.
+
+**1->** Asosiy MongoDB konfiguratsiya faylini tahrirlang.
+
+```bash
+sudo nano /etc/mongod.conf
+```
+**2->** `net` sarlavhasi ostida barcha manzillardan ulanishga ruxsat berish uchun `bindIp` qiymatini `0.0.0.0` ga o'zgartiring. Ushbu manzilga ulanishni cheklash uchun ma'lum bir manzilni kiriting.
+
+```conf filename="/etc/mongod.conf" /net:/ /port:/ /bindIp:/
+net:
+    port: 27017
+    bindIp: 0.0.0.0
+```
+
+Mana `mongod.conf` ni to'liq ko'rinishi
+
+```conf filename="/etc/mongod.conf" {19-21,28-29}
+# mongod.conf
+
+# for documentation of all options, see:
+#   http://docs.mongodb.org/manual/reference/configuration-options/
+
+# Where and how to store data.
+storage:
+  dbPath: /var/lib/mongodb
+#  engine:
+#  wiredTiger:
+
+# where to write logging data.
+systemLog:
+  destination: file
+  logAppend: true
+  path: /var/log/mongodb/mongod.log
+
+# network interfaces
+net:
+  port: 27017
+  bindIp: 0.0.0.0
+
+
+# how the process runs
+processManagement:
+  timeZoneInfo: /usr/share/zoneinfo
+
+security:
+  authorization: enabled
+#operationProfiling:
+
+#replication:
+
+#sharding:
+
+## Enterprise-Only Options:
+
+#auditLog:
+```
+
+**3->** Restart MongoDB.
+
+```bash
+sudo systemctl restart mongod
+```
+**4->** Agar ufw firewall yoqilgan bo'lsa, `27017` portiga ulanishga ruxsat bering.
+
+```bash
+sudo ufw allow 27017
+```
+
+### MongoDB-dan qanday foydalanish
+
+MongoDB ko'p jihatdan boshqa ma'lumotlar bazasi tizimlaridan juda farq qiladi va RDBMS foydalanuvchilarini chalkashtirib yuborishi mumkin. Ushbu qo'llanma o'rnatish va sozlashga qaratilgan bo'lsa-da, bu yerda bir nechta qo'shimcha maslahatlar mavjud. Har qanday buyruqni ishga tushirishdan oldin, MongoDB shellga kirish uchun `mongosh` buyrug'idan foydalaning. Agar kerak bo'lsa, autentifikatsiya ma'lumotlarini qo'shing. MongoDB-dan qanday foydalanish haqida qo'shimcha ma'lumot olish uchun [MongoDB texnik hujjatlarini](https://www.mongodb.com/docs/manual/introduction/) ko'rib chiqing. MongoDB shuningdek, asosiy ma'lumotlarni o'z ichiga olgan qisqa [Boshlash qo'llanmasini](https://www.mongodb.com/docs/manual/tutorial/getting-started/) taqdim etadi. Barcha mavjud ma'lumotlar bazalarini ko'rish uchun `show dbs` buyrug'idan foydalaning.
+
+```bash
+show dbs
+```
+
+```txt filename="Natija"
+admin   180.00 KiB
+config   60.00 KiB
+local    72.00 KiB
+```
+
+Kontekstni boshqa ma'lumotlar bazasiga o'zgartirish uchun `use` buyrug'ini qo'llang.
+
+```bash
+use admin
+```
+```txt filename="Natija"
+switched to db admin
+```
+
+Yangi ma'lumotlar bazasini yaratish uchun maxsus buyruq yo'q. Foydalanish buyrug'i mavjud ma'lumotlar bazasiga o'tadi yoki ma'lumotlar bazasi allaqachon mavjud yoki yo'qligiga qarab yangisini yaratadi. Yangi ma'lumotlar bazasini yaratish uchun `use newdatabase` kiriting, bu erda `newdatabase` - qo'shiladigan ma'lumotlar bazasi nomi.
+
+```bash
+use testguidedb
+```
+MongoDB collectionni relational ma'lumotlar bazasidagi tablega o'xshash funksiyaga ega. Collection yaratish uchun `db.collectionname.insertOne` funksiyasidan foydalaning, bu yerda `collectionname` collection nomidir. `{}` qavslar ichida bir qator key-value pairlarini kiriting. Har bir pairni(juftlik), oxirgisidan tashqari, vergul bilan ajrating. Bir vaqtning o'zida bir nechta yozuvlarni kiritish uchun uning o'rniga `insertMany` buyrug'idan foydalaning. `testdata` collectioniga ma'lumotlarni qo'shish uchun quyidagi formatdan foydalaning.
+
+```json
+db.testdata.insertOne(
+    {Value_one: "30",
+    Value_two: "40",
+    Value_three: "Test"
+    }
+)
+```
+
+Collectiondan ma'lumotlarni olish uchun `db.find` buyrug'idan foydalaning. Quyidagi buyruq `test` ma'lumotlari collectionidagi barcha pairlarni qaytaradi.
+
+```bash
+db.testdata.find( {} )
+```
+
+```txt filename="Natija"
+{
+    _id: ObjectId("63c56d3dd4cb6182bed3fac3"),
+    Value_one: '30',
+    Value_two: '40',
+    Value_three: 'Test'
+}
+```
+
+Muayyan ma'lumotlar bazasidagi barcha collectionlarni ro'yxatga olish uchun `show collections buyrug'idan foydalaning.
+
+```bash
+show collections
+```
+```txt filename="Natija"
+testdata
+```
+
+### Xulosa
+
+
+MongoDB - bu ma'lumotlarni saqlash bo'yicha katta moslashuvchanlikni ta'minlaydigan document-oriented ma'lumotlar bazasi. Har bir ma'lumotlar bazasida key-value pairlarining erkin shakldagi qatoridan iborat bir yoki bir nechta collection mavjud. MongoDB-ni o'rnatish uchun rasmiy repositoriyani qo'shing, keyin uni o'rnatish uchun `apt`-dan foydalaning. MongoDB daemonini boshqarish uchun `systemctl` dan foydalaning va konfiguratsiya fayliga autentifikatsiya yoki masofaviy kirishni qo'llab-quvvatlang. Qo'shimcha ma'lumot olish uchun [MongoDB veb-saytiga](https://www.mongodb.com/) qarang.
+
+### Qo'shimcha
+
+<Callout type="info" emoji="">
+Ushbu mavzu bo'yicha qo'shimcha ma'lumot olish uchun quyidagi manbalarga murojaat qilishingiz mumkin. 
+
+* [MongoDB](https://www.mongodb.com/)
+* [MongoDB Documentation](https://www.mongodb.com/docs/manual/introduction/)
+* [Getting Started tutorial](https://www.mongodb.com/docs/manual/tutorial/getting-started/)
+* [MongoDB Configuration File documentation](https://www.mongodb.com/docs/manual/reference/configuration-options/)
+* [SQL to MongoDB Mapping Chart](https://www.mongodb.com/docs/manual/reference/sql-comparison/)
+* [MongoDB Troubleshooting Guide](https://www.mongodb.com/docs/manual/reference/installation-ubuntu-community-troubleshooting/)
+
+**Foydalanilgan manbalar:** [www.linode.com](https://www.linode.com/docs/guides/), [www.cherryservers.com](https://www.cherryservers.com/blog/how-to-install-and-start-using-mongodb-on-ubuntu-20-04)
+
+**Sana:** 2023.11.18(2023-yil 18-noyabr)
+
+**Oxirgi yangilanish:** 2024.06.20(2024-yil 20-iyun)
+
+**Muallif: Otabek Ismoilov**
+
+| [Telegram](https://t.me/Otabek_Ismoilov) | [GitHub](https://github.com/ismoilovdevml) | [LinkedIn](https://www.linkedin.com/in/otabek-ismoilov/) |
+| - | - | - |
+</Callout>
