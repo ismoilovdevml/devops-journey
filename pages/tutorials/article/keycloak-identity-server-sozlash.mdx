@@ -4,7 +4,7 @@ description: "Keycloak bilan Identity Server sozlash"
 ---
 
 
-import { Callout } from "nextra/components";
+import { Callout } from "nextra-theme-docs";
 
 # Keycloak bilan Identity Server sozlash
 
@@ -536,3 +536,290 @@ Brauzer orqali `https://auth.helm.uz` addresga kirganimizda keycloak SSL bilan i
 ![keycloak-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/keycloak-server/19.png)
 
 Okey biz **Keycloak** `26.0.7` versiyasini muvaffaqiyatli **production** modeda ishga tushirdik tabriklayman.
+
+
+## Keycloakni PostgeSQL'ga ulash
+
+Keycloak asosan foydalanuvchi ma'lumotlarini(user data) va konfiguratsiyani saqlash uchun ma'lumotlar bazasidan foydalanadi. Standart o'rnatishda Keycloak ichki **H2** ma'lumotlar bazasi(embedded H2 database) bilan birga keladi, lekin bu faqat test qilish va development uchun tavsiya etiladi, chunkki u: memory-based va production environment uchun ishonchli emas, kaslterlash va multiple instance'lar o'rtasida data sharing qo'llab quvvatlamaydi.
+
+Keycloak quyidagi ma'lumotlarni databazaga yozadi:
+
+* **user data** loginlar, profillar va parollar.
+* **authentication data** sessionlar, tokenlar va authorization rulelar.
+* **configuration data** realmslar(domain-like segments), clientlar, user rolelar va permissionlar.
+
+Keycloak latest versiyasi quyidagi databaselarni qo'llab quvvatlaydi.
+
+
+| Database | Option value | Tested Versions |
+| -------- | ------------ | --------------- |
+| **MariaDB Server** | `mariadb` | 10.11 |
+| **Microsoft SQL Server** | `mssql` | 2022 |
+| **MySQL** | `mysql` | 8.0 |
+| **Oracle Database** | `oracle` | 19.3 |
+| **PostgreSQL** | `postgres` | 16 |
+| **Amazon Aurora PostgeSQL** | `postgres` | 16.1 |
+
+Biz bu amaliyotda eng mashhur open source relational database management system bo'lgan **PostgreSQL**ni  Keycloak uchun sozlaymiz.
+
+<Callout type="info" emoji="">
+Sizda **PostgreSQL** o'rnatilgan va configuratsiya qilingan bo'lishi kerak quyidagi qo'llanmadan foydalanishingiz mumkin - [**Linux Serverlarga Postgresql o'rnatish**](https://devops-journey.uz/guides/database/postgresql-ornatish)
+</Callout>
+
+### 16 - versiydan keyingi Keycloak
+Bu bosqichda biz keycloak 16 versiyadan yuqori bo'lgan keyclok uchun databaza integratsiyasini ko'rib chiqamiz.
+**1->** PostgreSQL'da `keycloak` databaza va `keycloak_user` yaratib olishimiz kerak bo'ladi.
+
+```bash
+sudo -u postgres psql
+```
+
+```sql
+CREATE DATABASE keycloak;
+CREATE USER keycloak_user WITH PASSWORD 'kEyCl0@k';
+GRANT ALL PRIVILEGES ON DATABASE keycloak TO keycloak_user;
+ALTER DATABASE keycloak OWNER TO keycloak_user;
+```
+
+Keling tekshiramiz.
+
+```sql
+postgres=# \l
+```
+![keycloak-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/keycloak-server/20.png)
+
+**2->** Keycloak `/etc/systemd/system/keycloak.service` databazaga ulanishni konfig qilamiz.
+
+```bash
+sudo nano /etc/systemd/system/keycloak.service
+```
+
+```bash { 16-19 }filename="/etc/systemd/system/keycloak.service"
+[Unit]
+Description=The Keycloak Server
+After=syslog.target network.target
+Before=httpd.service
+ 
+[Service]
+EnvironmentFile=-/etc/keycloak/keycloak.conf
+Type=idle
+User=keycloak
+Group=keycloak
+ExecStart=/opt/keycloak/bin/kc.sh start --optimized \
+  --https-key-store-file=/etc/letsencrypt/live/auth.helm.uz/keystore.p12 \
+  --https-key-store-password=adminCH@ \
+  --hostname=auth.helm.uz \
+  --https-port=443 \
+  --hostname-strict=false \
+  --db-url=jdbc:postgresql://127.0.0.1:5432/keycloak \
+  --db-username=keycloak_user \
+  --db-password=kEyCl0@k
+StandardOutput=append:/var/log/keycloak.log
+StandardError=inherit
+RestartSec=2s
+Restart=always
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+LimitNOFILE=102642
+ 
+[Install]
+WantedBy=multi-user.target
+```
+
+```bash
+export KC_DB=postgres
+echo $KC_DB
+/opt/keycloak/bin/kc.sh build --db=postgres
+```
+![keycloak-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/keycloak-server/22.png)
+
+![keycloak-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/keycloak-server/21.png)
+
+**3->** daemon-reload berib keyclok servicega restart beramiz va statusini tekshiramiz.
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl restart keycloak
+sudo systemctl status keycloak
+```
+
+`keycloak` bazaga ulanib tablelarni ko'rsak keycloak tablelari chiqishi kerak.
+
+![keycloak-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/keycloak-server/24.png)
+
+**4->** keycloak databazaga ulaganimizdan keyin admin user parolini yangilaymiz.
+
+```bash
+sudo systemctl stop keycloak
+/opt/keycloak/bin/kc.sh bootstrap-admin user \
+  --bootstrap-admin-username admin \
+  --bootstrap-admin-password mEnlngP@s$W0rdlm \
+  --db=postgres \
+  --db-url=jdbc:postgresql://127.0.0.1:5432/keycloak \
+  --db-username=keycloak_user \
+  --db-password=kEyCl0@k
+```
+![keycloak-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/keycloak-server/23.png)
+
+Buyruqni ishga tushirganingizdan keyin sizdan admin user va uning paroli so'raladi.
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl restart keycloak
+sudo systemctl status keycloak
+```
+
+Brauzer orqali `https://auth.helm.uz` addresga kirganimizda keycloak https bilan ochilib admin/login page ochilishi kerak va yangi admin/passwordni kiritib login qilsak ishlashi kerak.
+
+![keycloak-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/keycloak-server/25.png)
+
+## 16 - versiyadan kichik
+
+Bu bosqichda biz keycloak 16 versiyadan past bo'lgan keyclok uchun databaza integratsiyasini ko'rib chiqamiz.
+
+**1->** PostgreSQL'da `keycloak` databaza va `keycloak_user` yaratib olishimiz kerak bo'ladi.
+
+```bash
+sudo -u postgres psql
+```
+
+```sql
+CREATE DATABASE keycloak;
+CREATE USER keycloak_user WITH PASSWORD 'kEyCl0@k';
+GRANT ALL PRIVILEGES ON DATABASE keycloak TO keycloak_user;
+ALTER DATABASE keycloak OWNER TO keycloak_user;
+```
+
+Keling tekshiramiz.
+
+```sql
+postgres=# \l
+```
+![keycloak-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/keycloak-server/20.png)
+
+**2->** Keycloak PostgreSQL databazag ulana olishi uchun PostgreSQl JDBC driveri kerak bo'ladi uni yuklab olamiz Java 17 uchun `postgresql-42.7.3.jar` to'gri keladi yuklab olish sahifasi - [PostgreSQL JDBC Driver](https://jdbc.postgresql.org/download/)
+
+```bash
+cd /opt/keycloak/standalone/deployments/
+wget https://jdbc.postgresql.org/download/postgresql-42.7.3.jar
+```
+
+**3->** PostgeSQL JDBC driverini Keycloak'ning WildFly serverida ishlashi uchun modul qilib sozlashimiz kerak bo'ladi. PostgreSQL modul uchun directoriya yaratib olib unga JDBC driverni ko'chiramiz.
+
+```bash
+mkdir -p /opt/keycloak/modules/system/layers/base/org/postgresql/main
+cp -r /opt/keycloak/standalone/deployments/postgresql-42.7.3.jar /opt/keycloak/modules/system/layers/base/org/postgresql/main/
+```
+`module.xml` faylini yaratib olishimiz kerak bo'ladi.
+
+```bash
+sudo nano /opt/keycloak/modules/system/layers/base/org/postgresql/main/module.xml
+```
+
+```xml filename="/opt/keycloak/modules/system/layers/base/org/postgresql/main/module.xml" /postgresql-42.7.3.jar/ /org.postgresql/
+<?xml version="1.0" encoding="UTF-8"?>
+<module xmlns="urn:jboss:module:1.1" name="org.postgresql">
+    <resources>
+        <resource-root path="postgresql-42.7.3.jar"/>
+    </resources>
+    <dependencies>
+        <module name="javax.api"/>
+        <module name="javax.transaction.api"/>
+    </dependencies>
+</module>
+```
+Bu fayl **WildFly** serveriga **PostgreSQL** drayveridan qanday foydalanishni aytadi.
+
+**4->** Keycloak PostgreSQL databazaga ulanishni uchun `standalone.xml` faylini `datasources` va `drivers` qismlarini o'zgartirishimiz kerak.
+
+```bash
+sudo nano /opt/keycloak/standalone/configuration/standalone.xml
+```
+`standalone.xml`ga quyidagcha o'zgatirish kiritamiz.
+<Callout type="info" emoji="">
+Maslahat: cat orqali `standalone.xml` faylini ochib copy qilib birorta editorda ochib to'gri sintaksis bilan config qiling masalan VSCode, agar vim va nanoda yaxshi ishlashni bilmasangiz `.xml` config qilishda sintaksis xatolar ko'p qilishingiz mumkin.
+</Callout>
+```xml filename="/opt/keycloak/standalone/configuration/standalone.xml" /jdbc:postgresql://127.0.0.1:5432/keycloak/ /postgresql/ /keycloak_user/ /kEyCl0@k/
+<datasources>
+    <datasource jndi-name="java:jboss/datasources/ExampleDS" pool-name="ExampleDS" enabled="true" use-java-context="true" statistics-enabled="${wildfly.datasources.statistics-enabled:${wildfly.statistics-enabled:false}}">
+        <connection-url>jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE</connection-url>
+        <driver>h2</driver>
+        <security>
+            <user-name>sa</user-name>
+            <password>sa</password>
+        </security>
+    </datasource>
+    <datasource jndi-name="java:jboss/datasources/KeycloakDS" pool-name="KeycloakDS" enabled="true" use-java-context="true" statistics-enabled="${wildfly.datasources.statistics-enabled:${wildfly.statistics-enabled:false}}">
+        <connection-url>jdbc:postgresql://127.0.0.1:5432/keycloak</connection-url>
+        <driver>postgresql</driver>
+        <security>
+            <user-name>keycloak_user</user-name>
+            <password>kEyCl0@k</password>
+        </security>
+    </datasource>
+    <drivers>
+        <driver name="h2" module="com.h2database.h2">
+            <xa-datasource-class>org.h2.jdbcx.JdbcDataSource</xa-datasource-class>
+        </driver>
+        <driver name="postgresql" module="org.postgresql">
+            <xa-datasource-class>org.postgresql.xa.PGXADataSource</xa-datasource-class>
+        </driver>
+    </drivers>
+</datasources>
+```
+
+**5->** Keycloakni restart qilib qayta ishga tushiramiz.
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl restart keycloak
+sudo systemctl status keycloak
+```
+
+**6->** Keycloak birinchi o'rnatganimizda unda **H2** bazasida admin user yaratgandik PostgreSQL bazasiga o'tganimizda user o'chib ketadi qaytadan admin user yaratishimiz kerak bo'ladi.
+
+```bash
+sudo /opt/keycloak/bin/add-user-keycloak.sh -r master -u admin -p adminparol239dw2
+```
+development mode uchun SSL verificationni o'chiramiz.
+
+```bash
+sudo /opt/keycloak/bin/kcadm.sh config credentials \
+    --server http://localhost:8080/auth \
+    --realm master \
+    --user admin \
+    --password adminparol239dw2
+sudo /opt/keycloak/bin/kcadm.sh update realms/master -s sslRequired=NONE
+```
+
+Restart berib qayta ishga tushiramiz.
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl restart keycloak 
+```
+
+**7** Keycloak statusini va PostgreSQl databazani tekshiramiz.
+
+```bash
+sudo systemctl status keycloak
+```
+PostgreSQL `keycloak` databazasiga ulanib tablelarni ko'rsak keycloak tablelari chiqishi kerak.
+
+![keycloak-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/keycloak-server/26.png)
+Brauzer orqali `http://0.0.0.0/auth` addresga kirganimizda keycloak admin/login page ochilishi kerak va admin/passwordni kiritib login qilsak ishlashi kerak.
+
+![keycloak-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/keycloak-server/keycloak5.png)
+
+Nihoyat biz gemaroy **Keycloak**ni **OpenJDK** bilan eski va yangi versiyalarni o'rnatib basic config qilishni va **PostgreSQL** databaza ulashni va **keycloak 16** versiyadan keyingi versiyadagi keycloaklarni **production** modeda ishga tushirishni ko'rib chiqdik. ***Bilaman sizlarga bu bilan oson lekin yozgunimcha....***
+<Callout type="info" emoji="">
+
+**Sana:** 2024.12.22(2024-yil 22-sentabr)
+
+**Oxirgi yangilanish:** 2024.12.22(2024-yil 22-sentabr)
+
+**Muallif: Otabek Ismoilov**
+
+| [Telegram](https://t.me/Otabek_Ismoilov) | [GitHub](https://github.com/ismoilovdevml) | [LinkedIn](https://www.linkedin.com/in/otabek-ismoilov/) |
+| - | - | - |
+
+</Callout>
