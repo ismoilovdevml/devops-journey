@@ -1,70 +1,34 @@
-:root {
-    --tab-bg-light: #ffffff; /* Light theme background */
-    --tab-bg-dark: #2d2d2d; /* Dark theme background */
-    --tab-border-light: rgba(0, 0, 0, 0.1);
-    --tab-border-dark: rgba(255, 255, 255, 0.1);
-    --tab-text-light: #1a1a1a; /* Light theme text color */
-    --tab-text-dark: #eaeaea; /* Dark theme text color */
-    --tab-active-text-light: #0070f3; /* Light theme active tab text */
-    --tab-active-text-dark: #66e6ff; /* Dark theme active tab text */
-  }
-  
-  body.light-theme {
-    --tab-bg: var(--tab-bg-light);
-    --tab-border: var(--tab-border-light);
-    --tab-text: var(--tab-text-light);
-    --tab-active-text: var(--tab-active-text-light);
-  }
-  
-  body.dark-theme {
-    --tab-bg: var(--tab-bg-dark);
-    --tab-border: var(--tab-border-dark);
-    --tab-text: var(--tab-text-dark);
-    --tab-active-text: var(--tab-active-text-dark);
-  }
-  
-  .react-tabs__tab-list {
-    display: flex;
-    justify-content: flex-start;
-    border-bottom: 1px solid var(--tab-border);
-    padding: 0;
-    margin: 0;
-    list-style: none;
-    background: var(--tab-bg); /* Background depends on theme */
-    border-radius: 5px 5px 0 0;
-  }
-  
-  .react-tabs__tab {
-    padding: 0.75rem 1.5rem;
-    cursor: pointer;
-    font-size: 0.875rem;
-    color: var(--tab-text); /* Text color depends on theme */
-    border: none;
-    background: transparent; /* Transparent background */
-    border-bottom: 2px solid transparent;
-    transition: color 0.3s ease, border-bottom 0.3s ease, background 0.3s ease;
-  }
-  
-  .react-tabs__tab--selected {
-    color: var(--tab-active-text); /* Active tab text color */
-    border-bottom: 2px solid var(--tab-active-text); /* Active tab underline */
-    background: var(--tab-bg); /* Match tab background to overall theme */
-    font-weight: bold;
-  }
-  
-  .react-tabs__tab:hover {
-    color: var(--tab-active-text); /* Hover text color */
-  }
-  
-  .react-tabs__tab:focus {
-    outline: none; /* No border on focus */
-  }
-  
-  .react-tabs__tab-panel {
-    padding: 1rem;
-    font-size: 0.875rem;
-    color: var(--tab-text);
-    background: var(--tab-bg); /* Match panel background to theme */
-    border-radius: 0 0 5px 5px;
-    transition: background 0.3s ease, color 0.3s ease;
-  }  
+.react-tabs__tab {
+  border: 1px transparent solid !important;
+  border-top: 4px transparent solid !important;
+  background: transparent !important;
+}
+
+
+.react-tabs__tab:focus-visible {
+  box-shadow: none !important;
+}
+
+.react-tabs__tab--selected {
+  border-color: var(--shiki-token-string-expression) !important;
+  color: var(--shiki-token-string-expression) !important;
+  border-top-left-radius: 4px !important;
+  border-top-right-radius: 4px !important;
+  border-bottom-color: #111 !important;
+}
+
+.react-tabs__tab-list:has(.react-tabs__tab--selected) {
+  border-color: var(--shiki-token-string-expression) !important;
+}
+
+.react-tabs__tab--selected::after {
+  content: none !important;
+}
+
+.react-tabs__tab--selected:focus::after {
+  content: none !important;
+}
+
+.react-tabs__tab:focus::after {
+  content: none !important;
+}
