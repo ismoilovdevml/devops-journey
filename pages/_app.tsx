@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from 'react-query';
 
 import 'react-medium-image-zoom/dist/styles.css';
 import '../styles/globals.css';
+import '../styles/custom-tabs.css';
 
 function App({ Component, pageProps }: AppProps<{ dehydratedState: string }>) {
   const [queryClient] = React.useState(new QueryClient());
