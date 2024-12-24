@@ -1,3 +1,4 @@
+# Nodejs and package manager
 *.local
 .eslintcache
 .next
@@ -15,10 +16,10 @@ build/
 .env
 .envrc
 
-# svelte
-dist-ssr
+# Nix
+/result
 
-# editor directories and files
+# Editor directories and files
 .idea
 .DS_Store
 *.suo
