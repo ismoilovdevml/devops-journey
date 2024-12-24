@@ -257,7 +257,7 @@
     "description": "Muvaffaqiyatli Git branching modeli",
     "level": "Hamma uchun",
     "category": "DevOps",
-    "author": {
+     "author": {
       "name": "Ahmad (Akhmadiy) Kadirov",
       "image": "https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/authors/akhmadiy.jpeg"
     },
@@ -409,8 +409,8 @@
       "name": "Otabek Ismoilov",
       "image": "https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/authors/ismoilovdev.jpeg"
     },
-    "createdAt": "2024-02-10",
-    "minutesRead": 60,
+    "createdAt": "2024-12-24",
+    "minutesRead": 70,
     "href": "/tutorials/article/keycloak-identity-server-sozlash",
     "theme": {
       "breadcrumb": false,

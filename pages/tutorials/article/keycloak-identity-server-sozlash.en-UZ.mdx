@@ -3,7 +3,6 @@ image: https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/ar
 description: "Keycloak bilan Identity Server sozlash"
 ---
 
-
 import { Callout } from "nextra-theme-docs";
 import { Tabs, TabList, Tab, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
@@ -14,13 +13,30 @@ import 'react-tabs/style/react-tabs.css';
 
 ## Kirish
 
-Bugungi raqamli landshaftda applicationlar va resurslarga kirishni ta'minlash muhim ahamiyatga ega. **I**dentity and **A**ccess **M**anagement(**IAM**) yechimlari foydalanuvchi identifikatorlarini boshqarish, foydalanuvchilarni autentifikatsiya qilish va tashkilot ekotizimidagi turli resurslarga kirishni nazorat qilishda muhim rol o'ynaydi. Keycloak, open source IAM yechimi identifikatsiya va kirishni boshqarishni boshqarish uchun mustahkam va keng qamrovli platformani taklif etadi.
+Bugungi raqamli landshaftda applicationlar va resurslarga kirishni ta'minlash muhim ahamiyatga ega. **I**dentity and **A**ccess **M**anagement(**IAM**) yechimlari foydalanuvchi identifikatorlarini boshqarish, foydalanuvchilarni autentifikatsiya qilish va tashkilot ekotizimidagi turli resurslarga kirishni nazorat qilishda muhim rol o'ynaydi. Keycloak, open source **IAM** yechimi identifikatsiya va kirishni boshqarishni boshqarish uchun mustahkam va keng qamrovli platformani taklif etadi.
 
 Keycloak foydalanuvchilarga bir marta autentifikatsiya qilish va bir nechta applicationlarga muammosiz kirish imkonini beruvchi **s**ingle **s**ign-**o**n(**SSO**) yechimi sifatida xizmat qiladi. **Red Hat** tomonidan ishlab chiqilgan Keycloak **OpenID Connect**, **OAuth 2.0** va **SAML (Security Assertion Markup Language)** kabi turli xil autentifikatsiya protokollarini qo'llab-quvvatlaydi, bu uni ko'p qirrali va turli xil foydalanish holatlariga moslashtiradi.
 
-Keycloak-ning asosiy afzalliklaridan biri uning moslashuvchanligi(flexibility) va kengaytirilishidir(extensibility). U **LDAP (Lightweight Directory Access Protocol)** yoki **Active Directory** kabi mavjud identity storelari bilan birlashtirilishi mumkin, bu esa tashkilotlarga mavjud user repositoriyalaridan foydalanish imkonini beradi. Bundan tashqari, Keycloak user federation, fine-grained access control, multi-factor authentication va centralized user management kabi boy xususiyatlar to'plamini taklif etadi, bu esa tashkilotlarga xavfsizlik siyosatini samarali qo'llash imkonini beradi.
+Keycloak-ning asosiy afzalliklaridan biri uning moslashuvchanligi(flexibility) va kengaytirilishidir(extensibility). U **LDAP (Lightweight Directory Access Protocol)** yoki **Active Directory** kabi mavjud identity storelari bilan birlashtirilishi mumkin, bu esa tashkilotlarga mavjud user repositoriyalaridan foydalanish imkonini beradi. Bundan tashqari, Keycloak **user federation, fine-grained access control, multi-factor authentication** va **centralized user management** kabi boy xususiyatlar to'plamini taklif etadi, bu esa tashkilotlarga xavfsizlik siyosatini samarali qo'llash imkonini beradi.
 
-Ushbu texnik qo'llanma **Ubuntu 20.04** serverida **Keycloak**ni o'rnatish bo'yicha keng qamrovli ko'rsatmalar berishga qaratilgan bo'lib, o'rnatish, sozlashni qamrab oladi. Ushbu qo'llanmaga amal qilish orqali admin/devopslar va dasturchilar o'z applicationlari xavfsizligini oshirish hamda foydalanuvchilari uchun autentifikatsiya va avtorizatsiya jarayonlarini soddalashtirish uchun Keycloak quvvatidan foydalanishlari mumkin.
+Ushbu texnik qo'llanma **Keycloak**ni o'rnatish va configuratsiya qilish bo'yicha keng qamrovli ko'rsatmalar berishga qaratilgan. Ushbu qo'llanmaga amal qilish orqali admin/devopslar va dasturchilar o'z applicationlari xavfsizligini oshirish hamda foydalanuvchilari uchun autentifikatsiya va avtorizatsiya jarayonlarini soddalashtirish uchun Keycloak quvvatidan foydalanishlari mumkin.
+
+<Callout type="info" emoji="">
+Mundarija:
+* **[Ishni boshlash](https://devops-journey.uz/tutorials/article/keycloak-identity-server-sozlash#ishni-boshlash)**
+
+**[Keycloak o'rnatish](https://devops-journey.uz/tutorials/article/keycloak-identity-server-sozlash#keycloak-ornatish)**
+
+* **[16 versiyadan oldingilar](https://devops-journey.uz/tutorials/article/keycloak-identity-server-sozlash#16-chi-versiyagacha)**
+* **[16 versiyadan keyingilar](https://devops-journey.uz/tutorials/article/keycloak-identity-server-sozlash#16-chi-versiyadan-keyingilar)**
+* **[16 versiyadan keyingilarni production modeda ishgab tushirish](https://devops-journey.uz/tutorials/article/keycloak-identity-server-sozlash#16-chi-versiyadan-keyingilarni-production-modeda-ishgab-tushirish)**
+
+**[Keycloakni PostgeSQL'ga ulash](https://devops-journey.uz/tutorials/article/keycloak-identity-server-sozlash#16-chi-versiyadan-keyingilarni-production-modeda-ishgab-tushirish)**
+
+* **[Keycloakni PostgeSQL'ga ulash(16 versiyadan yuqori)](https://devops-journey.uz/tutorials/article/keycloak-identity-server-sozlash#16---versiydan-keyingi-keycloak)**
+* **[Keycloakni PostgeSQL'ga ulash(16 versiyadan kichik)](https://devops-journey.uz/tutorials/article/keycloak-identity-server-sozlash#16---versiyadan-kichik)**
+</Callout>
+
 
 ## Ishni boshlash
 
@@ -31,16 +47,16 @@ Ushbu amaliyotni amalga oshirish uchun bizga quyidagi minimum server talablarida
 
 | OS            | RAM            | CPU           | Xotira       | Static IP  |
 | ------------- | -------------- | ------------- |------------- | ---------- |
-| Ubuntu 20.04  | 8GB            | 8 core        | 50GB         | Ha kerak   |
+| Ubuntu 20.04 yoki RockyLinux 8  | 4GB            | 2 core        | 50GB         | Ha kerak   |
 
 </Callout>
 
 ## Keycloak o'rnatish
 
-Keycloak o'rnatishni biz ikki qismga bo'ldik ya'ni keycloak 16chi versiyagacha o'rnatish bosqacha bo'lgan va 17chi versiyadan boshlab o'rnatishdan katta o'zgarishlar bo'lgan shuning uchun biz 16 versiyagacha bo'lgan keycloak uchun alohida va 17dan boshlangan keycloak uchun boshqa o'rnatish qo'llanmasini yozdik. Keyclok versiyani loyihangi talablari yoki boshqa bo'gliklar orqali tanlaysiz.
+Keycloak o'rnatishni biz ikki qismga bo'ldik ya'ni keycloak 16chi versiyagacha o'rnatish bosqacha bo'lgan va 17chi versiyadan boshlab o'rnatishdan katta o'zgarishlar bo'lgan shuning uchun biz 16 versiyagacha bo'lgan keycloak uchun alohida va 17dan boshlangan keycloak uchun boshqa o'rnatish qo'llanmasini yozdik. Keycloak versiyani loyihaning talablari yoki boshqa bo'gliklar orqali tanlaysiz.
 
 <Callout type="info" emoji="">
-Keycloakning o'rnatishning quyidagi usullari bor biz bugungi amaliyotda **OpenJDK** va **Docker** yordamida o'rnatamiz.
+Keycloakning o'rnatishning quyidagi usullari bor biz bugungi amaliyotda **OpenJDK** yordamida o'rnatamiz.
 ![keycloak-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/keycloak-server/install.png)
 </Callout>
 
@@ -56,7 +72,7 @@ Keycloakning o'rnatishning quyidagi usullari bor biz bugungi amaliyotda **OpenJD
 **1->** Serverni yangilaymiz va kerakli dasturlarni o'rnatib olamiz.
 ```bash
 sudo yum update -y
-sudo yum install git nano zip unzip wget curl gnupg -y
+sudo yum install git nano vim zip unzip wget curl gnupg -y
 ```
 
 **2->** OpenJDK 17'ni o'rnatamiz.
@@ -81,7 +97,7 @@ OpenJDK 64-Bit Server VM (Red_Hat-17.0.13.0.11-1) (build 17.0.13+11-LTS, mixed m
 **1->** Serverni yangilaymiz va kerakli dasturlarni o'rnatib olamiz.
 ```bash
 sudo apt update && sudo apt upgrade -y
-sudo apt install git nano zip unzip wget apt-transport-https gnupg lsb-release -y
+sudo apt install git nano vim zip unzip wget apt-transport-https gnupg lsb-release -y
 ```
 
 **2->** OpenJDK 17'ni o'rnatamiz.
@@ -190,7 +206,7 @@ sudo cp /opt/keycloak/docs/contrib/scripts/systemd/wildfly.service /etc/systemd/
 sudo nano /etc/systemd/system/keycloak.service
 ```
 
-Dastlab keycloak.service konfiguratsiyamniz quyidagi ko'rinishda bo'ladi
+Dastlab `keycloak.service` konfiguratsiyamniz quyidagi ko'rinishda bo'ladi
 ```bash filename="/etc/systemd/system/keycloak.service"
 [Unit]
 Description=The WildFly Application Server
@@ -298,36 +314,68 @@ Login qilib kiramiz birinchi oyna.
 
 ![keycloak-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/keycloak-server/keycloak5.png)
 
-Okey bizda hammasi ishlayapti biz muvaffaqiyatli keycloak 15.0.0 o'rnatdik va dastlabki sozlashni yakunladik.
+Okey bizda hammasi ishlayapti biz muvaffaqiyatli keycloak `15.0.0` o'rnatdik va dastlabki sozlashni yakunladik.
 
 ### 16-chi versiyadan keyingilar
 
 Ushbu o'rnatish 16-chi versiyadan baland bo'lgan keycloak uchun o'rnatish qo'llanmasi va biz bunda **keycloak 26.0.7** latest versiyani o'rnatamiz.
 
-**1->** Serverni yangilab kerakli dasturlarni o'rnatib olamiz.
+<Tabs>
+  <TabList>
+    <Tab>Red Hat Based</Tab>
+    <Tab>Debian Based</Tab>
+  </TabList>
 
+  <TabPanel>
+**1->** Serverni yangilaymiz va kerakli dasturlarni o'rnatib olamiz.
 ```bash
-sudo apt update && sudo apt upgrade -y
-sudo apt install git nano zip unzip wget apt-transport-https gnupg lsb-release -y
+sudo dnf update -y
+sudo dnf install git nano vim zip unzip wget curl gnupg -y
 ```
 
-**2->** Keycloak **v26.0.7** ishlashi uchun **OpenJDK 21** talab qilinadi. Quyidagi buyruq yordamida **OpenJDK 21**ni o'rnataib olamiz.
-
+**2->** OpenJDK 17'ni o'rnatamiz.
 ```bash
-sudo apt install openjdk-21-jdk -y
+sudo dnf install java-21-openjdk -y
 ```
 OpenJDK 21 o'rnatilgani quyidagi buyruq orqali tekshirib ko'rishingiz mumkin.
 
 ```bash
 java -version
 ```
-Terminalda quyidagi natija chiqishi kerak
+Terminalda quyidagi natija chiqishi kerak.
+
+```txt
+openjdk version "21.0.5" 2024-10-15 LTS
+OpenJDK Runtime Environment (Red_Hat-21.0.5.0.10-1) (build 21.0.5+10-LTS)
+OpenJDK 64-Bit Server VM (Red_Hat-21.0.5.0.10-1) (build 21.0.5+10-LTS, mixed mode, sharing)
+```
+  </TabPanel>
+
+  <TabPanel>
+**1->** Serverni yangilaymiz va kerakli dasturlarni o'rnatib olamiz.
+```bash
+sudo apt update && sudo apt upgrade -y
+sudo apt install git nano vim zip unzip wget apt-transport-https gnupg lsb-release -y
+```
+
+**2->** OpenJDK 21'ni o'rnatamiz.
+```bash
+sudo apt install openjdk-17-jre openjdk-17-jdk -y
+```
+OpenJDK 21 o'rnatilgani quyidagi buyruq orqali tekshirib ko'rishingiz mumkin.
+
+```bash
+java -version
+```
+Terminalda quyidagi natija chiqishi kerak.
 
 ```txt
 openjdk version "21.0.5" 2024-10-15
 OpenJDK Runtime Environment (build 21.0.5+11-Ubuntu-1ubuntu120.04)
 OpenJDK 64-Bit Server VM (build 21.0.5+11-Ubuntu-1ubuntu120.04, mixed mode, sharing)
 ```
+  </TabPanel>
+</Tabs>
 
 **3->** Ushbu amaliyotda biz source code orqali Keycloak **26.0.7** versiyasni o'rnatamiz. Buning uchun keycloak source kodlarini serverimiz `/opt` papkasiga yuklab olamiz va arxivdan chiqaramiz. Rasmiy [Keycloak Downloads](https://www.keycloak.org/downloads.html) sahifasi.
 
@@ -377,8 +425,8 @@ sudo cp /opt/keycloak/conf/keycloak.conf /etc/keycloak/keycloak.conf
 sudo nano /etc/systemd/system/keycloak.service
 ```
 
-`keycloak.service` konfiguratsiyamniz quyidagi ko'rinishda bo'ladi
-```bash filename="/etc/systemd/system/keycloak.service"
+`keycloak.service` konfiguratsiyamniz quyidagi ko'rinishda bo'ladi.
+```bash filename="/etc/systemd/system/keycloak.service" { 2, 7, 9-12 }
 [Unit]
 Description=The Keycloak Server
 After=syslog.target network.target
@@ -386,11 +434,15 @@ Before=httpd.service
 
 [Service]
 EnvironmentFile=-/etc/keycloak/keycloak.conf
+Type=idle
 User=keycloak
 Group=keycloak
 ExecStart=/opt/keycloak/bin/kc.sh start-dev
-ExecStop=/opt/keycloak/bin/kc.sh stop
-Restart=on-failure
+StandardOutput=append:/var/log/keycloak.log
+StandardError=inherit
+RestartSec=2s
+Restart=always
+AmbientCapabilities=CAP_NET_BIND_SERVICE
 LimitNOFILE=102642
 
 [Install]
@@ -413,17 +465,17 @@ sudo systemctl status keycloak
 
 **15->** Keycloakni muvaffaqiyatli ishga tushirganimizdan keyin brauzer orqali serverimiz public IPsi bilan **8080** portiga kirganimizda bizda Keycloak oynasi ochilishi kerak.
 
-http://0.0.0.0:8080/auth/
+http://0.0.0.0:8080
 
 ![keycloak-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/keycloak-server/6.png)
 
-Keycloak hech qanday birinchi Administrator user bilan kelmaydi shuning uchun biz uni o'zimiz yaratib olishimiz kerak. Biz hozir localhost:8080 qilib kirmaganimiz uchun UI orqali admni user yarata olmaymiz shuning uchun `add-user-keycloak.sh` scripti orqali admin user yarataib olamiz.
+Keycloak hech qanday birinchi Administrator user bilan kelmaydi shuning uchun biz uni o'zimiz yaratib olishimiz kerak. Biz hozir localhost:8080 qilib kirmaganimiz uchun UI orqali admin user yarata olmaymiz shuning uchun `kc.sh` scripti orqali admin user yaratib olamiz.
 
 ```bash
 /opt/keycloak/bin/kc.sh bootstrap-admin user --username admin --password adminparol239dw2
 ```
 ![keycloak-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/keycloak-server/7.png)
-Keycloak admin user yaratib olganimzidan keyin avtomatik **master** realm bilan birga keladi.
+Keycloak admin user yaratib olganimizdan keyin avtomatik **master** realm bilan birga keladi.
 
 **16->** Keycloakga restart berib brauzer orqali qayta kiramiz.
 
@@ -435,7 +487,7 @@ Okey bizda **Administration Console** ochildi va kirganimizda quyidagi oyna ochi
 
 ![keycloak-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/keycloak-server/8.png)
 
-Bizda muammo chiqdi yani biz http bilan kiryapmiz keycloak esa SSL https talab qilyapti buning sababi biz keyloakni **production** modedda ishga tushirdik. Kleing boshlanishga **development** modeda http bilan ishga tushiramiz. Keling keycloakdan SSL verificationni o'chirib qo'yamiz.
+Bizda muammo chiqdi yani biz http bilan kiryapmiz keycloak esa SSL https talab qilyapti buning sababi biz keyloakni **production** modedda ishga tushirdik. Keling boshlanishga **development** modeda http bilan ishga tushiramiz. Keling keycloakdan SSL verificationni o'chirib qo'yamiz.
 
 ```bash
 sudo /opt/keycloak/bin/kcadm.sh config credentials \
@@ -465,6 +517,7 @@ Login qilib kiramiz birinchi oyna.
 
 Okey bizda hammasi ishlayapti biz muvaffaqiyatli keycloak **26.0.7** o'rnatdik va **development** modeda dastlabki sozlashni yakunladik.
 
+## 16-chi versiyadan keyingilarni production modeda ishga tushirish
 Keling endi **production** modeda ishga tushirib SSL bilan ishlatamiz.
 
 **1->** Birinchi navbtada DNS yordamida domainni serverga ulash uchun **A** record qo'shib serverimiz public IP'sini ulaymiz.
@@ -474,7 +527,7 @@ Rasmda Ahost DNS orqali A record qo'shish namunasini ko'rsatilgan.
 
 **2** Serverga certbot o'rnatamiz va domenimizga SSL sertifikat generatsiya qilib olamiz. Masalan domenimiz **auth.helm.uz**.
 
-```bash
+```bash /auth.helm.uz/
 sudo apt install certbot
 sudo certbot certonly --standalone -d auth.helm.uz
 ```
@@ -483,8 +536,8 @@ sudo certbot certonly --standalone -d auth.helm.uz
 ![keycloak-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/keycloak-server/13.png)
 certbot generatsiya qilgan sertifikatlar quyidagi papkada joylashgan bo'ladi `/etc/letcenrypt/live/auth.helm.uz/`
 
-**3->** Keycloak `PKCS12` formatidagi keystore bilan ishlaydi, shuning uchun **Let's Encrypt** sertifikati mos formatga o'zgartirish kerak bo'ladi. Let's Encrypt sertifikatlari .pem formatida bo'ladi PKCS12 keystore .pem formatini kalit (key) va sertifikatni birlashtirib ishlatadi. Quyidagi buyruq bilan  sertifikatni `PKCS12` formatga o'tkazamiz `-passout`ga keystore uchun parol qo'yishimiz kerak bo'ladi.
-```bash
+**3->** Keycloak `PKCS12` formatidagi keystore bilan ishlaydi, shuning uchun **Let's Encrypt** sertifikati mos formatga o'zgartirish kerak bo'ladi. Let's Encrypt sertifikatlari `.pem` formatida bo'ladi PKCS12 keystore `.pem` formatini kalit (key) va sertifikatni birlashtirib ishlatadi. Quyidagi buyruq bilan  sertifikatni `PKCS12` formatga o'tkazamiz `-passout`ga keystore uchun parol qo'yishimiz kerak bo'ladi.
+```bash { 2-3, 6}
 openssl pkcs12 -export \
   -in /etc/letsencrypt/live/auth.helm.uz/fullchain.pem \
   -inkey /etc/letsencrypt/live/auth.helm.uz/privkey.pem \
@@ -572,13 +625,13 @@ Okey biz **Keycloak** `26.0.7` versiyasini muvaffaqiyatli **production** modeda 
 
 ## Keycloakni PostgeSQL'ga ulash
 
-Keycloak asosan foydalanuvchi ma'lumotlarini(user data) va konfiguratsiyani saqlash uchun ma'lumotlar bazasidan foydalanadi. Standart o'rnatishda Keycloak ichki **H2** ma'lumotlar bazasi(embedded H2 database) bilan birga keladi, lekin bu faqat test qilish va development uchun tavsiya etiladi, chunkki u: memory-based va production environment uchun ishonchli emas, kaslterlash va multiple instance'lar o'rtasida data sharing qo'llab quvvatlamaydi.
+Keycloak asosan foydalanuvchi ma'lumotlarini(user data) va konfiguratsiyani saqlash uchun ma'lumotlar bazasidan foydalanadi. Standart o'rnatishda Keycloak ichki **H2** ma'lumotlar bazasi(embedded H2 database) bilan birga keladi, lekin bu faqat test qilish va development uchun tavsiya etiladi, chunkki u: memory-based va production environment uchun ishonchli emas, klasterlash va multiple instance'lar o'rtasida data sharing qo'llab quvvatlamaydi.
 
 Keycloak quyidagi ma'lumotlarni databazaga yozadi:
 
-* **user data** loginlar, profillar va parollar.
-* **authentication data** sessionlar, tokenlar va authorization rulelar.
-* **configuration data** realmslar(domain-like segments), clientlar, user rolelar va permissionlar.
+* **user data->** loginlar, profillar va parollar.
+* **authentication data->** sessionlar, tokenlar va authorization rulelar.
+* **configuration data->** realmslar(domain-like segments), clientlar, user rolelar va permissionlar.
 
 Keycloak latest versiyasi quyidagi databaselarni qo'llab quvvatlaydi.
 
@@ -600,8 +653,8 @@ Sizda **PostgreSQL** o'rnatilgan va configuratsiya qilingan bo'lishi kerak quyid
 
 ### 16 - versiydan keyingi Keycloak
 Bu bosqichda biz keycloak 16 versiyadan yuqori bo'lgan keyclok uchun databaza integratsiyasini ko'rib chiqamiz.
-**1->** PostgreSQL'da `keycloak` databaza va `keycloak_user` yaratib olishimiz kerak bo'ladi.
 
+**1->** PostgreSQL'da `keycloak` databaza va `keycloak_user` yaratib olishimiz kerak bo'ladi.
 ```bash
 sudo -u postgres psql
 ```
@@ -620,13 +673,13 @@ postgres=# \l
 ```
 ![keycloak-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/keycloak-server/20.png)
 
-**2->** Keycloak `/etc/systemd/system/keycloak.service` databazaga ulanishni konfig qilamiz.
+**2->** Keycloak `/etc/systemd/system/keycloak.service`si databazaga ulanish uchun quyidagicha o'zgartirishlar kiritamiz.
 
 ```bash
 sudo nano /etc/systemd/system/keycloak.service
 ```
 
-```bash { 16-19 }filename="/etc/systemd/system/keycloak.service"
+```bash { 17-19 }filename="/etc/systemd/system/keycloak.service"
 [Unit]
 Description=The Keycloak Server
 After=syslog.target network.target
@@ -678,7 +731,7 @@ sudo systemctl status keycloak
 
 ![keycloak-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/keycloak-server/24.png)
 
-**4->** keycloak databazaga ulaganimizdan keyin admin user parolini yangilaymiz.
+**4->** keycloak databazaga ulaganimizdan keyin admin user parolini yangilaymiz sababi Keycloak H2 databazasida admin user/parol yaratgandik va biz PostgreSQL bazag o'tdik admin user o'chib ketgan bo'lishi mumkin.
 
 ```bash
 sudo systemctl stop keycloak
@@ -728,7 +781,7 @@ postgres=# \l
 ```
 ![keycloak-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/keycloak-server/20.png)
 
-**2->** Keycloak PostgreSQL databazag ulana olishi uchun PostgreSQl JDBC driveri kerak bo'ladi uni yuklab olamiz Java 17 uchun `postgresql-42.7.3.jar` to'gri keladi yuklab olish sahifasi - [PostgreSQL JDBC Driver](https://jdbc.postgresql.org/download/)
+**2->** Keycloak PostgreSQL databazaga ulana olishi uchun **PostgreSQl JDBC** driveri kerak bo'ladi uni yuklab olamiz Java 17 uchun `postgresql-42.7.3.jar` to'gri keladi yuklab olish sahifasi - [PostgreSQL JDBC Driver](https://jdbc.postgresql.org/download/)
 
 ```bash
 cd /opt/keycloak/standalone/deployments/
@@ -768,9 +821,9 @@ sudo nano /opt/keycloak/standalone/configuration/standalone.xml
 ```
 `standalone.xml`ga quyidagcha o'zgatirish kiritamiz.
 <Callout type="info" emoji="">
-Maslahat: cat orqali `standalone.xml` faylini ochib copy qilib birorta editorda ochib to'gri sintaksis bilan config qiling masalan VSCode, agar vim va nanoda yaxshi ishlashni bilmasangiz `.xml` config qilishda sintaksis xatolar ko'p qilishingiz mumkin.
+**Maslahat:** cat orqali `standalone.xml` faylini ochib copy qilib birorta editorda ochib to'gri sintaksis bilan config qiling masalan VSCode, agar vim va nanoda yaxshi ishlashni bilmasangiz `.xml` config qilishda sintaksis xatolar ko'p qilishingiz mumkin.
 </Callout>
-```xml filename="/opt/keycloak/standalone/configuration/standalone.xml" /jdbc:postgresql://127.0.0.1:5432/keycloak/ /postgresql/ /keycloak_user/ /kEyCl0@k/
+```xml filename="/opt/keycloak/standalone/configuration/standalone.xml" /jdbc:postgresql://127.0.0.1:5432/keycloak/ /postgresql/ /keycloak_user/ /kEyCl0@k/ {10-17, 22-24}
 <datasources>
     <datasource jndi-name="java:jboss/datasources/ExampleDS" pool-name="ExampleDS" enabled="true" use-java-context="true" statistics-enabled="${wildfly.datasources.statistics-enabled:${wildfly.statistics-enabled:false}}">
         <connection-url>jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE</connection-url>
@@ -837,17 +890,20 @@ sudo systemctl status keycloak
 ```
 PostgreSQL `keycloak` databazasiga ulanib tablelarni ko'rsak keycloak tablelari chiqishi kerak.
 
-![keycloak-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/keycloak-server/26.png)
+![keycloak-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/keycloak-server/db-old.png)
 Brauzer orqali `http://0.0.0.0/auth` addresga kirganimizda keycloak admin/login page ochilishi kerak va admin/passwordni kiritib login qilsak ishlashi kerak.
 
 ![keycloak-sozlash](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/keycloak-server/keycloak5.png)
 
 Nihoyat biz gemaroy **Keycloak**ni **OpenJDK** bilan eski va yangi versiyalarni o'rnatib basic config qilishni va **PostgreSQL** databaza ulashni va **keycloak 16** versiyadan keyingi versiyadagi keycloaklarni **production** modeda ishga tushirishni ko'rib chiqdik. ***Bilaman sizlarga bu bilan oson lekin yozgunimcha....***
+
+Keyingi qismlar **Kubernetes/Docker** orqali o'rnatib/sozlash va Keycloakni boshqa dasturlar bilan integratsiya qilishni ko'rib chiqamiz.
+
 <Callout type="info" emoji="">
 
-**Sana:** 2024.12.22(2024-yil 22-sentabr)
+**Sana:** 2024.12.22(2024-yil 22-dekabr)
 
-**Oxirgi yangilanish:** 2024.12.22(2024-yil 22-sentabr)
+**Oxirgi yangilanish:** 2024.12.24(2024-yil 24-dekabr)
 
 **Muallif: Otabek Ismoilov**
 
