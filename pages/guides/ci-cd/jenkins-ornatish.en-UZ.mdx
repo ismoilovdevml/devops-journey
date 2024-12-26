@@ -4,6 +4,8 @@ description: "Linux Serverlarga Jenkins o'rnatish"
 ---
 
 import { Callout } from "nextra-theme-docs";
+import { Tabs, TabList, Tab, TabPanel } from 'react-tabs';
+import 'react-tabs/style/react-tabs.css';
 
 # Linux Serverlarga Jenkins o'rnatish
 
@@ -11,14 +13,14 @@ import { Callout } from "nextra-theme-docs";
 
 ## Kirish
 
-**Jenkins** - bu asosan continuous integration **(CI)** va continuous delivery **(CD)** maqsadlarida foydalaniladigan mashhur ochiq manbali(open source) avtomatlashtirish serveridir. U 2004 yilda `Kohsuke Kawaguchi` tomonidan **"Hudson"** nomi bilan yaratilgan va keyinchalik 2011 yilda **"Jenkins"** deb o'zgartirilgan.
+**Jenkins** - bu asosan continuous integration **(CI)** va continuous delivery **(CD)** maqsadlarida foydalaniladigan mashhur open source avtomatlashtirish serveridir. U 2004 yilda `Kohsuke Kawaguchi` tomonidan **"Hudson"** nomi bilan yaratilgan va keyinchalik 2011 yilda **"Jenkins"** deb o'zgartirilgan.
 
 U **Java**-da yozilgan va uning funksionalligini oshiruvchi keng ko'lamli plaginlarni qo'llab-quvvatlaydi, bu esa dasturiy ta'minot loyihalarini yaratish, sinovdan o'tkazish va joylashtirish bilan bog'liq turli vazifalarni avtomatlashtirishga mos keladi.
 
-Jenkins turli xil operatsion tizimlarga, jumladan **Linux, macOS** va **Windows**-ga o'rnatilishi mumkin va mustaqil rejimda ishga tushirilishi yoki Apache Tomcat kabi dastur serverlarida joylashtirilishi mumkin. U ko'p qirraliligi, kengaytirilishi va dasturiy ta'minotni ishlab chiqish hayotiy siklining ko'p jihatlarini avtomatlashtirish qobiliyati uchun barcha o'lchamdagi dasturiy ta'minotni ishlab chiqish tashkilotlarida keng qo'llaniladi.
+Jenkins turli xil operatsion tizimlarga, jumladan **Linux, macOS** va **Windows**-ga o'rnatilishi mumkin va mustaqil rejimda ishga tushirilishi yoki Apache Tomcat kabi dastur serverlarida ishga tushirilishi mumkin. U ko'p qirraliligi, kengaytirilishi va dasturiy ta'minotni ishlab chiqish life-skill ko'p jihatlarini avtomatlashtirish qobiliyati uchun barcha o'lchamdagi dasturiy ta'minotni ishlab chiqish tashkilotlarida keng qo'llaniladi.
 
 <Callout type="info" emoji="">
-Jenkins instalerlari bir nechta Linux distributivlari uchun mavjud.
+Jenkins installerlari bir nechta Linux distributivlari uchun mavjud.
 * **Debian/Ubuntu**
 * **Fedora**
 * **Red Hat/Alma/Rocky**
@@ -29,15 +31,23 @@ Jenkins instalerlari bir nechta Linux distributivlari uchun mavjud.
 Minimal qurilma talablari:
 
 * **256 MB** operativ xotira(RAM)
-* **1 GB** disk maydoni (garchi Jenkins Docker konteyneri sifatida ishlayotgan bo'lsa, kamida **10 GB** tavsiya etiladi)
+* **1 GB** disk maydoni (agar Jenkins Docker konteynerda ishlayotgan bo'lsa, kamida **10 GB** tavsiya etiladi)
 
 **Kichik jamoa uchun tavsiya etilgan qurilma konfiguratsiyasi:**
 
 * **4 GB+** RAM
 * **50 GB+** disk maydoni
 
-## Debian/Ubuntu'ga Jenkins o'rnatish
 
+## Jenkins o'rnatish
+<Tabs>
+<TabList>
+<Tab>Debian/Ubuntu</Tab>
+<Tab>Fedora</Tab>
+<Tab>Read Hat/Alma/Rocky</Tab>
+</TabList>
+
+<TabPanel>
 Ubuntu kabi Debian va Debian-ga asoslangan distributivlarda siz Jenkins-ni `apt` orqali o'rnatishingiz mumkin.
 
 **1-> Java o'rnatish**
@@ -49,14 +59,14 @@ Siz foydalanishingiz mumkin bo'lgan bir nechta Java ilovalari mavjud. **OpenJDK*
 Debian apt repositoriyalarini yangilang, **OpenJDK 17** ni o'rnating va buyruqlar bilan o'rnatishni tekshiring:
 
 ```bash
-sudo apt update
+sudo apt update -y
 sudo apt install fontconfig openjdk-17-jre -y
 java -version
 ```
 
 **2->** Uzoq muddatli qo'llab-quvvatlash versiyasi(**LTS** **L**ong **T**erm **S**upport release)
 
-**LTS** (Uzoq muddatli qo'llab-quvvatlash) versiyasi har 12 haftada muntazam releaselar oqimidan o'sha vaqt uchun barqaror release sifatida tanlanadi. U debian-stable apt repositorydan o'rnatilishi mumkin.
+**LTS** (Uzoq muddatli qo'llab-quvvatlash) versiyasi har 12 haftada muntazam releaselar streamidan o'sha vaqt uchun barqaror release sifatida tanlanadi. Jenkinsni debian-stable apt repositoriyadan o'rnatish mumkin.
 
 ```bash
 sudo wget -O /usr/share/keyrings/jenkins-keyring.asc \
@@ -70,7 +80,7 @@ sudo apt-get install jenkins -y
 
 **3-> Haftalik Release(ixtiyoriy)**
 
-Foydalanuvchilar va plaginlarni ishlab chiquvchilarga xatolarni tuzatish va xususiyatlarni yetkazib berish uchun har hafta yangi release chiqariladi. Uni debian apt repositorydan o'rnatishingiz mumkin.
+Foydalanuvchilar va plaginlarni ishlab chiquvchilarga xatolarni tuzatish va xususiyatlarni(feature) yetkazib berish uchun har hafta yangi release chiqariladi. Uni debian apt repositorydan o'rnatishingiz mumkin.
 
 ```bash
 sudo wget -O /usr/share/keyrings/jenkins-keyring.asc \
@@ -81,10 +91,15 @@ echo "deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc]" \
 sudo apt-get update
 sudo apt-get install jenkins -y
 ```
+**4->** Jenkinsni o'rnatganimizdan keyin SystemD orqali Jenkinsni isha tushiramiz.
 
-
-## Fedora'ga Jenkins o'rnatish
-
+```bash
+sudo systemctl enable jenkins
+sudo systemctl start jenkins
+sudo systemctl status jenkins
+```
+</TabPanel>
+<TabPanel>
 **1->** Java o'rnatish
 
 ```bash
@@ -94,7 +109,7 @@ Jenkins-ni `dnf` orqali o'rnatishingiz mumkin. Avval Jenkins veb-saytidan Jenkin
 
 **2->** Uzoq muddatli qo'llab-quvvatlash versiyasi(**LTS** **L**ong **T**erm **S**upport release)
 
-LTS (Uzoq muddatli qo'llab-quvvatlash) versiyasi har 12 haftada muntazam releaselar oqimidan o'sha vaqt uchun barqaror release sifatida tanlanadi. Uni `redhat-stable` yum repositorydan o'rnatish mumkin.
+LTS (Uzoq muddatli qo'llab-quvvatlash) versiyasi har 12 haftada muntazam releaselar streamidan o'sha vaqt uchun barqaror release sifatida tanlanadi. Uni `redhat-stable` yum repositoriyadan o'rnatish mumkin.
 
 ```bash
 sudo wget -O /etc/yum.repos.d/jenkins.repo \
@@ -116,9 +131,17 @@ sudo rpm --import https://pkg.jenkins.io/redhat/jenkins.io-2023.key
 sudo dnf upgrade
 sudo dnf install jenkins -y
 ```
+**4->** Jenkinsni o'rnatganimizdan keyin SystemD orqali Jenkinsni isha tushiramiz.
 
-## Red Hat/Alma/Rocky'ga Jenkins o'rnatish
-Siz **Jenkins**-ni **yum** orqali **Red Hat Enterprise Linux, Alma Linux, Rocky Linux, Oracle Linux** va boshqa **Red Hat**-ga asoslangan distributivlarga o'rnatishingiz mumkin.
+```bash
+sudo systemctl enable jenkins
+sudo systemctl start jenkins
+sudo systemctl status jenkins
+```
+
+</TabPanel>
+<TabPanel>
+Siz **Jenkins**-ni **yum** orqali **Red Hat Enterprise Linux, Alma Linux, Rocky Linux, Oracle Linux** va boshqa **Red Hat** based distributivlarga o'rnatishingiz mumkin.
 
 Siz Jenkins **Long Term Support** releaseni yoki Jenkins haftalik versiyasini tanlashingiz kerak.
 
@@ -130,7 +153,7 @@ sudo yum install fontconfig java-17-openjdk -y
 java -version
 ```
 **2->** Uzoq muddatli qo'llab-quvvatlash versiyasi(**LTS** **L**ong **T**erm **S**upport release)
-LTS (Uzoq muddatli qo'llab-quvvatlash) versiyasi har 12 haftada muntazam releaselar oqimidan o'sha vaqt uchun barqaror release sifatida tanlanadi. Uni `redhat-stable` yum repositorydan o'rnatish mumkin.
+LTS (Uzoq muddatli qo'llab-quvvatlash) versiyasi har 12 haftada muntazam releaselar streamidan o'sha vaqt uchun barqaror release sifatida tanlanadi. Uni `redhat-stable` yum repositorydan o'rnatish mumkin.
 
 ```bash
 sudo wget -O /etc/yum.repos.d/jenkins.repo \
@@ -143,7 +166,7 @@ sudo systemctl daemon-reload
 
 **3->** Haftalik Release(ixtiyoriy)
 
-Foydalanuvchilar va plaginlarni ishlab chiquvchilarga xatolarni tuzatish va xususiyatlarni yetkazib berish uchun har hafta yangi release chiqariladi. Uni redhat yum repositoriyadan o'rnatish mumkin.
+Foydalanuvchilar va plaginlarni ishlab chiquvchilarga xatolarni tuzatish va xususiyatlarni(feature) yetkazib berish uchun har hafta yangi release chiqariladi. Uni redhat yum repositoriyadan o'rnatish mumkin.
 
 ```bash
 sudo wget -O /etc/yum.repos.d/jenkins.repo \
@@ -152,16 +175,15 @@ sudo rpm --import https://pkg.jenkins.io/redhat/jenkins.io-2023.key
 sudo yum upgrade
 sudo yum install jenkins -y
 ```
-
-## Jenkinsni ishga tushirish
-
-Jenkinsni serviceni yoqish start berish va ishlayotgan statusni ko'rish uchun quyidagi buyruqlardan foydalaning.
+**4->** Jenkinsni o'rnatganimizdan keyin SystemD orqali Jenkinsni isha tushiramiz.
 
 ```bash
 sudo systemctl enable jenkins
 sudo systemctl start jenkins
 sudo systemctl status jenkins
 ```
+</TabPanel>
+</Tabs>
 
 ## O'rnatishdan keyingi sozlash
 
@@ -172,25 +194,42 @@ Ushbu wizard setup sizni Jenkins qulfini ochish, uni plaginlar bilan sozlash va 
 **1->** Jenkins qulfini ochish
 
 
-Yangi Jenkins misoliga birinchi marta kirganingizda, uni avtomatik ravishda yaratilgan parol yordamida qulfdan chiqarish so'raladi.
+Yangi Jenkins instance birinchi marta kirganingizda, uni avtomatik ravishda yaratilgan parol yordamida qulfdan chiqarish so'raladi.
 
 **2->** http://localhost:8080 (yoki uni o'rnatishda Jenkins uchun qaysi portni sozlagan bo'lsangiz) sahifasini ko'rib chiqing va `Unlock Jenkins` sahifasi paydo bo'lguncha kuting.
+<Callout type="info" emoji="">
+Agar brauzer orqali `8080` portga kirolmasangiz firewallni va SElinuxni tekshirib ko'ring.
 
+`ufw` uchun 
+
+```bash 
+sudo ufw allow 8080
+sudo ufw reload
+sudo ufw status
+```
+`firewalld` uchun
+
+```bash
+sudo firewall-cmd --zone=public --add-port=8080/tcp --permanent
+sudo firewall-cmd --reload
+sudo firewall-cmd --list-all
+```
+Agar sizda `SElinux` bo'lsa uni tekshiring.
+  
+```bash
+sudo getenforce
+sudo setenforce 0
+```
+</Callout>
 
 ![jenkins](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/jenkins-ornatish/1.jpg)
 
-**2->** parolni ko'rish uchun jenkins parol qayerda turganini ko'rsatib parol fayliga yo'l ko'rstaib qo'yadi yani `/var/lib/jenkins/secrets/initialAdminPassword`. parolni olish quyidagi buyruqdan foydalanamiz.
+**2->** Default jenkins admin parolni ko'rish uchun jenkins parol qayerda turganini ko'rsatib parol fayliga yo'l ko'rsatib qo'yadi yani `/var/lib/jenkins/secrets/initialAdminPassword`. parolni olish quyidagi buyruqdan foydalanamiz.
 
 ```bash
 sudo cat /var/lib/jenkins/secrets/initialAdminPassword
 ```
-Bu buyruq `sudo cat /var/lib/jenkins/secrets/initialAdminPassword` parolni konsolda chop etadi.
-
-Agar siz Jenkins-ni Docker-da rasmiy jenkins/jenkins imagedan foydalanib ishlayotgan bo'lsangiz, quyidagi buyruqdan foydalanib, parolni konteynerga kiritmasdan turib konsolda chop etishingiz mumkin.
-
-```bash
-sudo docker exec ${CONTAINER_ID yoki CONTAINER_NOMI} cat /var/jenkins_home/secrets/initialAdminPassword
-```
+Bu buyruq `sudo cat /var/lib/jenkins/secrets/initialAdminPassword` parolni konsolda chiqaradi.
 
 Terminaldan 32 belgidan iborat alphanumeric paroldan nusxa oling va uni Administrator paroli maydoniga joylashtiring, so'ng `Continue` tugmasini bosing.
 Keyingi ekranda tavsiya etilgan plaginlarni o'rnatish yoki maxsus plaginlarni tanlash imkoniyati mavjud:
@@ -205,7 +244,7 @@ Keyingi ekranda tavsiya etilgan plaginlarni o'rnatish yoki maxsus plaginlarni ta
 
 ![jenkins](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/jenkins-ornatish/4.png)
 
-**5->** Siz Jenkins instance uchun afzal qilingan URL manzilini tasdiqlashingizni so'raydigan Instance Configuration sahifasini olasiz. Serveringiz uchun domen nomini yoki serveringizning IP manzilini tasdiqlang:
+**5->** Siz Jenkins instance uchun afzal qilingan URL manzilini tasdiqlashingizni so'raydigan **Instance Configuration** sahifasini olasiz. Serveringiz uchun domen nomini yoki serveringizning IP manzilini tasdiqlang:
 
 ![jenkins](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/jenkins-ornatish/5.png)
 
@@ -236,7 +275,7 @@ Qo'shimcha Resurslar
 
 **Sana:** 2023.11.19(2023-yil 19-noyabr)
 
-**Oxirgi yangilanish:** 2024.05.19(2024-yil 19-may)
+**Oxirgi yangilanish:** 2024.12.26(2024-yil 26-dekabr)
 
 **Muallif: Otabek Ismoilov**
 
