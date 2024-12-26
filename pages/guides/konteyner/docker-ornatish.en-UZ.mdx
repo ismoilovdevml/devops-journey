@@ -4,30 +4,62 @@ description: "Linux serverlarga Docker o'rnatish"
 ---
 
 import { Callout } from "nextra-theme-docs";
+import { Tabs, TabList, Tab, TabPanel } from 'react-tabs';
+import 'react-tabs/style/react-tabs.css';
 
 # Linux serverlarga Docker o'rnatish
-
 ![docker o'rnatish](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/docker-ornatish.png)
+Ushu qo'llanmada biz offisial(rasmiy) Docker Engineni Linux serverlarga o'rnatishni/konfiguratsiya qilishni va o'chirib tozlalashni ko'rib chiuqamiz. Qo'llanma **Ubuntu**, **Debian**, **CentOS**, **RockyLinux/AlmaLinux** va **RHEL** operatsion tizimlari uchun mo'ljallangan.
 
-## Ubuntu serverlar uchun docker o'rnatish
+<Tabs>
+<TabList>
+<Tab>**Ubuntu**</Tab>
+<Tab>**Debian**</Tab>
+<Tab>**CentOS**</Tab>
+<Tab>**RHEL**</Tab>
+</TabList>
+<TabPanel>
+## Ubuntu'ga Docker Engine o'rnatish
 
-Docker Engine-ni yangi host machinega birinchi marta o'rnatishdan oldin Docker repozitoriysini sozlashingiz kerak. Shundan so'ng siz Docker-ni repositorydan o'rnatishingiz va yangilashingiz mumkin.
+<Callout type="info" emoji="">
+**Talablar**
 
-**1->** Repozitoriyani sozlash. `apt` paketi indeksini yangilang va aptga HTTPS orqali repositoriyadan foydalanishga ruxsat berish uchun paketlarni o'rnating:
+**OS talablari**
+
+**Docker Engine**-ni o'rnatish uchun sizga ushbu **Ubuntu** versiyalaridan birining **64 bitli** versiyasi kerak bo'ladi:
+
+* **Ubuntu Oracular 24.10**
+* **Ubuntu Noble 24.04 (LTS)**
+* **Ubuntu Jammy 22.04 (LTS)**
+* **Ubuntu Focal 20.04 (LTS)**
+
+**Ubuntu** uchun **Docker Engine** `x86_64`(yoki `amd64`), `armhf`, `arm64`, `s390x` va `ppc64le` (`ppc64el`) arxitekturalari bilan mos keladi.
+</Callout>
+
+
+Docker Engine-ni yangi host machinega birinchi marta o'rnatishdan oldin Docker repozitoriysini sozlashingiz kerak bo'ladi. Shundan so'ng siz Dockerni repositorydan o'rnatishingiz va yangilashingiz mumkin.
+
+**1->** Docker Engine-ni o'rnatishdan oldin har qanday ziddiyatli paketlarni olib tashlashingiz kerak bo'ladi.Sizning Linux distribyutoringiz norasmiy(unofficial) Docker paketlarini taqdim etishi mumkin, ular Docker tomonidan taqdim etilgan rasmiy(official) paketlarga zid kelishi mumkin. Docker Enginening rasmiy versiyasini o'rnatishdan oldin ushbu paketlarni o'chirib tashlashingiz kerak.
+
+```bash
+for pkg in docker.io docker-doc docker-compose docker-compose-v2 podman-docker containerd runc; do sudo apt-get remove $pkg; done
+```
+
+**2->** Repozitoriyani sozlash uchun `apt` paketi indeksini yangilang va aptga HTTPS orqali repositoriyadan foydalanishga ruxsat berish uchun paketlarni o'rnating:
 
 ```bash
  sudo apt-get update
  sudo apt-get install ca-certificates curl gnupg -y
  ```
 
-**2->** Dockerning rasmiy **GPG** kalitini qo'shing:
+**3->** Dockerning rasmiy **GPG** kalitini qo'shing:
 
 ```bash
 sudo install -m 0755 -d /etc/apt/keyrings
 sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
 sudo chmod a+r /etc/apt/keyrings/docker.asc
 ```
-**3->** Repositoriyani sozlash uchun quyidagi buyruqdan foydalaning:
+**4->** Repositoriyani sozlash uchun quyidagi buyruqdan foydalaning:
 
 ```bash
 echo \
@@ -36,45 +68,27 @@ echo \
   sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 ```
 
-**4->** `apt` paketi indeksini yangilang:
+**5->** `apt` paketi indeksini yangilaymiz.
 
 ```bash
 sudo apt-get update
 ```
 
-**5->** Docker Engine, containerd va Docker Compose-ni o'rnating.
-
-Eng so'nggi versiyani(latest) o'rnatish uchun quyidagilarni bajaring:
+**6->** Docker Engine, containerd va Docker Compose-ning eng oxirgi `latest` versiyasini o'rnatamiz.
 
 ```bash
 sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin docker-compose -y
 ```
-**6->**  `devops-journey-uz` docker imageni ishga tushirish orqali Docker Engine muvaffaqiyatli o'rnatilganini tekshiring:
+**7->** Dockerni ishga tushiramiz.
 
 ```bash
-sudo docker run -d -p 3000:3000 --name devops-journey --restart always devopsjourneyuz/devops-journey-uz:latest
+sudo systemctl start docker
+sudo systemctl enable docker
+sudo systemctl status docker
 ```
-
-DevOps Journey platformasi `3000` portda ishga tushadi.
-
-Bu buyruq devopsjourneyuz:latest imageni yuklaydi va uni containerda ishga tushiradi. Container ishga tushganda, u tasdiqlash xabarini chop etadi va chiqadi. Agar serveringizda `3000` portda DevOps Journey platformasi ishlab turgan bo'lsa, tabriklaymiz siz Docker Engine-ni muvaffaqiyatli o'rnatdingiz va ishga tushirdingiz.
-
-<Callout type="info" emoji="">
-
-rootsiz ishlashga urinayotganda xatoliklarni qabul qilyapsizmi?
-Docker foydalanuvchilari guruhi mavjud, lekin foydalanuvchilarni o'z ichiga olmaydi, shuning uchun siz Docker buyruqlarini bajarish uchun sudo-dan foydalanishingiz kerak. Imtiyozli bo'lmagan foydalanuvchilarga Docker buyruqlarini va boshqa ixtiyoriy konfiguratsiya bosqichlarini bajarishga ruxsat berish uchun quyidagilarni bajarishingiz kerak.
-
-```bash
-sudo usermod -aG docker $USER
-sudo chmod 666 /var/run/docker.sock
-sudo chown $USER:docker /var/run/docker.sock
-docker info
-```
-</Callout>
-
-## Debian serverlarga docker o'rnatish.
-
-Docker Engine-ni yangi host machinega birinchi marta o'rnatishdan oldin Docker repozitoriysini sozlashingiz kerak. Shundan so'ng siz Docker-ni repositorydan o'rnatishingiz va yangilashingiz mumkin.
+</TabPanel>
+<TabPanel>
+## Debian'ga Docker Engine o'rnatish
 
 <Callout type="info" emoji="">
 **Talablar**
@@ -89,46 +103,58 @@ Docker Engine-ni yangi host machinega birinchi marta o'rnatishdan oldin Docker r
 **Debian** uchun **Docker Engine** `x86_64`(yoki `amd64`), `armhf`, `arm64` va `ppc64le` (`ppc64el`) arxitekturalari bilan mos keladi.
 </Callout>
 
+Docker Engine-ni yangi host machinega birinchi marta o'rnatishdan oldin Docker repozitoriysini sozlashingiz kerak. Shundan so'ng siz Docker-ni repositorydan o'rnatishingiz va yangilashingiz mumkin.
 
-**1->** Repozitoriyani sozlash. `apt` paketi indeksini yangilang va aptga HTTPS orqali repositoriyadan foydalanishga ruxsat berish uchun paketlarni o'rnating:
+**1->** Docker Engine-ni o'rnatishdan oldin har qanday ziddiyatli paketlarni olib tashlashingiz kerak bo'ladi.Sizning Linux distribyutoringiz norasmiy(unofficial) Docker paketlarini taqdim etishi mumkin, ular Docker tomonidan taqdim etilgan rasmiy(official) paketlarga zid kelishi mumkin. Docker Enginening rasmiy versiyasini o'rnatishdan oldin ushbu paketlarni o'chirib tashlashingiz kerak.
+
+```bash
+for pkg in docker.io docker-doc docker-compose podman-docker containerd runc; do sudo apt-get remove $pkg; done
+```
+
+**2->** Repozitoriyani sozlash uchun `apt` paketi indeksini yangilaymiz va aptga HTTPS orqali repositoriyadan foydalanishga ruxsat berish uchun paketlarni o'rnatamiz:
 
 ```bash
  sudo apt-get update
  sudo apt-get install ca-certificates curl gnupg -y
  ```
 
-**2->** Dockerning rasmiy **GPG** kalitini qo'shing:
+**3->** Dockerning rasmiy **GPG** kalitini qo'shamiz.
 
 ```bash
 sudo install -m 0755 -d /etc/apt/keyrings
 sudo curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
 sudo chmod a+r /etc/apt/keyrings/docker.asc
 ```
-**3->** Repositoriyani sozlash uchun quyidagi buyruqdan foydalaning:
+**4->** Repositoriyani sozlash uchun quyidagi buyruqdan foydalaning:
 
 ```bash
 echo \
   "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian \
   $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
   sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-sudo apt-get update
 ```
 
-**4->** `apt` paketi indeksini yangilang:
+**5->** `apt` paketi indeksini yangilaymiz.
 
 ```bash
 sudo apt-get update
 ```
 
-**5->** Docker Engine, containerd va Docker Compose-ni o'rnating.
-
-Eng so'nggi versiyani(latest) o'rnatish uchun quyidagilarni bajaring:
+**6->** Docker Engine, containerd va Docker Compose-ning eng oxirgi `latest` versiyasini o'rnatamiz.
 
 ```bash
 sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin docker-compose -y
 ```
+**7->** Dockerni ishga tushiramiz.
 
-## CentOS-ga Docker Engine o'rnatish
+```bash
+sudo systemctl start docker
+sudo systemctl enable docker
+sudo systemctl status docker
+```
+</TabPanel>
+<TabPanel>
+## CentOS'ga Docker Engine o'rnatish
 CentOS-da Docker Engine bilan ishlashni boshlash uchun talab shartlarga javob berganingizga ishonch hosil qiling va keyin o'rnatish bosqichlarini bajaring.
 
 <Callout type="info" emoji="">
@@ -142,47 +168,175 @@ CentOS-da Docker Engine bilan ishlashni boshlash uchun talab shartlarga javob be
 * **CentOS 9 (stream)**
 </Callout>
 
-`rpm` repositoriya yordamida o'rnatish. Docker Engine-ni yangi serverga birinchi marta o'rnatishdan oldin Docker repozitoriyasini sozlashingiz kerak. Shundan so'ng siz Docker-ni repositoriyadan o'rnatishingiz va yangilashingiz mumkin.
+Docker Engine-ni yangi serverga birinchi marta o'rnatishdan oldin Docker repozitoriyasini sozlashingiz kerak. Shundan so'ng siz Docker-ni repositoriyadan o'rnatishingiz va yangilashingiz mumkin.
 
-**1->** Repozitoriyani sozlash `yum-utils` paketini o'rnating (`yum-config-manager` yordam dasturini taqdim etadi) va repositoriyani sozlang.
+**1->** Docker Engine-ni o'rnatishdan oldin har qanday ziddiyatli paketlarni olib tashlashingiz kerak bo'ladi.Sizning Linux distribyutoringiz norasmiy(unofficial) Docker paketlarini taqdim etishi mumkin, ular Docker tomonidan taqdim etilgan rasmiy(official) paketlarga zid kelishi mumkin. Docker Enginening rasmiy versiyasini o'rnatishdan oldin ushbu paketlarni o'chirib tashlashingiz kerak.
 
 ```bash
-sudo yum install -y yum-utils
-sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+sudo dnf remove docker \
+                  docker-client \
+                  docker-client-latest \
+                  docker-common \
+                  docker-latest \
+                  docker-latest-logrotate \
+                  docker-logrotate \
+                  docker-engine
 ```
 
-**2->** Docker Engine, containerd va Docker Compose-ni o'rnatish.
-
-Eng so'nggi versiyani(latest) o'rnatish uchun quyidagilarni bajaring:
+**2->** Repozitoriyani sozlash uchun `dnf-plugins-core` paketini o'rnatib `dnf config-manager` repositoriyani sozlab olamiz.
 
 ```bash
-sudo yum install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin docker-compose 
+sudo dnf -y install dnf-plugins-core
+sudo dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+```
+
+**3->** Docker Engine, containerd va Docker Compose-ning eng oxirgi `latest` versiyasini o'rnatamiz.
+
+```bash
+sudo dnf install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin docker-compose -y
+```
+
+Agar GPG kalitini(**GPG key**) qabul qilish so'ralsa, fingerprint `060A 61C5 1B55 8A7F 742B 77AA C52F EB6B 621E 9F35`ga mos kelishini tekshiring va agar shunday bo'lsa, uni qabul qiling.
+
+Bu buyruq **Docker**ni o'rnatadi, lekin u Docker-ni ishga tushirmaydi. Shuningdek, u docker guruhini(group) yaratadi, ammo u default bo'yicha guruhga hech qanday foydalanuvchi qo'shmaydi.
+
+**3->** Dockerni ishga tushiramiz.
+
+```bash
+sudo systemctl start docker
+sudo systemctl enable docker
+sudo systemctl status docker
+```
+</TabPanel>
+<TabPanel>
+## RHEL'ga Docker Engine o'rnatish
+RHEL-da Docker Engine bilan ishlashni boshlash uchun talab shartlarga javob berganingizga ishonch hosil qiling va keyin o'rnatish bosqichlarini bajaring.
+
+<Callout type="info" emoji="">
+**Talablar**
+**OS talablari**
+
+**Docker Engine**-ni o'rnatish uchun sizga quyidagi **RHEL** versiyalaridan birining maintained versiyasi kerak bo'ladi:
+
+* **RHEL 8**
+* **RHEL 9**
+</Callout>
+
+**1->** Docker Engine-ni o'rnatishdan oldin har qanday ziddiyatli paketlarni olib tashlashingiz kerak bo'ladi.Sizning Linux distribyutoringiz norasmiy(unofficial) Docker paketlarini taqdim etishi mumkin, ular Docker tomonidan taqdim etilgan rasmiy(official) paketlarga zid kelishi mumkin. Docker Enginening rasmiy versiyasini o'rnatishdan oldin ushbu paketlarni o'chirib tashlashingiz kerak.
+
+```bash
+sudo dnf remove docker \
+                  docker-client \
+                  docker-client-latest \
+                  docker-common \
+                  docker-latest \
+                  docker-latest-logrotate \
+                  docker-logrotate \
+                  docker-engine \
+                  podman \
+                  runc
+```
+
+**2->** Repozitoriyani sozlash uchun `dnf-plugins-core` paketini o'rnatib `dnf config-manager` repositoriyani sozlab olamiz.
+
+```bash
+sudo dnf -y install dnf-plugins-core
+sudo dnf config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
+```
+
+**3->** Docker Engine, containerd va Docker Compose-ning eng oxirgi `latest` versiyasini o'rnatamiz.
+
+```bash
+sudo dnf install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin docker-compose -y
 ```
 
 Agar GPG kalitini(**GPG key**) qabul qilish so'ralsa, fingerprint `060A 61C5 1B55 8A7F 742B 77AA C52F EB6B 621E 9F35`ga mos kelishini tekshiring va agar shunday bo'lsa, uni qabul qiling.
 
 Bu buyruq **Docker**-ni o'rnatadi, lekin u Docker-ni ishga tushirmaydi. Shuningdek, u docker guruhini(group) yaratadi, ammo u default bo'yicha guruhga hech qanday foydalanuvchi qo'shmaydi.
 
-**3->** Docker-ni ishga tushiring.
+**4->** Dockerni ishga tushiramiz.
 
 ```bash
 sudo systemctl start docker
 sudo systemctl enable docker
+sudo systemctl status docker
 ```
+</TabPanel>
+</Tabs>
 
-**4->**  `devops-journey-uz` docker imageni ishga tushirish orqali Docker Engine muvaffaqiyatli o'rnatilganini tekshiring:
+## Docker Engine sozlash
+
+Docker o'rnatilgandan keyin kichik sozlashlar va uni ishlashini test qilib ko'rishimiz kerak bo'ladi.
+
+**1->** **root** usersiz ishlayotganda maummoalrga duch kelayotgan bo'lsangiz.
+
+```bash
+sudo usermod -aG docker $USER
+sudo chmod 666 /var/run/docker.sock
+sudo chown $USER:docker /var/run/docker.sock
+docker info
+```
+Docker user group mavjud, lekin userlarni o'z ichiga olmaydi, shuning uchun siz Docker buyruqlarini bajarish uchun **sudo**-dan foydalanishingiz kerak. Imtiyozli bo'lmagan foydalanuvchilarga Docker buyruqlarini va boshqa ixtiyoriy konfiguratsiya bosqichlarini bajarishga ruxsat berish uchun yuqoridagi buyruqlarni bajarishingiz kerak.
+
+**2->** Docker Engine muvaffaqiyatli o'rnatilganini tekshirish uchun `devops-journey-uz` docker imageni ishga tushirib tekshirib ko'ramiz.
 
 ```bash
 sudo docker run -d -p 3000:3000 --name devops-journey --restart always devopsjourneyuz/devops-journey-uz:latest
 ```
+Bu buyruq `devopsjourneyuz:latest` imageni yuklaydi va uni containerda ishga tushiradi. Container ishga tushganda, u tasdiqlash xabarini chop etadi va chiqadi. Agar serveringizda `3000` portda DevOps Journey platformasi ishlab turgan bo'lsa, tabriklaymiz siz Docker Engine-ni muvaffaqiyatli o'rnatdingiz va ishga tushirdingiz.
 
-DevOps Journey platformasi `3000` portda ishga tushadi.
+DevOps Journey platformasi `3000` portda ishga tushadi. Agar brauzer orqali `3000` portga kirolmasangiz firewallni va SElinuxni tekshirib ko'ring.
 
-Bu buyruq devopsjourneyuz:latest imageni yuklaydi va uni containerda ishga tushiradi. Container ishga tushganda, u tasdiqlash xabarini chop etadi va chiqadi. Agar serveringizda `3000` portda DevOps Journey platformasi ishlab turgan bo'lsa, tabriklaymiz siz Docker Engine-ni muvaffaqiyatli o'rnatdingiz va ishga tushirdingiz.
+`ufw` uchun 
+
+```bash 
+sudo ufw allow 3000
+sudo ufw reload
+sudo ufw status
+```
+`firewalld` uchun
+
+```bash
+sudo firewall-cmd --zone=public --add-port=3000/tcp --permanent
+sudo firewall-cmd --reload
+sudo firewall-cmd --list-all
+```
+Agar sizda `SElinux` bo'lsa uni tekshiring.
+  
+```bash
+sudo getenforce
+sudo setenforce 0
+```
+**3->** Agar sizning kompaniyangizda serverlar faqat proxy orqali ishlaydigan bo'lsa siz docker uchun proxy konfiguratsiya qilishingiz kerak bo'ladi. `http-proxy.conf` yaratib olamiz.
+
+<Callout type="info" emoji="">
+**DIQQAT:** Serveringizda proxy ishlatish majburiy bo'lgandagina bu qadamni bajaring bo'lmasa buni o'tkizib yuboring.
+</Callout>
+
+```bash
+sudo mkdir -p /etc/systemd/system/docker.service.d
+sudo nano /etc/systemd/system/docker.service.d/http-proxy.conf
+```
+
+`http-proxy.conf`ni quyidagicha ko'rinishda bo'ladi.
+
+```bash
+[Service]
+Environment="HTTP_PROXY=http://myproxy:port"
+Environment="HTTPS_PROXY=http://myproxy:port"
+Environment="NO_PROXY=localhost,127.0.0.1"
+```
+damemon reload berib dockerni qayta ishga tushiramiz.
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl restart docker
+```
+
 
 ## Docker Engineni yangilash
 
-Ushbu misol [https://get.docker.com/](https://get.docker.com/) dan skriptni yuklab oladi va uni Linuxda Dockerning so'nggi barqaror versiyasini o'rnatish uchun ishga tushiradi:
+Ushbu misol [https://get.docker.com/](https://get.docker.com/) dan skriptni yuklab oladi va uni Linuxda Dockerning so'nggi latest versiyasini o'rnatish uchun ishga tushiradi:
 
 ```bash
 curl -fsSL https://get.docker.com -o get-docker.sh
@@ -196,18 +350,19 @@ curl -fsSL https://test.docker.com -o test-docker.sh
 sudo sh test-docker.sh
 ```
 
-## Docker Engine-ni o'chirib tashlash
-**1->** Docker Engine, CLI, containerd va Docker Compose paketlarini olib tashlash:
+## Docker Engineni o'chirib tashlash
 
-Ubuntu uchun 
+<Tabs>
+<TabList>
+<Tab>**Ubuntu**</Tab>
+<Tab>**Debian**</Tab>
+<Tab>**CentOS**</Tab>
+<Tab>**RHEL**</Tab>
+</TabList>
+<TabPanel>
+**1->** Docker Engine, CLI, containerd va Docker Compose paketlarini o'chiri tashlahs uchun
 ```bash
-sudo apt-get purge docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin docker-ce-rootless-extras
-```
-
-CentOS uchun
-
-```bash
-sudo yum remove docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin docker-ce-rootless-extras
+sudo apt-get purge docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin docker-ce-rootless-extras docker-compose
 ```
 **2->** Serveringizdagi imagelar, containerlar, volumelar yoki custom configuratsiya fayllari avtomatik ravishda o'chirilmaydi. Barcha imagelar, containerlar va volumelarni o'chirish uchun:
 
@@ -215,6 +370,59 @@ sudo yum remove docker-ce docker-ce-cli containerd.io docker-buildx-plugin docke
 sudo rm -rf /var/lib/docker
 sudo rm -rf /var/lib/containerd
 ```
+
+**3->** Repositoriya source list va keyringlarni o'chirib tashlash uchun.
+
+```bash
+sudo rm /etc/apt/sources.list.d/docker.list
+sudo rm /etc/apt/keyrings/docker.asc
+```
+</TabPanel>
+<TabPanel>
+**1->** Docker Engine, CLI, containerd va Docker Compose paketlarini o'chiri tashlahs uchun
+```bash
+sudo apt-get purge docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin docker-ce-rootless-extras docker-compose
+```
+**2->** Serveringizdagi imagelar, containerlar, volumelar yoki custom configuratsiya fayllari avtomatik ravishda o'chirilmaydi. Barcha imagelar, containerlar va volumelarni o'chirish uchun:
+
+```bash
+sudo rm -rf /var/lib/docker
+sudo rm -rf /var/lib/containerd
+```
+
+**3->** Repositoriya source list va keyringlarni o'chirib tashlash uchun.
+
+```bash
+sudo rm /etc/apt/sources.list.d/docker.list
+sudo rm /etc/apt/keyrings/docker.asc
+```
+</TabPanel>
+<TabPanel>
+**1->** Docker Engine, CLI, containerd va Docker Compose paketlarini o'chiri tashlahs uchun
+```bash
+sudo dnf remove docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin docker-ce-rootless-extras docker-compose
+```
+**2->** Serveringizdagi imagelar, containerlar, volumelar yoki custom configuratsiya fayllari avtomatik ravishda o'chirilmaydi. Barcha imagelar, containerlar va volumelarni o'chirish uchun:
+
+```bash
+sudo rm -rf /var/lib/docker
+sudo rm -rf /var/lib/containerd
+```
+</TabPanel>
+<TabPanel>
+**1->** Docker Engine, CLI, containerd va Docker Compose paketlarini o'chiri tashlahs uchun
+```bash
+sudo dnf remove docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin docker-ce-rootless-extras docker-compose
+```
+**2->** Serveringizdagi imagelar, containerlar, volumelar yoki custom configuratsiya fayllari avtomatik ravishda o'chirilmaydi. Barcha imagelar, containerlar va volumelarni o'chirish uchun:
+
+```bash
+sudo rm -rf /var/lib/docker
+sudo rm -rf /var/lib/containerd
+```
+</TabPanel>
+</Tabs>
+
 
 ## Qo'shimcha
 
@@ -224,7 +432,7 @@ sudo rm -rf /var/lib/containerd
 
 **Sana:** 2023.11.19(2023-yil 19-noyabr)
 
-**Oxirgi yangilanish:** 2024.05.16(2024-yil 16-may)
+**Oxirgi yangilanish:** 2024.12.26(2024-yil 26-dekabr)
 
 **Muallif: Otabek Ismoilov**
 
