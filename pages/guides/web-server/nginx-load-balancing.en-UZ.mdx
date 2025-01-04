@@ -5,6 +5,8 @@ description: "NGINX Load Balancing"
 
 import { KeyObject } from "crypto";
 import { Callout } from "nextra-theme-docs";
+import { Tabs, TabList, Tab, TabPanel } from 'react-tabs';
+import 'react-tabs/style/react-tabs.css';
 
 # NGINX Load Balancing
 
@@ -41,12 +43,12 @@ Bizda quyidagi holat bor: [devops-journey.uz](https://devops-journey.uz/) platfo
 <Callout type="info" emoji="">
 **Minimum Server talabi**
 
-| OS            | RAM            | CPU           | Xotira       | Static IP  |  Server vazifasi     |
-| ------------- | -------------- | ------------- |------------- | ---------- | -------------------- |
-| Ubuntu 20.04  | 4GB            | 2vCPU 2 core  | 50GB         | Ha kerak   | NGINX(Load Balancer) |
-| Ubuntu 20.04  | 4GB            | 2vCPU 2 core  | 50GB         | Shart emas | Application Server 1 |
-| Ubuntu 20.04  | 4GB            | 2vCPU 2 core  | 50GB         | Shart emas | Application Server 2 |
-| Ubuntu 20.04  | 4GB            | 2vCPU 2 core  | 50GB         | Shart emas | Application Server 3 |
+| OS                              | RAM            | CPU           | Xotira       | Static IP  |  Server vazifasi     |
+| ------------------------------- | -------------- | ------------- |------------- | ---------- | -------------------- |
+| Ubuntu 20.04 yoki RockyLinux 8  | 4GB            | 2vCPU 2 core  | 50GB         | Ha kerak   | NGINX(Load Balancer) |
+| Ubuntu 20.04 yoki RockyLinux 8  | 4GB            | 2vCPU 2 core  | 50GB         | Shart emas | Application Server 1 |
+| Ubuntu 20.04 yoki RockyLinux 8  | 4GB            | 2vCPU 2 core  | 50GB         | Shart emas | Application Server 2 |
+| Ubuntu 20.04 yoki RockyLinux 8  | 4GB            | 2vCPU 2 core  | 50GB         | Shart emas | Application Server 3 |
 
 Agar serverlar hammasi bir tarmoqda bo'lsa faqat **NGINX(Load Balancer)** serverida static IP(public IP) bo'lishi kerak serverlar ichki tarmog'i bilan o'zaro aloqa qila oladi. Agar serverlar tarmog'i alohida alohida bo'lsa unda hammasiga static IP kerak.
 
@@ -76,7 +78,13 @@ Biz gorizontal scalingni tanlaymiz va bizda bitta application serverimiz bor edi
 
 ![nginx-lb](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/web-server/nginx-lb/nginx-main.png)
 
-1. NGINX serverimizni sozlab NGINX o'rnatib olamiz.
+<Tabs>
+<TabList>
+<Tab>**Debian Based**</Tab>
+<Tab>**Red Had Based**</Tab>
+</TabList>
+<TabPanel>
+**1->** NGINX serverimizni sozlab NGINX o'rnatib olamiz.
 
 Serverni yangilab olamiz.
 
@@ -84,29 +92,59 @@ Serverni yangilab olamiz.
 sudo apt update && sudo apt upgrade -y
 ```
 
-NGINX o'rnatamiz
+**2->** NGINX o'rnatamiz
 
 ```bash
 sudo apt install nginx nginx-extras
 ```
 
-SSL sertifikat olish uchun certbot o'rnatamiz.
+**3->** SSL sertifikat olish uchun certbot o'rnatamiz.
 
 ```bash
 sudo apt install certbot python3-certbot-nginx -y
 ```
-NGINX o'rnatilganidan keyin uni statusini ko'ramiz.
+**4->** NGINX o'rnatilganidan keyin uni statusini ko'ramiz.
 
 ```bash
-sudo systemctl status nginx
 sudo systemctl enable nginx
+sudo systemctl start nginx
+sudo systemctl status nginx
 ```
+</TabPanel>
+<TabPanel>
+**1->** NGINX serverimizni sozlab NGINX o'rnatib olamiz.
+
+Serverni yangilab olamiz.
+
+```bash
+sudo dnf update && sudo dnf upgrade -y
+```
+
+**2->** NGINX o'rnatamiz
+
+```bash
+sudo dnf install nginx nginx-extras
+```
+
+**3->** SSL sertifikat olish uchun certbot o'rnatamiz.
+
+```bash
+sudo dnf install certbot python3-certbot-nginx -y
+```
+**4->** NGINX o'rnatilganidan keyin uni statusini ko'ramiz.
+
+```bash
+sudo systemctl enable nginx
+sudo systemctl start nginx
+sudo systemctl status nginx
+```
+</TabPanel>
+</Tabs>
+
 
 NGINX o'rnatganimizdan keyin NGINX Load Balancer sozlashni boshlasak bo'ladi.
 
 ## NGINX HTTP Load Balancing sozlash
-
-[devops-journey.uz](https://devops-journey.uz/) uchun `/etc/nginx/sites-available` jildida NGINX configuratsiya yaratib olamiz.
 
 <Callout type="info" emoji="">
 **Eslatma:** Ushbu loyida NGINX Load Balancingni tekshirish uchun **SonarQube** containeridan foydalanamiz sababi Docker orqali tezda ishga tushira olamiz va ro'yxatdan o'tish/kirish bo'lgani uchun Load Balancingni tekshirib olishimiz mumkin.
@@ -121,46 +159,7 @@ Platforma **3000**-chi portda ishga tushadi bu tizimga ko'proq **Round Robin** l
 
 Uchta application serverimizga ham docker o'rnatib SonarQubeni docker orali ishga tushiramiz.
 
-1. Dockerni bash script yozib o'rntamiz.
-
-```bash
-nano docker.sh
-```
-
-```bash filename="docker.sh"
-#!/bin/bash
- 
-# Update and upgrade system packages
-sudo apt update && sudo apt upgrade -y
-# Install additional utilities
-sudo apt install -y curl gnupg2 software-properties-common apt-transport-https 
- 
-# Add Docker's official GPG key:
-sudo apt-get update
-sudo apt-get -y install ca-certificates curl gnupg
-sudo install -m 0755 -d /etc/apt/keyrings
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-sudo chmod a+r /etc/apt/keyrings/docker.gpg
- 
-# Add the repository to Apt sources:
-echo \
-  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
-  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
-  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-sudo apt-get update
- 
-sudo apt-get -y install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin docker-compose
- 
-# Adjust Docker socket permissions
-sudo usermod -aG docker $USER
-sudo chmod 666 /var/run/docker.sock
-sudo chown $USER:docker /var/run/docker.sock
- 
-# Restart and enable Docker service
-sudo systemctl daemon-reload
-sudo systemctl restart docker
-sudo systemctl enable docker
-```
+**1->** Dokcerni o'rnatish bo'yicha [**Linux serverlarga Docker o'rnatish**](https://devops-journey.uz/guides/konteyner/docker-ornatish) qo'llanmasi orqali o'rnatib olishingiz mumkin.
 
 
 Docker o'rnatilganidan keyin SonarQubeni ishga tushiramiz. SonarQube default `9000`-portda ishga tushadi
@@ -179,13 +178,29 @@ SonarQube 3ta application serverimizda ham ulanganidan keyin har biriga kirib **
 
 Bunday ko'rinishda login parol qo'yishning o'ziga xos xususiyati bor u orqali biz load balancer qaysi serverdagi SonarQubega yo'naltirganini bilib olishimiz va Load Balancing metodlari to'gri ishlayotganini bilib olamiz.
 
+[devops-journey.uz](https://devops-journey.uz/) uchun nginx config fayl ochib olamiz. 
+<Tabs>
+<TabList>
+<Tab>Debian Based</Tab>
+<Tab>Red Had Based</Tab>
+</TabList>
+<TabPanel>
 ```bash
 cd /etc/nginx/sites-available/
 nano devops-journey.uz
 ```
+</TabPanel>
+<TabPanel>
+```bash
+cd /etc/nginx/conf.d/
+nano devops-journey.uz.conf
+```
+</TabPanel>
+</Tabs>
+
 `devops-journey.uz` konfiguratsiya ochib olganimzidan keyin quyidagicha Load Balancing konfiguratsiya qilamiz.
 
-```bash filename="/etc/nginx/sites-available/devop-journey.uz" {1-5,8,11}
+```bash {1-5,8,11}
 upstream backend {
   server 185.168.1.21:9000;
   server 185.168.1.22:9000;
@@ -266,22 +281,53 @@ server {
 
 Qisqa qilib aytganda, ushbu konfiguratsiya bloki serverning root URL(**/**) keladigan har qanday so'rovlarni `upstream`dagi serverlari guruhi `backend`dagi barcha serverlarga yo'naltirishni bildiradi va shu bilan birga client ma'lumotlarini saqlash va yo'naltirilgan so'rovga maxsus headerlarni o'zgartirish yoki qo'shish bilan ma'lum tafsilotlarni `backend` serverlariga yuboradi. 
 
-NGINX-da symbolic link yaratib uni reload qilamiz.
+NGINXni qayta ishga tushiramiz.
+<Tabs>
+<TabList>
+<Tab>Debian Based</Tab>
+<Tab>Red Had Based</Tab>
+</TabList>
+<TabPanel>
 ```bash
 sudo ln -s /etc/nginx/sites-available/devop-journey.uz /etc/nginx/sites-enabled/devop-journey.uz
 sudo systemctl reload nginx
 ```
+</TabPanel>
+<TabPanel>
+```bash
+sudo systemctl reload nginx
+```
+</TabPanel>
+</Tabs>
 
 SSL sertifikat olib HTTP'ni HTTPS qilish uchun certbot o'rnatib SSL sertifikat olamiz
 
+<Tabs>
+<TabList>
+<Tab>Debian Based</Tab>
+<Tab>Red Had Based</Tab>
+</TabList>
+<TabPanel>
 ```bash
 sudo apt update
-sudo apt install certbot python3-certbot-nginx
+sudo apt install certbot python3-certbot-nginx -y
 ```
 
 ```bash
 sudo certbot --nginx -d devops-journey.uz
 ```
+</TabPanel>
+<TabPanel>
+```bash
+sudo dnf update
+sudo dnf install certbot python3-certbot-nginx -y
+```
+
+```bash
+sudo certbot --nginx -d devops-journey.uz
+```
+</TabPanel>
+</Tabs>
 
 certbot orqali muvafaqqiyatli SSL sertifikat olganingizdan keyin brauzerdan applicatiomizga tashrif buyurishingiz mumkin va `https` orqali ochilishi kerak.
 
@@ -308,11 +354,24 @@ Keling NGINX Configuratsiyamizga laod balancing metodlarini qo'shamiz va **IP/UR
 
 NGINX configuratsiyamizga quyidagi o'zgartisihni kiritamiz NGINXga reload beramiz.
 
+<Tabs>
+<TabList>
+<Tab>Debian Based</Tab>
+<Tab>Red Had Based</Tab>
+</TabList>
+<TabPanel>
 ```bash
 sudo nano /etc/nginx/sites-available/devop-journey.uz
 ```
+</TabPanel>
+<TabPanel>
+```bash
+sudo nano /etc/nginx/conf.d/devop-journey.uz.conf
+```
+</TabPanel>
+</Tabs>
 
-```bash filename="/etc/nginx/sites-available/devop-journey.uz" /ip_hash;/ {2,9,12}
+```bash /ip_hash;/ {2,9,12}
 upstream backend {
   ip_hash;
   server 185.168.1.21:9000;
@@ -363,11 +422,24 @@ Bu vaziyat uchun serverlarga **weight** berish orqali bu vaziyatdan chiqa olamiz
 
 Buning uchun NGINX configuratsiyamizni quyidagidek yangilaymiz va NGINXga reload berib ishga tushiramiz.
 
+<Tabs>
+<TabList>
+<Tab>Debian Based</Tab>
+<Tab>Red Had Based</Tab>
+</TabList>
+<TabPanel>
 ```bash
 sudo nano /etc/nginx/sites-available/devop-journey.uz
 ```
+</TabPanel>
+<TabPanel>
+```bash
+sudo nano /etc/nginx/conf.d/devop-journey.uz.conf
+```
+</TabPanel>
+</Tabs>
 
-```bash filename="/etc/nginx/sites-available/devop-journey.uz" /weight/ {1-5,8,11}
+```bash /weight/ {1-5,8,11}
 upstream backend {
   server 185.168.1.21:9000 weight=10;
   server 185.168.1.22:9000 weight=8;
@@ -399,12 +471,24 @@ Ushbu holat rasmda tasvirlanganidek ishlaydi. Bu **Weighted Round Robin** load b
 
 Bizni applicationimiz uchun Round Robin load balancing metodi to'gri kelmagani uchun ushbu configuratsiyani IP/URL Hash laod balancing metodida ham ishlata olamiz. Quyida **IP/URL Hash** Load Balancing metodida serverlarga **weight** berib load balancing qilish NGINX konfiguratsiyasi.
 
+<Tabs>
+<TabList>
+<Tab>Debian Based</Tab>
+<Tab>Red Had Based</Tab>
+</TabList>
+<TabPanel>
 ```bash
 sudo nano /etc/nginx/sites-available/devop-journey.uz
 ```
+</TabPanel>
+<TabPanel>
+```bash
+sudo nano /etc/nginx/conf.d/devop-journey.uz.conf
+```
+</TabPanel>
+</Tabs>
 
-
-```bash filename="/etc/nginx/sites-available/devop-journey.uz" /weight/ /ip_hash;/ {2,9,12}
+```bash /weight/ /ip_hash;/ {2,9,12}
 upstream backend {
   ip_hash;
   server 185.168.1.21:9000 weight=10;
@@ -429,7 +513,7 @@ NGINXda yana bir load balancing metodini qo'llashimiz mumkin bu **Least Connecti
 
 **Least Connections** uchun NGINX configuratsiya quyidagicha
 
-```bash filename="/etc/nginx/sites-available/devop-journey.uz" /least_conn;/ {2,9,12}
+```bash /least_conn;/ {2,9,12}
 upstream backend {
   least_conn;
   server 185.168.1.21:9000 weight=10;
@@ -462,11 +546,24 @@ Keling bu uchun NGINX Load Balancing konfiguratsiyamizni yangilab NGINXga reload
 **Eslatma:** **Least Time** load balancing metodi faqat **NGINX Plus**da ishlaydi
 </Callout>
 
+<Tabs>
+<TabList>
+<Tab>Debian Based</Tab>
+<Tab>Red Had Based</Tab>
+</TabList>
+<TabPanel>
 ```bash
 sudo nano /etc/nginx/sites-available/devop-journey.uz
 ```
+</TabPanel>
+<TabPanel>
+```bash
+sudo nano /etc/nginx/conf.d/devop-journey.uz.conf
+```
+</TabPanel>
+</Tabs>
 
-```bash filename="/etc/nginx/sites-available/devop-journey.uz" /weight/ /least_time header;/ {2,9,12}
+```bash /weight/ /least_time header;/ {2,9,12}
 upstream backend {
   least_time header;
   server 185.168.1.21:9000 weight=10;
@@ -509,6 +606,8 @@ Qo'shimcha Resurslar
 * [**HAProxy bilan HTTP/TCP load balancing va monitoring**](https://devops-journey.uz/guides/web-server/haproxy-load-balancing)
 
 **Sana:** 2023.12.25(2023-yil 25-dekabr)
+
+**Oxirgi yangilanish:** 2025.01.04(2025-yil 4-yanvar)
 
 **Muallif: Otabek Ismoilov**
 

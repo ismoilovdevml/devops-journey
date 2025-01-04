@@ -4,6 +4,8 @@ description: "HAProxy bilan HTTP/TCP load balancing va monitoring"
 ---
 
 import { Callout } from "nextra-theme-docs";
+import { Tabs, TabList, Tab, TabPanel } from 'react-tabs';
+import 'react-tabs/style/react-tabs.css';
 
 # HAProxy bilan HTTP/TCP load balancing va monitoring
 
@@ -33,11 +35,11 @@ HAProxy bilan load balancing qilishimiz uchun minimum 3ta server kerak bo'ladi b
 <Callout type="info" emoji="">
 **Minimum Server talabi**
 
-| OS            | RAM            | CPU           | Xotira       | Static IP  |  Server vazifasi       |
-| ------------- | -------------- | ------------- |------------- | ---------- | ---------------------- |
-| Ubuntu 20.04  | 4GB            | 2vCPU 2 core  | 50GB         | Ha kerak   | HAProxy(Load Balancer) |
-| Ubuntu 20.04  | 4GB            | 2vCPU 2 core  | 50GB         | Shart emas | Application Server 1   |
-| Ubuntu 20.04  | 4GB            | 2vCPU 2 core  | 50GB         | Shart emas | Application Server 2   |
+| OS                              | RAM            | CPU           | Xotira       | Static IP  |  Server vazifasi       |
+| ------------------------------- | -------------- | ------------- |------------- | ---------- | ---------------------- |
+| Ubuntu 20.04 yoki RockyLinux 8  | 4GB            | 2vCPU 2 core  | 50GB         | Ha kerak   | HAProxy(Load Balancer) |
+| Ubuntu 20.04 yoki RockyLinux 8  | 4GB            | 2vCPU 2 core  | 50GB         | Shart emas | Application Server 1   |
+| Ubuntu 20.04 yoki RockyLinux 8  | 4GB            | 2vCPU 2 core  | 50GB         | Shart emas | Application Server 2   |
 
 **Qo'llanmada ishlatilgan Serverlar IP mazilllari**
 
@@ -51,19 +53,40 @@ HAProxy bilan load balancing qilishimiz uchun minimum 3ta server kerak bo'ladi b
 
 **HAProxy** serverimizni sozlashni boshlaymiz.
 
-**1->** Tizimingizni yangilang.
+**1->** Serverni yangilab olamiz.
 
+<Tabs>
+<TabList>
+<Tab>Debian Based</Tab>
+<Tab>Red Had Based</Tab>
+</TabList>
+<TabPanel>
 ```bash
 sudo apt-get update && sudo apt-get upgrade -y
 ```
+</TabPanel>
+<TabPanel>
+```bash
+sudo dnf update && sudo dnf upgrade -y
+```
+</TabPanel>
+</Tabs>
 
-**2->** HAProxy o'rnating. HAProxy ko'pgina Linux distributivlarining package management systemlariga kiritilgan:
+
+**2->** HAProxy o'rnatamiz, HAProxy ko'pgina Linux distributivlarining package management systemlariga kiritilgan:
 
 Debian based uchun. Debian va Ubuntu uchun maxsus HAProxy versiylarini o'rnatish uchun quyidagi websaytdan foydalanishingiz mumkin. [haproxy.debian.net](https://haproxy.debian.net/)
 
+<Tabs>
+<TabList>
+<Tab>Debian Based</Tab>
+<Tab>Red Had Based</Tab>
+</TabList>
+<TabPanel>
 ```bash
 sudo apt install haproxy -y
 ```
+Maxsus versiya kerak bo'lsa - [haproxy.debian.net](https://haproxy.debian.net/)
 Ubuntu 20.04 uchun HAProxy 2.8 LTS
 
 ```bash
@@ -71,13 +94,15 @@ sudo apt-get install --no-install-recommends software-properties-common
 sudo add-apt-repository ppa:vbernat/haproxy-2.8
 sudo apt-get install haproxy=2.8.\*
 ```
-Fedora uchun
-
+</TabPanel>
+<TabPanel>
 ```bash
-sudo yum install haproxy
+sudo dnf install haproxy -y
 ```
+</TabPanel>
+</Tabs>
 
-**3->** HAProxy o'rnatilganidan keyin statusini tekshiring.
+**3->** HAProxy o'rnatilganidan keyin statusini tekshiramiz.
 
 ```bash
 sudo systemctl status haproxy
@@ -632,7 +657,7 @@ Qo'shimcha Resurslar
 
 **Sana:** 2024.01.08(2024-yil 8-yanvar)
 
-**Oxirgi yangilanish:** 2024.01.09(2024-yil 9-yanvar)
+**Oxirgi yangilanish:** 2025.01.04(2025-yil 4-yanvar)
 
 **Muallif: Otabek Ismoilov**
 

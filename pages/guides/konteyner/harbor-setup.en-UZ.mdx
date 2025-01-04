@@ -4,6 +4,8 @@ description: "Harbor Container Registry o'rnatish va sozlash"
 ---
 
 import { Callout } from "nextra-theme-docs";
+import { Tabs, TabList, Tab, TabPanel } from 'react-tabs';
+import 'react-tabs/style/react-tabs.css';
 
 # Harbor Container Registry o'rnatish va sozlash
 
@@ -58,53 +60,6 @@ Bu bosqichda biz Harbor Container Registryni manual(qo'lda) holda setup qilishni
 
 Harborni ishga tushirish uchun serverimizga Docker va Docker Compose o'rnatib olishimiz kerak bo'ladi. Dokcer va Docker Compose o'rnatish bo'yicha [**Linux serverlarga Docker o'rnatish**](https://devops-journey.uz/guides/konteyner/docker-ornatish) qo'llanmasi orqali o'rnatib olishingiz mumkin.
 
-Ubuntu serverlarga Docker va Docker Compose o'rnatish.
-
-**1->** Repozitoriyani sozlash. `apt` paketi indeksini yangilang va aptga HTTPS orqali repositoriyadan foydalanishga ruxsat berish uchun paketlarni o'rnating:
-
-```bash
- sudo apt-get update
- sudo apt-get install ca-certificates curl gnupg -y
- ```
-
-**2->** Dockerning rasmiy **GPG** kalitini qo'shing:
-
-```bash
-sudo install -m 0755 -d /etc/apt/keyrings
-sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
-sudo chmod a+r /etc/apt/keyrings/docker.asc
-```
-**3->** Repositoriyani sozlash uchun quyidagi buyruqdan foydalaning:
-
-```bash
-echo \
-  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
-  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
-  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-```
-
-**4->** `apt` paketi indeksini yangilang
-
-```bash
-sudo apt-get update
-```
-
-**5->** Docker Engine, containerd va Docker Compose-ni o'rnatamiz.
-
-Eng so'nggi versiyani(latest) o'rnatish uchun quyidagilarni bajaring.
-
-```bash
-sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin docker-compose -y
-```
-
-**6->** Dockerni ishga tushiramiz, statusini ko'ramiz va server o'chib yonganida avtomatik ishga tushishini yoqamiz.
-
-```bash
-sudo ssystemctl enable docker
-sudo systemctl enable docker
-sudo systemctl status docker
-```
-
 ### SSL Sertifikat olish
 
 **SSL**dan foydalanish port serveriga va undan keladigan trafikni himoya qilish imkonini beradi. Harborda o'zida Nginx mavjud bo'lib Nginx o'rnatib sozlamaymiz.
@@ -113,14 +68,30 @@ Web server HTTPS requestlarini qabul qilishidan oldin ishonchli sertifikat marka
 
 **Certbot** HTTPS-ni yoqish orqali veb-xavfsizlikni yaxshilash maqsadida **Electronic Frontier Foundation (EFF)** tomonidan ishlab chiqilgan. U ko'pgina operatsion tizimlar, shuningdek, Apache va NGINX kabi eng mashhur veb-server dasturlari bilan mos keladi. Certbot sertifikatni so'rash, ACME bo'yicha barcha talablarni bajarish, sertifikatni o'rnatish va veb-serverni sozlash uchun **Let's Encrypt** bilan bog'lanish uchun javobgardir. Shuningdek, u sertifikatni yangilash jarayonini avtomatik ravishda boshqarishi mumkin. Qo'shimcha ma'lumot uchun Certbot veb-saytidagi [**About Certbot**](https://certbot.eff.org/pages/about) sahifasini ko'rib chiqishingiz mumkin.
 
-**1->** Serverimizga **certbot** o'rnatib olamiz.
+<Tabs>
+<TabList>
+<Tab>**Debian Based**</Tab>
+<Tab>**Red Hat Based**</Tab>
+</TabList>
+<TabPanel>
+**1->** Serverimizga **certbot** va kerakli tollarni o'rnatib olamiz.
 
 ```bash
 sudo apt update
-sudo apt install certbot
+sudo apt install certbot vim nano zip unzip wget git -y
 ```
+</TabPanel>
+<TabPanel>
+**1->** Serverimizga **certbot** o'rnatib olamiz.
 
-**2->** domenimiz uchun SSL sertifikat olamiz, bunihc uchun domenimiz DNS hostga serverimiz static IP manzili bog'langan bo'lishi kerak.
+```bash
+sudo dnf update
+sudo dnf install certbot vim nano zip unzip wget git -y
+```
+</TabPanel>
+</Tabs>
+
+**2->** domenimiz uchun SSL sertifikat olamiz, buning uchun domenimiz DNS hostga serverimiz static IP manzili bog'langan bo'lishi kerak.
 
 ```bash
 sudo certbot certonly --standalone -d harbor.helm.uz
