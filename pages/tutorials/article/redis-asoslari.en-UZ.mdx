@@ -4,6 +4,8 @@ description: "Redis asoslari"
 ---
 
 import { Callout } from "nextra-theme-docs";
+import { Tabs, TabList, Tab, TabPanel } from 'react-tabs';
+import 'react-tabs/style/react-tabs.css';
 
 # Redis asoslari - Arxitektura, O'rnatish, Konfiguratsiya, Monitoring
 ![redis-asoslari](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/redis-asoslari/banner.png)
@@ -121,14 +123,18 @@ Ushbu amaliyotni amalga oshirish uchun bizga quyidagi minimum server talablarida
 
 Eslatma: Server Linux OS ning qaysi distroligi muhim emas bu qo'llanmada Red Hat based va Debian based serverlarda ko'rsatiladi
 
-| Host        | OS            | RAM            | CPU           | Xotira       |
-| ----------- | ------------- | -------------- | ------------- |------------- |
-|  redis-server        | Ubuntu 20.04 yoki Rocky Linux 8  | 4GB           | 2vCPU,1 core  | 50GB        |
+| Host             | OS                               | RAM            | CPU           | Xotira       |
+| ---------------- | -------------------------------- | -------------- | ------------- |------------- |
+|  redis-server    | Ubuntu 20.04 yoki Rocky Linux 8  | 4GB            | 2vCPU         | 50GB         |
 </Callout>
 
 
-### Debian based serverlar uchun
-
+<Tabs>
+<TabList>
+<Tab>Debian Based</Tab>
+<Tab>Red Had Based</Tab>
+</TabList>
+<TabPanel>
 **1->** Tizimni yangilab kerakli toollarni install qilib oling.
 
 ```bash
@@ -158,9 +164,8 @@ sudo systemctl start redis-server
 ```bash
 sudo systemctl status redis-server
 ```
-
-### Red Hat based serverlar uchun
-
+</TabPanel>
+<TabPanel>
 **1->** Tizimni yangilab kerakli toollarni install qilib oling.
 
 ```bash
@@ -186,6 +191,8 @@ sudo systemctl start redis
 sudo systemctl status redis
 ```
 ![redis-asoslari](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/article/redis-asoslari/7.png)
+</TabPanel>
+</Tabs>
 
 
 Redis o'rnatganimizdan keyin uni statusini ham tekshirib keling unning to'gri ishlayotganini `redis-cli` dan foydalanib tekshiramiz.
@@ -382,7 +389,7 @@ Dashboardni import qilganimizdan keyin dashboard bizda ochilishi kerak.
 
 **Sana:** 2024.12.19(2024-yil 19-dekabr)
 
-**Oxirgi yangilanish:** 2024.19.07(2024-yil 19-dekabr)
+**Oxirgi yangilanish:** 2025.01.07(2025-yil 7-yanvar)
 
 **Muallif: Otabek Ismoilov**
 
