@@ -4,6 +4,8 @@ description: "Percona PMM bilan PostgreSQL monitoring"
 ---
 
 import { Callout } from "nextra-theme-docs";
+import { Tabs, TabList, Tab, TabPanel } from 'react-tabs';
+import 'react-tabs/style/react-tabs.css';
 
 # Percona PMM bilan PostgreSQL monitoring
 
@@ -47,7 +49,7 @@ PMM componentlarini quyidagi percona rasmiy sahifasida ko'rishingiz mumkin - [**
 
 
 
-PMM arxitketurasini quyidagi rasmda ko'rishingiz mumkin([**Rasm olingna sahifa**](https://docs.percona.com/percona-monitoring-and-management/details/architecture.html))
+PMM arxitketurasini quyidagi rasmda ko'rishingiz mumkin([**Rasm olingan sahifa**](https://docs.percona.com/percona-monitoring-and-management/details/architecture.html))
 
 ![pmm-postgresql-monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgres-monitoring-pmm/2.jpg)
 
@@ -104,13 +106,16 @@ PMM serverga login qilib kirganingizda sizda default Home Dashbord ochilishi ker
 
 ![pmm-postgresql-monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgres-monitoring-pmm/7.png)
 
-Okeyy PMM serverni o'rnatib sozlab oldik endi PMM client o'rnatishimiz kerak.
+Okeyy PMM serverni o'rnatib sozlab oldik endi PMM client o'rnatishimiz kerak. PMM clientni paketini serverlarimizga o'rnatamiz.
 
 ## PMM client o'rnatish
 
-**1->** PMM clientni paketini serverlarimizga o'rnatamiz.
-
-### Debian-based serverlar uchun
+<Tabs>
+<TabList>
+<Tab>Debian Based</Tab>
+<Tab>Red Had Based</Tab>
+</TabList>
+<TabPanel>
 
 **1->** Repositoriyani sozlab olamiz
 
@@ -130,8 +135,8 @@ sudo apt install -y pmm2-client
 ```bash
 pmm-admin --version
 ```
-
-### Redhat-based serverlar uchun
+</TabPanel>
+<TabPanel>
 
 **1->** Repositoriyani sozlab olamiz
 
@@ -149,6 +154,9 @@ sudo yum install -y pmm2-client
 ```bash
 pmm-admin --version
 ```
+</TabPanel>
+</Tabs>
+
 ![pmm-postgresql-monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgres-monitoring-pmm/8.png)
 
 **2->** PMM client o'rnatib olganimizdan keyin uni PMM serverga register qilib qo'shishimiz kerak bo'ladi, buning uchun quyidagi buyruqdan foydalanamiz.
@@ -245,9 +253,12 @@ psql -h localhost -U pmm -d postgres -c "\conninfo"
 PostgreSQL monitoring qilish uchun postgres extensionlar o'rnatishimiz kerak bo'ladi bunda rasmiy postgresqlning `pg_stat_statements` extensioni va perconaning `pg_stat_monitor` extensioni bor bu amaliyotda biz `pg_stat_monitor` extensiondan foydalanamiz.
 
 Buning uchun `pg_stat_monitor` extensionni o'rnatib olishimiz kerak bo'ladi, undan oldin esa  `percona-release` o'rnatishimiz kerak bo'ladi
-
-#### Debian-based serverlar uchun
-
+<Tabs>
+<TabList>
+<Tab>Debian Based</Tab>
+<Tab>Red Had Based</Tab>
+</TabList>
+<TabPanel>
 **1->** Kerakli tollarni isntall qilib olamiz.
 
 ```bash
@@ -270,14 +281,15 @@ sudo apt install gnupg2 lsb-release ./percona-release_latest.generic_all.deb
 ```bash
 sudo apt update
 ```
-
-#### Redhat-based serverlar uchun
-
+</TabPanel>
+<TabPanel>
 **1->** `percona-release`ni install qilamiz.
 
 ```bash
 sudo yum install -y https://repo.percona.com/yum/percona-release-latest.noarch.rpm
 ```
+</TabPanel>
+</Tabs>
 
 ### `pg_stat_monitor` o'rnatish va config qilish
 
@@ -290,16 +302,24 @@ sudo percona-release setup ppg17
 ```
 ![pmm-postgresql-monitoring](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/database/postgres-monitoring-pmm/12.png)
 
-`pg_stat_monitor` paketini o'rnatamiz.
-#### Debian based serverlar uchun
+**1->** `pg_stat_monitor` paketini o'rnatamiz.
+
+<Tabs>
+<TabList>
+<Tab>Debian Based</Tab>
+<Tab>Red Had Based</Tab>
+</TabList>
+<TabPanel>
 ```bash
 sudo apt-get install percona-pg-stat-monitor17
 ```
-#### Redhat based serverlar uchun
+</TabPanel>
+<TabPanel>
 ```bash
 sudo yum install percona-pg-stat-monitor17
 ```
-
+</TabPanel>
+</Tabs>
 **2->** `pg_stat_monitor` o'rnatganimizdan keyin postgresqlga extension qilib config qilishimiz kerak bo'ladi.
 
 Debian based serverlar uchun `postgresql.conf` config fayli `/etc/postgresql/{postgres-versiyasi}/main/postgresql.conf` da joylashgan bo'ladi

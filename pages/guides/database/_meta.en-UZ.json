@@ -47,12 +47,6 @@
       "description": "Percona PMM",
       "href": "/guides/database/postgres-monitoring-pmm"
     },
-    "sql-injection": {
-      "title": "SQL Injection Attack",
-      "icon": "▶️",
-      "description": "Bu nima va uni qanday oldini olish mumkin",
-      "href": "/guides/database/sql-injection"
-    },
     "postgresql-bilan-ishlash": {
       "title": "SQL querylar bilan ishlash",
       "icon": "▶️",
