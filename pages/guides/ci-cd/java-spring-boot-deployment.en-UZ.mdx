@@ -23,4 +23,83 @@ Ushbu amaliyotda quyidagi Java Spring Boot application kodlaridan foydalanamiz -
 
 ## Loyihani tushunish
 
-Spring Boot loyihasini deploy qilishdan oldin uning tuzilishini, ishlash prinsipi va muhim konfiguratsiyalarini to'liq tushunib olish zarur. 
+Spring Boot loyihasini muvaffaqiyatli deploy qilish uchun dastlab uning tuzilishini, ishlash prinsipini va muhim konfiguratsiyalarini to'liq tushunish lozim.
+Spring Boot loyihasi asosan quyidagi tarkibiy qismlardan iborat:
+
+Masalan bizning loyihamiz tuzulishi:
+
+```
+/waifulist
+├── Dockerfile
+├── HELP.md
+├── LICENSE
+├── mvnw
+├── mvnw.cmd
+├── pom.xml
+└── src
+    ├── main
+    │   ├── java
+    │   │   └── zawkin
+    │   │       └── me
+    │   │           └── asuna
+    │   │               ├── config
+    │   │               │   └── SwaggerConfig.java
+    │   │               ├── controller
+    │   │               │   └── WaifuController.java
+    │   │               ├── dto
+    │   │               │   └── WaifuDTO.java
+    │   │               ├── entity
+    │   │               │   └── WaifuEntity.java
+    │   │               ├── repository
+    │   │               │   └── WaifuRepository.java
+    │   │               ├── service
+    │   │               │   └── WaifuService.java
+    │   │               └── WaifulistApplication.java
+    │   └── resources
+    │       └── application.properties
+    └── test
+        └── java
+            └── zawkin
+                └── me
+                    └── asuna
+                        └── WaifulistApplicationTests.java
+```
+
+`src/main/java/zawkin/me/asuna` katalogida loyihaning asosiy Java fayllari joylashgan. `WaifulistApplication.java` fayli Spring Boot applicationning asosiy dastur kodi hisoblanadi.
+
+```java filename="WaifulistApplication.java"
+package zawkin.me.asuna;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class WaifulistApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(WaifulistApplication.class, args);
+	}
+
+}
+```
+@SpringBootApplication` anotatsiyasi Spring Boot applicationning asosiy konfiguratsiyalarini o'z ichiga oladi. `main` metodida esa application ishga tushiriladi.
+
+`src/main/resources` katalogida esa applicationning konfiguratsiyalarini saqlash uchun fayllar joylashgan. Bu katalogda `application.properties` yoki `application.yml` joylashadi. Bizning loyihamizda `application.properties` fayli mavjud.
+
+```properties filename="application.properties"
+spring.application.name=waifulist
+
+# DATABASE
+spring.datasource.url=jdbc:postgresql://134.209.217.179:5432/waifulist
+spring.datasource.username=postgres
+spring.datasource.password=lwfjljqwotpreqwt2
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+
+logging.level.org.springframework.web=DEBUG
+logging.level.org.springdoc=DEBUG
+```
+
+`application.properties` faylida applicationning konfiguratsiyalarini saqlash uchun kerak bo'lgan sozlamalar joylashgan. Masalan, `spring.datasource.url` sozlamasi PostgreSQL bazasiga ulanish uchun kerak bo'lgan ma'lumotlarni saqlaydi.
+
+`pom.xml` yoki `build.gradle` fayllari loyihaning Maven yoki Gradle konfiguratsiyalarini saqlash uchun ishlatiladi. Bizning loyihamizda `pom.xml` fayli mavjud, ya'ni Maven loyihasi agar `build.gradle` fayli mavjud bo'lsa Gradle loyihasi deb hisoblanadi.
