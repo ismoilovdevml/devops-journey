@@ -102,4 +102,154 @@ logging.level.org.springdoc=DEBUG
 
 `application.properties` faylida applicationning konfiguratsiyalarini saqlash uchun kerak bo'lgan sozlamalar joylashgan. Masalan, `spring.datasource.url` sozlamasi PostgreSQL bazasiga ulanish uchun kerak bo'lgan ma'lumotlarni saqlaydi.
 
-`pom.xml` yoki `build.gradle` fayllari loyihaning Maven yoki Gradle konfiguratsiyalarini saqlash uchun ishlatiladi. Bizning loyihamizda `pom.xml` fayli mavjud, ya'ni Maven loyihasi agar `build.gradle` fayli mavjud bo'lsa Gradle loyihasi deb hisoblanadi.
+`pom.xml` yoki `build.gradle` fayllari dependencylar, pluginlar va boshqa loyihaning konfiguratsiyalarini saqlaydi. Bizning loyihamizda `pom.xml` fayli mavjud, ya'ni Maven loyihasi agar `build.gradle` fayli mavjud bo'lsa Gradle loyihasi deb hisoblanadi.
+
+
+`src/test/java/zawkin/me/asuna` katalogida loyihaning test fayllari joylashgan. `WaifulistApplicationTests.java` fayli Spring Boot applicationning test kodi hisoblanadi.
+
+```java filename="WaifulistApplicationTests.java"
+package zawkin.me.asuna;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+
+@SpringBootTest
+class WaifulistApplicationTests {
+
+	@Test
+	void contextLoads() {
+	}
+
+}
+```
+
+Spring Boot loyihasini muvaffaqiyatli ishlashi uchun `application.properties` yoki `application.yml` fayllari muhim ahamiyatga egadir. Applicationning barcha konfiguratsiyalarini bu fayllar orqali o'zgartirish mumkin. Masalan bizning loyihamizdagi `properties` konfiguratsiya faylini ko'rib chiqamiz.
+
+```properties filename="application.properties"
+spring.application.name=waifulist
+
+# DATABASE
+spring.datasource.url=jdbc:postgresql://134.209.217.179:5432/waifulist
+spring.datasource.username=postgres
+spring.datasource.password=lwfjljqwotpreqwt2
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+
+logging.level.org.springframework.web=DEBUG
+logging.level.org.springdoc=DEBUG
+```
+Bu xavsfzilik uchun yaxshi yechim emas chunki secretlar ochiq holda turibdi buni Gitlab CI variable yoki Github secretga qo'shiob ishlatishni ko'rib chiqamiz bu amlaiyotda.
+
+Qiziq savol tu'giladi nega ba'zi loyihlarda `application.properties` fayli bor ba'zilarida esa `application.yml` fayli bor?
+
+`application.properties` va `application.yml` o'rtasidagi far quyidagicha:
+
+| Xusuysatlar | `application.properties` | `application.yml` |
+| --- | --- | --- |
+| Format | Oddiy key=value formatida yoziladi. | YAML formatida, ierarxik struktura ko'rinishida. |
+| O'qilish qulayligi | Kichik loyihalar uchun qulay. | Murakkab konfiguratsiyalarda o'qish oson. |
+| Profil boshqaruvi | Har bir profil uchun alohida fayl yaratiladi. | Profil boshqaruvi oson va YAML ichida qilinadi. |
+
+Bu misolda `application-dev.properties` va `application-prod.properties` fayllarini alohida yaratish kerak bo'lsa, `application-dev.yml` va `application-prod.yml` fayllarini alohida yaratish kerak emas. YAML formati ierarxik struktura ko'rinishida yoziladi, shuning uchun profil boshqaruvi oson va qulaydir.
+
+```yaml filename="application.yml"
+spring:
+  profiles:
+    active: dev
+---
+spring:
+  profiles: dev
+  datasource:
+    url: jdbc:postgresql://dev-db-url
+---
+spring:
+  profiles: prod
+  datasource:
+    url: jdbc:postgresql://prod-db-url
+```
+
+Multi environment boshqaruvda application.properties va application.yml fayllarini quyidagicha ishlatamiz.
+
+Masalan bizda `dev`, `stage`, `prod` environmentlar uchun alohida konfiguratsiyalar mavjud bo'lsa, `application-dev.properties`, `application-stage.properties`, `application-prod.properties` fayllarini yaratamiz. Bu fayllar alohida environmentlar uchun kerak bo'lgan konfiguratsiyalarni saqlaydi, agar `application.yml` faylini ishlatishni xohlasak, uni `application-dev.yml`, `application-stage.yml`, `application-prod.yml` yoki bitta `application.yml` faylida yozishimiz mumkin.
+
+CI/CD'da ishga tushirishda esa `docker run -e SPRING_PROFILES_ACTIVE=dev` yoki `docker run -e SPRING_PROFILES_ACTIVE=prod` kabi environmentlar orqali alohida environmentni tanlashimiz mumkin.
+
+## Dockerfile yozish
+
+<Callout type="info" emoji="">
+Agar siz Docker bilan tanish bo'lmasangiz quyidagi qo'llanmalar orqali Docker bilan tanishingiz mumkin: [**Dockerga Kirish**](https://devops-journey.uz/guides/konteyner/dockerga-kirish), [**Mastering Docker**](https://devops-journey.uz/guides/konteyner/docker-asoslari), [**Dockerfile yozish**](https://devops-journey.uz/guides/konteyner/dockerfile-yozish), [**Docker o'rnatish**](https://devops-journey.uz/guides/konteyner/docker-ornatish)
+</Callout>
+
+Spring Boot applicationni Docker konteyneriga joylash uchun `Dockerfile` yozish kerak. `Dockerfile` fayli konteynerning tuzilishini, ishlash prinsiplarini va muhim konfiguratsiyalarini saqlaydi. Docker orqali applicationlarimizni 
+
+```bash filename="Dockerfile"
+FROM maven:3.9.5-eclipse-temurin-17-alpine AS builder
+WORKDIR /app
+COPY pom.xml .
+RUN mvn dependency:go-offline -B
+COPY src ./src
+RUN mvn package -DskipTests -B
+
+FROM eclipse-temurin:17-alpine
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+WORKDIR /app
+COPY --from=builder /app/target/*.jar app.jar
+RUN chown -R appuser:appgroup /app
+USER appuser
+EXPOSE 8080
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+    CMD wget --spider --quiet http://localhost:8080/actuator/health || exit 1
+ENTRYPOINT ["java", "-jar", "app.jar"]
+```
+
+Dockerfileni ko'rib chiqadigan bo'lsa, u quyidagi qadamlardan iborat: 
+
+Dockerfile 2 qismga bo'linadi, build bosqichi(build stage) va runtime bosqichi(runtime stage). builter stageda Maven asosida  loyihani build qilish va kerakli librarylarni yuklab olish uchun ishlatiladi va bunda biz yengil va kichik alpine imagedan foydalanamiz. runtime stageda esa yengil `eclipse-temurin:17-alpine` imajidan foydalanamiz bu Spring Boot uchun eng optimal JDK imagedir. Birinchi bosqich 1-6 qadamlar Maven asosida loyihani build qilish uchun kerakli jar faylini yaratadi. Ikkinchi bosqich 7-14 qadamlar esa jar faylini ishga tushiradi.
+
+1. `FROM maven:3.9.5-eclipse-temurin-17-alpine AS builder` - Maven va Java 17 asosida Docker imageni yaratamiz bu bizning `builder` imagemiz bo'ladi.
+2. `WORKDIR /app` - `/app` papkasiga o'tamiz yani barcha ishlarimizni bu papkada amalga oshiramiz.
+3. `COPY pom.xml .` - `pom.xml` faylini `/app` papkasiga ko'chiramiz bu faylda Maven dependencylar saqlanadi.
+4. `RUN mvn dependency:go-offline -B` - Maven dependencylarini yuklab olamiz va `go-offline` parametri bilan ishga tushiramiz.
+5. `COPY src ./src` - `src` katalogini `/app/src` papkasiga ko'chiramiz bu katalogda Java fayllar joylashgan.
+6. `RUN mvn package -DskipTests -B` - Spring Boot applicationni jar faylini yaratamiz va testlarni ishga tushirmasdan ishga tushiramiz.
+7. `FROM eclipse-temurin:17-alpine` - Java 17 asosida Docker imajini yaratamiz bu bizning asosiy imagemiz bo'ladi.
+8. `RUN addgroup -S appgroup && adduser -S appuser -G appgroup` - `appgroup` va `appuser` guruhlarini yaratamiz bu xavfsizlik uchun kerak bo'ladi.
+9. `WORKDIR /app` - `/app` papkasiga o'tamiz.
+10. `COPY --from=builder /app/target/*.jar app.jar` - `builder` imajidan jar faylini `/app` papkasiga ko'chiramiz bu jar fayl Spring Boot applicationni ishga tushirish uchun kerak bo'ladi.
+11. `RUN chown -R appuser:appgroup /app` - `/app` papkasiga `appuser` va `appgroup` guruhlariga ega bo'lgan huquqlarni beramiz
+12. `USER appuser` - `appuser` foydalanuvchiga o'tamiz. 
+13. `EXPOSE 8080` - 8080 portni ochamiz.
+14. `HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \ CMD wget --spider --quiet http://localhost:8080/actuator/health || exit 1` - Spring Boot applicationning `actuator/health` endpointiga HTTP so'rov yuborishni tekshiramiz va 3 marta urinishdan keyin xatolik chiqsa konteynerni qayta ishga tushiramiz.
+15. `ENTRYPOINT ["java", "-jar", "app.jar"]` - Spring Boot applicationni ishga tushiramiz.
+
+## Konfiguratsiya fayllari bilan ishlash
+
+Spring Boot applicationni Docker konteyneriga joylashda `application.properties` yoki `application.yml` fayllarini ishlatish kerak bo'ladi. Bu fayllar applicationning konfiguratsiyalarini saqlash uchun kerak bo'ladi. Bizning loyihamizda `application.properties` fayli mavjud lekin unda secretlar ochiq holda shunih uchun secretlarni Gitlab CI variablega qo'shib multi-environment qilib sozlashimiz kerak bo'ladi. `src/main/resources` katalogida `application-dev.properties`,va `application-prod.properties` fayllarini yaratamiz va ularni alohida environmentlar uchun kerakli konfiguratsiyalarni saqlaymiz.
+
+`application-dev.properties` faylida dev environment uchun kerakli konfiguratsiyalar saqlanadi.
+```properties filename="application-dev.properties"
+spring.application.name=waifulist
+# DATABASE
+spring.datasource.url=${DEV_DATABASE_URL}
+spring.datasource.username=${DEV_DATABASE_USERNAME}
+spring.datasource.password=${DEV_DATABASE_PASSWORD}
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+
+logging.level.org.springframework.web=DEBUG
+logging.level.org.springdoc=DEBUG
+```
+`application-prod.properties` faylida esa prod environment uchun kerakli konfiguratsiyalar saqlanadi.
+```properties filename="application-prod.properties"
+spring.application.name=waifulist
+# DATABASE
+spring.datasource.url=${PROD_DATABASE_URL}
+spring.datasource.username=${PROD_DATABASE_USERNAME}
+spring.datasource.password=${PROD_DATABASE_PASSWORD}
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+
+logging.level.org.springframework.web=DEBUG
+logging.level.org.springdoc=DEBUG
+```
+
