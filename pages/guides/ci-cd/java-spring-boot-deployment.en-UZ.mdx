@@ -224,7 +224,7 @@ Dockerfile 2 qismga bo'linadi, build bosqichi(build stage) va runtime bosqichi(r
 
 ## Konfiguratsiya fayllari bilan ishlash
 
-Spring Boot applicationni Docker konteyneriga joylashda `application.properties` yoki `application.yml` fayllarini ishlatish kerak bo'ladi. Bu fayllar applicationning konfiguratsiyalarini saqlash uchun kerak bo'ladi. Bizning loyihamizda `application.properties` fayli mavjud lekin unda secretlar ochiq holda shunih uchun secretlarni Gitlab CI variablega qo'shib multi-environment qilib sozlashimiz kerak bo'ladi. `src/main/resources` katalogida `application-dev.properties`,va `application-prod.properties` fayllarini yaratamiz va ularni alohida environmentlar uchun kerakli konfiguratsiyalarni saqlaymiz.
+Spring Boot applicationni Docker konteyneriga joylashda `application.properties` yoki `application.yml` fayllarini ishlatish kerak bo'ladi. Bu fayllar applicationning konfiguratsiyalarini saqlash uchun kerak bo'ladi. Bizning loyihamizda `application.properties` fayli mavjud lekin unda secretlar ochiq holda shunih uchun secretlarni Gitlab CI variablega qo'shib multi-environment qilib sozlashimiz kerak bo'ladi. `src/main/resources` katalogida `application-dev.properties`va `application-prod.properties` fayllarini yaratamiz va ularni alohida environmentlar uchun kerakli konfiguratsiyalarni saqlaymiz.
 
 `application-dev.properties` faylida dev environment uchun kerakli konfiguratsiyalar saqlanadi.
 ```properties filename="application-dev.properties"
@@ -253,3 +253,152 @@ logging.level.org.springframework.web=DEBUG
 logging.level.org.springdoc=DEBUG
 ```
 
+Environment variablelarni Gitlab CI variablega qo'shib chiqishimiz kerak bo'ladi. Repositoriyaga o'tib **-> Settings -> CI/CD -> Variables** bo'limiga o'tamiz va kerakli environment variablelarni qo'shib chiqamiz.
+
+`DEV_DATABASE_URL` ga `jdbc:postgresql://134.209.217.179:5432/waifulist` formatda secret keyni yozamiz buyerda IP manzil PostgreSQL server manzili va porti `waifulist` esa database nomi bo'ladi.
+![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/1.png)
+
+`DEV_DATABASE_USERNAME` ga `postgres` secret keyni yozamiz buyerda PostgreSQL serverga ulanish uchun kerak bo'lgan foydalanuvchi nomi.
+![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/2.png)
+`DEV_DATABASE_PASSWORD` ga `lwfjljqwotpreqwt2` secret keyni yozamiz bu PostgreSQL serverga yuqoria belgilangan user bilan ulanish uchun kerak user paroli(yani `postgres` user paroli).
+![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/3.png)
+Gitlab CI variablega secret keylarni qo'shib chiqdik endi Gitlab CI/CD pipeline'larimizda bu secret keylarni ishlatishimiz mumkin.
+![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/4.png)
+
+## Gitlab CI/CD pipeline
+
+Okey yuqorida biz loyihani tushundik, Dockerfile yozdik va konfiguratsiyalarimizni sozladik endi Gitlab CI/CD pipeline'larimizni yozamiz. Gitlab CI/CD pipeline'larini yozish uchun `.gitlab-ci.yml` faylini loyihaning asosiy katalogiga yaratamiz.
+
+### CI pipeline
+Birinchi navbatda loyihani test qilish uchun CI pipeline'ni yozamiz.
+
+```yaml filename=".gitlab-ci.yml"
+stages:
+  - build_and_push
+
+variables:
+  IMAGE_NAME: waifulist
+  REPO_NAME: $CI_PROJECT_PATH
+  REGISTRY: "registry.gitlab.com"
+
+build_and_push:
+  stage: build_and_push
+  image: docker:stable
+
+  services:
+    - docker:dind
+
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+
+  script:
+    - docker build -t $REGISTRY/$REPO_NAME/$IMAGE_NAME:$CI_COMMIT_SHA .
+    - docker push $REGISTRY/$REPO_NAME/$IMAGE_NAME:$CI_COMMIT_SHA
+```
+Ushbu CI pipeline'ni tushunish uchun quyidagi qadamlarni ko'rib chiqamiz: 
+
+<Callout type="info" emoji="">
+Agar siz Gitlab CI/CD bilan tanish bo'lmasangiz quyidagi qo'llanmalar orqali Gitlab CI/CD bilan tanishingiz mumkin: [**Gitlab CI bilan CI/CD**](https://devops-journey.uz/guides/ci-cd/start-gitlabci), [**Gitlab CI | Releaselar va Integrationlar**](https://devops-journey.uz/guides/ci-cd/gitlab-ci-release-integrations).
+</Callout>
+
+1. `stages` - Pipeline'ning bosqichlarini bildiradi bunda faqat `build_and_push` bosqich bor.
+2. `variables` - Pipeline'ning ishlatadigan o'zgaruvchilar belgilanadi bu yerda `IMAGE_NAME`, `REPO_NAME`, `REGISTRY` o'zgaruvchilari belgilangan container registry sifatida gitlab container registry ishlatilgan.
+3. `build_and_push` - Pipeline'ning birinchi bosqichidir bu bosqichda loyihani build qilish va Gitlab registryga imageni push qilish amalga oshiriladi.
+4. `image` - Docker imageni ishlatish uchun `docker:stable` imageni ishlatamiz.
+5. `services` - Docker daemonni ishlatish uchun `docker:dind` servisini ishlatamiz.
+6. `before_script` - Pipeline boshlanishida Gitlab registryga kirish uchun bajariladigan amallar belgilanadi bu holda `docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY` amalini bajaradi yani Gitlab registryga kiradi.
+7. `script` - Docker imageni build qilish va Gitlab registryga push qilish amallari belgilanadi bu holda `docker build -t $REGISTRY/$REPO_NAME/$IMAGE_NAME:$CI_COMMIT_SHA .` va `docker push $REGISTRY/$REPO_NAME/$IMAGE_NAME:$CI_COMMIT_SHA` amallari bajariladi.
+
+Bu CI pipeline docker yordamida loyihani build qiladi va Gitlab registryga imageni push qiladi.
+
+`.gilab-ci.yml` faylini yuqoridagidek konfiguratsiya yozib gitlabga push qilamiz va bizda avtomatik CI pipeline ishga tushadi.
+
+![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/12.png)
+Ko'k rang bilan ishlab turgan job ustiga bosib CI pipeline'ni ko'rishimiz mumkin  va u ochilganda biz `build_and_push` jobini ko'rishimiz mumkin. Joblar ko'k rangda pipeline ishga tushayotganini bildiradi.
+![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/13.png)
+
+Okey bizning CI pipeline muvaffaqiyatli ishga tushdi va Gitlab registryga imageni push qildik endi uni tekshirib ko'rishimiz kerak bo'ladi.
+![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/14.png)
+
+Repositoriyadagi **-> Deploy -> Container Registry** bo'limiga o'tib CI pipeline orqali build qilingan imageni ko'rishimiz mumkin.
+![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/15.png)
+Mana bizning `waifulist` docker imagemiz.
+![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/16.png)
+
+Bizda CI bosqichini muvaffaqiyatli ishga tushirdik endi esa CD pipeline'ni yozamiz.
+
+### CD pipeline
+
+CD pipelineda biz CI bosqichida build bo'lgan docker imageni Gitlab registrydan olib, ssh orqali vm'ga kirib docker konteynerini ishga tushiramiz. Bu amaliyotda deploy qilish uchun vm(virtual mashina) ishlatamiz vmga docker intsall qilamiz va CD pipelineda serverga kirib docker konteynerini ishga tushiramiz.
+
+Buning uchun `.gitlab-ci.yml` faylini quyidagicha o'zgartiramiz.
+
+```yaml filename=".gitlab-ci.yml" {3,7-8,11-17,30-44}
+stages:
+  - build_and_push
+  - deploy
+
+variables:
+  IMAGE_NAME: waifulist
+  CONTAINER_NAME: waifulist
+  PORT: "8080:8080"
+  REPO_NAME: $CI_PROJECT_PATH
+  REGISTRY: "registry.gitlab.com"
+  SSH_HOST: $SERVER_IP
+  SSH_USER: $SERVER_USERNAME
+  SSH_KEY: $SSH_PRIVATE_KEY
+  SPRING_PROFILES_ACTIVE: dev
+  DEV_DATABASE_URL: $DEV_DATABASE_URL
+  DEV_DATABASE_USERNAME: $DEV_DATABASE_USERNAME
+  DEV_DATABASE_PASSWORD: $DEV_DATABASE_PASSWORD
+
+build_and_push:
+  stage: build_and_push
+  image: docker:stable
+  services:
+    - docker:dind
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+  script:
+    - docker build -t "$REGISTRY/$REPO_NAME/$IMAGE_NAME:$CI_COMMIT_SHA" .
+    - docker push "$REGISTRY/$REPO_NAME/$IMAGE_NAME:$CI_COMMIT_SHA"
+
+deploy:
+  stage: deploy
+  image: alpine:latest
+  before_script:
+    - apk add --update --no-cache openssh-client
+  script:
+    - mkdir -p ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - ssh-keyscan -H $SSH_HOST >> ~/.ssh/known_hosts 
+    - ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "echo "$CI_JOB_TOKEN" | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY"
+    - ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "docker pull $REGISTRY/$REPO_NAME/$IMAGE_NAME:$CI_COMMIT_SHA"
+    - ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "docker stop $CONTAINER_NAME || true"
+    - ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "docker rm $CONTAINER_NAME || true"
+    - ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no "$SSH_USER@$SSH_HOST" "docker run -d --name $CONTAINER_NAME -p $PORT -e SPRING_PROFILES_ACTIVE=$SPRING_PROFILES_ACTIVE -e DEV_DATABASE_URL=$DEV_DATABASE_URL -e DEV_DATABASE_USERNAME=$DEV_DATABASE_USERNAME -e DEV_DATABASE_PASSWORD=$DEV_DATABASE_PASSWORD $REGISTRY/$REPO_NAME/$IMAGE_NAME:$CI_COMMIT_SHA"
+```
+
+Ushbu CD pipeline'ni tushunish uchun quyidagi qadamlarni ko'rib chiqamiz:
+
+1. `stages` - ga `deploy` bosqichini qo'shamiz bu bosqichda loyihani deploy qilish amalga oshiriladi.
+2. `variables` - ga yangi o'zgaruvchilar qo'shamiz bu o'zgaruvchilar `CONTAINER_NAME`, `PORT`, `SSH_HOST`, `SSH_USER`, `SSH_KEY`, `SPRING_PROFILES_ACTIVE`, `DEV_DATABASE_URL`, `DEV_DATABASE_USERNAME`, `DEV_DATABASE_PASSWORD` o'zgaruvchilari belgilangan.
+3. `deploy` - Pipeline'ning ikkinchi bosqichidir bu bosqichda loyihani deploy qilish amalga oshiriladi bu bosqichda ssh orqali serverga kirib docker konteynerini ishga tushiramiz.
+4. `image` - Docker imageni ishlatish uchun `alpine:latest` imageni ishlatamiz.
+5. `before_script` - Pipeline boshlanishida `openssh-client`ni o'rnatish uchun bajariladigan amallar belgilanadi.
+6. `script` - SSH orqali serverga kirib docker konteynerini ishga tushirish amallari belgilanadi.
+7. `mkdir -p ~/.ssh` - `~/.ssh` papkasini yaratamiz bu papkada ssh keylar saqlanadi.
+8. `echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa` - SSH private keyni `~/.ssh/id_rsa` fayliga yozamiz bu key serverga kirish uchun kerak bo'ladi.
+9. `chmod 600 ~/.ssh/id_rsa` - `~/.ssh/id_rsa` faylining huquqlarini belgilaymiz bu keyga faqat foydalanuvchi o'qishi mumkin.
+10. `ssh-keyscan -H $SSH_HOST >> ~/.ssh/known_hosts` - SSH hostning public keyini `~/.ssh/known_hosts` fayliga yozamiz bu hostga birinchi marta ulanishda xatolik chiqmasligi uchun kerak bo'ladi.
+11. `ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST " bu amal SSH orqali serverga kirish amaliyotini bajaradi.
+12. `echo "$CI_JOB_TOKEN" | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY"` - Gitlab registryga kirish uchun bajariladigan amal buning sababi Gitlab container registryga kirish va CI pipelineda yaratilgan imageni olish uchun kerak bo'ladi.
+13. `docker pull $REGISTRY/$REPO_NAME/$IMAGE_NAME:$CI_COMMIT_SHA` - Gitlab registrydan imageni pull qilib oladi.
+14. `docker stop $CONTAINER_NAME || true` - Bu eski Docker konteynerini to'xtatadi.
+15. `docker rm $CONTAINER_NAME || true` - Bu eski Docker konteynerini o'chiradi.
+16. `docker run -d --name $CONTAINER_NAME -p $PORT -e SPRING_PROFILES_ACTIVE=$SPRING_PROFILES_ACTIVE -e DEV_DATABASE_URL=$DEV_DATABASE_URL -e DEV_DATABASE_USERNAME=$DEV_DATABASE_USERNAME -e DEV_DATABASE_PASSWORD=$DEV_DATABASE_PASSWORD $REGISTRY/$REPO_NAME/$IMAGE_NAME:$CI_COMMIT_SHA` - Bu buyruq esa Gitlab CI pipelineda yaratilgan imageni belgilan variablelar bilan ishga tushiradi, yani belgilangan portda, belgilangan nomda, belgilangan environment variablelar bilan ishga tushiradi.
+
+
+![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/17.png)
+![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/18.png)
