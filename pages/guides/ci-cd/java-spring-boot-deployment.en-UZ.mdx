@@ -269,6 +269,8 @@ Gitlab CI variablega secret keylarni qo'shib chiqdik endi Gitlab CI/CD pipeline'
 
 Okey yuqorida biz loyihani tushundik, Dockerfile yozdik va konfiguratsiyalarimizni sozladik endi Gitlab CI/CD pipeline'larimizni yozamiz. Gitlab CI/CD pipeline'larini yozish uchun `.gitlab-ci.yml` faylini loyihaning asosiy katalogiga yaratamiz.
 
+![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/5.png)
+
 ### CI pipeline
 Birinchi navbatda loyihani test qilish uchun CI pipeline'ni yozamiz.
 
@@ -400,5 +402,81 @@ Ushbu CD pipeline'ni tushunish uchun quyidagi qadamlarni ko'rib chiqamiz:
 16. `docker run -d --name $CONTAINER_NAME -p $PORT -e SPRING_PROFILES_ACTIVE=$SPRING_PROFILES_ACTIVE -e DEV_DATABASE_URL=$DEV_DATABASE_URL -e DEV_DATABASE_USERNAME=$DEV_DATABASE_USERNAME -e DEV_DATABASE_PASSWORD=$DEV_DATABASE_PASSWORD $REGISTRY/$REPO_NAME/$IMAGE_NAME:$CI_COMMIT_SHA` - Bu buyruq esa Gitlab CI pipelineda yaratilgan imageni belgilan variablelar bilan ishga tushiradi, yani belgilangan portda, belgilangan nomda, belgilangan environment variablelar bilan ishga tushiradi.
 
 
+Bu CD pipelineni ishga tushirish uchun kerakli secretlarni Gitlab CI variablega qo'shib chiqamiz.
+
+CD pipelien serverga ssh orqali kira olishi kerak buning uchun serverda ssh-key generatsiya qilib uni Gitlab CI variablega qo'shib chiqamiz.
+
+```bash
+ssh-keygen
+```
+Yuqoridagi buyruqni yozin **ENTER**ni bosib key generatsiya qilib oling
+![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/6.png)
+
+yuqorida buyruq 2ta key generatsiya qiladi public(`id_rsa.pub`) va private(`id_rsa`) keylar, bu keylar `~/.ssh` papkasiga saqlanadi.
+![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/7.png)
+CD pipeline serverga kira olishi uchun private(`id_rsa`) keyni `authorized_keys` fayliga qo'shib chiqishimiz kerak bo'ladi.
+```bash
+cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+```
+
+Keyin esa private(`id_rsa`) keyni Gitlab CI variablega `SSH_PRIVATE_KEY` nomi bilan qo'shamiz private keyni `cat ~/.ssh/id_rsa` buyruqini ishga tushirib olishimiz mumkin.
+```bash
+cat ~/.ssh/id_rsa
+```
+![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/8.png)
+
+Serverda ssh key genratsiya qilib sozlab olganimizdan keyin Gitlab CI variablega qo'shib chiqishimiz kerak bo'ladi.
+**-> Settings -> CI/CD -> Variables** bo'limiga o'tamiz va `SERVER_IP` nomli variablega server ip manzilini(Gitlab bo'glana oladigan IP) yozamiz.
+![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/9.png)
+`SERVER_USERNAME` nomli variablega serverga kirish uchun user nomini yozamiz, userni `whoami` buyruqini ishga tushirib olishimiz mumkin.
+```bash
+whoami
+```
+![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/10.png)
+`SSH_PRIVATE_KEY` nomli variablega esa yuqorida yaratib olgan private keyni yozamiz.
+![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/11.png)
+
+Gitlab CI variablelarni to'gri qo'yib chiqganimizdan keyin yangilangan `.gitlab-ci.yml` faylini gitlabga push qilamiz va avtomatik CI/CD pipeline ishga tushadi.
+![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/12.png)
+Joblar ro'yxatini ko'rsak bu safar biz `build_and_push` va `deploy` joblarini ko'ramiz.
 ![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/17.png)
+
+Okeey pipeliene muvaffaqiyatli ishga tushdi endi esa uni tekshirib ko'rishimiz kerak bo'ladi.
 ![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/18.png)
+
+Serverga kirib docker containerlar ro'yxatini ko'ramiz.
+```bash
+docker ps
+```
+![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/19.png)
+
+Docker containerlar ro'yxatida `waifulist` nomli containerni ko'rib turibmiz porti `8080` va statusi healthy bo'lganini ko'ramiz, keling endi bu API'ning swagger interfeysiga kirib ko'ramiz, bunig uchun brauzerdan `http://server-ip::8080/swagger-ui/index.html` manziliga kirib ko'ramiz bizda API swagger interfeysi ochilishi kerak.
+![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/20.png)
+
+Keling endi PostgreSQL databazani tekshirib ko'ramiz.
+![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/21.png)
+
+Niyohat biz bugun Spring Boot applicationni Docker konteyneriga ishga tushirishni o'rgandik, Gitlab CI/CD pipelinelarini yozdik va loyihamizni Gitlab CI/CD orqali jarayonlarni avtomatlashtirdik, Spring Bootda multi-environment konfiguratsiyalar bilan ishlashni o'rgandik va secretlarimizni Gitlab CI variablega qo'shib ishladik. Bugungi amaliyot boshlang'ich darajada hisoblanasa bu orqali siz ko'p narsalarni o'rganib chiqasiz, qolganlari esa keyingi boqichlarda.
+
+## Qo'shimcha
+<Callout type="info" emoji="">
+
+Qo'shimcha Resurslar
+ * [**Gitlab Server o'rnatish va sozlash**](https://devops-journey.uz/guides/ci-cd/gitlab-server)
+ * [**Gitlab CI | Releaselar va Integrationlar**](https://devops-journey.uz/guides/ci-cd/gitlab-ci-release-integrations)
+ * [**Github Actions bilan Flutter CI/CD**](https://devops-journey.uz/guides/ci-cd/flutter-github-action)
+ * [**Github Actions CI/CD**](https://devops-journey.uz/guides/ci-cd/github-actions-ci-cd)
+ * [**Linux Serverlarga Jenkins o'rnatish**](https://devops-journey.uz/guides/ci-cd/jenkins-ornatish)
+ * [**Koddan Servergacha: Jenkins bilan Docker CI/CD va Discord bilan integratsiya**](https://devops-journey.uz/guides/ci-cd/jenkins-docker-ci-cd)
+ * [**Kubernetes CI/CD | GitHub Actions + Argo CD | GitOps**](https://devops-journey.uz/guides/ci-cd/github-actions-argocd-cicd)
+
+**Sana:** 2025.01.26(2025-yil 26-yanvar)
+
+**Oxirgi yangilanish:** 2025.01.26(2025-yil 26-yanvar)
+
+**Muallif: Otabek Ismoilov**
+
+| [Telegram](https://t.me/Otabek_Ismoilov) | [GitHub](https://github.com/ismoilovdevml) | [LinkedIn](https://www.linkedin.com/in/otabek-ismoilov/) |
+| - | - | - |
+
+</Callout>
