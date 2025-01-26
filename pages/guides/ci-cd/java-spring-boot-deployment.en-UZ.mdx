@@ -10,7 +10,7 @@ import { Callout } from "nextra-theme-docs";
 ![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/banner.png)
 
 
-Ushbu qo'llanma **Java Spring Boot** applicationlarnni **GitLab CI/CD** va **GitHub Actions** yordamida avtomatlashtirilgan tarzda deploy qilishni o'rganishni maqsad qilgan. Bu amaliyot DevOps Engineerlar va Java dasturchilari uchun zarur bo'lgan bilim va ko'nikmalarni qamrab oladi. Qo'llanmada Java Spring Boot applicationining tuzilishini tushunish va konfiguratsiya qilish jarayonlari ko'rib chiqamiz.
+Ushbu qo'llanma **Java Spring Boot** applicationlarnni **GitLab CI/CD** va **GitHub Actions** yordamida avtomatlashtirilgan tarzda deploy qilishni o'rganib chiqamiz. Bu amaliyot DevOps Engineerlar va Java dasturchilari uchun zarur bo'lgan bilim va ko'nikmalarni qamrab oladi. Qo'llanmada Java Spring Boot applicationining tuzilishini tushunish va konfiguratsiya qilish jarayonlari ko'rib chiqamiz.
 
 Shuningdek, biz Dockerfile yozishni o'rganamiz va uni samarali ishlashi uchun optimallashtiramiz. Docker asosida konteynerlash jarayonlarini o'zlashtirgach, GitLab CI/CD va GitHub Actions yordamida CI/CD pipeline'larini sozlash va avtomatlashtirish usullarini ko'rib chiqamiz.
 
@@ -265,6 +265,34 @@ Environment variablelarni Gitlab CI variablega qo'shib chiqishimiz kerak bo'ladi
 Gitlab CI variablega secret keylarni qo'shib chiqdik endi Gitlab CI/CD pipeline'larimizda bu secret keylarni ishlatishimiz mumkin.
 ![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/4.png)
 
+## VM Tayyorlash
+
+CI/CD deployment bosqichida biz applicationimizni vm(virtual machine)ga deploy qilamiz bu uchun vm tayyorlashimiz kerak bo'ladi, yani pipeline serverga ssh bilan ulanib ishlaydigan qismi bor shu qismi uchun ssh sozlashimiz va docker o'rnatishimiz kerak bo'ladi.
+
+Docker o'rnatish uchun quyidagi qo'llanmadan foydalanishingiz mumkin - **[Linux serverlarga Docker o'rnatish](https://devops-journey.uz/guides/konteyner/docker-ornatish)**
+
+CD pipelien serverga ssh orqali kira olishi kerak buning uchun serverda ssh-key generatsiya qilishimiz kerak bo'ladi.
+
+```bash
+ssh-keygen
+```
+Yuqoridagi buyruqni yozib **ENTER**ni bosib key generatsiya qilib oling
+![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/6.png)
+
+yuqorida buyruq 2ta key generatsiya qiladi public(`id_rsa.pub`) va private(`id_rsa`) keylar, bu keylar `~/.ssh` papkasiga saqlanadi.
+![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/7.png)
+CD pipeline serverga kira olishi uchun private(`id_rsa`) keyni `authorized_keys` fayliga qo'shib chiqishimiz kerak bo'ladi.
+```bash
+cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+```
+
+Keyin esa private(`id_rsa`) keyni Gitlab CI variablega `SSH_PRIVATE_KEY` nomi bilan qo'shamiz private keyni `cat ~/.ssh/id_rsa` buyruqini ishga tushirib olishimiz mumkin.
+```bash
+cat ~/.ssh/id_rsa
+```
+![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/8.png)
+
+
 ## Gitlab CI/CD pipeline
 
 Okey yuqorida biz loyihani tushundik, Dockerfile yozdik va konfiguratsiyalarimizni sozladik endi Gitlab CI/CD pipeline'larimizni yozamiz. Gitlab CI/CD pipeline'larini yozish uchun `.gitlab-ci.yml` faylini loyihaning asosiy katalogiga yaratamiz.
@@ -404,28 +432,7 @@ Ushbu CD pipeline'ni tushunish uchun quyidagi qadamlarni ko'rib chiqamiz:
 
 Bu CD pipelineni ishga tushirish uchun kerakli secretlarni Gitlab CI variablega qo'shib chiqamiz.
 
-CD pipelien serverga ssh orqali kira olishi kerak buning uchun serverda ssh-key generatsiya qilib uni Gitlab CI variablega qo'shib chiqamiz.
-
-```bash
-ssh-keygen
-```
-Yuqoridagi buyruqni yozin **ENTER**ni bosib key generatsiya qilib oling
-![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/6.png)
-
-yuqorida buyruq 2ta key generatsiya qiladi public(`id_rsa.pub`) va private(`id_rsa`) keylar, bu keylar `~/.ssh` papkasiga saqlanadi.
-![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/7.png)
-CD pipeline serverga kira olishi uchun private(`id_rsa`) keyni `authorized_keys` fayliga qo'shib chiqishimiz kerak bo'ladi.
-```bash
-cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
-```
-
-Keyin esa private(`id_rsa`) keyni Gitlab CI variablega `SSH_PRIVATE_KEY` nomi bilan qo'shamiz private keyni `cat ~/.ssh/id_rsa` buyruqini ishga tushirib olishimiz mumkin.
-```bash
-cat ~/.ssh/id_rsa
-```
-![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/8.png)
-
-Serverda ssh key genratsiya qilib sozlab olganimizdan keyin Gitlab CI variablega qo'shib chiqishimiz kerak bo'ladi.
+Yuqorida biz **[VM tayyorlash](#vm-tayyorlash)** bosqichida serverga docker install qilib ssh-key generatsiya qilgandik endi shu keylarni Gitlab CI variablega qo'shib chiqishimiz kerak bo'ladi.
 **-> Settings -> CI/CD -> Variables** bo'limiga o'tamiz va `SERVER_IP` nomli variablega server ip manzilini(Gitlab bo'glana oladigan IP) yozamiz.
 ![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/9.png)
 `SERVER_USERNAME` nomli variablega serverga kirish uchun user nomini yozamiz, userni `whoami` buyruqini ishga tushirib olishimiz mumkin.
@@ -451,6 +458,222 @@ docker ps
 ![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/19.png)
 
 Docker containerlar ro'yxatida `waifulist` nomli containerni ko'rib turibmiz porti `8080` va statusi healthy bo'lganini ko'ramiz, keling endi bu API'ning swagger interfeysiga kirib ko'ramiz, bunig uchun brauzerdan `http://server-ip::8080/swagger-ui/index.html` manziliga kirib ko'ramiz bizda API swagger interfeysi ochilishi kerak.
+![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/20.png)
+
+Keling endi PostgreSQL databazani tekshirib ko'ramiz.
+![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/21.png)
+
+## Github Actions CI/CD
+
+Bu amaliyotimizda biz ham Gitlab CI bilan CI/CD pipeline va Github Actions bilan CI/CD pipeline yozamiz. Yuqorida biz Gitlab CI/CD bilan pipeline yozishni ko'rib chiqdik bu qismda biz Github Actions bilan CI/CD pipeline yozamiz.
+
+<Callout type="info" emoji="">
+Agar siz Github Actions bilan tanish bo'lmasangiz quyidagi qo'llanma orqali o'rganib chiqishingiz mumkin: [**Github Actions CI/CD**](https://devops-journey.uz/guides/ci-cd/github-actions-ci-cd).
+</Callout>
+
+### CI pipeline
+Github Actions CI pipeline'ni yozish uchun birinchi navbatda `.github/workflows` papkasini yaratib olamiz va ichiga `ci-cd.yml` faylini yaratamiz ba CI pipeline'ni quyidagicha yozamiz.
+
+```yaml filename=".github/workflows/ci.yml"
+name: Github Actions CI/CD
+ 
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+ 
+env:
+  REPO_NAME: ${{ github.repository }}
+  REGISTRY: ghcr.io
+ 
+jobs:
+  build_and_push:
+    runs-on: ubuntu-latest
+    permissions:
+        contents: read
+        packages: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+ 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+ 
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+ 
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: "${{ env.REGISTRY }}/${{ env.REPO_NAME }}:${{ github.sha }}"
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.REPO_NAME }}:buildcache
+          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.REPO_NAME }}:buildcache,mode=max
+```
+Agar siz [**Github Actions CI/CD**](https://devops-journey.uz/guides/ci-cd/github-actions-ci-cd) qo'llanmasini o'qib chiqgan bo'lsangiz bu CI pipeline'ni oson tushunasiz. Qisqa qilib aytganda bu CI juda oddiy pipeline bo'lib Github Actions orqali `main` branchga push qilganda yoki pull request ochganda avtomatik ishga tushadi va Docker imageni build qilib Github Container registryga push qiladi.
+
+CI pipelineni sinash uchub Githubdagi repositoriyamiz `main` branchiga push qilamiz pipeline avtomatik ishga tushishi kerak.
+![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/22.png)
+
+-----------------
+
+Rasmda Github Actions ishga tushayotganini ko'rishingiz mumkin.
+![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/23.png)
+
+-----------------
+
+Repositoriyadan **-> Actions** bo'limiga o'tib pipelinedagi joblarni ko'rishimiz mumkin.
+![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/24.png)
+
+-----------------
+
+Bu qismda faqat bizda CI pipelineda `build_and_push` jobi ishlayotanini ko'rishimiz mumkin.
+![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/25.png)
+
+-----------------
+
+Bu rasmda esa CI pipeliendagi `build_and_push` jobi muvaffaqiyatli ishga tushganini ko'rishimiz mumkin.
+![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/26.png)
+
+CI pipeline muvaffaqiyatli ishga tushdi endi esa uni teklshirib ko'rishimiz kerak bo'ladi. Biz container registry sifatida Github Container registryni ishlatdik keling container registryda CI pipelienda yaratilgan imageni tekshirib ko'ramiz, buning uchun **-> Packages** bo'limiga o'tib container registryda yaratilgan imageni ko'ramiz.
+![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/27.png)
+
+-----------------
+
+Ko'rib turganingizdek bizda `waifulist` nomli docker image mavjud.
+![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/28.png)
+
+Biz Github Actionsda CI pipeline muvaffaqiyatli yozib ishga tushirdik endi esa CD pipeline'ni yozamiz.
+
+### CD pipeline
+
+CD pipelineda biz CI pipeline'da build qilingan docker imageni Github Actions orqali serverga kirib docker imageni Github Container registrydan pull qilib  belgilan qiymatlar bilan uni ishga tushiramiz. Buning uchun `ci-cd.yml` faylini o'zgartirishlar kiritishimiz kerak bo'ladi.
+
+```yaml filename=".github/workflows/ci-cd.yml" {11,13-17,48-71}
+name: Github Actions CI/CD
+ 
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+ 
+env:
+  REPO_NAME: ${{ github.repository }}
+  CONTAINER_NAME: waifulist
+  REGISTRY: ghcr.io
+  SSH_HOST: ${{ secrets.SERVER_IP }}
+  SSH_USER: ${{ secrets.SERVER_USERNAME }}
+  SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+  PORT: 8080:8080
+  SPRING_PROFILES_ACTIVE: dev
+ 
+jobs:
+  build_and_push:
+    runs-on: ubuntu-latest
+    permissions:
+        contents: read
+        packages: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+ 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+ 
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+ 
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: "${{ env.REGISTRY }}/${{ env.REPO_NAME }}:${{ github.sha }}"
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.REPO_NAME }}:buildcache
+          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.REPO_NAME }}:buildcache,mode=max
+
+  deploy:
+    needs: build_and_push
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Executing remote SSH commands to deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: "${{ env.SSH_HOST }}"
+          username: "${{ env.SSH_USER }}"
+          key: "${{ env.SSH_KEY }}"
+          script: |
+            echo ${{ secrets.GITHUB_TOKEN }} | docker login -u ${{ github.actor }} --password-stdin ${{ env.REGISTRY }}
+            docker pull "${{ env.REGISTRY }}/${{ env.REPO_NAME }}:${{ github.sha }}"
+            docker stop "${{ env.CONTAINER_NAME }}" || true
+            docker rm "${{ env.CONTAINER_NAME }}" || true
+            docker run -d --name ${{ env.CONTAINER_NAME }} -p ${{ env.PORT }} \
+            -e SPRING_PROFILES_ACTIVE=${{ env.SPRING_PROFILES_ACTIVE }} \
+            -e DEV_DATABASE_URL=${{ secrets.DEV_DATABASE_URL }} \
+            -e DEV_DATABASE_USERNAME=${{ secrets.DEV_DATABASE_USERNAME }} \
+            -e DEV_DATABASE_PASSWORD=${{ secrets.DEV_DATABASE_PASSWORD }} \
+            ${{ env.REGISTRY }}/${{ env.REPO_NAME }}:${{ github.sha }}
+```
+
+Ushbu CD pipelineni qisqacha tushintiradigan bo'lsam `cd-cd.yml` ga `CONTAINER_NAME`, `PORT`, `SSH_HOST`, `SSH_USER`, `SSH_KEY`, `SPRING_PROFILES_ACTIVE`, `DEV_DATABASE_URL`, `DEV_DATABASE_USERNAME`, `DEV_DATABASE_PASSWORD` nomli yangi o'zgaruvchilari qo'shildi. deploy uchu `deploy` nomli job yozdik bu job afqat `build_and_push` jobi tugagandan keyin ishlaydi va berilgan `SSH_HOST`, `SSH_USER`, `SSH_KEY` secretlarini Github Secretsdan olib serverga ssh orqali kiradi va birinchi navbatda Github Container Registyrga login qiladi va `build_and_push` jobida build qilingan imageni pull qilib oladi va hozir ishlab turgan eski containerni to'xtatatib belgilangan variablelar(`SPRING_PROFILES_ACTIVE`, `PORT`, `CONTAINER_NAME`) orqali yangi containerni ishga tushiradi. `application-dev.properties` faylida dev environment uchun kerakli secretlarni esa Github Secretsdan olib ishlatadi.
+
+Ushbu yangilangan to'liq CI/CD pipelieni ishga tushirishdan oldin kerakli secretlarni Github Secretga qo'shib chiqishimiz kerak bo'ladi. 
+
+Buning uchun **-> Settings -> Secrets and variable -> New repository secret** bo'limiga o'tib kerakli secretlarni qo'shib chiqamiz.
+
+`DEV_DATABASE_URL` ga `jdbc:postgresql://134.209.217.179:5432/waifulist` formatda secret keyni yozamiz buyerda IP manzil PostgreSQL server manzili va porti `waifulist` esa database nomi bo'ladi. 
+![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/30.png)
+`DEV_DATABASE_USERNAME` ga postgres secret keyni yozamiz buyerda PostgreSQL serverga ulanish uchun kerak bo'lgan foydalanuvchi nomi. 
+![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/31.png)
+`DEV_DATABASE_PASSWORD` ga `lwfjljqwotpreqwt2` secret keyni yozamiz bu PostgreSQL serverga yuqoria belgilangan user bilan ulanish uchun kerak user paroli(yani `postgres` user paroli). 
+![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/29.png)
+
+Yuqorida biz **[VM tayyorlash](#vm-tayyorlash)** bosqichida serverga docker install qilib ssh-key generatsiya qilgandik endi shu keylarni Github Actions Secretga qo'shib chiqishimiz kerak bo'ladi.
+
+`SERVER_IP` nomli variablega server ip manzilini(Gitlab bo'glana oladigan IP) yozamiz.
+![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/32.png)
+`SERVER_USERNAME` nomli variablega serverga kirish uchun user nomini yozamiz, userni `whoami` buyruqini ishga tushirib olishimiz mumkin.
+```bash
+whoami
+```
+![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/33.png)
+`SSH_PRIVATE_KEY` nomli variablega esa yuqorida yaratib olgan private keyni yozamiz. 
+![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/34.png)
+
+Bizda secretlar umumiy ro'yxati.
+![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/36.png)
+
+
+Okeyy biz barcha secret va variablelarni to'g'ri qo'shib chiqdik endi esa to'liq CI/CD pipelineni ishga tushirish uchun o'zgarishlarni `main` branchga push qilamiz. CI/CD avtomatik ishga tushishi kerak.
+
+
+Ko'rib turganingizdek bu safar bizda jobllar ikkita `build_and_push` va `deploy` joblarini ko'ramiz va ular ketma-ketlikda ishlaydi.
+![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/37.png)
+
+Okey bizda to'liq CI/CD muvaffaqiyatli ishladi endi uni tekshirib ko'rishimiz kerak bo'ladi.
+![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/38.png)
+
+Serverga kirib docker containerlar ro'yxatini ko'ramiz.
+```bash
+docker ps
+```
+![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/39.png)
+Bizda `waifulist` nomli docker containerimiz mavjud va statusi healthy bo'lganini ko'ramiz, keling endi bu API'ning swagger interfeysiga kirib ko'ramiz, bunig uchun brauzerdan `http://server-ip::8080/swagger-ui/index.html` manziliga kirib ko'ramiz bizda API swagger interfeysi ochilishi kerak.
+
 ![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/20.png)
 
 Keling endi PostgreSQL databazani tekshirib ko'ramiz.
