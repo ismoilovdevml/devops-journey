@@ -10,14 +10,14 @@ import { Callout } from "nextra-theme-docs";
 ![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/banner.png)
 
 
-Ushbu qo'llanma **Java Spring Boot** applicationlarnni **GitLab CI/CD** va **GitHub Actions** yordamida avtomatlashtirilgan tarzda deploy qilishni o'rganib chiqamiz. Bu amaliyot DevOps Engineerlar va Java dasturchilari uchun zarur bo'lgan bilim va ko'nikmalarni qamrab oladi. Qo'llanmada Java Spring Boot applicationining tuzilishini tushunish va konfiguratsiya qilish jarayonlari ko'rib chiqamiz.
+Ushbu qo'llanma **Java Spring Boot** applicationlarnni **GitLab CI/CD** va **GitHub Actions** yordamida avtomatlashtirilgan tarzda deploy qilishni o'rganib chiqamiz. Bu amaliyot **DevOps Engineer**lar va **Java dasturchi**lar uchun zarur bo'lgan bilim va ko'nikmalarni qamrab oladi. Qo'llanmada **Java Spring Boot** applicationining tuzilishini tushunish va konfiguratsiya qilish jarayonlari ko'rib chiqamiz.
 
-Shuningdek, biz Dockerfile yozishni o'rganamiz va uni samarali ishlashi uchun optimallashtiramiz. Docker asosida konteynerlash jarayonlarini o'zlashtirgach, GitLab CI/CD va GitHub Actions yordamida CI/CD pipeline'larini sozlash va avtomatlashtirish usullarini ko'rib chiqamiz.
+Shuningdek, biz **Dockerfile** yozishni o'rganamiz va uni samarali ishlashi uchun optimallashtiramiz. Docker asosida konteynerlash jarayonlarini o'zlashtirgach, GitLab CI/CD va GitHub Actions yordamida CI/CD pipeline'larini sozlash va avtomatlashtirish usullarini ko'rib chiqamiz.
 
 Ushbu qo'llanma orqali siz Java Spring Boot applicationlari uchun CI/CD jarayonlarini muvaffaqiyatli amalga oshirish bo'yicha amaliy yondashuvga ega bo'lasiz va real loyihalarda bu usullarni qo'llash imkoniyatiga ega bo'lasiz.
 
 <Callout type="info" emoji="">
-Ushbu amaliyotda quyidagi Java Spring Boot application kodlaridan foydalanamiz - [**gitlab.com/ismoilovdev/waifulist**](https://gitlab.com/ismoilovdev/waifulist)
+Ushbu amaliyotda quyidagi Java Spring Boot application kodlaridan foydalanamiz **Gitlab->** [**gitlab.com/ismoilovdev/waifulist**](https://gitlab.com/ismoilovdev/waifulist), **Github->** [**github.com/devops-journey-uz/waifulist**](https://github.com/devops-journey-uz/waifulist)
 </Callout>
 
 
@@ -28,7 +28,7 @@ Spring Boot loyihasi asosan quyidagi tarkibiy qismlardan iborat:
 
 Masalan bizning loyihamiz tuzulishi:
 
-```
+```bash
 /waifulist
 ├── Dockerfile
 ├── HELP.md
@@ -82,7 +82,7 @@ public class WaifulistApplication {
 
 }
 ```
-@SpringBootApplication` anotatsiyasi Spring Boot applicationning asosiy konfiguratsiyalarini o'z ichiga oladi. `main` metodida esa application ishga tushiriladi.
+`@SpringBootApplication` anotatsiyasi Spring Boot applicationning asosiy konfiguratsiyalarini o'z ichiga oladi. `main` metodida esa application ishga tushiriladi.
 
 `src/main/resources` katalogida esa applicationning konfiguratsiyalarini saqlash uchun fayllar joylashgan. Bu katalogda `application.properties` yoki `application.yml` joylashadi. Bizning loyihamizda `application.properties` fayli mavjud.
 
@@ -98,11 +98,13 @@ spring.jpa.show-sql=true
 
 logging.level.org.springframework.web=DEBUG
 logging.level.org.springdoc=DEBUG
+management.endpoints.web.exposure.include=health,info
+management.endpoint.health.show-details=always
 ```
 
 `application.properties` faylida applicationning konfiguratsiyalarini saqlash uchun kerak bo'lgan sozlamalar joylashgan. Masalan, `spring.datasource.url` sozlamasi PostgreSQL bazasiga ulanish uchun kerak bo'lgan ma'lumotlarni saqlaydi.
 
-`pom.xml` yoki `build.gradle` fayllari dependencylar, pluginlar va boshqa loyihaning konfiguratsiyalarini saqlaydi. Bizning loyihamizda `pom.xml` fayli mavjud, ya'ni Maven loyihasi agar `build.gradle` fayli mavjud bo'lsa Gradle loyihasi deb hisoblanadi.
+`pom.xml` yoki `build.gradle` fayllari dependencylar, pluginlar va boshqa loyihaning konfiguratsiyalarini saqlaydi. Bizning loyihamizda `pom.xml` fayli mavjud, ya'ni **Maven** loyihasi agar `build.gradle` fayli mavjud bo'lsa **Gradle** loyihasi deb hisoblanadi.
 
 
 `src/test/java/zawkin/me/asuna` katalogida loyihaning test fayllari joylashgan. `WaifulistApplicationTests.java` fayli Spring Boot applicationning test kodi hisoblanadi.
@@ -137,16 +139,18 @@ spring.jpa.show-sql=true
 
 logging.level.org.springframework.web=DEBUG
 logging.level.org.springdoc=DEBUG
+management.endpoints.web.exposure.include=health,info
+management.endpoint.health.show-details=always
 ```
-Bu xavsfzilik uchun yaxshi yechim emas chunki secretlar ochiq holda turibdi buni Gitlab CI variable yoki Github secretga qo'shiob ishlatishni ko'rib chiqamiz bu amlaiyotda.
+Bu xavsfzilik uchun yaxshi yechim emas chunki secretlar ochiq holda turibdi buni **Gitlab CI variable** yoki **Github Secrets**ga qo'shib ishlatishni ko'rib chiqamiz bu amaliyotda.
 
-Qiziq savol tu'giladi nega ba'zi loyihlarda `application.properties` fayli bor ba'zilarida esa `application.yml` fayli bor?
+Qiziq savol tu'giladi nega ba'zi loyihalarda `application.properties` fayli bor ba'zilarida esa `application.yml` fayli bor?
 
 `application.properties` va `application.yml` o'rtasidagi far quyidagicha:
 
 | Xusuysatlar | `application.properties` | `application.yml` |
 | --- | --- | --- |
-| Format | Oddiy key=value formatida yoziladi. | YAML formatida, ierarxik struktura ko'rinishida. |
+| Format | Oddiy `key=value` formatida yoziladi. | YAML formatida, ierarxik struktura ko'rinishida. |
 | O'qilish qulayligi | Kichik loyihalar uchun qulay. | Murakkab konfiguratsiyalarda o'qish oson. |
 | Profil boshqaruvi | Har bir profil uchun alohida fayl yaratiladi. | Profil boshqaruvi oson va YAML ichida qilinadi. |
 
@@ -168,11 +172,11 @@ spring:
     url: jdbc:postgresql://prod-db-url
 ```
 
-Multi environment boshqaruvda application.properties va application.yml fayllarini quyidagicha ishlatamiz.
+Multi environment boshqaruvda `application.properties` va `application.yml` fayllarini quyidagicha ishlatamiz.
 
 Masalan bizda `dev`, `stage`, `prod` environmentlar uchun alohida konfiguratsiyalar mavjud bo'lsa, `application-dev.properties`, `application-stage.properties`, `application-prod.properties` fayllarini yaratamiz. Bu fayllar alohida environmentlar uchun kerak bo'lgan konfiguratsiyalarni saqlaydi, agar `application.yml` faylini ishlatishni xohlasak, uni `application-dev.yml`, `application-stage.yml`, `application-prod.yml` yoki bitta `application.yml` faylida yozishimiz mumkin.
 
-CI/CD'da ishga tushirishda esa `docker run -e SPRING_PROFILES_ACTIVE=dev` yoki `docker run -e SPRING_PROFILES_ACTIVE=prod` kabi environmentlar orqali alohida environmentni tanlashimiz mumkin.
+**CI/CD**'da ishga tushirishda esa `docker run -e SPRING_PROFILES_ACTIVE=dev` yoki `docker run -e SPRING_PROFILES_ACTIVE=prod` kabi environmentlar orqali alohida environmentni tanlashimiz mumkin.
 
 ## Dockerfile yozish
 
@@ -180,7 +184,7 @@ CI/CD'da ishga tushirishda esa `docker run -e SPRING_PROFILES_ACTIVE=dev` yoki `
 Agar siz Docker bilan tanish bo'lmasangiz quyidagi qo'llanmalar orqali Docker bilan tanishingiz mumkin: [**Dockerga Kirish**](https://devops-journey.uz/guides/konteyner/dockerga-kirish), [**Mastering Docker**](https://devops-journey.uz/guides/konteyner/docker-asoslari), [**Dockerfile yozish**](https://devops-journey.uz/guides/konteyner/dockerfile-yozish), [**Docker o'rnatish**](https://devops-journey.uz/guides/konteyner/docker-ornatish)
 </Callout>
 
-Spring Boot applicationni Docker konteyneriga joylash uchun `Dockerfile` yozish kerak. `Dockerfile` fayli konteynerning tuzilishini, ishlash prinsiplarini va muhim konfiguratsiyalarini saqlaydi. Docker orqali applicationlarimizni 
+Spring Boot applicationni Docker konteyneriga joylash uchun `Dockerfile` yozish kerak. `Dockerfile` fayli konteynerning tuzilishini, ishlash prinsiplarini va muhim konfiguratsiyalarini saqlaydi. Docker orqali applicationlarimizni tezroq va xavfsiz tarzda deploy qilishimiz mumkin.
 
 ```bash filename="Dockerfile"
 FROM maven:3.9.5-eclipse-temurin-17-alpine AS builder
@@ -204,27 +208,51 @@ ENTRYPOINT ["java", "-jar", "app.jar"]
 
 Dockerfileni ko'rib chiqadigan bo'lsa, u quyidagi qadamlardan iborat: 
 
-Dockerfile 2 qismga bo'linadi, build bosqichi(build stage) va runtime bosqichi(runtime stage). builter stageda Maven asosida  loyihani build qilish va kerakli librarylarni yuklab olish uchun ishlatiladi va bunda biz yengil va kichik alpine imagedan foydalanamiz. runtime stageda esa yengil `eclipse-temurin:17-alpine` imajidan foydalanamiz bu Spring Boot uchun eng optimal JDK imagedir. Birinchi bosqich 1-6 qadamlar Maven asosida loyihani build qilish uchun kerakli jar faylini yaratadi. Ikkinchi bosqich 7-14 qadamlar esa jar faylini ishga tushiradi.
+Dockerfile ikki qismga bo'linadi, **build bosqichi(build stage)** va **runtime bosqichi(runtime stage)**. Build stageda **Maven** asosida  loyihani build qilish va kerakli librarylarni yuklab olish uchun ishlatiladi va bunda biz yengil va kichik alpine imagedan foydalanamiz. runtime stageda esa yengil `eclipse-temurin:17-alpine` imagedan foydalanamiz bu Spring Boot uchun eng optimal JDK imagedir. Birinchi bosqich 1-6 qadamlar Maven asosida loyihani build qilish uchun kerakli jar faylini yaratadi. Ikkinchi bosqich 7-14 qadamlar esa jar faylini ishga tushiradi.
 
 1. `FROM maven:3.9.5-eclipse-temurin-17-alpine AS builder` - Maven va Java 17 asosida Docker imageni yaratamiz bu bizning `builder` imagemiz bo'ladi.
 2. `WORKDIR /app` - `/app` papkasiga o'tamiz yani barcha ishlarimizni bu papkada amalga oshiramiz.
 3. `COPY pom.xml .` - `pom.xml` faylini `/app` papkasiga ko'chiramiz bu faylda Maven dependencylar saqlanadi.
-4. `RUN mvn dependency:go-offline -B` - Maven dependencylarini yuklab olamiz va `go-offline` parametri bilan ishga tushiramiz.
+4. `RUN mvn dependency:go-offline -B` - Maven dependencylarini yuklab olamiz.
 5. `COPY src ./src` - `src` katalogini `/app/src` papkasiga ko'chiramiz bu katalogda Java fayllar joylashgan.
 6. `RUN mvn package -DskipTests -B` - Spring Boot applicationni jar faylini yaratamiz va testlarni ishga tushirmasdan ishga tushiramiz.
-7. `FROM eclipse-temurin:17-alpine` - Java 17 asosida Docker imajini yaratamiz bu bizning asosiy imagemiz bo'ladi.
+7. `FROM eclipse-temurin:17-alpine` - Java 17 asosida Docker imageni yaratamiz bu bizning asosiy imagemiz bo'ladi.
 8. `RUN addgroup -S appgroup && adduser -S appuser -G appgroup` - `appgroup` va `appuser` guruhlarini yaratamiz bu xavfsizlik uchun kerak bo'ladi.
 9. `WORKDIR /app` - `/app` papkasiga o'tamiz.
-10. `COPY --from=builder /app/target/*.jar app.jar` - `builder` imajidan jar faylini `/app` papkasiga ko'chiramiz bu jar fayl Spring Boot applicationni ishga tushirish uchun kerak bo'ladi.
-11. `RUN chown -R appuser:appgroup /app` - `/app` papkasiga `appuser` va `appgroup` guruhlariga ega bo'lgan huquqlarni beramiz
+10. `COPY --from=builder /app/target/*.jar app.jar` - `builder` imagedan jar faylini `/app` papkasiga ko'chiramiz bu jar fayl Spring Boot applicationni ishga tushirish uchun kerak bo'ladi.
+11. `RUN chown -R appuser:appgroup /app` - `/app` papkasiga `appuser` va `appgroup` guruhlariga ega bo'lgan permissionlarni beramiz
 12. `USER appuser` - `appuser` foydalanuvchiga o'tamiz. 
 13. `EXPOSE 8080` - 8080 portni ochamiz.
-14. `HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \ CMD wget --spider --quiet http://localhost:8080/actuator/health || exit 1` - Spring Boot applicationning `actuator/health` endpointiga HTTP so'rov yuborishni tekshiramiz va 3 marta urinishdan keyin xatolik chiqsa konteynerni qayta ishga tushiramiz.
+14. `HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \ CMD wget --spider --quiet http://localhost:8080/actuator/health || exit 1` - Spring Boot applicationning `actuator/health` endpointiga HTTP so'rov yuborishni tekshiramiz va 3 marta urinishdan keyin xatolik chiqsa konteynerni qayta ishga tushiramiz, bu helatchek deyiladi.
 15. `ENTRYPOINT ["java", "-jar", "app.jar"]` - Spring Boot applicationni ishga tushiramiz.
+
+<Callout type="info" emoji="">
+**Eslatma:** Ushbu helatchekni ishlatish uchun Spring Boot applicationda `spring-boot-starter-actuator` dependencyni qo'shishingiz kerak bo'ladi.
+
+```bash
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+    CMD wget --spider --quiet http://localhost:8080/actuator/health || exit 1
+```
+
+`pom.xml` faylida `spring-boot-starter-actuator` dependencyni qo'shamiz.
+
+```xml filename="pom.xml"
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-actuator</artifactId>
+</dependency>
+```
+`.properties` yoki `.yml` fayllariga quyidagi konfiguratsiyalarni ham qo'shish kerak bo'ladi.
+
+```properties
+management.endpoints.web.exposure.include=health,info
+management.endpoint.health.show-details=always
+```
+</Callout>
 
 ## Konfiguratsiya fayllari bilan ishlash
 
-Spring Boot applicationni Docker konteyneriga joylashda `application.properties` yoki `application.yml` fayllarini ishlatish kerak bo'ladi. Bu fayllar applicationning konfiguratsiyalarini saqlash uchun kerak bo'ladi. Bizning loyihamizda `application.properties` fayli mavjud lekin unda secretlar ochiq holda shunih uchun secretlarni Gitlab CI variablega qo'shib multi-environment qilib sozlashimiz kerak bo'ladi. `src/main/resources` katalogida `application-dev.properties`va `application-prod.properties` fayllarini yaratamiz va ularni alohida environmentlar uchun kerakli konfiguratsiyalarni saqlaymiz.
+Spring Boot applicationni Docker konteyneriga joylashda `application.properties` yoki `application.yml` fayllarini ishlatish kerak bo'ladi. Bu fayllar applicationning konfiguratsiyalarini saqlash uchun kerak bo'ladi. Bizning loyihamizda `application.properties` fayli mavjud lekin unda secretlar ochiq holda shuning uchun secretlarni **Gitlab CI variable** yoki **Github Secrets**ga qo'shib multi-environment qilib sozlashimiz kerak bo'ladi. `src/main/resources` katalogida `application-dev.properties`va `application-prod.properties` fayllarini yaratamiz va ularni alohida environmentlar uchun kerakli konfiguratsiyalarni saqlaymiz.
 
 `application-dev.properties` faylida dev environment uchun kerakli konfiguratsiyalar saqlanadi.
 ```properties filename="application-dev.properties"
@@ -238,6 +266,8 @@ spring.jpa.show-sql=true
 
 logging.level.org.springframework.web=DEBUG
 logging.level.org.springdoc=DEBUG
+management.endpoints.web.exposure.include=health,info
+management.endpoint.health.show-details=always
 ```
 `application-prod.properties` faylida esa prod environment uchun kerakli konfiguratsiyalar saqlanadi.
 ```properties filename="application-prod.properties"
@@ -251,23 +281,13 @@ spring.jpa.show-sql=true
 
 logging.level.org.springframework.web=DEBUG
 logging.level.org.springdoc=DEBUG
+management.endpoints.web.exposure.include=health,info
+management.endpoint.health.show-details=always
 ```
-
-Environment variablelarni Gitlab CI variablega qo'shib chiqishimiz kerak bo'ladi. Repositoriyaga o'tib **-> Settings -> CI/CD -> Variables** bo'limiga o'tamiz va kerakli environment variablelarni qo'shib chiqamiz.
-
-`DEV_DATABASE_URL` ga `jdbc:postgresql://134.209.217.179:5432/waifulist` formatda secret keyni yozamiz buyerda IP manzil PostgreSQL server manzili va porti `waifulist` esa database nomi bo'ladi.
-![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/1.png)
-
-`DEV_DATABASE_USERNAME` ga `postgres` secret keyni yozamiz buyerda PostgreSQL serverga ulanish uchun kerak bo'lgan foydalanuvchi nomi.
-![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/2.png)
-`DEV_DATABASE_PASSWORD` ga `lwfjljqwotpreqwt2` secret keyni yozamiz bu PostgreSQL serverga yuqoria belgilangan user bilan ulanish uchun kerak user paroli(yani `postgres` user paroli).
-![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/3.png)
-Gitlab CI variablega secret keylarni qo'shib chiqdik endi Gitlab CI/CD pipeline'larimizda bu secret keylarni ishlatishimiz mumkin.
-![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/4.png)
 
 ## VM Tayyorlash
 
-CI/CD deployment bosqichida biz applicationimizni vm(virtual machine)ga deploy qilamiz bu uchun vm tayyorlashimiz kerak bo'ladi, yani pipeline serverga ssh bilan ulanib ishlaydigan qismi bor shu qismi uchun ssh sozlashimiz va docker o'rnatishimiz kerak bo'ladi.
+**CI/CD** deployment bosqichida biz applicationimizni vm(virtual machine)ga deploy qilamiz bu uchun vm tayyorlashimiz kerak bo'ladi, yani pipeline serverga ssh bilan ulanib ishlaydigan qismi bor shu qismi uchun ssh sozlashimiz va docker o'rnatishimiz kerak bo'ladi chuni applicationimizni dockerda ishga tushiramiz.
 
 Docker o'rnatish uchun quyidagi qo'llanmadan foydalanishingiz mumkin - **[Linux serverlarga Docker o'rnatish](https://devops-journey.uz/guides/konteyner/docker-ornatish)**
 
@@ -279,14 +299,14 @@ ssh-keygen
 Yuqoridagi buyruqni yozib **ENTER**ni bosib key generatsiya qilib oling
 ![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/6.png)
 
-yuqorida buyruq 2ta key generatsiya qiladi public(`id_rsa.pub`) va private(`id_rsa`) keylar, bu keylar `~/.ssh` papkasiga saqlanadi.
+yuqorida buyruq ikkita key generatsiya qiladi public(`id_rsa.pub`) va private(`id_rsa`) keylar, bu keylar `~/.ssh` papkasiga saqlanadi.
 ![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/7.png)
 CD pipeline serverga kira olishi uchun private(`id_rsa`) keyni `authorized_keys` fayliga qo'shib chiqishimiz kerak bo'ladi.
 ```bash
 cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
 ```
 
-Keyin esa private(`id_rsa`) keyni Gitlab CI variablega `SSH_PRIVATE_KEY` nomi bilan qo'shamiz private keyni `cat ~/.ssh/id_rsa` buyruqini ishga tushirib olishimiz mumkin.
+Keyin esa private(`id_rsa`) keyni Gitlab CI variable yoki Github Secretsga `SSH_PRIVATE_KEY` nomi bilan qo'shamiz private keyni `cat ~/.ssh/id_rsa` buyruqini ishga tushirib olishimiz mumkin.
 ```bash
 cat ~/.ssh/id_rsa
 ```
@@ -295,7 +315,7 @@ cat ~/.ssh/id_rsa
 
 ## Gitlab CI/CD pipeline
 
-Okey yuqorida biz loyihani tushundik, Dockerfile yozdik va konfiguratsiyalarimizni sozladik endi Gitlab CI/CD pipeline'larimizni yozamiz. Gitlab CI/CD pipeline'larini yozish uchun `.gitlab-ci.yml` faylini loyihaning asosiy katalogiga yaratamiz.
+Okey yuqorida biz loyihani tushundik, Dockerfile yozdik va konfiguratsiyalarimizni sozladik endi **Gitlab CI/CD** pipeline'larimizni yozamiz. Gitlab CI/CD pipeline'larini yozish uchun `.gitlab-ci.yml` faylini loyihaning asosiy katalogiga yaratamiz.
 
 ![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/5.png)
 
@@ -339,7 +359,7 @@ Agar siz Gitlab CI/CD bilan tanish bo'lmasangiz quyidagi qo'llanmalar orqali Git
 6. `before_script` - Pipeline boshlanishida Gitlab registryga kirish uchun bajariladigan amallar belgilanadi bu holda `docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY` amalini bajaradi yani Gitlab registryga kiradi.
 7. `script` - Docker imageni build qilish va Gitlab registryga push qilish amallari belgilanadi bu holda `docker build -t $REGISTRY/$REPO_NAME/$IMAGE_NAME:$CI_COMMIT_SHA .` va `docker push $REGISTRY/$REPO_NAME/$IMAGE_NAME:$CI_COMMIT_SHA` amallari bajariladi.
 
-Bu CI pipeline docker yordamida loyihani build qiladi va Gitlab registryga imageni push qiladi.
+Buni qisqacha qilib tushuntiradigan bo'lsam CI pipeline belgilangan branchda o'zgarish bo'lsa vatomatik ishga tushadi va `docker login` qilib Gitlab Container Registrga kiradi va  docker yordamida loyihani build qilib uni  Gitlab Container Registryga imageni push qiladi.
 
 `.gilab-ci.yml` faylini yuqoridagidek konfiguratsiya yozib gitlabga push qilamiz va bizda avtomatik CI pipeline ishga tushadi.
 
@@ -355,11 +375,11 @@ Repositoriyadagi **-> Deploy -> Container Registry** bo'limiga o'tib CI pipeline
 Mana bizning `waifulist` docker imagemiz.
 ![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/16.png)
 
-Bizda CI bosqichini muvaffaqiyatli ishga tushirdik endi esa CD pipeline'ni yozamiz.
+Biz CI bosqichini muvaffaqiyatli ishga tushirdik endi esa CD pipeline'ni yozamiz.
 
 ### CD pipeline
 
-CD pipelineda biz CI bosqichida build bo'lgan docker imageni Gitlab registrydan olib, ssh orqali vm'ga kirib docker konteynerini ishga tushiramiz. Bu amaliyotda deploy qilish uchun vm(virtual mashina) ishlatamiz vmga docker intsall qilamiz va CD pipelineda serverga kirib docker konteynerini ishga tushiramiz.
+CD pipelineda biz CI bosqichida build bo'lgan docker imageni Gitlab registrydan olib, ssh orqali vm'ga kirib docker konteynerini ishga tushiramiz. Bu amaliyotda deploy qilish uchun vm(virtual mashina) ishlatamiz, CD pipelineda serverga kirib docker konteynerini ishga tushiramiz.
 
 Buning uchun `.gitlab-ci.yml` faylini quyidagicha o'zgartiramiz.
 
@@ -420,28 +440,41 @@ Ushbu CD pipeline'ni tushunish uchun quyidagi qadamlarni ko'rib chiqamiz:
 6. `script` - SSH orqali serverga kirib docker konteynerini ishga tushirish amallari belgilanadi.
 7. `mkdir -p ~/.ssh` - `~/.ssh` papkasini yaratamiz bu papkada ssh keylar saqlanadi.
 8. `echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa` - SSH private keyni `~/.ssh/id_rsa` fayliga yozamiz bu key serverga kirish uchun kerak bo'ladi.
-9. `chmod 600 ~/.ssh/id_rsa` - `~/.ssh/id_rsa` faylining huquqlarini belgilaymiz bu keyga faqat foydalanuvchi o'qishi mumkin.
+9. `chmod 600 ~/.ssh/id_rsa` - `~/.ssh/id_rsa` faylining permissionlarni belgilaymiz bu keyni faqat foydalanuvchi o'qishi mumkin.
 10. `ssh-keyscan -H $SSH_HOST >> ~/.ssh/known_hosts` - SSH hostning public keyini `~/.ssh/known_hosts` fayliga yozamiz bu hostga birinchi marta ulanishda xatolik chiqmasligi uchun kerak bo'ladi.
-11. `ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST " bu amal SSH orqali serverga kirish amaliyotini bajaradi.
+11. `ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "` bu amal SSH orqali serverga kirish amaliyotini bajaradi.
 12. `echo "$CI_JOB_TOKEN" | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY"` - Gitlab registryga kirish uchun bajariladigan amal buning sababi Gitlab container registryga kirish va CI pipelineda yaratilgan imageni olish uchun kerak bo'ladi.
 13. `docker pull $REGISTRY/$REPO_NAME/$IMAGE_NAME:$CI_COMMIT_SHA` - Gitlab registrydan imageni pull qilib oladi.
 14. `docker stop $CONTAINER_NAME || true` - Bu eski Docker konteynerini to'xtatadi.
 15. `docker rm $CONTAINER_NAME || true` - Bu eski Docker konteynerini o'chiradi.
-16. `docker run -d --name $CONTAINER_NAME -p $PORT -e SPRING_PROFILES_ACTIVE=$SPRING_PROFILES_ACTIVE -e DEV_DATABASE_URL=$DEV_DATABASE_URL -e DEV_DATABASE_USERNAME=$DEV_DATABASE_USERNAME -e DEV_DATABASE_PASSWORD=$DEV_DATABASE_PASSWORD $REGISTRY/$REPO_NAME/$IMAGE_NAME:$CI_COMMIT_SHA` - Bu buyruq esa Gitlab CI pipelineda yaratilgan imageni belgilan variablelar bilan ishga tushiradi, yani belgilangan portda, belgilangan nomda, belgilangan environment variablelar bilan ishga tushiradi.
+16. `docker run -d --name $CONTAINER_NAME -p $PORT -e SPRING_PROFILES_ACTIVE=$SPRING_PROFILES_ACTIVE -e DEV_DATABASE_URL=$DEV_DATABASE_URL -e DEV_DATABASE_USERNAME=$DEV_DATABASE_USERNAME -e DEV_DATABASE_PASSWORD=$DEV_DATABASE_PASSWORD $REGISTRY/$REPO_NAME/$IMAGE_NAME:$CI_COMMIT_SHA` - Bu buyruq esa Gitlab CI pipelineda yaratilgan imageni belgilangan variablelar bilan ishga tushiradi, yani belgilangan portda, belgilangan nomda, belgilangan environment variablelar bilan ishga tushiradi.
 
+Qisqacha qilib CD pipeline tushuntiradigan bo'lsam u `alpine:latest` imagedan foydalanib unga openssh-clientni o'rnatadi bu serverga ssh orqali kirish uchun kerak va `SSH_HOST`, `SSH_USER`, `SSH_KEY` o'zgaruvchilardan foydalanib serverga ssh bilan kiradi va `docker login` qilib Gitlab Container Registryga kiradi va CI pipelineda build qilinib yaratilgan docker imageni pull qilib oladi va eski ishlab turgan containerni to'xtatib o'chirib yangi containerni belgilangan o'zgaruvchilar va secretlar bilan ishga tushiradi.
 
 Bu CD pipelineni ishga tushirish uchun kerakli secretlarni Gitlab CI variablega qo'shib chiqamiz.
 
 Yuqorida biz **[VM tayyorlash](#vm-tayyorlash)** bosqichida serverga docker install qilib ssh-key generatsiya qilgandik endi shu keylarni Gitlab CI variablega qo'shib chiqishimiz kerak bo'ladi.
 **-> Settings -> CI/CD -> Variables** bo'limiga o'tamiz va `SERVER_IP` nomli variablega server ip manzilini(Gitlab bo'glana oladigan IP) yozamiz.
 ![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/9.png)
-`SERVER_USERNAME` nomli variablega serverga kirish uchun user nomini yozamiz, userni `whoami` buyruqini ishga tushirib olishimiz mumkin.
+`SERVER_USERNAME` nomli variablega serverga kirish uchun user nomini yozamiz, userni `whoami` buyrug'ini ishga tushirib olishimiz mumkin.
 ```bash
 whoami
 ```
 ![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/10.png)
 `SSH_PRIVATE_KEY` nomli variablega esa yuqorida yaratib olgan private keyni yozamiz.
 ![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/11.png)
+
+Environment variablelarni Gitlab CI variablega qo'shib chiqishimiz kerak bo'ladi. Repositoriyaga o'tib **-> Settings -> CI/CD -> Variables** bo'limiga o'tamiz va kerakli environment variablelarni qo'shib chiqamiz.
+
+`DEV_DATABASE_URL` ga `jdbc:postgresql://134.209.217.179:5432/waifulist` formatda secret keyni yozamiz buyerda IP manzil PostgreSQL server manzili va porti `waifulist` esa database nomi bo'ladi.
+![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/1.png)
+
+`DEV_DATABASE_USERNAME` ga `postgres` secret keyni yozamiz buyerda PostgreSQL serverga ulanish uchun kerak bo'lgan foydalanuvchi nomi.
+![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/2.png)
+`DEV_DATABASE_PASSWORD` ga `lwfjljqwotpreqwt2` secret keyni yozamiz bu PostgreSQL serverga yuqoria belgilangan user bilan ulanish uchun kerak user paroli(yani `postgres` user paroli).
+![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/3.png)
+Gitlab CI variablega secret keylarni qo'shib chiqdik endi Gitlab CI/CD pipeline'larimizda bu secret keylarni ishlatishimiz mumkin.
+![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/4.png)
 
 Gitlab CI variablelarni to'gri qo'yib chiqganimizdan keyin yangilangan `.gitlab-ci.yml` faylini gitlabga push qilamiz va avtomatik CI/CD pipeline ishga tushadi.
 ![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/12.png)
@@ -465,7 +498,7 @@ Keling endi PostgreSQL databazani tekshirib ko'ramiz.
 
 ## Github Actions CI/CD
 
-Bu amaliyotimizda biz ham Gitlab CI bilan CI/CD pipeline va Github Actions bilan CI/CD pipeline yozamiz. Yuqorida biz Gitlab CI/CD bilan pipeline yozishni ko'rib chiqdik bu qismda biz Github Actions bilan CI/CD pipeline yozamiz.
+Bu amaliyotimizda biz ham Gitlab CI bilan CI/CD pipeline va Github Actions bilan CI/CD pipeline yozamiz. Yuqorida biz Gitlab CI bilan pipeline yozishni ko'rib chiqdik bu qismda biz Github Actions bilan CI/CD pipeline yozamiz.
 
 <Callout type="info" emoji="">
 Agar siz Github Actions bilan tanish bo'lmasangiz quyidagi qo'llanma orqali o'rganib chiqishingiz mumkin: [**Github Actions CI/CD**](https://devops-journey.uz/guides/ci-cd/github-actions-ci-cd).
@@ -629,9 +662,9 @@ jobs:
             ${{ env.REGISTRY }}/${{ env.REPO_NAME }}:${{ github.sha }}
 ```
 
-Ushbu CD pipelineni qisqacha tushintiradigan bo'lsam `cd-cd.yml` ga `CONTAINER_NAME`, `PORT`, `SSH_HOST`, `SSH_USER`, `SSH_KEY`, `SPRING_PROFILES_ACTIVE`, `DEV_DATABASE_URL`, `DEV_DATABASE_USERNAME`, `DEV_DATABASE_PASSWORD` nomli yangi o'zgaruvchilari qo'shildi. deploy uchu `deploy` nomli job yozdik bu job afqat `build_and_push` jobi tugagandan keyin ishlaydi va berilgan `SSH_HOST`, `SSH_USER`, `SSH_KEY` secretlarini Github Secretsdan olib serverga ssh orqali kiradi va birinchi navbatda Github Container Registyrga login qiladi va `build_and_push` jobida build qilingan imageni pull qilib oladi va hozir ishlab turgan eski containerni to'xtatatib belgilangan variablelar(`SPRING_PROFILES_ACTIVE`, `PORT`, `CONTAINER_NAME`) orqali yangi containerni ishga tushiradi. `application-dev.properties` faylida dev environment uchun kerakli secretlarni esa Github Secretsdan olib ishlatadi.
+Ushbu CD pipelineni qisqacha tushintiradigan bo'lsam `cd-cd.yml` ga `CONTAINER_NAME`, `PORT`, `SSH_HOST`, `SSH_USER`, `SSH_KEY`, `SPRING_PROFILES_ACTIVE`, `DEV_DATABASE_URL`, `DEV_DATABASE_USERNAME`, `DEV_DATABASE_PASSWORD` nomli yangi o'zgaruvchilari qo'shildi. deploy uchun `deploy` nomli job yozdik bu job faqat `build_and_push` jobi tugagandan keyin ishlaydi va berilgan `SSH_HOST`, `SSH_USER`, `SSH_KEY` secretlarini Github Secretsdan olib serverga ssh orqali kiradi va birinchi navbatda Github Container Registyrga login qiladi va `build_and_push` jobida build qilingan imageni pull qilib oladi va hozir ishlab turgan eski containerni to'xtatatib belgilangan variablelar(`SPRING_PROFILES_ACTIVE`, `PORT`, `CONTAINER_NAME`, `DEV_DATABASE_URL`, `DEV_DATABASE_USERNAME`, `DEV_DATABASE_PASSWORD`) orqali yangi containerni ishga tushiradi. `application-dev.properties` faylida dev environment uchun kerakli secretlarni esa Github Secretsdan olib ishlatadi.
 
-Ushbu yangilangan to'liq CI/CD pipelieni ishga tushirishdan oldin kerakli secretlarni Github Secretga qo'shib chiqishimiz kerak bo'ladi. 
+Ushbu yangilangan to'liq CI/CD pipelineni ishga tushirishdan oldin kerakli secretlarni Github Secretga qo'shib chiqishimiz kerak bo'ladi. 
 
 Buning uchun **-> Settings -> Secrets and variable -> New repository secret** bo'limiga o'tib kerakli secretlarni qo'shib chiqamiz.
 
@@ -644,7 +677,7 @@ Buning uchun **-> Settings -> Secrets and variable -> New repository secret** bo
 
 Yuqorida biz **[VM tayyorlash](#vm-tayyorlash)** bosqichida serverga docker install qilib ssh-key generatsiya qilgandik endi shu keylarni Github Actions Secretga qo'shib chiqishimiz kerak bo'ladi.
 
-`SERVER_IP` nomli variablega server ip manzilini(Gitlab bo'glana oladigan IP) yozamiz.
+`SERVER_IP` nomli variablega server ip manzilini(Github bo'glana oladigan IP) yozamiz.
 ![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/32.png)
 `SERVER_USERNAME` nomli variablega serverga kirish uchun user nomini yozamiz, userni `whoami` buyruqini ishga tushirib olishimiz mumkin.
 ```bash
@@ -661,7 +694,7 @@ Bizda secretlar umumiy ro'yxati.
 Okeyy biz barcha secret va variablelarni to'g'ri qo'shib chiqdik endi esa to'liq CI/CD pipelineni ishga tushirish uchun o'zgarishlarni `main` branchga push qilamiz. CI/CD avtomatik ishga tushishi kerak.
 
 
-Ko'rib turganingizdek bu safar bizda jobllar ikkita `build_and_push` va `deploy` joblarini ko'ramiz va ular ketma-ketlikda ishlaydi.
+Ko'rib turganingizdek bu safar bizda joblar ikkita `build_and_push` va `deploy` joblarini ko'ramiz va ular ketma-ketlikda ishlaydi.
 ![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/37.png)
 
 Okey bizda to'liq CI/CD muvaffaqiyatli ishladi endi uni tekshirib ko'rishimiz kerak bo'ladi.
@@ -679,7 +712,7 @@ Bizda `waifulist` nomli docker containerimiz mavjud va statusi healthy bo'lganin
 Keling endi PostgreSQL databazani tekshirib ko'ramiz.
 ![java-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/java-deployment/21.png)
 
-Niyohat biz bugun Spring Boot applicationni Docker konteyneriga ishga tushirishni o'rgandik, Gitlab CI/CD pipelinelarini yozdik va loyihamizni Gitlab CI/CD orqali jarayonlarni avtomatlashtirdik, Spring Bootda multi-environment konfiguratsiyalar bilan ishlashni o'rgandik va secretlarimizni Gitlab CI variablega qo'shib ishladik. Bugungi amaliyot boshlang'ich darajada hisoblanasa bu orqali siz ko'p narsalarni o'rganib chiqasiz, qolganlari esa keyingi boqichlarda.
+Niyohat biz bugun Spring Boot applicationni Docker konteynerida ishga tushirishni o'rgandik, Gitlab CI/CD va Github Actions CI/CD pipelinelarini yozdik va loyihamiz jarayonlarni avtomatlashtirdik, Spring Bootda multi-environment konfiguratsiyalar bilan ishlashni o'rgandik va secretlarimizni Gitlab CI variablega/Github Actionsga qo'shib ishladik. Bugungi amaliyot boshlang'ich darajada hisoblanadi bu orqali siz ko'p narsalarni o'rganib chiqasiz, qolganlari esa keyingi boqichlarda.
 
 ## Qo'shimcha
 <Callout type="info" emoji="">
