@@ -123,12 +123,13 @@ sudo dnf update && sudo dnf upgrade -y
 **2->** NGINX o'rnatamiz
 
 ```bash
-sudo dnf install nginx nginx-extras
+sudo dnf install nginx
 ```
 
 **3->** SSL sertifikat olish uchun certbot o'rnatamiz.
 
 ```bash
+sudo dnf install epel-release -y
 sudo dnf install certbot python3-certbot-nginx -y
 ```
 **4->** NGINX o'rnatilganidan keyin uni statusini ko'ramiz.
