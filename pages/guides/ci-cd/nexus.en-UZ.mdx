@@ -4,6 +4,8 @@ description: "Java Spring Boot Deployment: Gitlab CI va Github Actions"
 ---
 
 import { Callout } from "nextra-theme-docs";
+import { Tabs, TabList, Tab, TabPanel } from 'react-tabs';
+import 'react-tabs/style/react-tabs.css';
 
 # Sonatype Nexus Repository Manager
 
@@ -24,15 +26,81 @@ Bu amaliyotda biz **Sonatype Nexus Repository Manager**ni docker yordamida o'rna
 ## Nexus o'rnatish
 
 Bu amaliyotda biz **Nexus**ni docker yordamida ishga tushiramiz va o'rnatishning manual va ansible yordamida qilishni ko'rib chiqamiz.
+<Callout type="info" emoji="">
+**Minimum Server talabi**
+
+| OS            | RAM            | CPU           | Xotira       | Static IP  |
+| ------------- | -------------- | ------------- |------------- | ---------- |
+| Ubuntu 20.04 yoki Rocky Linux 8 | 8GB          | 4  | 80GB         | Ha kerak   |
+</Callout>
 Quyidagi qo'llanmadan foydalanib Docker o'rnatib olishingiz mumkin - [**Docker o'rnatish**](https://devops-journey.uz/guides/konteyner/docker-ornatish)
 
-### Manual o'rnatish
 
+<Tabs>
+<TabList>
+<Tab>Manual</Tab>
+<Tab>Ansible</Tab>
+</TabList>
+<TabPanel>
+### Manual o'rnatish
+**1->** Nexusni docker orqali o'rnatayotganimiz sababli nexus malumotlarini docker volume yoki hostpath qilib saqlashimiz kerak bo'ladi aks holda nexus container restart bo'lganda malumotlar o'chib ketadi shuning uchun nexusga data papka ochib olamiz.
 ```bash
 sudo mkdir -p /mnt/nexus/nexus-data
 sudo chown -R 200 /mnt/nexus/nexus-data
 ```
+**2->** Nexusni docker yordamida ishga tushiramiz va `nexus-data`ni serverimizdagi `/mnt/nexus/nexus-data`ga ulab qo'yamiz va `--restart=always` flagi orqali tasodifan server yoki docker  restart bo'lganda avtomatik ishga tushirilishini belgilaymiz.
 
 ```bash
 docker run -d -p 8081:8081 --name nexus --restart=always -v /mnt/nexus/nexus-data:/nexus-data sonatype/nexus3
 ```
+![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/1.png)
+
+**3->** Nexusni ishga tuhsirganimizdan keyin u default admin user va parol bilan birga keladi, admin parolni olish uchun quyidagicha amalni bajaramiz.
+
+```bash
+docker exec -it nexus cat /nexus-data/admin.password
+```
+![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/2.png)
+</TabPanel>
+<TabPanel>
+### Ansible bilan o'rnatish
+
+**1->** **[github.com/ismoilovdevml/infra-as-code]**(https://github.com/ismoilovdevml/infra-as-code) repositoriyani git clone qilib olamiz bu repositoriyada ko'plab ansible playbooklar bor shu jumladan nexus uchun ham.
+
+```bash
+git clone https://github.com/ismoilovdevml/infra-as-code.git
+```
+Nexus playbokga o'tamiz.
+
+```bash
+cd infra-as-code/Ansible/nexus
+```
+
+```bash
+├── ansible.cfg
+├── cleanup_nexus_docker.yml
+├── install_nexus.yml
+├── invnetory.ini
+└── vars.yml
+```
+
+`vars.yml` faylida variablelar berilgan bo'ladi.
+
+```yaml filename="vars.yml"
+---
+nexus_image: "sonatype/nexus3:latest"
+nexus_data_dir: "/mnt/nexus/nexus-data"
+nexus_container_name: "nexus"
+nexus_port: 8081
+nexus_admin_password_file: "/nexus-data/admin.password"
+nexus_parent_dir: "/mnt/nexus"
+```
+
+`inventory.ini` faylida serverlarimizni yozamiz.
+
+```ini filename="inventory.ini"
+[nexus_servers]
+nexus-server ansible_host=159.89.94.148 ansible_user=root
+```
+</TabPanel>
+</Tabs>
