@@ -314,7 +314,7 @@ jobs:
             docker pull "${{ env.REGISTRY }}/${{ env.REPO_NAME }}:${{ github.sha }}"
             docker stop "${{ env.CONTAINER_NAME }}" || true
             docker rm "${{ env.CONTAINER_NAME }}" || true
-            docker run -d --name "${{ env.CONTAINER_NAME }}" -p "${{ env.PORT }}" "${{ env.REGISTRY }}/${{ env.REPO_NAME }}:${{ github.sha }}"
+            docker run -d --name "${{ env.CONTAINER_NAME }}" --restart=always -p "${{ env.PORT }}" "${{ env.REGISTRY }}/${{ env.REPO_NAME }}:${{ github.sha }}"
 ```
 
 
@@ -406,7 +406,7 @@ script: |
     docker pull "${{ env.REGISTRY }}/${{ env.REPO_NAME }}:${{ github.sha }}"
     docker stop "${{ env.CONTAINER_NAME }}" || true
     docker rm "${{ env.CONTAINER_NAME }}" || true
-    docker run -d --name "${{ env.CONTAINER_NAME }}" -p "${{ env.PORT }}" "${{ env.REGISTRY }}/${{ env.REPO_NAME }}:${{ github.sha }}"
+    docker run -d --name "${{ env.CONTAINER_NAME }}" --restart=always -p "${{ env.PORT }}" "${{ env.REGISTRY }}/${{ env.REPO_NAME }}:${{ github.sha }}"
 ```
 
 Ushbu bosqich endi serverda bajariladi yuqorida [appleboy/ssh-action@master](https://github.com/appleboy/ssh-action) orqali Github Actionimiz serverimizga kirgandi endi serverimizda quyidagi buyruqlarni ishga tushiradi.
@@ -539,8 +539,8 @@ jobs:
             docker stop "${{ env.API_CONTAINER_NAME }}" || true
             docker rm "${{ env.UI_CONTAINER_NAME }}" || true
             docker rm "${{ env.API_CONTAINER_NAME }}" || true
-            docker run -d --name "${{ env.API_CONTAINER_NAME }}" -p "${{ env.API_PORT }}" "${{ env.REGISTRY }}/${{ env.REPO_NAME}}/${{ env.API_IMAGE_NAME }}:${{ github.sha }}"
-            docker run -d --name "${{ env.UI_CONTAINER_NAME }}" -p "${{ env.UI_PORT }}" "${{ env.REGISTRY }}/${{ env.REPO_NAME}}/${{ env.UI_IMAGE_NAME }}:${{ github.sha }}" 
+            docker run -d --name "${{ env.API_CONTAINER_NAME }}" --restart=always -p "${{ env.API_PORT }}" "${{ env.REGISTRY }}/${{ env.REPO_NAME}}/${{ env.API_IMAGE_NAME }}:${{ github.sha }}"
+            docker run -d --name "${{ env.UI_CONTAINER_NAME }}" --restart=always -p "${{ env.UI_PORT }}" "${{ env.REGISTRY }}/${{ env.REPO_NAME}}/${{ env.UI_IMAGE_NAME }}:${{ github.sha }}" 
 ```
 
 Ushbu multi container ham yuqoridagi bitta containerlidek bir xil ishlaydi faqat bir nechta container bilan birga. Ushbu Github Actions ikkita docker image build qilib push qiladi va serverda eski ikkita containerni to'xtatib o'chirib yangi Container Registrydagi ikkita containerni berilgan portda berilgan nom bilan ishga tushirib qo'yadi.
@@ -642,7 +642,7 @@ jobs:
             docker pull ${{ env.DOCKERHUB_USERNAME }}/${{ env.CONTAINER_NAME }}:${{ github.sha }}
             docker stop ${{ env.CONTAINER_NAME }} || true
             docker rm ${{ env.CONTAINER_NAME }} || true
-            docker run -d --name ${{ env.CONTAINER_NAME }} -p ${{ env.PORT }} ${{ env.DOCKERHUB_USERNAME }}/${{ env.CONTAINER_NAME }}:${{ github.sha }}
+            docker run -d --name ${{ env.CONTAINER_NAME }} --restart=always -p ${{ env.PORT }} ${{ env.DOCKERHUB_USERNAME }}/${{ env.CONTAINER_NAME }}:${{ github.sha }}
 ```
 
 #### Multi-container
@@ -718,8 +718,8 @@ jobs:
             docker stop ${{ env.UI_CONTAINER_NAME }} || true
             docker rm ${{ env.API_CONTAINER_NAME }} || true
             docker rm ${{ env.UI_CONTAINER_NAME }} || true
-            docker run -d --name ${{ env.API_CONTAINER_NAME }} -p ${{ env.API_PORT }} ${{ env.DOCKERHUB_USERNAME }}/${{ env.API_CONTAINER_NAME }}:${{ github.sha }}
-            docker run -d --name ${{ env.UI_CONTAINER_NAME }} -p ${{ env.UI_PORT }} ${{ env.DOCKERHUB_USERNAME }}/${{ env.UI_CONTAINER_NAME }}:${{ github.sha }}
+            docker run -d --name ${{ env.API_CONTAINER_NAME }} --restart=always -p ${{ env.API_PORT }} ${{ env.DOCKERHUB_USERNAME }}/${{ env.API_CONTAINER_NAME }}:${{ github.sha }}
+            docker run -d --name ${{ env.UI_CONTAINER_NAME }} --restart=always -p ${{ env.UI_PORT }} ${{ env.DOCKERHUB_USERNAME }}/${{ env.UI_CONTAINER_NAME }}:${{ github.sha }}
 ```
 
 ### GCR Google Container Registry
@@ -798,7 +798,7 @@ jobs:
             docker pull gcr.io/${{ env.GCP_PROJECT_ID }}/${{ env.CONTAINER_NAME }}:latest
             docker stop ${{ env.CONTAINER_NAME }} || true
             docker rm ${{ env.CONTAINER_NAME }} || true
-            docker run -d --name ${{ env.CONTAINER_NAME }} -p ${{ env.PORT }} gcr.io/${{ env.GCP_PROJECT_ID }}/${{ env.CONTAINER_NAME }}:latest
+            docker run -d --name ${{ env.CONTAINER_NAME }} --restart=always -p ${{ env.PORT }} gcr.io/${{ env.GCP_PROJECT_ID }}/${{ env.CONTAINER_NAME }}:latest
             rm keyfile.json
 ```
 
@@ -881,8 +881,8 @@ jobs:
             docker stop ${{ env.UI_CONTAINER_NAME }} || true
             docker rm ${{ env.API_CONTAINER_NAME }} || true
             docker rm ${{ env.UI_CONTAINER_NAME }} || true
-            docker run -d --name ${{ env.API_CONTAINER_NAME }} -p ${{ env.API_PORT }} gcr.io/${{ env.GCP_PROJECT_ID }}/${{ env.API_CONTAINER_NAME }}:${{ github.sha }}
-            docker run -d --name ${{ env.UI_CONTAINER_NAME }} -p ${{ env.UI_PORT }} gcr.io/${{ env.GCP_PROJECT_ID }}/${{ env.UI_CONTAINER_NAME }}:${{ github.sha }}
+            docker run -d --name ${{ env.API_CONTAINER_NAME }} --restart=always -p ${{ env.API_PORT }} gcr.io/${{ env.GCP_PROJECT_ID }}/${{ env.API_CONTAINER_NAME }}:${{ github.sha }}
+            docker run -d --name ${{ env.UI_CONTAINER_NAME }} --restart=always -p ${{ env.UI_PORT }} gcr.io/${{ env.GCP_PROJECT_ID }}/${{ env.UI_CONTAINER_NAME }}:${{ github.sha }}
             rm keyfile.json
 ```
 

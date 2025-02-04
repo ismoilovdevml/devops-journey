@@ -59,6 +59,12 @@
     "description": "Gitlab CI va Github Actions bilan",
     "href": "/guides/ci-cd/java-spring-boot-deployment"
   },
+  "nexus": {
+    "title": "Nexus o'rnatish va integratsiya",
+    "icon": "▶️",
+    "description": "Sonatype Nexus Repository Manager",
+    "href": "/guides/ci-cd/nexus"
+  },
   "m1-runner-setup": {
     "title": "Github Actionsga M1 macOS runner qo'shish",
     "icon": "▶️",

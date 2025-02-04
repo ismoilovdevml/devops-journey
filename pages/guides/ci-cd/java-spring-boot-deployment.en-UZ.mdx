@@ -427,7 +427,7 @@ deploy:
     - ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "docker pull $REGISTRY/$REPO_NAME/$IMAGE_NAME:$CI_COMMIT_SHA"
     - ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "docker stop $CONTAINER_NAME || true"
     - ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "docker rm $CONTAINER_NAME || true"
-    - ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no "$SSH_USER@$SSH_HOST" "docker run -d --name $CONTAINER_NAME -p $PORT -e SPRING_PROFILES_ACTIVE=$SPRING_PROFILES_ACTIVE -e DEV_DATABASE_URL=$DEV_DATABASE_URL -e DEV_DATABASE_USERNAME=$DEV_DATABASE_USERNAME -e DEV_DATABASE_PASSWORD=$DEV_DATABASE_PASSWORD $REGISTRY/$REPO_NAME/$IMAGE_NAME:$CI_COMMIT_SHA"
+    - ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no "$SSH_USER@$SSH_HOST" "docker run -d --name $CONTAINER_NAME --restart=always -p $PORT -e SPRING_PROFILES_ACTIVE=$SPRING_PROFILES_ACTIVE -e DEV_DATABASE_URL=$DEV_DATABASE_URL -e DEV_DATABASE_USERNAME=$DEV_DATABASE_USERNAME -e DEV_DATABASE_PASSWORD=$DEV_DATABASE_PASSWORD $REGISTRY/$REPO_NAME/$IMAGE_NAME:$CI_COMMIT_SHA"
 ```
 
 Ushbu CD pipeline'ni tushunish uchun quyidagi qadamlarni ko'rib chiqamiz:
@@ -654,7 +654,7 @@ jobs:
             docker pull "${{ env.REGISTRY }}/${{ env.REPO_NAME }}:${{ github.sha }}"
             docker stop "${{ env.CONTAINER_NAME }}" || true
             docker rm "${{ env.CONTAINER_NAME }}" || true
-            docker run -d --name ${{ env.CONTAINER_NAME }} -p ${{ env.PORT }} \
+            docker run -d --name ${{ env.CONTAINER_NAME }} --restart=always -p ${{ env.PORT }} \
             -e SPRING_PROFILES_ACTIVE=${{ env.SPRING_PROFILES_ACTIVE }} \
             -e DEV_DATABASE_URL=${{ secrets.DEV_DATABASE_URL }} \
             -e DEV_DATABASE_USERNAME=${{ secrets.DEV_DATABASE_USERNAME }} \

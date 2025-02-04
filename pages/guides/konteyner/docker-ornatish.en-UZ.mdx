@@ -281,7 +281,7 @@ Docker user group mavjud, lekin userlarni o'z ichiga olmaydi, shuning uchun siz 
 **2->** Docker Engine muvaffaqiyatli o'rnatilganini tekshirish uchun `devops-journey-uz` docker imageni ishga tushirib tekshirib ko'ramiz.
 
 ```bash
-sudo docker run -d -p 3000:3000 --name devops-journey --restart always devopsjourneyuz/devops-journey-uz:latest
+sudo docker run -d -p 3000:3000 --name devops-journey --restart=always devopsjourneyuz/devops-journey-uz:latest
 ```
 Bu buyruq `devopsjourneyuz:latest` imageni yuklaydi va uni containerda ishga tushiradi. Container ishga tushganda, u tasdiqlash xabarini chop etadi va chiqadi. Agar serveringizda `3000` portda DevOps Journey platformasi ishlab turgan bo'lsa, tabriklaymiz siz Docker Engine-ni muvaffaqiyatli o'rnatdingiz va ishga tushirdingiz.
 

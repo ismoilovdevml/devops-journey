@@ -1,0 +1,38 @@
+---
+image: https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/banner.png
+description: "Java Spring Boot Deployment: Gitlab CI va Github Actions"
+---
+
+import { Callout } from "nextra-theme-docs";
+
+# Sonatype Nexus Repository Manager
+
+![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/banner.png)
+
+Bugungi software development jarayonlarida CI/CD (Continuous Integration/Continuous Deployment) jarayonlarini samarali yuritish muhim ahamiyat kasb etadi. Bunday jarayonlarda paketlar va artifaktlarni boshqarish uchun maxsus repository managerlar kerak bo'ladi. **Sonatype Nexus Repository Manager** - eng ommabop va ishonchli artifakt menejerlardan biri bo'lib, Java (Maven, Gradle), .NET (NuGet), Python (PyPi), Docker va boshqa paketlarni saqlash va boshqarish uchun eng mashhur va ishonchli yechimlardan biridir.
+
+Nexus opensource **(Nexus OSS)** va pullik **(Nexus Pro)** versiyalarda mavjud bo'lib, ushbu qo'llanma asosan **Nexus OSS** bilan ishlashga yo'naltirilgan.
+
+**Sonatype Nexus Repository Manager** dasturi dastlab 2007-yilda **Sonatype Inc**. tomonidan ishlab chiqilgan. U dasturiy ta'minot artifaktlarini saqlash, boshqarish va tarqatish uchun mo'ljallangan markazlashtirilgan repository menejeri sifatida ishlab chiqilgan.
+
+Nexus Repository Manager dasturiy ta'minot ishlab chiqishda artifaktlar va paketlarni saqlash, boshqarish hamda ularga kirishni ta'minlash uchun ishlatiladi. Java (Maven, Gradle), .NET (NuGet), Node.js (NPM), Docker, Python (PyPi) kabi texnologiyalar uchun artifaktlarni markazlashtirilgan holda saqlaydi va boshqaradi.Tashqi repository'lardan yuklash jarayonlarini tezlashtirish va tarmoq yuklamasini kamaytirish imkonini beradi va Korxona ichki(local) repository'sini yaratishi, Kompaniyaning o'ziga xos kutubxonalarini(library) boshqarish, xavfsizlikni ta'minlash va dasturiy ta'minot jarayonlarini optimallashtirish uchun ishlatiladi.
+
+
+Bu amaliyotda biz **Sonatype Nexus Repository Manager**ni docker yordamida o'rnatish va sozlashni va loyihalarimizga va CI/CD ga integratsiya qilishni ko'rib chiqamiz.
+
+
+## Nexus o'rnatish
+
+Bu amaliyotda biz **Nexus**ni docker yordamida ishga tushiramiz va o'rnatishning manual va ansible yordamida qilishni ko'rib chiqamiz.
+Quyidagi qo'llanmadan foydalanib Docker o'rnatib olishingiz mumkin - [**Docker o'rnatish**](https://devops-journey.uz/guides/konteyner/docker-ornatish)
+
+### Manual o'rnatish
+
+```bash
+sudo mkdir -p /mnt/nexus/nexus-data
+sudo chown -R 200 /mnt/nexus/nexus-data
+```
+
+```bash
+docker run -d -p 8081:8081 --name nexus --restart=always -v /mnt/nexus/nexus-data:/nexus-data sonatype/nexus3
+```

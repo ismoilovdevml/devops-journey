@@ -829,7 +829,7 @@ stage('Deploy Server') {
                         docker pull ${REGISTRY_URL}/${CONTAINER_NAME}:latest && \
                         docker stop ${CONTAINER_NAME} || true && \
                         docker rm ${CONTAINER_NAME} || true && \
-                        docker run -d -p 3000:3000 --name ${CONTAINER_NAME} --restart always ${REGISTRY_URL}/${CONTAINER_NAME}:latest '
+                        docker run -d -p 3000:3000 --name ${CONTAINER_NAME} --restart=always --restart always ${REGISTRY_URL}/${CONTAINER_NAME}:latest '
                     """
                 }
             }
@@ -895,7 +895,7 @@ stage('Deploy to Server') {
                     docker pull ${REGISTRY_URL}/${GCP_PROJECT_ID}/${CONTAINER_NAME}:latest && \
                     docker stop ${CONTAINER_NAME} || true && \
                     docker rm ${CONTAINER_NAME} || true && \
-                    docker run -d -p 3000:3000 --name ${CONTAINER_NAME} --restart always ${REGISTRY_URL}/${GCP_PROJECT_ID}/${CONTAINER_NAME}:latest '
+                    docker run -d -p 3000:3000 --name ${CONTAINER_NAME} --restart=always ${REGISTRY_URL}/${GCP_PROJECT_ID}/${CONTAINER_NAME}:latest '
                 """
             }
         }
@@ -964,7 +964,7 @@ pipeline {
                                 docker pull ${REGISTRY_URL}/${CONTAINER_NAME}:latest && \
                                 docker stop ${CONTAINER_NAME} || true && \
                                 docker rm ${CONTAINER_NAME} || true && \
-                                docker run -d -p 3000:3000 --name ${CONTAINER_NAME} --restart always ${REGISTRY_URL}/${CONTAINER_NAME}:latest '
+                                docker run -d -p 3000:3000 --name ${CONTAINER_NAME} --restart=always ${REGISTRY_URL}/${CONTAINER_NAME}:latest '
                             """
                         }
                     }
@@ -1053,7 +1053,7 @@ pipeline {
                             docker pull ${REGISTRY_URL}/${GCP_PROJECT_ID}/${CONTAINER_NAME}:latest && \
                             docker stop ${CONTAINER_NAME} || true && \
                             docker rm ${CONTAINER_NAME} || true && \
-                            docker run -d -p 3000:3000 --name ${CONTAINER_NAME} --restart always ${REGISTRY_URL}/${GCP_PROJECT_ID}/${CONTAINER_NAME}:latest '
+                            docker run -d -p 3000:3000 --name ${CONTAINER_NAME} --restart=always ${REGISTRY_URL}/${GCP_PROJECT_ID}/${CONTAINER_NAME}:latest '
                         """
                     }
                 }
