@@ -11,6 +11,8 @@ import 'react-tabs/style/react-tabs.css';
 
 ![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/banner.png)
 
+## Kirish
+
 Bugungi software development jarayonlarida CI/CD (Continuous Integration/Continuous Deployment) jarayonlarini samarali yuritish muhim ahamiyat kasb etadi. Bunday jarayonlarda paketlar va artifaktlarni boshqarish uchun maxsus repository managerlar kerak bo'ladi. **Sonatype Nexus Repository Manager** - eng ommabop va ishonchli artifakt menejerlardan biri bo'lib, Java (Maven, Gradle), .NET (NuGet), Python (PyPi), Docker va boshqa paketlarni saqlash va boshqarish uchun eng mashhur va ishonchli yechimlardan biridir.
 
 Nexus opensource **(Nexus OSS)** va pullik **(Nexus Pro)** versiyalarda mavjud bo'lib, ushbu qo'llanma asosan **Nexus OSS** bilan ishlashga yo'naltirilgan.
@@ -70,7 +72,7 @@ docker exec -it nexus cat /nexus-data/admin.password
 ```bash
 git clone https://github.com/ismoilovdevml/infra-as-code.git
 ```
-Nexus playbokga o'tamiz.
+**2->** Nexus playbokga o'tamiz.
 
 ```bash
 cd infra-as-code/Ansible/nexus
@@ -84,7 +86,7 @@ cd infra-as-code/Ansible/nexus
 └── vars.yml
 ```
 
-`vars.yml` faylida variablelar berilgan bo'ladi.
+`vars.yml` faylida variablelar berilgan bo'ladi, bunda nexus image, nexus data papkasi, nexus container nomi, nexus porti, nexus admin parol fayli va nexus parent papkasi berilgan.
 
 ```yaml filename="vars.yml"
 ---
@@ -96,11 +98,57 @@ nexus_admin_password_file: "/nexus-data/admin.password"
 nexus_parent_dir: "/mnt/nexus"
 ```
 
-`inventory.ini` faylida serverlarimizni yozamiz.
+**4->** `inventory.ini` faylida serverlarimizni yozamiz, bu holda serverlarga ssh key bilan ulanadi.
 
 ```ini filename="inventory.ini"
 [nexus_servers]
 nexus-server ansible_host=159.89.94.148 ansible_user=root
 ```
+Agar siz parol bilan ulanmoqchi bo'lsangiz quyidagicha yozishingiz mumkin.
+
+```ini filename="inventory.ini"
+[nexus_servers]
+nexus-server ansible_host=159.89.94.148 ansible_user=root ansible_password=your_password
+```
+
+**5->** Asosiy ikkita playbook bor, bular `install_nexus.yml` va `cleanup_nexus_docker.yml` bu playbooklar orqali nexusni o'rnatish va o'chirishni bajaramiz. Playbookni ishga tushirishdan oldin kerakli ansible collectionlarni o'rnatishimiz kerak yani `community.docker` va `community.general` collectionlarini o'rnatishimiz kerak.
+
+```bash
+ansible-galaxy collection install community.general -f
+ansible-galaxy collection install community.docker -f
+```
+
+**6->** Nexusni o'rnatish uchun quyidagicha playbookni ishga tushiramiz.
+
+```bash
+ansible-playbook -i inventory.ini install_nexus.yml
+```
+Playbook muvaffaqiyatli ishga tushirilgandan keyin default `admin` user parolini ko'rsatadi.
+![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/11.png)
+
 </TabPanel>
 </Tabs>
+
+Nexusni o'rnatib bo'lganimizdan keyin brauzerda `server_ip:8081` manzilini ochganimizda Nexus ochilishi kerak.
+
+![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/3.png)
+
+Bu qismda **->Sign in** bosib Nexusning login sahifasiga o'tamiz.
+![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/4.png)
+Default `admin` user va generatsiya qilingan default parol bilan kiramiz.
+![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/5.png)
+Bu qismda esa default parol o'rniga o'zimiz yangi parol qo'yishni talab qiladi yangi parolni yozib kiritamiz.
+![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/6.png)
+Bu qismda o'zimizga kerak tanlovni tanlaymiz.
+![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/7.png)
+Sizda `admin` user bilan kirganingizdan keyin sizda quyidagicha dastlabki sahifa ochiladi.
+![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/8.png)
+
+## Nexus bilan tanishuv
+
+Nexus Repository Manager **APT, Cargo, Bower CocoaPods, Composer, Conan, Conda, Docker, Git LFS, Go, Helm, Hugging Face, Maven, npm, NuGet, p2, PyPI, R, Raw, RubyGems, Yum(RPM)** kabi texnologiyalar uchun repositorylar yaratish va boshqarishni qo'llab-quvvatlaydi.
+![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/37.png)
+
+**Sonatype Inc**ning **Sonatype Nexus Repository**dan tashqari **Sonatype Repository Firewall**, **Sonatype Lifecycle** va **Sonatype SBOM** kabi service'lari  ham mavjud.
+
+![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/38.png)
