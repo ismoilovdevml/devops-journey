@@ -152,3 +152,55 @@ Nexus Repository Manager **APT, Cargo, Bower CocoaPods, Composer, Conan, Conda, 
 **Sonatype Inc**ning **Sonatype Nexus Repository**dan tashqari **Sonatype Repository Firewall**, **Sonatype Lifecycle** va **Sonatype SBOM** kabi service'lari  ham mavjud.
 
 ![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/38.png)
+Nexusga kirganimizda asosiy sahifa ochiladi.
+![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/8.png)
+**-> Server Administration and Configuration** bo'limida server va konfiguratsiyalarini o'zgartirish imkoniyati mavjud.
+![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/15.png)
+**-> Blob Stores** bo'limida Nexusning fayllarni saqlash uchun ishlatiladigan papkalarni ko'rishimiz mumkin, bizning holda `default` papkasi(blobstore) mavjud.
+![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/16.png)
+**-> Repository** bo'limida repositorylarimizni ko'rishimiz mumkin, nexusda default **maven-public, maven-central, maven-releases, maven-snapshots, nuget-group, nuget-hosted, nuget.org-proxy** repositorylar mavjud.
+![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/17.png)
+
+Agar siz kompaniyangizda **Proxy** bilan internetga chiqish talab qilinsa **-> Settings -> System -> HTTP** bo'limiga o'tib proxy sozlashimiz mumkin.
+![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/18.png)
+**HTTP Proxy** uchun `Enable HTTP Proxy`ni belgilaymiz va `HTTP Proxy Host` ga proxy serverimiz addresi va `HTTP Proxy Port` ga portni kiritamiz.
+![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/19.png)
+**HTTPS Proxy** uchun `Enable HTTPS Proxy`ni belgilaymiz va `HTTPS Proxy Host`ga proxy serverimiz addresi va `HTTPS Proxy Port` ga portni kiritamiz. Agar sizning proxyyingiz **HTTPS Authentication**ni talab qilinsa `Enable HTTPS Proxy Authentication`ni belgilaymiz va `HTTPS Proxy Username` va `HTTPS Proxy Password`ni kiritib ishlatishimiz mumkin.
+![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/20.png)
+Nexus servergfa proxy sozlamalarini sozlagandan keyin proxysiz ulanaidgan local sercvicelarimizga **NO Proxy Hosts** qismida yozishimiz mumkin.
+![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/21.png)
+
+## Repositorylar bilan ishlash
+
+**Sonatype Nexus Repository Manager** repositoriyalarni tashkil qilish va boshqarish uchun turli xil turlarni(repo type) qo'llab-quvvatlaydi, ulardan eng asosiylari **Proxy, Hosted va Group** repository'laridir.
+
+**Proxy** typedagi repository - tashqi (remote) repository'larni mahalliy (local) server orqali kechlashtirish (cache) va ulardan foydalanishni optimallashtirish uchun ishlatiladi. U **Maven Central, NuGet Gallery, Docker Hub, NPM Registry, PyPi** va boshqa repository'lardan paketlarni olish uchun qo'llaniladi. Bu turdagi repositoriyaning asosiy maqsadi internetga chiqishni kamaytirish va local serverda paketlarni saqlashdir, loyihamiz nexusga ulanganidna keyin u paketlarni yuklab olish uchun birinci bo'lib nexusga so'rov yuboradi agar loyiha so'ragan package nexus local repositoriyada bo'lmasa **Proxy** typedagi repositoriya berilgan **remote repository**dan oladi va nexus local repositoriyada cache qilib saqlaydi.
+
+**Hosted** typedagi repository - lokal serverda paketlarni saqlash uchun ishlatiladi. U **Maven, NuGet, Docker, PyPi** va boshqa paketlarni saqlash uchun ishlatiladi. Bu turdagi repositorylar loyihalarga xizmat qilish uchun ishlatiladi, loyiha paketlarini yuklash uchun ishlatiladi.  Bu turdagi repositoriyaning asosiy maqsadi Kompaniya uchun maxsus yozilgan packagelar uchun local repository bo'lib xizmat qiladi.
+
+**Group** repository - bu bir nechta repository'larni bitta umumiy repositoriya sifatida boshqarish imkonini beruvchi repository turi. Group repository bir vaqtning o'zida **Proxy, Hosted** va boshqa repositoriyalarni bitta URL orqali boshqarishga yordam beradi. Bu turdagi repositoriya ishlatishga bitta misol: maslan sizda **maven-central, maven-releases, maven-snapshots** repositorylar mavjud bo'lsa siz ularni bitta **maven-public** repositoryda birlashtirib qo'yishingiz mumkin va loyihalarga bitta URL orqali boshqarish imkonini beradi, yani siz loyihangizni Nexusga ulaganingizda bitta **maven-public** repositoriyani belgila ishlatishingiz mumkin uching ichida esa **maven-central, maven-releases, maven-snapshots** repositorylar mavjud bo'ladi.
+
+
+Nexusda default holda **Maven va Nuget** uchun **Proxy, Hosted** va **Group** repositorylar mavjud bo'ladi, **Python, Go, Docker, Cargo** va boshqalar uchun o'zingiz repositorylar yaratishingiz kerak bo'ladi.
+
+**Proxy** repositoriyalar vazifasi 
+
+**-> Server Administration and Configuration** bo'limidan **-> Repositories** bo'limiga o'tib repositorieslarni ko'rishimiz mumkin.
+![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/15.png)
+Nexus default repositoriyalar.
+![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/17.png)
+Keling masalan **maven-central** repositoryni ko'rib chiqamiz. Bu repository turi **Proxy** bo'lib internetdan **https://repo1.maven.org/maven2/** manzilidan ma'lumotlarni olish uchun ishlatiladi.
+![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/22.png)
+Quyidagi rasmda maven packagelarni qaysi global repositorydan olishini ko'rishimiz mumkin **https://repo1.maven.org/maven2/**.
+![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/23.png)
+
+![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/24.png)
+
+**maven-public** repository **group** repository bo'lib **maven-central, maven-releases, maven-snapshots** repositorylarini birlashtirgan repository bo'lib, bu repositorydan maven packagelarni olishimiz mumkin.
+![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/25.png)
+Bu rasmda **maven-public** repositoriyamiz o'z ichiga olgan **maven-central, maven-releases, maven-snapshots** repositorylarini ko'rishimiz mumkin.
+![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/26.png)
+**nuget-group** repository ham **group** repository bo'lib **nuget-hosted, nuget.org-proxy** repositorylarini birlashtirgan repository bo'lib, bu repositorydan nuget packagelarni yani .NET packagelarni olishimiz mumkin.
+![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/27.png)
+**nuget.org-proxy** repository **proxy** repository bo'lib **https://api.nuget.org/v3/index.json** addresidan nuget packagelarni olish uchun ishlatiladi.
+![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/28.png)
