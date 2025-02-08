@@ -60,9 +60,9 @@
     "href": "/guides/ci-cd/java-spring-boot-deployment"
   },
   "nexus": {
-    "title": "Nexus o'rnatish va integratsiya",
+    "title": "Sonatype Nexus",
     "icon": "▶️",
-    "description": "Sonatype Nexus Repository Manager",
+    "description": "Paketlar va CI/CD uchun yechim",
     "href": "/guides/ci-cd/nexus"
   },
   "m1-runner-setup": {

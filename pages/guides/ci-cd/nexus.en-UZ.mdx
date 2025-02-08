@@ -1,6 +1,6 @@
 ---
 image: https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/banner.png
-description: "Java Spring Boot Deployment: Gitlab CI va Github Actions"
+description: "Nexus Repository: O'rnatish va Integratsiya"
 ---
 
 import { Callout } from "nextra-theme-docs";
@@ -19,7 +19,7 @@ Nexus opensource **(Nexus OSS)** va pullik **(Nexus Pro)** versiyalarda mavjud b
 
 **Sonatype Nexus Repository Manager** dasturi dastlab 2007-yilda **Sonatype Inc**. tomonidan ishlab chiqilgan. U dasturiy ta'minot artifaktlarini saqlash, boshqarish va tarqatish uchun mo'ljallangan markazlashtirilgan repository menejeri sifatida ishlab chiqilgan.
 
-Nexus Repository Manager dasturiy ta'minot ishlab chiqishda artifaktlar va paketlarni saqlash, boshqarish hamda ularga kirishni ta'minlash uchun ishlatiladi. Java (Maven, Gradle), .NET (NuGet), Node.js (NPM), Docker, Python (PyPi) kabi texnologiyalar uchun artifaktlarni markazlashtirilgan holda saqlaydi va boshqaradi.Tashqi repository'lardan yuklash jarayonlarini tezlashtirish va tarmoq yuklamasini kamaytirish imkonini beradi va Korxona ichki(local) repository'sini yaratishi, Kompaniyaning o'ziga xos kutubxonalarini(library) boshqarish, xavfsizlikni ta'minlash va dasturiy ta'minot jarayonlarini optimallashtirish uchun ishlatiladi.
+Nexus Repository Manager dasturiy ta'minot ishlab chiqishda artifaktlar va paketlarni saqlash, boshqarish hamda ularga kirishni ta'minlash uchun ishlatiladi. Java (Maven, Gradle), .NET (NuGet), Node.js (NPM), Docker, Python (PyPi) kabi texnologiyalar uchun artifaktlarni markazlashtirilgan holda saqlaydi va boshqaradi.Tashqi repository'lardan yuklash jarayonlarini tezlashtirish va tarmoq yuklamasini kamaytirish imkonini beradi va Korxona ichki(local) repositoriyasini yaratishi, Kompaniyaning o'ziga xos kutubxonalarini(library) boshqarish, xavfsizlikni ta'minlash va dasturiy ta'minot jarayonlarini optimallashtirish uchun ishlatiladi.
 
 
 Bu amaliyotda biz **Sonatype Nexus Repository Manager**ni docker yordamida o'rnatish va sozlashni va loyihalarimizga va CI/CD ga integratsiya qilishni ko'rib chiqamiz.
@@ -53,11 +53,16 @@ sudo chown -R 200 /mnt/nexus/nexus-data
 **2->** Nexusni docker yordamida ishga tushiramiz va `nexus-data`ni serverimizdagi `/mnt/nexus/nexus-data`ga ulab qo'yamiz va `--restart=always` flagi orqali tasodifan server yoki docker  restart bo'lganda avtomatik ishga tushirilishini belgilaymiz.
 
 ```bash
-docker run -d -p 8081:8081 --name nexus --restart=always -v /mnt/nexus/nexus-data:/nexus-data sonatype/nexus3
+docker run -d \
+  -p 8081:8081 \
+  --name nexus \
+  --restart=always \
+  -v /mnt/nexus/nexus-data:/nexus-data \
+  sonatype/nexus3
 ```
 ![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/1.png)
 
-**3->** Nexusni ishga tuhsirganimizdan keyin u default admin user va parol bilan birga keladi, admin parolni olish uchun quyidagicha amalni bajaramiz.
+**3->** Nexusni ishga tushirganimizdan keyin u default admin user va parol bilan birga keladi, admin parolni olish uchun quyidagicha amalni bajaramiz.
 
 ```bash
 docker exec -it nexus cat /nexus-data/admin.password
@@ -67,7 +72,7 @@ docker exec -it nexus cat /nexus-data/admin.password
 <TabPanel>
 ### Ansible bilan o'rnatish
 
-**1->** **[github.com/ismoilovdevml/infra-as-code]**(https://github.com/ismoilovdevml/infra-as-code) repositoriyani git clone qilib olamiz bu repositoriyada ko'plab ansible playbooklar bor shu jumladan nexus uchun ham.
+**1->** **[github.com/ismoilovdevml/infra-as-code](https://github.com/ismoilovdevml/infra-as-code)** repositoriyani git clone qilib olamiz bu repositoriyada ko'plab ansible playbooklar bor shu jumladan nexus uchun ham.
 
 ```bash
 git clone https://github.com/ismoilovdevml/infra-as-code.git
@@ -123,13 +128,20 @@ ansible-galaxy collection install community.docker -f
 ```bash
 ansible-playbook -i inventory.ini install_nexus.yml
 ```
+
+Agar siz `inevntory.ini` faylida parol bilan ulanmoqchi bo'lsangiz quyidagicha yozishingiz kerak.
+
+```bash
+export ANSIBLE_HOST_KEY_CHECKING=False
+ansible-playbook -i inventory.ini install_nexus.yml
+```
 Playbook muvaffaqiyatli ishga tushirilgandan keyin default `admin` user parolini ko'rsatadi.
 ![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/11.png)
 
 </TabPanel>
 </Tabs>
 
-Nexusni o'rnatib bo'lganimizdan keyin brauzerda `server_ip:8081` manzilini ochganimizda Nexus ochilishi kerak.
+Nexusni o'rnatib bo'lganimizdan keyin brauzerda `server_ip:8081` manzilini ochganimizda Nexus ochilishi kerak. Nexus default porti `8081` bo'ladi.
 
 ![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/3.png)
 
@@ -144,7 +156,7 @@ Bu qismda o'zimizga kerak tanlovni tanlaymiz.
 Sizda `admin` user bilan kirganingizdan keyin sizda quyidagicha dastlabki sahifa ochiladi.
 ![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/8.png)
 
-## Nexusga domen ulash.
+## Nexusga domen ulash
 
 Bu bo'limda biz **Nexus**ni domen orqali ulashni va Letsencrypt sertifikat orqali SSL olishni ko'rib chiqamiz.
 
@@ -161,7 +173,7 @@ sudo apt update
 sudo apt install nginx certbot python3-certbot-nginx -y
 ```
 
-**2->** Nexusga bo'glamoqchigan bo'lgan domenimiz DNS serveridan A record ochib serverimiz IP manzilini qo'shib qo'yamiz. Rasmda ahost misolida **helm.uz** domeniga **nexus** subdomen qo'shib ko'rsatilgan.
+**2->** Nexusga bo'glamoqchi bo'lgan domenimiz DNS serveridan A record ochib serverimiz IP manzilini qo'shib qo'yamiz. Rasmda ahost misolida **helm.uz** domeniga **nexus** subdomen qo'shib ko'rsatilgan.
 ![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/40.png)
 **3->** Bog'lamoqchi bo'lgan domenimiz nomi bilan nginx konfiguratsiyasini yaratamiz.
 
@@ -170,7 +182,7 @@ sudo nano /etc/nginx/sites-available/nexus.helm.uz
 ```
 Quyidagicha konfiguratsiyani yozamiz.
 
-```nginx /etc/nginx/sites-available/nexus
+```nginx filename="/etc/nginx/sites-available/nexus.helm.uz"
 server {
     listen 80;
     max_body_size 100M;
@@ -224,7 +236,7 @@ sudo nano /etc/nginx/conf.d/nexus.helm.uz.conf
 ```
 Quyidagicha konfiguratsiyani yozamiz.
 
-```nginx /etc/nginx/conf.d/nexus.helm.uz.conf
+```nginx filename="/etc/nginx/conf.d/nexus.helm.uz.conf"
 server {
     listen 80;
     max_body_size 100M;
@@ -287,51 +299,55 @@ Agar siz kompaniyangizda **Proxy** bilan internetga chiqish talab qilinsa **-> S
 ![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/19.png)
 **HTTPS Proxy** uchun `Enable HTTPS Proxy`ni belgilaymiz va `HTTPS Proxy Host`ga proxy serverimiz addresi va `HTTPS Proxy Port` ga portni kiritamiz. Agar sizning proxyyingiz **HTTPS Authentication**ni talab qilinsa `Enable HTTPS Proxy Authentication`ni belgilaymiz va `HTTPS Proxy Username` va `HTTPS Proxy Password`ni kiritib ishlatishimiz mumkin.
 ![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/20.png)
-Nexus servergfa proxy sozlamalarini sozlagandan keyin proxysiz ulanaidgan local sercvicelarimizga **NO Proxy Hosts** qismida yozishimiz mumkin.
+Nexus servergfa proxy sozlamalarini sozlagandan keyin proxysiz ulanadigan local sercvicelarimizga **NO Proxy Hosts** qismida yozishimiz mumkin.
 ![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/21.png)
 
 ## Repositorylar bilan ishlash
 
-**Sonatype Nexus Repository Manager** repositoriyalarni tashkil qilish va boshqarish uchun turli xil turlarni(repo type) qo'llab-quvvatlaydi, ulardan eng asosiylari **Proxy, Hosted va Group** repository'laridir.
+**Sonatype Nexus Repository Manager** repositoriyalarni tashkil qilish va boshqarish uchun turli xil turlarni(repo type) qo'llab-quvvatlaydi, ulardan eng asosiylari **Proxy, Hosted va Group** repositoriyalaridir.
 
-**Proxy** typedagi repository - tashqi (remote) repository'larni mahalliy (local) server orqali kechlashtirish (cache) va ulardan foydalanishni optimallashtirish uchun ishlatiladi. U **Maven Central, NuGet Gallery, Docker Hub, NPM Registry, PyPi** va boshqa repository'lardan paketlarni olish uchun qo'llaniladi. Bu turdagi repositoriyaning asosiy maqsadi internetga chiqishni kamaytirish va local serverda paketlarni saqlashdir, loyihamiz nexusga ulanganidna keyin u paketlarni yuklab olish uchun birinci bo'lib nexusga so'rov yuboradi agar loyiha so'ragan package nexus local repositoriyada bo'lmasa **Proxy** typedagi repositoriya berilgan **remote repository**dan oladi va nexus local repositoriyada cache qilib saqlaydi.
+**Proxy** typedagi repositoriya - tashqi (remote) repositoriyalarni mahalliy (local) server orqali kechlashtirish (cache) va ulardan foydalanishni optimallashtirish uchun ishlatiladi. U **Maven Central, NuGet Gallery, Docker Hub, NPM Registry, PyPi** va boshqa repositoriyalardan paketlarni olish uchun qo'llaniladi. Bu turdagi repositoriyaning asosiy maqsadi internetga chiqishni kamaytirish va local serverda paketlarni saqlashdir, loyihamiz nexusga ulanganidan keyin u paketlarni yuklab olish uchun birinchi bo'lib nexusga so'rov yuboradi agar loyiha so'ragan package nexus local repositoriyada bo'lmasa **Proxy** typedagi repositoriya berilgan **remote repository**dan oladi va nexus local repositoriyada cache qilib saqlaydi.
 
 **Hosted** typedagi repository - lokal serverda paketlarni saqlash uchun ishlatiladi. U **Maven, NuGet, Docker, PyPi** va boshqa paketlarni saqlash uchun ishlatiladi. Bu turdagi repositorylar loyihalarga xizmat qilish uchun ishlatiladi, loyiha paketlarini yuklash uchun ishlatiladi.  Bu turdagi repositoriyaning asosiy maqsadi Kompaniya uchun maxsus yozilgan packagelar uchun local repository bo'lib xizmat qiladi.
 
-**Group** repository - bu bir nechta repository'larni bitta umumiy repositoriya sifatida boshqarish imkonini beruvchi repository turi. Group repository bir vaqtning o'zida **Proxy, Hosted** va boshqa repositoriyalarni bitta URL orqali boshqarishga yordam beradi. Bu turdagi repositoriya ishlatishga bitta misol: maslan sizda **maven-central, maven-releases, maven-snapshots** repositorylar mavjud bo'lsa siz ularni bitta **maven-public** repositoryda birlashtirib qo'yishingiz mumkin va loyihalarga bitta URL orqali boshqarish imkonini beradi, yani siz loyihangizni Nexusga ulaganingizda bitta **maven-public** repositoriyani belgila ishlatishingiz mumkin uching ichida esa **maven-central, maven-releases, maven-snapshots** repositorylar mavjud bo'ladi.
+**Group** repository - bu bir nechta repositoriyalarni bitta umumiy repositoriya sifatida boshqarish imkonini beruvchi repository turi. Group repository bir vaqtning o'zida **Proxy, Hosted** va boshqa repositoriyalarni bitta URL orqali boshqarishga yordam beradi. Bu turdagi repositoriya ishlatishga bitta misol: maslan sizda **maven-central, maven-releases, maven-snapshots** repositorylar mavjud bo'lsa siz ularni bitta **maven-public** repositoryda birlashtirib qo'yishingiz mumkin va loyihalarga bitta URL orqali boshqarish imkonini beradi, yani siz loyihangizni Nexusga ulaganingizda bitta **maven-public** repositoriyani belgilab ishlatishingiz mumkin uching ichida esa **maven-central, maven-releases, maven-snapshots** repositorylar mavjud bo'ladi.
 
 
-Nexusda default holda **Maven va Nuget** uchun **Proxy, Hosted** va **Group** repositorylar mavjud bo'ladi, **Python, Go, Docker, Cargo** va boshqalar uchun o'zingiz repositorylar yaratishingiz kerak bo'ladi.
+Nexusda default holda **Maven va Nuget** uchun **Proxy, Hosted** va **Group** repositorylar mavjud bo'ladi, **Python, Go, Docker, Cargo** va boshqalar uchun o'zingiz repositoriyalar yaratishingiz kerak bo'ladi.
 
-**Proxy** repositoriyalar vazifasi 
-
-**-> Server Administration and Configuration** bo'limidan **-> Repositories** bo'limiga o'tib repositorieslarni ko'rishimiz mumkin.
+**-> Server Administration and Configuration** bo'limidan **-> Repositories** bo'limiga o'tib repositoriyalarni ko'rishimiz mumkin.
 ![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/15.png)
 Nexus default repositoriyalar.
 ![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/17.png)
-Keling masalan **maven-central** repositoryni ko'rib chiqamiz. Bu repository turi **Proxy** bo'lib internetdan **https://repo1.maven.org/maven2/** manzilidan ma'lumotlarni olish uchun ishlatiladi.
+Keling masalan **maven-central** repositoryni ko'rib chiqamiz. Bu repositoriya turi **Proxy** bo'lib internetdan **https://repo1.maven.org/maven2/** manzilidan ma'lumotlarni olish uchun ishlatiladi.
 ![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/22.png)
-Quyidagi rasmda maven packagelarni qaysi global repositorydan olishini ko'rishimiz mumkin **https://repo1.maven.org/maven2/**.
+Quyidagi rasmda maven packagelarni qaysi global repositoriyadan olishini ko'rishimiz mumkin **https://repo1.maven.org/maven2/**.
 ![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/23.png)
 
 ![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/24.png)
 
-**maven-public** repository **group** repository bo'lib **maven-central, maven-releases, maven-snapshots** repositorylarini birlashtirgan repository bo'lib, bu repositorydan maven packagelarni olishimiz mumkin.
+**maven-public** repositoriya **group** repositoriya bo'lib **maven-central, maven-releases, maven-snapshots** repositoriyalarini birlashtirgan repositoriya bo'lib, bu repositoriyadan maven packagelarni olishimiz mumkin.
 ![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/25.png)
-Bu rasmda **maven-public** repositoriyamiz o'z ichiga olgan **maven-central, maven-releases, maven-snapshots** repositorylarini ko'rishimiz mumkin.
+Bu rasmda **maven-public** repositoriyamiz o'z ichiga olgan **maven-central, maven-releases, maven-snapshots** repositoriyalarini ko'rishimiz mumkin.
 ![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/26.png)
-**nuget-group** repository ham **group** repository bo'lib **nuget-hosted, nuget.org-proxy** repositorylarini birlashtirgan repository bo'lib, bu repositorydan nuget packagelarni yani .NET packagelarni olishimiz mumkin.
+**nuget-group** repository ham **group** repository bo'lib **nuget-hosted, nuget.org-proxy** repositorylarini birlashtirgan repositoriya bo'lib, bu repositoriyadan nuget packagelarni yani .NET packagelarni olishimiz mumkin.
 ![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/27.png)
-**nuget.org-proxy** repository **proxy** repository bo'lib **https://api.nuget.org/v3/index.json** addresidan nuget packagelarni olish uchun ishlatiladi.
+**nuget.org-proxy** repositoriya **proxy** repositoriya bo'lib **https://api.nuget.org/v3/index.json** addresidan nuget packagelarni olish uchun ishlatiladi.
 ![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/28.png)
 
 
-## Loyihalarga Nexusni integratsiya
+## Nexus Integratsiyasi
 
 Bu bosqichda **Maven va NuGet** loyihalarini **Sonatype Nexus Repository Manager** bilan integratsiya qilish va shuningdek, CI/CDga qo'shishni ko'rib chiqamiz. Bu bilan biz Nexus'ni ishlatish orqali **build** vaqtlarini qisqartirish, paketlarni local boshqarish va xavfsizlikni oshirish imkoniyatiga ega bo'lamiz.
 
 ### Java Maven
-Platformamizda **[Java Spring Boot Deployment: Gitlab CI va Github Actions](https://devops-journey.uz/guides/ci-cd/java-spring-boot-deployment)** amaliyotida biz Spring Boot Maven projectni GItlab CI va Github Actyions bilan CI/Cd yozib ishga tushirishni ko'rib chiqgandik endi bu bosqichda unga nexus inetgratsiyani ko'rib chiqamiz.
+Platformamizda **[Java Spring Boot Deployment: Gitlab CI va Github Actions](https://devops-journey.uz/guides/ci-cd/java-spring-boot-deployment)** amaliyotida biz Spring Boot Maven projectni GItlab CI va Github Actyions bilan CI/CD yozib ishga tushirishni ko'rib chiqgandik endi bu bosqichda unga nexus inetgratsiyani ko'rib chiqamiz.
+
+<Callout type="info" emoji="">
+**Ushbu bo'limda ishlatiladigan loyihalar:**
+* **Github:** **https://github.com/devops-journey-uz/waifulist**
+* **Gitlab:** **https://gitlab.com/ismoilovdev/waifulist**
+</Callout>
 
 **1->** Loyihangizda `pom.xml` faylga quyidagicha dependencyni qo'shib qo'yamiz.
 
@@ -362,9 +378,9 @@ Platformamizda **[Java Spring Boot Deployment: Gitlab CI va Github Actions](http
     </pluginRepository>
 </pluginRepositories>
 ```
-`<repositories>` bo'limi Mavenga Nexus'dagi dependencylarni yuklab olish uchun qayerga murojaat qilish kerakligini bildiradi. `<id>` - Repository'ni identifikatsiya qilish uchun unikal nom (nexus deb belgilangan) `<url>` - Nexus repositoryning manzili (https://nexus.helm.uz/repository/maven-public/). `<releases>` - Release versiyalarning yuklab olinishi yoqilgan (true). `<snapshots>` - Snapshot versiyalar ham qollab-quvvatlanishi yoqilgan (true).
+`<repositories>` bo'limi Mavenga Nexusdagi dependencylarni yuklab olish uchun qayerga murojaat qilish kerakligini bildiradi. `<id>` - Repositoriyani identifikatsiya qilish uchun unikal nom (nexus deb belgilangan) `<url>` - Nexus repositoriyaning manzili (https://nexus.helm.uz/repository/maven-public/). `<releases>` - Release versiyalarning yuklab olinishi yoqilgan (true). `<snapshots>` - Snapshot versiyalar ham qollab-quvvatlanishi yoqilgan (true).
 
-`<pluginRepositories>` Maven plugin'larini Nexus repositorydan yuklash uchun ishlatiladi. Bu Maven build va test jarayonlari uchun zarur bo'lgan plaginlarni Nexus orqali yuklashni taminlaydi.Agar loyiha Maven pluginlari uchun Nexus'dan foydalanmoqchi bo'lsa, ushbu bo'lim kiritilishi shart.
+`<pluginRepositories>` Maven pluginlarini Nexus repositoriyadan yuklash uchun ishlatiladi. Bu Maven build va test jarayonlari uchun zarur bo'lgan plaginlarni Nexus orqali yuklashni taminlaydi. Agar loyiha Maven pluginlari uchun Nexusdan foydalanmoqchi bo'lsa, ushbu bo'lim kiritilishi shart.
 
 **2->** Loyihangizda `settings.xml` faylga quyidagicha sozlamalarni qo'shib qo'yamiz.
 
@@ -413,16 +429,14 @@ Platformamizda **[Java Spring Boot Deployment: Gitlab CI va Github Actions](http
     </activeProfiles>
 </settings>
 ```
-`<servers>` bo'limi Autentifikatsiya konfiglarini o'z ichiga oladi. `<id>` - `pom.xml`dagi repository ID bilan bir xil bo'lishi kerak (nexus). `<username>` va `<password>` - Nexus'ga kirish uchun foydalanuvchi nomi va parol. Nexusga kirish uchun login va parol environment avribale sifatida yozilgan `${env.NEXUS_USER}` va `${env.NEXUS_PASSWORD}`.
+`<servers>` bo'limi Autentifikatsiya konfiglarini o'z ichiga oladi. `<id>` - `pom.xml`dagi repository ID bilan bir xil bo'lishi kerak (nexus). `<username>` va `<password>` - Nexusga kirish uchun foydalanuvchi nomi va parol. Nexusga kirish uchun login va parol environment variable sifatida yozilgan `${env.NEXUS_USER}` va `${env.NEXUS_PASSWORD}`.
 Bu konfiguratsiya Nexusga artifaktlarni yuklash (`mvn deploy`) yoki yuklab olish (`mvn install`) uchun autentifikatsiyani ta'minlaydi.
 
-`<mirrorOf>*</mirrorOf>` - Barcha (*) repository'lar uchun Nexus'ni o'zgartirilgan mirror sifatida ishlatishni bildiradi. `<url>` - Nexus'ning **maven-public** repositoriyasi orqali barcha dependencylarni yuklash bildiradi. `<layout>` esa default Maven repository arxitekturasi ishlatiladi.
+`<mirrorOf>*</mirrorOf>` - Barcha (*) repositoriyalar uchun Nexusni o'zgartirilgan mirror sifatida ishlatishni bildiradi. `<url>` - Nexus'ning **maven-public** repositoriyasi orqali barcha dependencylarni yuklash bildiradi. `<layout>` esa default Maven repository arxitekturasi ishlatiladi. Bu bo'lim **Maven Central** yoki boshqa tashqi repositoriyalarni bevosita ishlatish o'rniga, ularni Nexus orqali yuklab olishni ta'minlaydi.
 
-Bu bo'lim **Maven Central** yoki boshqa tashqi repositoriyalarni bevosita ishlatish o'rniga, ularni Nexus orqali yuklab olishni ta'minlaydi.
+`<profiles>` bo'limi turli xil konfiguratsiyalarni yaratish va ishlatish imkonini beradi, bunda biz `<id>` nexus nomli profil yaratib olamiz va  `<repositories>` bu Maven repositoriyalarini yaratish uchun ishlatiladi, unga biz Nexus repositoriya urlni qo'shib qo'yamiz va `<activeProfiles>` bo'limida nexusni profilni faollashtiramiz, shunda mvn buyruqlari bajarilganda, Maven ushbu profilni ishlatadi, nexus profili faollashtirilganda, Maven dependencylarni https://nexus.helm.uz/repository/maven-public/ orqali yuklaydi.
 
-`<profiles>` bo'limi turli xil konfiguratsiyalarni yaratish va ishlatish imkonini beradi, bunda biz `<id>` nexus nomli profil yaratib olamiz va  `<repositories>` bu Maven repositorylarini yaratish uchun ishlatiladi, unga biz Nexus repositoriya urlni qo'shib qo'yamiz va `<activeProfiles>` bo'limida nexusni profilni faollashtiramiz, shunda mvn buyruqlari bajarilganda, Maven ushbu profilni ishlatadi, nexus profili faollashtirilganda, Maven dependencylarni https://nexus.helm.uz/repository/maven-public/ orqali yuklaydi.
-
-**3->** `${env.NEXUS_USER}` va `${env.NEXUS_PASSWORD}` environment variablelarni agar sizda Gitlab bo'lsa Gitlab variablesga yoki Githubda bo'lsa Github Secretsga qo'shib qo'yishimiz kerak bo'ladi.
+**3->** `${env.NEXUS_USER}` va `${env.NEXUS_PASSWORD}` environment variablelarni agar sizda Gitlab bo'lsa Gitlab CI/CD variablesga yoki Githubda bo'lsa Github Secretsga qo'shib qo'yishimiz kerak bo'ladi.
 
 Gitlabda **Settings -> CI/CD -> Variables** bo'limiga o'tib quyidagicha variablelarni qo'shib qo'yamiz.
 
@@ -465,7 +479,7 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
 ENTRYPOINT ["java", "-jar", "app.jar"]
 ```
 
-**5->** Loyihamiz CI/CD'dasida ham o'zgarishlar kiritishimiz kerak bo'ladi.
+**5->** Loyihamiz CI/CD'sida ham o'zgarishlar kiritishimiz kerak bo'ladi.
 
 Gitlab CI uchun `before_script` bo'limiga quyidagicha  yangilamymiz bu qatorlar `sed` yordamida `settings.xml` faylga `NEXUS_USER` va `NEXUS_PASSWORD` environment variablelarni yozadi.
 
@@ -537,7 +551,7 @@ Github Actions uchun.
     sed -i "s|\${env.NEXUS_USER}|${{ secrets.NEXUS_USER }}|g" settings.xml
     sed -i "s|\${env.NEXUS_PASSWORD}|${{ secrets.NEXUS_PASSWORD }}|g" settings.xml
 ```
-To'liq Github Actions `ci-cd` fayli quyidagicha ko'rinishda bo'ladi.
+To'liq Github Actions `.github/workflows/main.yml` fayli quyidagicha ko'rinishda bo'ladi.
 
 ```yaml filename=".github/workflows/main.yml" {32-35}
 name: Github Actions CI/CD
@@ -618,14 +632,14 @@ jobs:
             ${{ env.REGISTRY }}/${{ env.REPO_NAME }}:${{ github.sha }}
 ```
 
-**6->** Keling endi loyiha CI/CD'da ishga tushirib uni tekshirib ko'ramiz, loyihamiz barcha package va dependencylarni Nexus orqali yuklab olishi kerak.
+**6->** Keling endi loyiha CI/CD orqali ishga tushirib uni tekshirib ko'ramiz, loyihamiz barcha package va dependencylarni Nexus orqali yuklab olishi kerak.
 
 Gitlab CI'da ko'rib turganinigizdek barcha package va dependencylarni **nexus.helm.uz/repository/maven-public/** manzili orqali yuklab olyapti. 
 ![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/31.png)
 Github Actionsda
 ![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/36.png)
 
-Nexusga brazuerdan kirib ko'rganimzida ham o'zgarishlarni sezishimiz mumkin.
+Nexusga brazuerdan kirib ko'rganimizda ham o'zgarishlarni sezishimiz mumkin.
 ![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/30.png)
 
 Nexusdan **maven-central** repositoryni ko'rib chiqadigan bo'lsak nexus o'zida saqlayotgan local package va dependencylarni ko'rishimiz mumkin.
@@ -634,7 +648,15 @@ Nexusdan **maven-central** repositoryni ko'rib chiqadigan bo'lsak nexus o'zida s
 
 ### .NET NuGet
 
-**.NET Core** loyihalarni **Sonatype Nexus Repository Manager** bilan integratsiya qilish uchun quyidagicha bosqichlarni bajaramiz.
+**.NET Core** loyihalarida **Sonatype Nexus Repository Manager** bilan integratsiya qilish uchun quyidagicha bosqichlarni bajaramiz. **NuGet** - bu **.NET** loyihalari uchun paket menejeri bo'lib, u turli librarylar va tollarni boshqarish uchun ishlatiladi. `NuGet.Config` fayli NuGet paketlarini Nexus'ga yo'naltirish, hamda autentifikatsiya ma'lumotlarini kiritish uchun ishlatiladi.
+
+Ushbu bo'limda **[Github Actions CI/CD](https://devops-journey.uz/guides/ci-cd/github-actions-ci-cd)** amaliyotida ishlatilgan **https://github.com/devops-journey-uz/devops-journey-github-actions** .NET Core applicationini ishlatamiz, bunga oldin biz Github Actions bilan CI/CD yozib ishga tushirishni ko'rib chiqgandik endi bu bosqichda unga nexus inetgratsiyani ko'rib chiqamiz.
+
+<Callout type="info" emoji="">
+**Ushbu bo'limda ishlatiladigan loyihalar:**
+* **Github:** **https://github.com/devops-journey-uz/devops-journey-github-actions**
+* **Gitlab:** **https://gitlab.com/ismoilovdev/github-actions-dotnet**
+</Callout>
 
 **1->** Loyihamizda `NuGet.Config` faylini yaratamiz va quyidagicha configuratsiya qilamiz.
 
@@ -652,8 +674,9 @@ Nexusdan **maven-central** repositoryni ko'rib chiqadigan bo'lsak nexus o'zida s
   </packageSourceCredentials>
 </configuration>
 ```
+Konfiguratsiyada `packageSources` - NuGet paket manbalarini aniqlash uchun ishlatiladi. `<clear />` avvalgi NuGet manbalarini tozalaydi va faqat biz bergan nexus manbadan foydalanadi. `<add key="Nexus" value="https://nexus.helm.uz/repository/nuget-group/index.json" />` Nexus nomli yangi NuGet repositoriya qo'shiladi url esa nuget packagelarni yuklab olish uchun berilgan nexus repositoriya manzili. `packageSourceCredentials`  Autentifikatsiya ma'lumotlarini o'z ichiga oladi. Bu yerdagi `__NEXUS_USER__` va `__NEXUS_PASSWORD__` o'zgaruvchilar Gitlab CI variable yoki Github Secretsga qo'shib ishlatiladi. 
 
-**2->** `__NEXUS_USER__` va `__NEXUS_PASSWORD__` environment variablelarni agar sizda Gitlab bo'lsa Gitlab variablesga yoki Githubda bo'lsa Github Secretsga qo'shib qo'yishimiz kerak bo'ladi.
+**2->** `__NEXUS_USER__` va `__NEXUS_PASSWORD__` environment variablelarni agar sizda Gitlab bo'lsa Gitlab CI/CD variablesga yoki Githubda bo'lsa Github Secretsga qo'shib qo'yishimiz kerak bo'ladi.
 
 Gitlabda **Settings -> CI/CD -> Variables** bo'limiga o'tib quyidagicha variablelarni qo'shib qo'yamiz.
 
@@ -692,7 +715,76 @@ COPY --from=build-env /app/build .
 ENTRYPOINT ["dotnet", "GitHub.Actions.API.dll", "--urls=http://0.0.0.0:4001"]
 ```
 
-**4->** Loyihamiz CI/CD'dasida ham o'zgarishlar kiritishimiz kerak bo'ladi.
+**4->** Loyihamiz CI/CD'sida ham o'zgarishlar kiritishimiz kerak bo'ladi.
+
+Gitlab CI uchun `before_script` bo'limiga quyidagicha  yangilamymiz bu qatorlar `sed` yordamida `NuGet.Config` faylga `NEXUS_USER` va `NEXUS_PASSWORD` environment variablelarni yozadi.
+
+```yaml filename=".gitlab-ci.yml"
+before_script:
+  - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  - sed -i 's|__NEXUS_USER__|'"$NEXUS_USER"'|g' NuGet.Config
+  - sed -i 's|__NEXUS_PASSWORD__|'"$NEXUS_PASSWORD"'|g' NuGet.Config
+```
+To'liq Gitlab CI `.gitlab-ci.yml` fayli quyidagicha ko'rinishda bo'ladi.
+
+```yaml filename=".gitlab-ci.yml" {25-28}
+stages:
+  - build_and_push
+  - deploy
+
+variables:
+  API_IMAGE_NAME: github-api
+  API_CONTAINER_NAME: github-api
+  UI_IMAGE_NAME: github-ui
+  UI_CONTAINER_NAME: github-ui
+  UI_PORT: "4000:4000"
+  API_PORT: "4001:4001"
+  REPO_NAME: $CI_PROJECT_PATH
+  REGISTRY: "registry.gitlab.com"
+  SSH_HOST: $SERVER_IP
+  SSH_USER: $SERVER_USERNAME
+  SSH_KEY: $SSH_PRIVATE_KEY
+
+build_and_push:
+  stage: build_and_push
+  image: docker:stable
+
+  services:
+    - docker:dind
+
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - sed -i 's|__NEXUS_USER__|'"$NEXUS_USER"'|g' NuGet.Config
+    - sed -i 's|__NEXUS_PASSWORD__|'"$NEXUS_PASSWORD"'|g' NuGet.Config
+
+  script:
+    - docker build -t $REGISTRY/$REPO_NAME/$API_IMAGE_NAME:$CI_COMMIT_SHA -f ./API.Dockerfile .
+    - docker push $REGISTRY/$REPO_NAME/$API_IMAGE_NAME:$CI_COMMIT_SHA
+    - docker build -t $REGISTRY/$REPO_NAME/$UI_IMAGE_NAME:$CI_COMMIT_SHA -f ./UI.Dockerfile .
+    - docker push $REGISTRY/$REPO_NAME/$UI_IMAGE_NAME:$CI_COMMIT_SHA
+    
+deploy:
+  stage: deploy
+  image: alpine:latest
+
+  before_script:
+    - apk add --update --no-cache openssh-client
+
+  script:
+    - mkdir -p ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - ssh-keyscan -H $SSH_HOST >> ~/.ssh/known_hosts 
+    - ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "echo "$CI_JOB_TOKEN" | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY"
+    - ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "docker pull $REGISTRY/$REPO_NAME/$API_IMAGE_NAME:$CI_COMMIT_SHA"
+    - ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "docker pull $REGISTRY/$REPO_NAME/$UI_IMAGE_NAME:$CI_COMMIT_SHA"
+    - ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "docker stop $UI_CONTAINER_NAME || true"
+    - ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "docker stop $API_CONTAINER_NAME || true"
+    - ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "docker rm $UI_CONTAINER_NAME || true"
+    - ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "docker rm $API_CONTAINER_NAME || true"
+    - ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "docker run -d --name $API_CONTAINER_NAME --restart=always -p $API_PORT $REGISTRY/$REPO_NAME/$API_IMAGE_NAME:$CI_COMMIT_SHA"
+    - ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "docker run -d --name $UI_CONTAINER_NAME --restart=always -p $UI_PORT $REGISTRY/$REPO_NAME/$UI_IMAGE_NAME:$CI_COMMIT_SHA"
+```
 
 Github Actions `.github/workflows/ci-cd.yml` faylini quyidagicha yangilaymiz.
 
@@ -702,7 +794,7 @@ Github Actions `.github/workflows/ci-cd.yml` faylini quyidagicha yangilaymiz.
     sed -i "s|__NEXUS_USER__|${{ secrets.NEXUS_USER }}|g" NuGet.Config
     sed -i "s|__NEXUS_PASSWORD__|${{ secrets.NEXUS_PASSWORD }}|g" NuGet.Config
 ```
-To'liq Github Actions `ci-cd` fayli quyidagicha ko'rinishda bo'ladi.
+To'liq Github Actions `.github/workflows/ci-cd.yml` fayli quyidagicha ko'rinishda bo'ladi.
 
 ```yaml filename=".github/workflows/ci-cd.yml" {43-46}
 name: Docker CI/CD
@@ -797,24 +889,26 @@ jobs:
             docker run -d --name "${{ env.UI_CONTAINER_NAME }}" --restart=always -p "${{ env.UI_PORT }}" "${{ env.REGISTRY }}/${{ env.REPO_NAME}}/${{ env.UI_IMAGE_NAME }}:${{ github.sha }}" 
 ```
 
-**5->** Keling endi loyiha CI/CD'da ishga tushirib uni tekshirib ko'ramiz, loyihamiz barcha package va dependencylarni Nexus orqali yuklab olishi kerak.
+**5->** Keling endi loyihani CI/CD orqali ishga tushirib uni tekshirib ko'ramiz, loyihamiz barcha package va dependencylarni Nexus orqali yuklab olishi kerak.
 
 Ko'rib turganingizdek Github Actions CI/CD muvaffaqiyatli yakunlangan.
 ![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/41.png)
 ![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/42.png)
 
-Nexusga brazuerdan kirib ko'rganimzida ham o'zgarishlarni sezishimiz mumkin.
+Nexusga brazuerdan kirib ko'rganimizda ham o'zgarishlarni sezishimiz mumkin.
 ![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/30.png)
 
-Nexusdan **nuget-group** repositoryni ko'rib chiqadigan bo'lsak nexus o'zida saqlayotgan local package va dependencylarni ko'rishimiz mumkin.
+Nexusdan **nuget-group** repositoriyani ko'rib chiqadigan bo'lsak nexus o'zida saqlayotgan local package va dependencylarni ko'rishimiz mumkin.
 
 ![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/39.png)
 
 
+Nihoyat biz bugungi **Sonatype Nexus Repository Manager** bilan bo'lgan amaliyotimizni shu yerda yakunlaymiz, o'ylaymanku bu sizga foydali bo'ldi. Agar sizda savollar yoki takliflar bo'lsa, ularni shu post izohlariga yozishingiz mumkin. Qolgan **PyPI, Docker, Go, Cargo** va boshqa package repositoriyalarni sozlashni o'zingiz davom ettirasiz ))
 ## Qo'shimcha
 <Callout type="info" emoji="">
 
 Qo'shimcha Resurslar
+ * [**Java Spring Boot Deployment: Gitlab CI va Github Actions**](https://devops-journey.uz/guides/ci-cd/java-spring-boot-deployment)
  * [**Gitlab Server o'rnatish va sozlash**](https://devops-journey.uz/guides/ci-cd/gitlab-server)
  * [**Gitlab CI | Releaselar va Integrationlar**](https://devops-journey.uz/guides/ci-cd/gitlab-ci-release-integrations)
  * [**Github Actions bilan Flutter CI/CD**](https://devops-journey.uz/guides/ci-cd/flutter-github-action)
