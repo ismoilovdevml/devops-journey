@@ -144,6 +144,126 @@ Bu qismda o'zimizga kerak tanlovni tanlaymiz.
 Sizda `admin` user bilan kirganingizdan keyin sizda quyidagicha dastlabki sahifa ochiladi.
 ![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/8.png)
 
+## Nexusga domen ulash.
+
+Bu bo'limda biz **Nexus**ni domen orqali ulashni va Letsencrypt sertifikat orqali SSL olishni ko'rib chiqamiz.
+
+<Tabs>
+<TabList>
+<Tab>Debian Based</Tab>
+<Tab>Red Had Based</Tab>
+</TabList>
+<TabPanel>
+**1->** Nginx va certbotni o'rnatamiz.
+
+```bash
+sudo apt update
+sudo apt install nginx certbot python3-certbot-nginx -y
+```
+
+**2->** Nexusga bo'glamoqchigan bo'lgan domenimiz DNS serveridan A record ochib serverimiz IP manzilini qo'shib qo'yamiz. Rasmda ahost misolida **helm.uz** domeniga **nexus** subdomen qo'shib ko'rsatilgan.
+![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/40.png)
+**3->** Bog'lamoqchi bo'lgan domenimiz nomi bilan nginx konfiguratsiyasini yaratamiz.
+
+```bash
+sudo nano /etc/nginx/sites-available/nexus.helm.uz
+```
+Quyidagicha konfiguratsiyani yozamiz.
+
+```nginx /etc/nginx/sites-available/nexus
+server {
+    listen 80;
+    max_body_size 100M;
+    server_name nexus.helm.uz;
+    location / {
+        proxy_pass http://localhost:8081;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+
+**4->** Konfiguratsiyani `sites-enabled` papkasiga joylaymiz.
+
+```bash
+sudo ln -s /etc/nginx/sites-available/nexus.helm.uz /etc/nginx/sites-enabled/
+```
+**5->** Nginxga restart beramiz.
+```bash
+sudo systemctl restart nginx
+```
+**6->** certbot orqali Letsencrypt sertifikatni olish uchun quyidagi buyruqni yozamiz.
+
+```bash
+sudo certbot
+```
+Bunda siz certbot uchun email yozasiz va **Terms of Service** ni qabul qilishingiz kerak bo'ladi `y` bosib o'tib ketasiz.
+![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/12.png)
+Bu qismda sizning domenlaringizni ko'rsatadi siz kerakli domenlarni tanlab `Enter` bosib o'tib ketasiz, bizning holatda 1.
+![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/13.png)
+Sertifikat muvaffaqiyatli olinganidan keyin nginxni restart qilamiz.
+```bash
+sudo systemctl restart nginx
+```
+</TabPanel>
+<TabPanel>
+**1->** Nginx va certbotni o'rnatamiz.
+```bash
+sudo yum install epel-release -y
+sudo yum install nginx certbot python3-certbot-nginx -y
+```
+**2->** Nexusga bo'glamoqchigan bo'lgan domenimiz DNS serveridan A record ochib serverimiz IP manzilini qo'shib qo'yamiz. Rasmda ahost misolida **helm.uz** domeniga **nexus** subdomen qo'shib ko'rsatilgan.
+![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/40.png)
+
+**3->** Bog'lamoqchi bo'lgan domenimiz nomi bilan nginx konfiguratsiyasini yaratamiz.
+
+```bash
+sudo nano /etc/nginx/conf.d/nexus.helm.uz.conf
+```
+Quyidagicha konfiguratsiyani yozamiz.
+
+```nginx /etc/nginx/conf.d/nexus.helm.uz.conf
+server {
+    listen 80;
+    max_body_size 100M;
+    server_name nexus.helm.uz;
+    location / {
+        proxy_pass http://localhost:8081;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+
+**4->** Nginxga restart beramiz.
+```bash
+sudo systemctl restart nginx
+```
+**5->** certbot orqali Letsencrypt sertifikatni olish uchun quyidagi buyruqni yozamiz.
+
+```bash
+sudo certbot
+```
+Bunda siz certbot uchun email yozasiz va **Terms of Service** ni qabul qilishingiz kerak bo'ladi `y` bosib o'tib ketasiz.
+![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/12.png)
+Bu qismda sizning domenlaringizni ko'rsatadi siz kerakli domenlarni tanlab `Enter` bosib o'tib ketasiz, bizning holatda 1.
+![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/13.png)
+**6->** Sertifikat muvaffaqiyatli olinganidan keyin nginxni restart qilamiz.
+```bash
+sudo systemctl restart nginx
+```
+
+</TabPanel>
+</Tabs>
+
+Tekshirib ko'rish uchun brauzerda **https://nexus.helm.uz** manzilini ochganimizda Nexus https bilan ochilishi kerak.
+
+![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/14.png)
+
 ## Nexus bilan tanishuv
 
 Nexus Repository Manager **APT, Cargo, Bower CocoaPods, Composer, Conan, Conda, Docker, Git LFS, Go, Helm, Hugging Face, Maven, npm, NuGet, p2, PyPI, R, Raw, RubyGems, Yum(RPM)** kabi texnologiyalar uchun repositorylar yaratish va boshqarishni qo'llab-quvvatlaydi.
@@ -498,10 +618,218 @@ jobs:
             ${{ env.REGISTRY }}/${{ env.REPO_NAME }}:${{ github.sha }}
 ```
 
-**6->** keling endi loyiha CI/CD'da ishga tushirib uni tekshirib ko'ramiz, loyihamiz barcha package va dependencylarni Nexus orqali yuklab olishi kerak.
+**6->** Keling endi loyiha CI/CD'da ishga tushirib uni tekshirib ko'ramiz, loyihamiz barcha package va dependencylarni Nexus orqali yuklab olishi kerak.
 
 Gitlab CI'da ko'rib turganinigizdek barcha package va dependencylarni **nexus.helm.uz/repository/maven-public/** manzili orqali yuklab olyapti. 
 ![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/31.png)
 Github Actionsda
 ![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/36.png)
 
+Nexusga brazuerdan kirib ko'rganimzida ham o'zgarishlarni sezishimiz mumkin.
+![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/30.png)
+
+Nexusdan **maven-central** repositoryni ko'rib chiqadigan bo'lsak nexus o'zida saqlayotgan local package va dependencylarni ko'rishimiz mumkin.
+
+![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/29.png)
+
+### .NET NuGet
+
+**.NET Core** loyihalarni **Sonatype Nexus Repository Manager** bilan integratsiya qilish uchun quyidagicha bosqichlarni bajaramiz.
+
+**1->** Loyihamizda `NuGet.Config` faylini yaratamiz va quyidagicha configuratsiya qilamiz.
+
+```bash filename="NuGet.Config"
+<configuration>
+  <packageSources>
+    <clear />
+    <add key="Nexus" value="https://nexus.helm.uz/repository/nuget-group/index.json" />
+  </packageSources>
+  <packageSourceCredentials>
+    <Nexus>
+      <add key="Username" value="__NEXUS_USER__" />
+      <add key="ClearTextPassword" value="__NEXUS_PASSWORD__" />
+    </Nexus>
+  </packageSourceCredentials>
+</configuration>
+```
+
+**2->** `__NEXUS_USER__` va `__NEXUS_PASSWORD__` environment variablelarni agar sizda Gitlab bo'lsa Gitlab variablesga yoki Githubda bo'lsa Github Secretsga qo'shib qo'yishimiz kerak bo'ladi.
+
+Gitlabda **Settings -> CI/CD -> Variables** bo'limiga o'tib quyidagicha variablelarni qo'shib qo'yamiz.
+
+`NEXUS_USER` - Nexusga kirish uchun foydalanuvchi nomi.
+![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/32.png)
+`NEXUS_PASSWORD` - Nexusga kirish uchun foydalanuvchi paroli.
+![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/33.png)
+
+Githubda esa **Settings -> Secrets -> New repository secret** bo'limiga o'tib quyidagicha secretlarni qo'shib qo'yamiz.
+
+`NEXUS_USER` - Nexusga kirish uchun foydalanuvchi nomi.
+![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/34.png)
+`NEXUS_PASSWORD` - Nexusga kirish uchun foydalanuvchi paroli.
+![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/35.png)
+
+**3->** Dockerfile faylini quyidagicha yangilaymiz.
+```bash
+COPY NuGet.Config /root/.nuget/NuGet/NuGet.Config
+```
+qatorini Dockerfilega qo'shib qo'yamiz.
+
+```bash filename="Dockerfile" {4}
+FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build-env
+WORKDIR /app
+
+COPY NuGet.Config /root/.nuget/NuGet/NuGet.Config
+COPY . .
+WORKDIR "/app/GitHub.Actions.API"
+RUN dotnet publish "GitHub.Actions.API.csproj" -o /app/build -c Release
+
+FROM mcr.microsoft.com/dotnet/aspnet:7.0
+WORKDIR /app
+ENV ASPNETCORE_ENVIRONMENT=Development
+ENV TZ="Asia/Tashkent"
+COPY --from=build-env /app/build .
+ENTRYPOINT ["dotnet", "GitHub.Actions.API.dll", "--urls=http://0.0.0.0:4001"]
+```
+
+**4->** Loyihamiz CI/CD'dasida ham o'zgarishlar kiritishimiz kerak bo'ladi.
+
+Github Actions `.github/workflows/ci-cd.yml` faylini quyidagicha yangilaymiz.
+
+```yaml filename=".github/workflows/ci-cd.yml"
+- name: Replace Nexus Credentials in NuGet.Config
+  run: |
+    sed -i "s|__NEXUS_USER__|${{ secrets.NEXUS_USER }}|g" NuGet.Config
+    sed -i "s|__NEXUS_PASSWORD__|${{ secrets.NEXUS_PASSWORD }}|g" NuGet.Config
+```
+To'liq Github Actions `ci-cd` fayli quyidagicha ko'rinishda bo'ladi.
+
+```yaml filename=".github/workflows/ci-cd.yml" {43-46}
+name: Docker CI/CD
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+    
+env:
+  API_IMAGE_NAME: github-api
+  API_CONTAINER_NAME: github-api
+  UI_IMAGE_NAME: github-ui
+  UI_CONTAINER_NAME: github-ui
+  UI_PORT: 4000:4000
+  API_PORT: 4001:4001
+  
+  REPO_NAME: ${{ github.repository }}
+  REGISTRY: ghcr.io
+  SSH_HOST: ${{ secrets.SERVER_IP }}
+  SSH_USER: ${{ secrets.SERVER_USERNAME }}
+  SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+
+jobs:
+  build_and_push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Replace Nexus Credentials in NuGet.Config
+        run: |
+          sed -i "s|__NEXUS_USER__|${{ secrets.NEXUS_USER }}|g" NuGet.Config
+          sed -i "s|__NEXUS_PASSWORD__|${{ secrets.NEXUS_PASSWORD }}|g" NuGet.Config
+
+      - name: Build and push API Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./API.Dockerfile
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.REPO_NAME}}/${{ env.API_IMAGE_NAME }}:${{ github.sha }}
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.REPO_NAME}}/${{ env.API_IMAGE_NAME }}:buildcache
+          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.REPO_NAME}}/${{ env.API_IMAGE_NAME }}:buildcache,mode=max
+
+      - name: Build and push UI Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./UI.Dockerfile
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.REPO_NAME}}/${{ env.UI_IMAGE_NAME }}:${{ github.sha }}
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.REPO_NAME}}/${{ env.UI_IMAGE_NAME }}:buildcache
+          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.REPO_NAME}}/${{ env.UI_IMAGE_NAME }}:buildcache,mode=max
+  
+  deploy:
+    needs: build_and_push
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Executing remote SSH commands to deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: "${{ env.SSH_HOST }}"
+          username: "${{ env.SSH_USER }}"
+          key: "${{ env.SSH_KEY }}"
+          script: |
+            echo ${{ secrets.GITHUB_TOKEN }} | docker login -u ${{ github.actor }} --password-stdin ${{ env.REGISTRY }}
+            docker pull "${{ env.REGISTRY }}/${{ env.REPO_NAME}}/${{ env.API_IMAGE_NAME }}:${{ github.sha }}"
+            docker pull "${{ env.REGISTRY }}/${{ env.REPO_NAME}}/${{ env.UI_IMAGE_NAME }}:${{ github.sha }}"
+            docker stop "${{ env.UI_CONTAINER_NAME }}" || true
+            docker stop "${{ env.API_CONTAINER_NAME }}" || true
+            docker rm "${{ env.UI_CONTAINER_NAME }}" || true
+            docker rm "${{ env.API_CONTAINER_NAME }}" || true
+            docker run -d --name "${{ env.API_CONTAINER_NAME }}" --restart=always -p "${{ env.API_PORT }}" "${{ env.REGISTRY }}/${{ env.REPO_NAME}}/${{ env.API_IMAGE_NAME }}:${{ github.sha }}"
+            docker run -d --name "${{ env.UI_CONTAINER_NAME }}" --restart=always -p "${{ env.UI_PORT }}" "${{ env.REGISTRY }}/${{ env.REPO_NAME}}/${{ env.UI_IMAGE_NAME }}:${{ github.sha }}" 
+```
+
+**5->** Keling endi loyiha CI/CD'da ishga tushirib uni tekshirib ko'ramiz, loyihamiz barcha package va dependencylarni Nexus orqali yuklab olishi kerak.
+
+Ko'rib turganingizdek Github Actions CI/CD muvaffaqiyatli yakunlangan.
+![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/41.png)
+![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/42.png)
+
+Nexusga brazuerdan kirib ko'rganimzida ham o'zgarishlarni sezishimiz mumkin.
+![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/30.png)
+
+Nexusdan **nuget-group** repositoryni ko'rib chiqadigan bo'lsak nexus o'zida saqlayotgan local package va dependencylarni ko'rishimiz mumkin.
+
+![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/39.png)
+
+
+## Qo'shimcha
+<Callout type="info" emoji="">
+
+Qo'shimcha Resurslar
+ * [**Gitlab Server o'rnatish va sozlash**](https://devops-journey.uz/guides/ci-cd/gitlab-server)
+ * [**Gitlab CI | Releaselar va Integrationlar**](https://devops-journey.uz/guides/ci-cd/gitlab-ci-release-integrations)
+ * [**Github Actions bilan Flutter CI/CD**](https://devops-journey.uz/guides/ci-cd/flutter-github-action)
+ * [**Github Actions CI/CD**](https://devops-journey.uz/guides/ci-cd/github-actions-ci-cd)
+ * [**Linux Serverlarga Jenkins o'rnatish**](https://devops-journey.uz/guides/ci-cd/jenkins-ornatish)
+ * [**Koddan Servergacha: Jenkins bilan Docker CI/CD va Discord bilan integratsiya**](https://devops-journey.uz/guides/ci-cd/jenkins-docker-ci-cd)
+ * [**Kubernetes CI/CD | GitHub Actions + Argo CD | GitOps**](https://devops-journey.uz/guides/ci-cd/github-actions-argocd-cicd)
+
+**Sana:** 2025.02.08(2025-yil 8-fevral)
+
+**Oxirgi yangilanish:** 2025.02.08(2025-yil 8-fevral)
+
+**Muallif: Otabek Ismoilov**
+
+| [Telegram](https://t.me/Otabek_Ismoilov) | [GitHub](https://github.com/ismoilovdevml) | [LinkedIn](https://www.linkedin.com/in/otabek-ismoilov/) |
+| - | - | - |
+
+</Callout>
