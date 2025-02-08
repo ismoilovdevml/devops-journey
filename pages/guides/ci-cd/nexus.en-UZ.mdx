@@ -204,3 +204,304 @@ Bu rasmda **maven-public** repositoriyamiz o'z ichiga olgan **maven-central, mav
 ![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/27.png)
 **nuget.org-proxy** repository **proxy** repository bo'lib **https://api.nuget.org/v3/index.json** addresidan nuget packagelarni olish uchun ishlatiladi.
 ![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/28.png)
+
+
+## Loyihalarga Nexusni integratsiya
+
+Bu bosqichda **Maven va NuGet** loyihalarini **Sonatype Nexus Repository Manager** bilan integratsiya qilish va shuningdek, CI/CDga qo'shishni ko'rib chiqamiz. Bu bilan biz Nexus'ni ishlatish orqali **build** vaqtlarini qisqartirish, paketlarni local boshqarish va xavfsizlikni oshirish imkoniyatiga ega bo'lamiz.
+
+### Java Maven
+Platformamizda **[Java Spring Boot Deployment: Gitlab CI va Github Actions](https://devops-journey.uz/guides/ci-cd/java-spring-boot-deployment)** amaliyotida biz Spring Boot Maven projectni GItlab CI va Github Actyions bilan CI/Cd yozib ishga tushirishni ko'rib chiqgandik endi bu bosqichda unga nexus inetgratsiyani ko'rib chiqamiz.
+
+**1->** Loyihangizda `pom.xml` faylga quyidagicha dependencyni qo'shib qo'yamiz.
+
+```xml /nexus.helm.uz/ filename="pom.xml"
+<repositories>
+    <repository>
+        <id>nexus</id>
+        <url>https://nexus.helm.uz/repository/maven-public/</url>
+        <releases>
+            <enabled>true</enabled>
+        </releases>
+        <snapshots>
+            <enabled>true</enabled>
+        </snapshots>
+    </repository>
+</repositories>
+
+<pluginRepositories>
+    <pluginRepository>
+        <id>nexus</id>
+        <url>https://nexus.helm.uz/repository/maven-public/</url>
+        <releases>
+            <enabled>true</enabled>
+        </releases>
+        <snapshots>
+            <enabled>true</enabled>
+        </snapshots>
+    </pluginRepository>
+</pluginRepositories>
+```
+`<repositories>` bo'limi Mavenga Nexus'dagi dependencylarni yuklab olish uchun qayerga murojaat qilish kerakligini bildiradi. `<id>` - Repository'ni identifikatsiya qilish uchun unikal nom (nexus deb belgilangan) `<url>` - Nexus repositoryning manzili (https://nexus.helm.uz/repository/maven-public/). `<releases>` - Release versiyalarning yuklab olinishi yoqilgan (true). `<snapshots>` - Snapshot versiyalar ham qollab-quvvatlanishi yoqilgan (true).
+
+`<pluginRepositories>` Maven plugin'larini Nexus repositorydan yuklash uchun ishlatiladi. Bu Maven build va test jarayonlari uchun zarur bo'lgan plaginlarni Nexus orqali yuklashni taminlaydi.Agar loyiha Maven pluginlari uchun Nexus'dan foydalanmoqchi bo'lsa, ushbu bo'lim kiritilishi shart.
+
+**2->** Loyihangizda `settings.xml` faylga quyidagicha sozlamalarni qo'shib qo'yamiz.
+
+```xml /nexus.helm.uz/ filename="settings.xml" {5-11, 13-20, 22-38, 40-42}
+<settings xmlns="http://maven.apache.org/SETTINGS/1.2.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.2.0 https://maven.apache.org/xsd/settings-1.2.0.xsd">
+    
+    <servers>
+        <server>
+            <id>nexus</id>
+            <username>${env.NEXUS_USER}</username>
+            <password>${env.NEXUS_PASSWORD}</password>
+        </server>
+    </servers>
+
+    <mirrors>
+        <mirror>
+            <id>nexus</id>
+            <mirrorOf>*</mirrorOf>
+            <url>https://nexus.helm.uz/repository/maven-public/</url>
+            <layout>default</layout>
+        </mirror>
+    </mirrors>
+
+    <profiles>
+        <profile>
+            <id>nexus</id>
+            <repositories>
+                <repository>
+                    <id>nexus</id>
+                    <url>https://nexus.helm.uz/repository/maven-public/</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>true</enabled>
+                    </snapshots>
+                </repository>
+            </repositories>
+        </profile>
+    </profiles>
+
+    <activeProfiles>
+        <activeProfile>nexus</activeProfile>
+    </activeProfiles>
+</settings>
+```
+`<servers>` bo'limi Autentifikatsiya konfiglarini o'z ichiga oladi. `<id>` - `pom.xml`dagi repository ID bilan bir xil bo'lishi kerak (nexus). `<username>` va `<password>` - Nexus'ga kirish uchun foydalanuvchi nomi va parol. Nexusga kirish uchun login va parol environment avribale sifatida yozilgan `${env.NEXUS_USER}` va `${env.NEXUS_PASSWORD}`.
+Bu konfiguratsiya Nexusga artifaktlarni yuklash (`mvn deploy`) yoki yuklab olish (`mvn install`) uchun autentifikatsiyani ta'minlaydi.
+
+`<mirrorOf>*</mirrorOf>` - Barcha (*) repository'lar uchun Nexus'ni o'zgartirilgan mirror sifatida ishlatishni bildiradi. `<url>` - Nexus'ning **maven-public** repositoriyasi orqali barcha dependencylarni yuklash bildiradi. `<layout>` esa default Maven repository arxitekturasi ishlatiladi.
+
+Bu bo'lim **Maven Central** yoki boshqa tashqi repositoriyalarni bevosita ishlatish o'rniga, ularni Nexus orqali yuklab olishni ta'minlaydi.
+
+`<profiles>` bo'limi turli xil konfiguratsiyalarni yaratish va ishlatish imkonini beradi, bunda biz `<id>` nexus nomli profil yaratib olamiz va  `<repositories>` bu Maven repositorylarini yaratish uchun ishlatiladi, unga biz Nexus repositoriya urlni qo'shib qo'yamiz va `<activeProfiles>` bo'limida nexusni profilni faollashtiramiz, shunda mvn buyruqlari bajarilganda, Maven ushbu profilni ishlatadi, nexus profili faollashtirilganda, Maven dependencylarni https://nexus.helm.uz/repository/maven-public/ orqali yuklaydi.
+
+**3->** `${env.NEXUS_USER}` va `${env.NEXUS_PASSWORD}` environment variablelarni agar sizda Gitlab bo'lsa Gitlab variablesga yoki Githubda bo'lsa Github Secretsga qo'shib qo'yishimiz kerak bo'ladi.
+
+Gitlabda **Settings -> CI/CD -> Variables** bo'limiga o'tib quyidagicha variablelarni qo'shib qo'yamiz.
+
+`NEXUS_USER` - Nexusga kirish uchun foydalanuvchi nomi.
+![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/32.png)
+`NEXUS_PASSWORD` - Nexusga kirish uchun foydalanuvchi paroli.
+![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/33.png)
+
+Githubda esa **Settings -> Secrets -> New repository secret** bo'limiga o'tib quyidagicha secretlarni qo'shib qo'yamiz.
+
+`NEXUS_USER` - Nexusga kirish uchun foydalanuvchi nomi.
+![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/34.png)
+`NEXUS_PASSWORD` - Nexusga kirish uchun foydalanuvchi paroli.
+![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/35.png)
+
+**4->** Maven loyihani `settings.xml` bilan ishga tushirish uchun Dockerfileni ham yangilashimiz kerak bo'ladi.
+```bash
+COPY settings.xml /root/.m2/settings.xml
+```
+qatorini Dockerfilega qo'shib qo'yamiz.
+    
+```bash filename="Dockerfile" {3}
+FROM maven:3.9.5-eclipse-temurin-17-alpine AS builder
+WORKDIR /app
+COPY settings.xml /root/.m2/settings.xml
+COPY pom.xml .
+RUN mvn dependency:go-offline -B
+COPY src ./src
+RUN mvn package -DskipTests -B
+
+FROM eclipse-temurin:17-alpine
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+WORKDIR /app
+COPY --from=builder /app/target/*.jar app.jar
+RUN chown -R appuser:appgroup /app
+USER appuser
+EXPOSE 8080
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+    CMD wget --spider --quiet http://localhost:8080/actuator/health || exit 1
+ENTRYPOINT ["java", "-jar", "app.jar"]
+```
+
+**5->** Loyihamiz CI/CD'dasida ham o'zgarishlar kiritishimiz kerak bo'ladi.
+
+Gitlab CI uchun `before_script` bo'limiga quyidagicha  yangilamymiz bu qatorlar `sed` yordamida `settings.xml` faylga `NEXUS_USER` va `NEXUS_PASSWORD` environment variablelarni yozadi.
+
+```yaml filename=".gitlab-ci.yml"
+  before_script:
+  - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+  - sed -i "s|\${env.NEXUS_USER}|${NEXUS_USER}|g" settings.xml
+  - sed -i "s|\${env.NEXUS_PASSWORD}|${NEXUS_PASSWORD}|g" settings.xml
+```
+To'liq Gitlab CI `.gitlab-ci.yml` fayli quyidagicha ko'rinishda bo'ladi.
+
+```yaml filename=".gitlab-ci.yml" {26-29}
+stages:
+  - build_and_push
+  - deploy
+
+variables:
+  IMAGE_NAME: waifulist
+  CONTAINER_NAME: waifulist
+  PORT: "8080:8080"
+  REPO_NAME: $CI_PROJECT_PATH
+  REGISTRY: "registry.gitlab.com"
+  SSH_HOST: $SERVER_IP
+  SSH_USER: $SERVER_USERNAME
+  SSH_KEY: $SSH_PRIVATE_KEY
+  SPRING_PROFILES_ACTIVE: dev
+  DEV_DATABASE_URL: $DEV_DATABASE_URL
+  DEV_DATABASE_USERNAME: $DEV_DATABASE_USERNAME
+  DEV_DATABASE_PASSWORD: $DEV_DATABASE_PASSWORD
+
+build_and_push:
+  stage: build_and_push
+  image: docker:stable
+
+  services:
+    - docker:dind
+
+  before_script:
+  - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+  - sed -i "s|\${env.NEXUS_USER}|${NEXUS_USER}|g" settings.xml
+  - sed -i "s|\${env.NEXUS_PASSWORD}|${NEXUS_PASSWORD}|g" settings.xml
+
+  script:
+    - docker build -t "$REGISTRY/$REPO_NAME/$IMAGE_NAME:$CI_COMMIT_SHA" .
+    - docker push "$REGISTRY/$REPO_NAME/$IMAGE_NAME:$CI_COMMIT_SHA"
+
+deploy:
+  stage: deploy
+  image: alpine:latest
+  before_script:
+    - apk add --update --no-cache openssh-client
+
+  script:
+    - mkdir -p ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - ssh-keyscan -H $SSH_HOST >> ~/.ssh/known_hosts 
+    - ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "echo "$CI_JOB_TOKEN" | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY"
+    - ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "docker pull $REGISTRY/$REPO_NAME/$IMAGE_NAME:$CI_COMMIT_SHA"
+    - ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "docker stop $CONTAINER_NAME || true"
+    - ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "docker rm $CONTAINER_NAME || true"
+    - ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no "$SSH_USER@$SSH_HOST" "docker run -d --name $CONTAINER_NAME --restart=always -p $PORT -e SPRING_PROFILES_ACTIVE=$SPRING_PROFILES_ACTIVE -e DEV_DATABASE_URL=$DEV_DATABASE_URL -e DEV_DATABASE_USERNAME=$DEV_DATABASE_USERNAME -e DEV_DATABASE_PASSWORD=$DEV_DATABASE_PASSWORD $REGISTRY/$REPO_NAME/$IMAGE_NAME:$CI_COMMIT_SHA"
+```
+Github Actions uchun.
+
+```yaml filename=".github/workflows/main.yml"
+- name: Replace Nexus Credentials in settings.xml
+  run: |
+    sed -i "s|\${env.NEXUS_USER}|${{ secrets.NEXUS_USER }}|g" settings.xml
+    sed -i "s|\${env.NEXUS_PASSWORD}|${{ secrets.NEXUS_PASSWORD }}|g" settings.xml
+```
+To'liq Github Actions `ci-cd` fayli quyidagicha ko'rinishda bo'ladi.
+
+```yaml filename=".github/workflows/main.yml" {32-35}
+name: Github Actions CI/CD
+ 
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+ 
+env:
+  REPO_NAME: ${{ github.repository }}
+  CONTAINER_NAME: waifulist
+  REGISTRY: ghcr.io
+  SSH_HOST: ${{ secrets.SERVER_IP }}
+  SSH_USER: ${{ secrets.SERVER_USERNAME }}
+  SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+  PORT: 8080:8080
+  SPRING_PROFILES_ACTIVE: dev
+ 
+jobs:
+  build_and_push:
+    runs-on: ubuntu-latest
+    permissions:
+        contents: read
+        packages: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+ 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Replace Nexus Credentials in settings.xml
+        run: |
+          sed -i "s|\${env.NEXUS_USER}|${{ secrets.NEXUS_USER }}|g" settings.xml
+          sed -i "s|\${env.NEXUS_PASSWORD}|${{ secrets.NEXUS_PASSWORD }}|g" settings.xml
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+ 
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: "${{ env.REGISTRY }}/${{ env.REPO_NAME }}:${{ github.sha }}"
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.REPO_NAME }}:buildcache
+          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.REPO_NAME }}:buildcache,mode=max
+
+  deploy:
+    needs: build_and_push
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Executing remote SSH commands to deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: "${{ env.SSH_HOST }}"
+          username: "${{ env.SSH_USER }}"
+          key: "${{ env.SSH_KEY }}"
+          script: |
+            echo ${{ secrets.GITHUB_TOKEN }} | docker login -u ${{ github.actor }} --password-stdin ${{ env.REGISTRY }}
+            docker pull "${{ env.REGISTRY }}/${{ env.REPO_NAME }}:${{ github.sha }}"
+            docker stop "${{ env.CONTAINER_NAME }}" || true
+            docker rm "${{ env.CONTAINER_NAME }}" || true
+            docker run -d --name ${{ env.CONTAINER_NAME }} --restart=always -p ${{ env.PORT }} \
+            -e SPRING_PROFILES_ACTIVE=${{ env.SPRING_PROFILES_ACTIVE }} \
+            -e DEV_DATABASE_URL=${{ secrets.DEV_DATABASE_URL }} \
+            -e DEV_DATABASE_USERNAME=${{ secrets.DEV_DATABASE_USERNAME }} \
+            -e DEV_DATABASE_PASSWORD=${{ secrets.DEV_DATABASE_PASSWORD }} \
+            ${{ env.REGISTRY }}/${{ env.REPO_NAME }}:${{ github.sha }}
+```
+
+**6->** keling endi loyiha CI/CD'da ishga tushirib uni tekshirib ko'ramiz, loyihamiz barcha package va dependencylarni Nexus orqali yuklab olishi kerak.
+
+Gitlab CI'da ko'rib turganinigizdek barcha package va dependencylarni **nexus.helm.uz/repository/maven-public/** manzili orqali yuklab olyapti. 
+![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/31.png)
+Github Actionsda
+![nexus](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/nexus/36.png)
+
