@@ -11,6 +11,10 @@
     "title": "Maqolalar",
     "type": "page"
   },
+  "consultation": {
+    "title": "Konsultatsiya",
+    "type": "page"
+  },
   "404": {
     "type": "page",
     "theme": {

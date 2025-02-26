@@ -65,6 +65,12 @@
     "description": "Paketlar va CI/CD uchun yechim",
     "href": "/guides/ci-cd/nexus"
   },
+  "dotnet-deployment": {
+    "title": ".NET Core Deployment",
+    "icon": "▶️",
+    "description": "Gitlab CI va Github Actions bilan",
+    "href": "/guides/ci-cd/dotnet-deployment"
+  },
   "m1-runner-setup": {
     "title": "Github Actionsga M1 macOS runner qo'shish",
     "icon": "▶️",
