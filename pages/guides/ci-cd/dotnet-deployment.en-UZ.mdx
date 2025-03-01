@@ -8,3 +8,46 @@ import { Callout } from "nextra-theme-docs";
 # .NET Core Deployment: Gitlab CI and Github Actions
 
 ![dotnet-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/dotnet-deployment/banner.png)
+
+
+Ushbu qo'llanmanda **.NET Core** applicationlarini **Gitlab CI** va **Github Actions** yordamida avtomatlashtirilgan holda qanday deploy qilishni ko'rib chiqamiz. Bu qo'llanma **DevOps Engineer**lar va **.NET Developer**lar uchun zarur bo'lgan bilim va ko'nikmalar qamrab oladi. Qo'llanma davomida biz **.NET** loyihalarini qanday tuzlishini, qanday konfiguratsiya qilkishni va secretlar bilan ishlashni ko'rib chiqamiz. 
+
+Shuningdek, biz **Dockerfile** yozishni o'rganamiz va uni samarali ishlashi uchun optimallashtiramiz. Docker asosida konteynerlash jarayonlarini o'zlashtirgach, **GitLab CI/CD** va **GitHub Actions** yordamida CI/CD pipeline'larini sozlash va avtomatlashtirish usullarini ko'rib chiqamiz.
+
+Ushbu qo'llanma orqali siz **.NET** applicationlari uchun CI/CD jarayonlarini muvaffaqiyatli amalga oshirish bo'yicha amaliy yondashuvga ega bo'lasiz va real loyihalarda bu usullarni qo'llash imkoniyatiga ega bo'lasiz.
+
+<Callout type="info" emoji="">
+Ushbu amaliyotda quyidagi **.NET** application kodlaridan foydalanamiz **Gitlab->** [**gitlab.com/ismoilovdev/productapi**](https://gitlab.com/ismoilovdev/productapi), **Github->** [**github.com/devops-journey-uz/productapi**](https://gitlab.com/ismoilovdev/productapi)
+</Callout>
+
+
+## Loyihani tushunish
+
+.NET loyihasini muvaffaqiyatli deploy qilish uchun dastlab uning tuzilishini, ishlash prinsipini va muhim konfiguratsiyalarini to'liq tushunish lozim.
+.NET loyihasi asosan quyidagi tarkibiy qismlardan iborat:
+
+Masalan bizning loyihamiz tuzulishi(**.NET 8**):
+```bash
+productapi/
+├── appsettings.json
+├── Dockerfile
+├── ProductApi.csproj
+├── Program.cs
+├── Readme.md
+├── Controllers
+│   └── ProductController.cs
+├── Data
+│   └── AppDbContext.cs
+├── Migrations
+│   ├── 20250212065937_InitialCreate.cs
+│   ├── 20250212065937_InitialCreate.Designer.cs
+│   └── AppDbContextModelSnapshot.cs
+├── Models
+│   └── Product.cs
+├── Properties
+│   └── launchSettings.json
+└── Services
+    ├── IProductService.cs
+    └── ProductService.cs
+```
+Bu loyiha **.NET 8** versiyasida yaratilgan va **Entity Framework Core** yordamida **PostgreSQL** bazasiga ulanadi. Loyiha productlarni manage qilish uchun yaratilgan oddiy **CRUD API** hisoblanadi. Testlash uchun Swaaqer yordamida **Swagger UI** qo'llanilgan.

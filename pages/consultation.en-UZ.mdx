@@ -11,7 +11,48 @@ import Image from 'next/image'
       MUTAXASSISLAR
     </h2>
 
-    <div className="grid place-items-center grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+    {/* Konsultatsiya haqida ma'lumot */}
+    <div className="bg-green-50 dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-green-300 dark:border-gray-700 mb-12">
+      <p className="text-lg text-gray-800 dark:text-gray-200">
+        Mutaxassislar bilan konsultatsiya olib, biznesingizdagi texnik muammolarni tez va samarali hal qiling.Har bir mutaxassis o‘z sohasida tajribaga ega va real loyihalarda ishlagan.
+      </p>
+
+      <h3 className="mt-6 font-bold text-green-700 dark:text-green-400">
+        Kimlar uchun
+      </h3>
+      <ul className="mt-2 space-y-2">
+        {[
+          "IT kompaniyalari va jamoalari",
+          "Startap va yangi biznes egalari",
+          "Katta va o‘rta biznes vakillari",
+          "O‘z loyihasini rivojlantirayotgan tadbirkorlar"
+        ].map((item, idx) => (
+          <li key={idx} className="flex items-center text-gray-800 dark:text-gray-200">
+            <span className="inline-block w-3 h-3 mr-2 bg-green-500 rounded-full"></span>
+            {item}
+          </li>
+        ))}
+      </ul>
+
+      <h3 className="mt-6 font-bold text-green-700 dark:text-green-400">
+        Mas'uliyat va cheklovlar
+      </h3>
+      <ul className="mt-2 space-y-2">
+        {[
+          "Faqat texnik va IT masalalar bo‘yicha maslahat beriladi.",
+          "Maxfiylik saqlanadi, lekin biznes sirlarini oshkor etish tavsiya etilmaydi.",
+          "Konsultatsiyadan tashqari ishlar alohida kelishiladi va to‘lov asosida bajariladi."
+        ].map((item, idx) => (
+          <li key={idx} className="flex items-center text-gray-800 dark:text-gray-200">
+            <span className="inline-block w-3 h-3 mr-2 bg-red-500 rounded-full"></span>
+            {item}
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    {/* Mutaxassislar kartalari */}
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
       {[
         {
           name: "Akhmad Kadirov",
@@ -22,7 +63,7 @@ import Image from 'next/image'
           consultTime: "60 min",
           price: "900.000 so'm",
           linkedin: "https://www.linkedin.com/in/akhmadiy/",
-          email: "mailto:akhmadiy@gmail.com?subject=Consultatsiya so'rovi&body=Salom, men consultatsiyaga yozilmoqchiman..."
+          email: "mailto:akhmadiy@gmail.com"
         },
         {
           name: "Mansur Jo'rayev",
@@ -33,7 +74,7 @@ import Image from 'next/image'
           consultTime: "60 min",
           price: "1.200.000 so'm",
           linkedin: "https://www.linkedin.com/in/mansur-juraev",
-          email: "mailto:jurayevmansurbek667@gmail.com?subject=Consultatsiya so'rovi&body=Salom, men consultatsiyaga yozilmoqchiman..."
+          email: "mailto:jurayevmansurbek667@gmail.com"
         },
         {
           name: "Otabek Ismoilov",
@@ -44,7 +85,7 @@ import Image from 'next/image'
           consultTime: "60 min",
           price: "800.000 so'm",
           linkedin: "https://www.linkedin.com/in/otabek-ismoilov/",
-          email: "mailto:ismoilovdev@gmail.com?subject=Consultatsiya so'rovi&body=Salom, men consultatsiyaga yozilmoqchiman..."
+          email: "mailto:ismoilovdev@gmail.com"
         },
         {
           name: "Sherzod Kuvandikov",
@@ -62,37 +103,21 @@ import Image from 'next/image'
           key={index}
           className="bg-white w-64 dark:bg-gray-800 rounded-xl shadow-lg p-3 py-6 hover:shadow-2xl transition-transform transform hover:-translate-y-2 border border-green-500 flex flex-col justify-between"
         >
-          <div classNam='h-64'>
-            {/* Profil rasmi */}
-            <div className="w-24 h-24 mx-auto rounded-full overflow-hidden border-4 border-green-500">
-              <Image
-                src={expert.img}
-                alt={expert.name}
-                width={96}
-                height={96}
-                className="object-cover w-full h-full"
-              />
+          <div className="flex flex-col items-center space-y-2">
+            <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-green-500">
+              <Image src={expert.img} alt={expert.name} width={96} height={96} />
             </div>
-
-            {/* Ism va lavozim */}
-            <div className="text-center mt-4">
-              <h4 className="text-xl font-bold text-gray-800 dark:text-gray-100">
-                {expert.name}
-              </h4>
-              <h5 className="text-sm text-gray-600 dark:text-gray-400">
-                {expert.role}
-              </h5>
-            </div>
+            <h4 className="text-lg font-bold text-gray-800 dark:text-gray-100">{expert.name}</h4>
+            <h5 className="text-sm text-gray-600 dark:text-gray-400">{expert.role}</h5>
           </div>
 
-          {/* Ma'lumotlar bloki */}
-          <div className="mt-6 space-y-3">
+          <div className="mt-4 space-y-2 text-sm">
             <div className="bg-gray-100 dark:bg-gray-700 p-3 rounded-lg">
               <span className="font-semibold text-green-600">Tajriba:</span>
               <span className="ml-2 text-gray-800 dark:text-gray-200">{expert.experience}</span>
             </div>
             <div className="bg-gray-100 dark:bg-gray-700 p-3 rounded-lg">
-              <span className="font-semibold text-green-600">Ishlagan joylari:</span>
+              <span className="font-semibold text-green-600">Ish joylari:</span>
               <span className="ml-2 text-gray-800 dark:text-gray-200">{expert.workplaces}</span>
             </div>
             <div className="bg-gray-100 dark:bg-gray-700 p-3 rounded-lg">
@@ -105,22 +130,14 @@ import Image from 'next/image'
             </div>
           </div>
 
-          {/* Tugmalar */}
           <div className="flex justify-center space-x-3 mt-4">
-            <a
-              href={expert.linkedin}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <a href={expert.linkedin} target="_blank" rel="noopener noreferrer">
               <button className="bg-green-500 text-white px-4 py-2 rounded-md text-sm font-semibold hover:bg-green-600 hover:scale-105 transform transition">
                 LinkedIn
-              </button>  
+              </button>
             </a>
-
             <a href={expert.email}>
-              <button
-                className="bg-green-500 text-white px-4 py-2 rounded-md text-sm font-semibold hover:bg-green-600 hover:scale-105 transform transition"
-              >
+              <button className="bg-green-500 text-white px-4 py-2 rounded-md text-sm font-semibold hover:bg-green-600 hover:scale-105 transform transition">
                 Yozilish
               </button>
             </a>
