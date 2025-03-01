@@ -36,6 +36,41 @@ Whether you're a seasoned DevOps practitioner, an aspiring enthusiast, or someon
 
 ---
 
+## 🚀 Getting Started
+
+We've made it easy to get started with DevOps Journey using our setup script and Makefile:
+
+```bash
+# Clone the repository
+git clone https://github.com/ismoilovdevml/devops-journey.git
+cd devops-journey
+
+# Install system requirements (Node.js and pnpm)
+make setup
+
+# Set up development environment with pnpm
+make setup-dev
+
+# Start the development server
+make dev
+```
+
+The Makefile provides many useful commands to simplify development:
+
+- `make setup` - Install system requirements (Node.js and pnpm)
+- `make help` - Display all available commands
+- `make install` - Install dependencies using pnpm
+- `make dev` - Start development server
+- `make build` - Build for production
+- `make docker-build` - Build Docker image
+- `make docker-run` - Run in Docker container
+
+See the [IMPROVEMENTS.md](IMPROVEMENTS.md) file for details on recent enhancements to the project.
+
+For detailed information about system requirements and installation options, see [SYSTEM_REQUIREMENTS.md](SYSTEM_REQUIREMENTS.md).
+
+For Docker deployment and optimization details, see [DOCKER.md](DOCKER.md).
+
 ## 🌟 Join Us
 
 Begin or continue your DevOps Journey with us! Dive into our resources, connect with fellow learners and practitioners, and contribute to shaping the future of DevOps.
