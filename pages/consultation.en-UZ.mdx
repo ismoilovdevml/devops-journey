@@ -96,17 +96,23 @@ import Image from 'next/image'
 
           {/* Tugmalar */}
           <div className="flex justify-center space-x-3 mt-4">
-            <button
-              className="bg-green-500 text-white px-4 py-2 rounded-md text-sm font-semibold 
-                         hover:bg-green-600 hover:scale-105 transform transition"
-            >
-              LinkedIn
-            </button>
-            <button
-              className="bg-green-500 text-white px-4 py-2 rounded-md text-sm font-semibold hover:bg-green-600 hover:scale-105 transform transition"
-            >
-              Yozilish
-            </button>
+          <a
+              href="https://www.linkedin.com/in/shkuvandikov/"
+              target="_blank"
+              rel="noopener noreferrer">
+                <button className="bg-green-500 text-white px-4 py-2 rounded-md text-sm font-semibold hover:bg-green-600 hover:scale-105 transform transition">
+                  LinkedIn
+                </button>  
+              </a>
+            
+            <a href="mailto:shkuvandikov@gmail.com?subject=Consultatsiya so'rovi&body=Salom, men consultatsiyaga yozilmoqchiman...">
+              <button
+                className="bg-green-500 text-white px-4 py-2 rounded-md text-sm font-semibold hover:bg-green-600 hover:scale-105 transform transition"
+              >
+                Yozilish
+              </button>
+            </a>
+            
           </div>
         </div>
       ))}
