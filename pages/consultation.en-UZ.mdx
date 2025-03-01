@@ -5,158 +5,94 @@ showFooter: false
 
 import Image from 'next/image'
 
-<section className="py-10">
-  <div className="max-w-6xl mx-auto px-4">
-    <h2 className="text-center text-3xl font-bold text-gray-800 dark:text-white mb-8">
+<section className="py-12">
+  <div className="max-w-7xl mx-auto px-4">
+    <h2 className="text-center text-4xl font-extrabold text-gray-800 dark:text-white mb-12">
       MUTAXASSISLAR
     </h2>
 
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-      {/* 1-Karta */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg transition-transform transform hover:-translate-y-1 p-6">
-        {/* Rasm qismi */}
-        <div className="w-24 h-24 mx-auto rounded-full overflow-hidden">
-          <Image
-            src="https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/authors/otabek_ismoilov.jpg" 
-            alt="Otabek Ismoilov"
-            width={96}
-            height={96}
-            className="object-cover w-full h-full"
-          />
-        </div>
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+      {[
+        {
+          name: "Otabek Ismoilov",
+          role: "DevOps Engineer",
+          img: "https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/authors/otabek_ismoilov.jpg",
+          experience: "3 yil+",
+          workplaces: "Ucell, Aloqabank, Fincube",
+          consultTime: "60 min",
+          price: "800.000 so'm",
+          linkedin: "https://www.linkedin.com/in/otabek-ismoilov/",
+          email: "mailto:ismoilovdev@gmail.com?subject=Consultatsiya so'rovi&body=Salom, men consultatsiyaga yozilmoqchiman..."
+        },
+        {
+          name: "Mansur Jo'rayev",
+          role: "SRE Engineer",
+          img: "https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/authors/mansur_jurayev.jpeg",
+          experience: "4 yil+",
+          workplaces: "Ucell, DavrBank, Fincube",
+          consultTime: "60 min",
+          price: "1.200.000 so'm",
+          linkedin: "https://www.linkedin.com/in/mansur-juraev",
+          email: "mailto:jurayevmansurbek667@gmail.com?subject=Consultatsiya so'rovi&body=Salom, men consultatsiyaga yozilmoqchiman..."
+        },
+        {
+          name: "Sherzod Kuvandikov",
+          role: "DevOps Engineer | CKA",
+          img: "https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/authors/sherzod_kuvandikov.jpg",
+          experience: "4 yil+",
+          workplaces: "Texnomart, Optochka, iTech Art Group",
+          consultTime: "60 min",
+          price: "800.000 so'm",
+          linkedin: "https://www.linkedin.com/in/shkuvandikov/",
+          email: "mailto:shkuvandikov@gmail.com?subject=Consultatsiya so'rovi&body=Salom, men consultatsiyaga yozilmoqchiman..."
+        },
+      ].map((expert, index) => (
+        <div
+          key={index}
+          className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 hover:shadow-2xl transition-transform transform hover:-translate-y-2 border border-green-500"
+        >
+          {/* Profil rasmi */}
+          <div className="w-24 h-24 mx-auto rounded-full overflow-hidden border-4 border-green-500">
+            <Image
+              src={expert.img}
+              alt={expert.name}
+              width={96}
+              height={96}
+              className="object-cover w-full h-full"
+            />
+          </div>
 
-        {/* Ma'lumot qismi */}
-        <div className="text-center mt-4">
-          <h4 className="text-lg font-semibold text-gray-800 dark:text-gray-100">
-            Otabek Ismoilov
-          </h4>
-          <h5 className="text-sm text-gray-600 dark:text-gray-400">
-            DevOps Engineer
-          </h5>
+          {/* Ism va lavozim */}
+          <div className="text-center mt-4">
+            <h4 className="text-xl font-bold text-gray-800 dark:text-gray-100">
+              {expert.name}
+            </h4>
+            <h5 className="text-sm text-gray-600 dark:text-gray-400">
+              {expert.role}
+            </h5>
+          </div>
 
-          <div className="mt-2 text-gray-700 dark:text-gray-300 text-sm">
-            Tajriba: 3 yil+
-          </div>
-          <div className="mt-1 text-gray-700 dark:text-gray-300 text-sm">
-            Ishlagan joylari: Ucell, Aloqabank, Fincube
-          </div>
-          <div className="mt-1 text-gray-700 dark:text-gray-300 text-sm">
-            Consultatsiya vaqti: 60 min
-          </div>
-          <div className="mt-1 text-gray-700 dark:text-gray-300 text-sm">
-            Narxi: 800ming so'm
+          {/* Ma'lumotlar bloki */}
+          <div className="mt-6 space-y-3">
+            <div className="bg-gray-100 dark:bg-gray-700 p-3 rounded-lg">
+              <span className="font-semibold text-green-600">Tajriba:</span>
+              <span className="ml-2 text-gray-800 dark:text-gray-200">{expert.experience}</span>
+            </div>
+            <div className="bg-gray-100 dark:bg-gray-700 p-3 rounded-lg">
+              <span className="font-semibold text-green-600">Ishlagan joylari:</span>
+              <span className="ml-2 text-gray-800 dark:text-gray-200">{expert.workplaces}</span>
+            </div>
+            <div className="bg-gray-100 dark:bg-gray-700 p-3 rounded-lg">
+              <span className="font-semibold text-green-600">Davomiyligi:</span>
+              <span className="ml-2 text-gray-800 dark:text-gray-200">{expert.consultTime}</span>
+            </div>
+            <div className="bg-gray-100 dark:bg-gray-700 p-3 rounded-lg">
+              <span className="font-semibold text-green-600">Narxi:</span>
+              <span className="ml-2 text-gray-800 dark:text-gray-200">{expert.price}</span>
+            </div>
           </div>
 
           {/* Tugmalar */}
-          <div className="flex justify-center space-x-3 mt-4">
-            {/* LinkedIn button */}
-            <a
-              href="https://www.linkedin.com/in/otabek-ismoilov/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="bg-green-500 text-white px-4 py-2 rounded-md text-sm font-semibold 
-                         hover:bg-green-600 hover:scale-105 transform transition"
-            >
-              LinkedIn
-            </a>
-            {/* Email button */}
-            <a
-              href="mailto:ismoilovdev@gmail.com?subject=Consultatsiya so'rovi&body=Salom, men consultatsiyaga yozilmoqchiman..."
-              className="bg-green-500 text-white px-4 py-2 rounded-md text-sm font-semibold 
-                         hover:bg-green-600 hover:scale-105 transform transition"
-            >
-              Yozilish
-            </a>
-          </div>
-        </div>
-      </div>
-
-      {/* 2-Karta */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg transition-transform transform hover:-translate-y-1 p-6">
-        <div className="w-24 h-24 mx-auto rounded-full overflow-hidden">
-          <Image
-            src="https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/authors/mansur_jurayev.jpeg"
-            alt="Mansur Jo'rayev"
-            width={96}
-            height={96}
-            className="object-cover w-full h-full"
-          />
-        </div>
-
-        <div className="text-center mt-4">
-          <h4 className="text-lg font-semibold text-gray-800 dark:text-gray-100">
-            Mansur Jo'rayev
-          </h4>
-          <h5 className="text-sm text-gray-600 dark:text-gray-400">
-            SRE Engineer
-          </h5>
-
-          <div className="mt-2 text-gray-700 dark:text-gray-300 text-sm">
-            Tajriba: 4 yil+
-          </div>
-          <div className="mt-1 text-gray-700 dark:text-gray-300 text-sm">
-            Ishlagan joylari: Ucell, DavrBank, Fincube
-          </div>
-          <div className="mt-1 text-gray-700 dark:text-gray-300 text-sm">
-            Consultatsiya vaqti: 60 min
-          </div>
-          <div className="mt-1 text-gray-700 dark:text-gray-300 text-sm">
-            Narxi: 1mln200ming so'm
-          </div>
-
-          <div className="flex justify-center space-x-3 mt-4">
-            <a
-              href="https://www.linkedin.com/in/mansur-juraev"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="bg-green-500 text-white px-4 py-2 rounded-md text-sm font-semibold 
-                         hover:bg-green-600 hover:scale-105 transform transition"
-            >
-              LinkedIn
-            </a>
-            <a
-              href="mailto:jurayevmansurbek667@gmail.com?subject=Consultatsiya so'rovi&body=Salom, men consultatsiyaga yozilmoqchiman..."
-              className="bg-green-500 text-white px-4 py-2 rounded-md text-sm font-semibold 
-                         hover:bg-green-600 hover:scale-105 transform transition"
-            >
-              Yozilish
-            </a>
-          </div>
-        </div>
-      </div>
-      {/* 3-Karta */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg transition-transform transform hover:-translate-y-1 p-6">
-        <div className="w-24 h-24 mx-auto rounded-full overflow-hidden">
-          <Image
-            src="https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/authors/sherzod_kuvandikov.jpg"
-            alt="Sherzod Kuvandikov"
-            width={96}
-            height={96}
-            className="object-cover w-full h-full"
-          />
-        </div>
-
-        <div className="text-center mt-4">
-          <h4 className="text-lg font-semibold text-gray-800 dark:text-gray-100">
-            Sherzod Kuvandikov
-          </h4>
-          <h5 className="text-sm text-gray-600 dark:text-gray-400">
-            DevOps Engineer | CKA
-          </h5>
-
-          <div className="mt-2 text-gray-700 dark:text-gray-300 text-sm">
-            Tajriba: 4 yil+
-          </div>
-          <div className="mt-1 text-gray-700 dark:text-gray-300 text-sm">
-            Ishlagan joylari: Texnomart, Optochka, iTech Art Group
-          </div>
-          <div className="mt-1 text-gray-700 dark:text-gray-300 text-sm">
-            Consultatsiya vaqti: 60 min
-          </div>
-          <div className="mt-1 text-gray-700 dark:text-gray-300 text-sm">
-            Narxi: 800ming so'm
-          </div>
-
           <div className="flex justify-center space-x-3 mt-4">
             <a
               href="https://www.linkedin.com/in/shkuvandikov/"
@@ -176,7 +112,7 @@ import Image from 'next/image'
             </a>
           </div>
         </div>
-      </div>
+      ))}
     </div>
   </div>
 </section>
