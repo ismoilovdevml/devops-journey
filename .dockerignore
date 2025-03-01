@@ -1,1 +1,48 @@
+# Dependencies
 node_modules
+.pnpm-store
+
+# Build outputs
+.next
+out
+dist
+build
+
+# Development files
+.git
+.github
+.vscode
+.idea
+.env*
+!.env.example
+
+# Testing and documentation
+__tests__
+**/*.test.*
+**/*.spec.*
+**/*.stories.*
+coverage
+.nyc_output
+
+# Logs and caches
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.eslintcache
+.stylelintcache
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Project specific
+README.md
+CONTRIBUTING.md
+LICENSE
+CHANGELOG.md
+Makefile
+setup.sh
+.nvmrc
+.prettierrc
+.eslintrc*
