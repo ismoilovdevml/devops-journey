@@ -36,13 +36,13 @@ import Image from 'next/image'
       </h3>
       <ul className="mt-2 space-y-2">
         {[
-          "Onboarding jarayoni, loyihaga yechim berishdan oldin o'rganib chiqib kegin yechim qilinadi.",
+          "Onboarding jarayoni, loyihaga yechim berishdan oldin o'rganib chiqib keyin yechim qilinadi.",
           "Maxvfiylik siyosatiga amal qilinadi ikki tomondan.",
           "Konsultatsiyadan tashqari ishlarda ham kelishuvlar qilishimiz mumkin.",
           "Taklif qilinayotgan mutaxasisslar bilan ish kelishuvlarini o'zingiz belgilaysiz."
         ].map((item, idx) => (
           <li key={idx} className="flex items-center text-gray-800 dark:text-gray-200">
-            <span className="inline-block w-3 h-3 mr-2 bg-red-500 rounded-full"></span>
+            <span className="inline-block w-3 h-3 mr-2 bg-green-500 rounded-full"></span>
             {item}
           </li>
         ))}
@@ -76,6 +76,17 @@ import Image from 'next/image'
           price: "1.200.000 so'm",
           linkedin: "https://www.linkedin.com/in/mansur-juraev",
           email: "mailto:jurayevmansurbek667@gmail.com?subject=Consultatsiya so'rovi&body=Salom, men consultatsiyaga yozilmoqchiman..."
+        },
+        {
+          name: "Manuchehr Usmonov",
+          role: "Hardware and Software engineer",
+          img: "https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/authors/manuchehr_usmonov.jpg",
+          experience: "10 yil+",
+          workplaces: "Shaxsiy biznes, IT-Park, Uzinfocom",
+          consultTime: "60 min",
+          price: "1.200.000 so'm",
+          linkedin: "https://manu.uz/",
+          email: "mailto:yetimdasturhi@gmail.com?subject=Consultatsiya so'rovi&body=Salom, men consultatsiyaga yozilmoqchiman..."
         },
         {
           name: "Otabek Ismoilov",
