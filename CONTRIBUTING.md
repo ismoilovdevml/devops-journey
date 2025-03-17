@@ -122,7 +122,7 @@ Rasmda ushbu mavzu uchun `k8s-kirish.en-US.mdx` fayli ochilgan siz ham yangi mav
   }
 ```
 
-`k8s-kirish` bu fayl nomi hisoblanaadi va bu yerga fayl nomi to'gri kiritilishi kerak. `"tittle"` esa bu mavzuning sarlavhasi hisoblanadi. `"description"` bu mavzuning qisqachi izohi. `"href"` mavzu joylashgan yo'lni tasvirlaydi.
+`k8s-kirish` bu fayl nomi hisoblanaadi va bu yerga fayl nomi to'gri kiritilishi kerak. `"title"` esa bu mavzuning sarlavhasi hisoblanadi. `"description"` bu mavzuning qisqachi izohi. `"href"` mavzu joylashgan yo'lni tasvirlaydi.
 
 ## Sahifalarga ishlov berish
 
