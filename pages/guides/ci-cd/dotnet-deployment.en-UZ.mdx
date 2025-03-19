@@ -10,6 +10,8 @@ import { Callout } from "nextra-theme-docs";
 ![dotnet-deployment](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/dotnet-deployment/banner.png)
 
 
+## Kirish 
+
 Ushbu qo'llanmanda **.NET Core** applicationlarini **Gitlab CI** va **Github Actions** yordamida avtomatlashtirilgan holda qanday deploy qilishni ko'rib chiqamiz. Bu qo'llanma **DevOps Engineer**lar va **.NET Developer**lar uchun zarur bo'lgan bilim va ko'nikmalar qamrab oladi. Qo'llanma davomida biz **.NET** loyihalarini qanday tuzlishini, qanday konfiguratsiya qilkishni va secretlar bilan ishlashni ko'rib chiqamiz. 
 
 Shuningdek, biz **Dockerfile** yozishni o'rganamiz va uni samarali ishlashi uchun optimallashtiramiz. Docker asosida konteynerlash jarayonlarini o'zlashtirgach, **GitLab CI/CD** va **GitHub Actions** yordamida CI/CD pipeline'larini sozlash va avtomatlashtirish usullarini ko'rib chiqamiz.
@@ -19,6 +21,20 @@ Ushbu qo'llanma orqali siz **.NET** applicationlari uchun CI/CD jarayonlarini mu
 <Callout type="info" emoji="">
 Ushbu amaliyotda quyidagi **.NET** application kodlaridan foydalanamiz **Gitlab->** [**gitlab.com/ismoilovdev/productapi**](https://gitlab.com/ismoilovdev/productapi), **Github->** [**github.com/devops-journey-uz/productapi**](https://gitlab.com/ismoilovdev/productapi)
 </Callout>
+
+**.NET** platformasi Microsoft tomonidan ishlab chiqilgan bo'lib, birinchi versiyasi 2002-yilda **.NET Framework** nomi bilan taqdim etilgan. Dastlab, u asosan Windows muhitida ishlash uchun mo'ljallangan edi, vaqt o'tishi bilan, ayniqsa, cloud computing va microservices arxitekturasining rivojlanishi bilan, Microsoft kross-platforma va open-source bo'lgan yangi tizimni yaratishga qaror qildi. Shu tariqa, 2016-yilda **.NET Core 1.0** taqdim etildi. U modullashtirilgan, high-performance va container-friendly texnologiya hisoblanadi. Keyinchalik, **.NET 5** dan boshlab, Microsoft barcha **.NET** versiyalarini birlashgan .NET ekotizimiga aylantirdi va .NET Core nomi .NET deb o'zgartirildi. .NET platformasining yangi versiyalari har yili, odatda noyabr oyida chiqariladi. .NET'ning eng so'nggi versiyasi 2024-yil noyabr oyida chiqarilgan **.NET 9**, joriy **LTS** versiyasi esa **.NET 8** bo'lib, 2023-yil noyabr oyida chiqarilgan.
+
+**.NET Core** **.NET Framework** ning davomchisi bo'lib, u monolit arxitektura o'rniga mikroservis va cloud-native applicationlarni yaratishga moslashtirilgan. **.NET Framework** faqatgina Windows uchun mo'ljallangan bo'lsa, **.NET Core** platformadan mustaqil bo'lib, **Docker, Kubernetes** va **cloud infratuzilma**lariga moslashgan.
+
+.NET Core dasturlarining ishlash muhiti quyidagilardan iborat:
+
+**SDK** (**S**oftware **D**evelopment **K**it) - dasturlarni ishlab chiqish va build qilish uchun kerakli vositalar.
+
+**Runtime** - kompilyatsiya qilingan ilovani(applicationni) ishga tushirish uchun zaruriy komponentlar.
+
+**NuGet Package Manager** - .NET Core dasturlarini yaratish va ulash uchun kerakli paketlar.
+
+.NET Core cross-platform bo'lib, uni Windows, Linux va MacOS da ishlatish mumkin. Linux va MacOS muhitida u bash terminal yoki Docker konteynerlar orqali ishlab chiqilishi mumkin, bu esa uni DevOps va cloud-native yechimlar uchun ideal variantga aylantiradi.
 
 
 ## Loyihani tushunish
