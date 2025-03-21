@@ -67,3 +67,35 @@ productapi/
     └── ProductService.cs
 ```
 Bu loyiha **.NET 8** versiyasida yaratilgan va **Entity Framework Core** yordamida **PostgreSQL** bazasiga ulanadi. Loyiha productlarni manage qilish uchun yaratilgan oddiy **CRUD API** hisoblanadi. Testlash uchun Swaaqer yordamida **Swagger UI** qo'llanilgan.
+
+**.NET Core** loyihalari odatda quyidagi asosiy papkalar va fayllardan tashkil topgan bo'ladi:
+
+* `Controllers/` - API yoki MVC ilovalarida so'rovlarni(requestlarni) boshqaruvchi classlar joylashadi.
+
+* `Models/` - ma'lumotlar strukturasi (model) classlari.
+
+* `Data/` - kontekst fayli (masalan, `AppDbContext.cs`) va ma'lumotlar bazasi bilan bog'liq logika.
+
+* `Services/` - biznes logika (servis layerlari).
+
+* `Migrations/` - Entity Framework orqali generatsiya qilingan migratsiyalar.
+
+**Program.cs** va **Startup.cs** (yoki **builder.Services** sintaksisi)  applicationing asosiy ishga tushirish nuqtasi va konfiguratsiyasi. `appsettings.json`, `appsettings.Development.json` - bu konfiguratsiya fayllari hisoblanadi.
+
+**ASP.NET Core** quyidagi application turlarini yaratishga imkon beradi:
+
+* Web API - RESTful API yaratish uchun.
+
+* MVC (Model-View-Controller) - klassik web-ilovalar uchun.
+
+* Console Applications - backround servicelar, servislar yoki oddiy dasturlar uchun.
+
+Konfiguratsiya fayllari orasida eng muhimlaridan biri `appsettings.json` bo'lib, unda connection string, log level, custom konfiguratsiyalar saqlanadi. Har bir environment uchun alohida fayl (appsettings.Development.json, appsettings.Production.json) bo'lishi mumkin.
+
+Dependency Injection (DI) .NET Core da by-default qo'llab-quvvatlanadi. `Startup.cs` yoki `Program.cs` da `services.AddTransient`, `AddScoped`, `AddSingleton` orqali servislar DI konteynerga qo'shiladi va kontrollerlarda konstruktor orqali chaqiriladi.
+
+Deployment vaqtida application turli envikronmentlarda ishlashi mumkin (**Development, Staging, Production**), shuning uchun konfiguratsiyalarni `appsettings.{Environment}.json` fayllari orqali ajratib borish tavsiya qilinadi.
+
+Connection string larni `appsettings.json` yoki Environment Variables orqali boshqarish mumkin. Maxfiy ma'lumotlar (masalan, parollar) Secret Manager, Azure Key Vault, Hashicorp Vault yoki environment variable orqali xavfsiz saqlanishi kerak.
+
+Logging uchun .NET Core ichki **ILogger** interfeysini qo'llab-quvvatlaydi. Qo'shimcha logging librarylari sifatida **Serilog**, **NLog**, yoki **Application Insights** ishlatilishi mumkin.
