@@ -28,6 +28,8 @@
 
         # Development environment
         devShells.default = import ./shell.nix {inherit pkgs;};
+
+        packages.default = pkgs.callPackage ./default.nix {inherit pkgs;};
       }
     );
 }

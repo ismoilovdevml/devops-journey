@@ -1,0 +1,20 @@
+name: Test CI
+
+on: [push, pull_request]
+
+jobs:
+  test-flake:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@main
+
+      - name: Check up flake configuration
+        run: nix flake check --all-systems --show-trace
+
+      - name: Build website
+        run: nix build

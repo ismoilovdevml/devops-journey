@@ -11,6 +11,7 @@ const withNextra = require('nextra')({
 
 /** @type {import('next').NextConfig} */
 const config = {
+  output: 'standalone',
   i18n: {
     locales: ['en-UZ'],
     defaultLocale: 'en-UZ',
