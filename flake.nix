@@ -31,5 +31,9 @@
 
         packages.default = pkgs.callPackage ./default.nix {inherit pkgs;};
       }
-    );
+    )
+    // {
+      # Deployment module
+      nixosModules.server = import ./module.nix self;
+    };
 }
