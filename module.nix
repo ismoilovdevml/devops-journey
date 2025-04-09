@@ -16,6 +16,7 @@ flake: {
   caddy = lib.mkIf (cfg.enable && cfg.proxy.enable && cfg.proxy.proxy == "caddy") {
     services.caddy.virtualHosts = lib.debug.traceIf (builtins.isNull cfg.proxy.domain) "proxy.domain can't be null, please specicy it properly!" {
       "${cfg.proxy.domain}" = {
+        serverAliases = cfg.proxy.aliases;
         extraConfig = ''
           reverse_proxy 127.0.0.1:${toString cfg.port}
         '';
@@ -133,6 +134,13 @@ in {
           default = null;
           example = "devops-journey.uz";
           description = "Domain to use while adding configurations to web proxy server";
+        };
+
+        aliases = mkOption {
+          type = with types; listOf str;
+          default = [];
+          example = ["www.devops-journey.uz"];
+          description = "List of domain aliases to add to domain";
         };
 
         proxy = mkOption {
