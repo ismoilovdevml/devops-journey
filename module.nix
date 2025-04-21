@@ -30,6 +30,7 @@ flake: {
       "${cfg.proxy.domain}" = {
         addSSL = true;
         enableACME = true;
+        serverAliases = cfg.proxy.aliases;
         locations."/" = {
           proxyPass = "http://127.0.0.1:${toString cfg.port}";
           proxyWebsockets = true;
