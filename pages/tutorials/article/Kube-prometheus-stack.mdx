@@ -1,0 +1,445 @@
+# Kube-Prometheus-Stack O'rnatish va Tashqi Monitoring Serverga Ulash Qo'llanmasi 
+
+Bu qo'llanma Kubernetes klasterida kube-prometheus-stack o'rnatish va uni tashqi monitoring serverga (198.34.2.12) ulash uchun qadamma-qadam ko'rsatmalarni o'z ichiga oladi. 
+
+## Talab qilinadigan narsalar
+
+- Ishlab turgan Kubernetes klasteri
+- kubectl va helm o'rnatilgan
+- Klaster administratori huquqlari
+- Tashqi monitoring server (198.34.2.12) ga ulanish imkoniyati
+
+## 1-Qadam: Helm o'rnatish (agar o'rnatilmagan bo'lsa)
+
+```bash
+curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+```
+
+Helm versiyasini tekshirish:
+
+```bash
+helm version
+```
+
+## 2-Qadam: Prometheus Community Helm repositoriyasini qo'shish
+
+```bash
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
+```
+
+## 3-Qadam: Monitoring namespace yaratish
+
+```bash
+kubectl create namespace monitoring
+```
+
+## 4-Qadam: Tashqi monitoring server uchun autentifikatsiya ma'lumotlarini saqlash
+
+Tashqi Prometheus serveriga ulanish uchun autentifikatsiya ma'lumotlarini saqlash uchun Kubernetes Secret yaratamiz:
+
+```bash
+# Agar tashqi Prometheus serverda autentifikatsiya kerak bo'lmasa, bu qadamni o'tkazib yuborishingiz mumkin
+kubectl create secret generic prometheus-remote-write-auth \
+  --from-literal=username=admin \
+  --from-literal=password=admin \
+  -n monitoring
+```
+
+> Eslatma: `admin` va `admin` o'rniga tashqi Prometheus serveringiz uchun haqiqiy ma'lumotlarni kiriting. Agar tashqi Prometheus serverda autentifikatsiya kerak bo'lmasa, bu qadamni o'tkazib yuborishingiz mumkin va keyingi qadamlarda basicAuth konfiguratsiyasini olib tashlashingiz kerak.
+
+## 5-Qadam: Kube-prometheus-stack konfiguratsiyasini tayyorlash
+
+Quyidagi konfiguratsiya faylini `values.yaml` nomi bilan saqlang:
+
+```yaml
+# values.yaml
+prometheus:
+  prometheusSpec:
+    # Tashqi Prometheus serverga remote write konfiguratsiyasi
+    remoteWrite:
+      - url: "http://198.34.2.12:9090/api/v1/write"
+        # Agar tashqi Prometheus serverda autentifikatsiya kerak bo'lmasa, quyidagi basicAuth qismini olib tashlang
+        basicAuth:
+          username:
+            name: prometheus-remote-write-auth
+            key: username
+          password:
+            name: prometheus-remote-write-auth
+            key: password
+    resources:
+      requests:
+        memory: 1Gi
+        cpu: 500m
+      limits:
+        memory: 2Gi
+        cpu: 1000m
+    # Prometheus CRD konfiguratsiyasi
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 10Gi
+
+# Klasterdagi 50 pod va 50 service uchun ServiceMonitor konfiguratsiyasi
+prometheus:
+  prometheusSpec:
+    serviceMonitorSelector: {}
+    serviceMonitorNamespaceSelector: {}
+    podMonitorSelector: {}
+    podMonitorNamespaceSelector: {}
+
+# Grafana konfiguratsiyasi
+grafana:
+  enabled: true
+  adminPassword: "admin"
+  service:
+    type: ClusterIP
+  datasources:
+    datasources.yaml:
+      apiVersion: 1
+      datasources:
+        - name: Prometheus
+          type: prometheus
+          url: http://kube-prometheus-stack-prometheus:9090
+          access: proxy
+          isDefault: true
+        - name: External-Prometheus
+          type: prometheus
+          url: http://198.34.2.12:9090
+          access: proxy
+          # Agar tashqi Prometheus serverda autentifikatsiya kerak bo'lmasa, quyidagi basicAuth qismini olib tashlang
+          basicAuth: true
+          basicAuthUser: admin
+          secureJsonData:
+            basicAuthPassword: admin
+
+# Alertmanager konfiguratsiyasi
+alertmanager:
+  enabled: true
+  config:
+    global:
+      resolve_timeout: 5m
+    route:
+      group_by: ['job']
+      group_wait: 30s
+      group_interval: 5m
+      repeat_interval: 12h
+      receiver: 'null'
+      routes:
+      - match:
+          alertname: Watchdog
+        receiver: 'null'
+    receivers:
+    - name: 'null'
+
+# Node exporter konfiguratsiyasi
+prometheus-node-exporter:
+  enabled: true
+
+# Kube state metrics konfiguratsiyasi
+kube-state-metrics:
+  enabled: true
+```
+
+## 6-Qadam: Kube-prometheus-stack o'rnatish
+
+```bash
+# Avval mavjud o'rnatishni tekshirish va o'chirish (agar mavjud bo'lsa)
+helm list -n monitoring
+
+# Agar mavjud bo'lsa, o'chirish
+# helm uninstall kube-prometheus-stack -n monitoring
+
+# Yangi o'rnatish
+helm install kube-prometheus-stack prometheus-community/kube-prometheus-stack \
+  --namespace monitoring \
+  --values values.yaml \
+  --debug
+```
+
+Agar xatolik yuz bersa, debug rejimida o'rnatishni sinab ko'ring va xatolik haqida ma'lumot oling:
+
+```bash
+helm install kube-prometheus-stack prometheus-community/kube-prometheus-stack \
+  --namespace monitoring \
+  --values values.yaml \
+  --debug
+```
+
+## 7-Qadam: O'rnatishni tekshirish
+
+```bash
+kubectl get pods -n monitoring
+```
+
+Barcha podlar Running holatida bo'lishi kerak:
+
+```
+NAME                                                     READY   STATUS    RESTARTS   AGE
+alertmanager-kube-prometheus-stack-alertmanager-0        2/2     Running   0          2m
+kube-prometheus-stack-grafana-5c5f8f5b69-xkrjb           3/3     Running   0          2m
+kube-prometheus-stack-kube-state-metrics-7d4b46f-xkrjb   1/1     Running   0          2m
+kube-prometheus-stack-operator-7d4b46f-xkrjb             1/1     Running   0          2m
+kube-prometheus-stack-prometheus-node-exporter-abcde     1/1     Running   0          2m
+prometheus-kube-prometheus-stack-prometheus-0            2/2     Running   0          2m
+```
+
+Agar podlar ishga tushmasa, xatoliklarni tekshiring:
+
+```bash
+kubectl describe pod <pod-nomi> -n monitoring
+kubectl logs <pod-nomi> -n monitoring
+```
+
+## 8-Qadam: Mavjud servislar uchun ServiceMonitor yaratish
+
+### 8.1 Mavjud servislarni tekshirish
+
+Avval mavjud servislarni tekshiring va ularning portlarini aniqlang:
+
+```bash
+kubectl get svc --all-namespaces
+```
+
+### 8.2 Servislarni teglar bilan belgilash (agar kerak bo'lsa)
+
+Agar servislaringiz metrics portini ochmaydigan bo'lsa, ularni yangilashingiz kerak:
+
+```bash
+kubectl patch svc <servis-nomi> -n <namespace> -p '{"metadata":{"labels":{"app":"monitored"}}}'
+```
+
+### 8.3 ServiceMonitor yaratish
+
+Har bir servis uchun alohida ServiceMonitor yaratish mumkin. Quyida umumiy misol keltirilgan:
+
+```yaml
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: app-services-monitor
+  namespace: monitoring
+  labels:
+    release: kube-prometheus-stack
+spec:
+  selector:
+    matchLabels:
+      app: monitored  # Servislaringiz uchun mos keladigan label
+  namespaceSelector:
+    any: true  # Barcha namespacelardagi servislarni monitoring qilish
+  endpoints:
+  - port: metrics  # Servislaringizning metrics porti nomi
+    interval: 30s
+    path: /metrics  # Metrics endpointi yo'li
+```
+
+Bu faylni `service-monitor.yaml` nomi bilan saqlang va quyidagi buyruq bilan qo'llang:
+
+```bash
+kubectl apply -f service-monitor.yaml
+```
+
+### 8.4 Servislar metrics portini ochmaydigan bo'lsa
+
+Agar servislaringiz metrics portini ochmaydigan bo'lsa, Prometheus Operator'ning PodMonitor resursini ishlatishingiz mumkin:
+
+```yaml
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: app-pods-monitor
+  namespace: monitoring
+  labels:
+    release: kube-prometheus-stack
+spec:
+  selector:
+    matchLabels:
+      app: monitored  # Podlaringiz uchun mos keladigan label
+  namespaceSelector:
+    any: true  # Barcha namespacelardagi podlarni monitoring qilish
+  podMetricsEndpoints:
+  - port: metrics  # Podlaringizning metrics porti nomi
+    interval: 30s
+    path: /metrics  # Metrics endpointi yo'li
+```
+
+Bu faylni `pod-monitor.yaml` nomi bilan saqlang va quyidagi buyruq bilan qo'llang:
+
+```bash
+kubectl apply -f pod-monitor.yaml
+```
+
+## 9-Qadam: Tashqi monitoring serverga ulanishni tekshirish
+
+### 9.1 Prometheus UI ga kirish
+
+```bash
+kubectl port-forward svc/kube-prometheus-stack-prometheus -n monitoring 9090:9090
+```
+
+Brauzerda http://localhost:9090/status qo'yib, Remote Write konfiguratsiyasini tekshiring. "Remote Write" bo'limida 198.34.2.12 IP manzili ko'rinishi kerak.
+
+### 9.2 Remote Write statusini tekshirish
+
+Prometheus UI da "Status" -> "Runtime & Build Information" bo'limiga o'ting va "remote_storage" qismini tekshiring.
+
+### 9.3 Tashqi Prometheus serverda ma'lumotlarni tekshirish
+
+Tashqi Prometheus serverga (198.34.2.12) kirib, ma'lumotlar kelyaptimi yo'qmi tekshiring. Quyidagi so'rovni bajaring:
+
+```
+up{job="kube-prometheus-stack-prometheus"}
+```
+
+## 10-Qadam: Grafana dashboardlarini ko'rish
+
+```bash
+kubectl port-forward svc/kube-prometheus-stack-grafana -n monitoring 3000:80
+```
+
+Brauzerda http://localhost:3000 qo'yib, quyidagi ma'lumotlar bilan kiring:
+- Foydalanuvchi: admin
+- Parol: admin (yoki values.yaml faylida belgilangan parol)
+
+## Muammolarni bartaraf etish
+
+### Prometheus pod ishga tushmasa
+
+```bash
+kubectl describe pod prometheus-kube-prometheus-stack-prometheus-0 -n monitoring
+kubectl logs prometheus-kube-prometheus-stack-prometheus-0 -n monitoring -c prometheus
+```
+
+### Remote Write ishlamasa
+
+1. Tashqi Prometheus server (198.34.2.12) remote write so'rovlarini qabul qilishga sozlanganligini tekshiring.
+
+2. Tashqi Prometheus server konfiguratsiyasini tekshiring:
+
+```yaml
+# Tashqi Prometheus server prometheus.yml faylida
+remote_write:
+  - url: "http://localhost:9090/api/v1/write"
+```
+
+3. Tarmoq ulanishini tekshiring:
+
+```bash
+# Kubernetes klasteridan tashqi Prometheus serverga ulanishni tekshiring
+kubectl run -it --rm debug --image=curlimages/curl -- curl -v http://198.34.2.12:9090/api/v1/query?query=up
+```
+
+### Servislar monitoring qilinmasa
+
+1. ServiceMonitor resurslarini tekshiring:
+
+```bash
+kubectl get servicemonitors -n monitoring
+kubectl describe servicemonitor app-services-monitor -n monitoring
+```
+
+2. Prometheus konfiguratsiyasini tekshiring:
+
+```bash
+kubectl get secret -n monitoring prometheus-kube-prometheus-stack-prometheus -o jsonpath='{.data.prometheus\.yaml\.gz}' | base64 -d | gunzip
+```
+
+## Qo'shimcha konfiguratsiyalar
+
+### Tashqi monitoring server uchun Prometheus Agent mode
+
+Agar tashqi monitoring serverga faqat metrikalarni yuborish kerak bo'lsa, Prometheus Agent mode ishlatish mumkin:
+
+```yaml
+prometheus:
+  prometheusSpec:
+    enableFeatures:
+    - agent
+    remoteWrite:
+      - url: "http://198.34.2.12:9090/api/v1/write"
+        # Agar tashqi Prometheus serverda autentifikatsiya kerak bo'lmasa, quyidagi basicAuth qismini olib tashlang
+        basicAuth:
+          username:
+            name: prometheus-remote-write-auth
+            key: username
+          password:
+            name: prometheus-remote-write-auth
+            key: password
+```
+
+### Tashqi monitoring serverdan metrikalarni olish
+
+Agar tashqi monitoring serverdan metrikalarni olish kerak bo'lsa, quyidagi ServiceMonitor va Endpoints yaratish mumkin:
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: external-prometheus
+  namespace: monitoring
+  labels:
+    app: external-prometheus
+spec:
+  ports:
+    - name: metrics
+      port: 9090
+      protocol: TCP
+      targetPort: 9090
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: external-prometheus
+  namespace: monitoring
+subsets:
+  - addresses:
+    - ip: 198.34.2.12
+    ports:
+      - name: metrics
+        port: 9090
+        protocol: TCP
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: external-prometheus
+  namespace: monitoring
+  labels:
+    release: kube-prometheus-stack
+spec:
+  endpoints:
+    - port: metrics
+      interval: 30s
+      path: /metrics
+  selector:
+    matchLabels:
+      app: external-prometheus
+```
+
+Bu faylni `external-prometheus.yaml` nomi bilan saqlang va quyidagi buyruq bilan qo'llang:
+
+```bash
+kubectl apply -f external-prometheus.yaml
+```
+
+## Xulosa
+
+Endi sizning Kubernetes klasteringizda kube-prometheus-stack o'rnatilgan va u 198.34.2.12 IP manzilidagi tashqi monitoring serverga ulangan. Klasterdagi 50 pod va 50 servis uchun monitoring sozlangan.
+
+
+
+<Callout type="info" emoji="">
+
+
+**Sana:** 2025.04.25(2025-yil 24-Aprel)
+
+
+**Muallif: Husniddin Tangirov**
+
+| [Telegram](https://t.me/Husniddin_989) | 
+| - | - | - |
+
+</Callout>
