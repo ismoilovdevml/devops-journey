@@ -17,7 +17,7 @@ Oddiy qilib aytganda, klaster ichidagi Prometheus minimal vazifani bajaradi - me
 ```mermaid
 graph TD
     subgraph Kubernetes Klasteri
-        KPS[kube-prometheus-stack (Agent/Minimal)]
+        KPS["kube-prometheus-stack (Agent/Minimal)"]
         Pods(Podlar)
         Services(Servislar)
         Nodes(Nodlar)
@@ -26,7 +26,7 @@ graph TD
     subgraph Tashqi Monitoring Server (198.34.2.12)
         ExtPrometheus[Prometheus]
         ExtGrafana[Grafana]
-        OtherServices[Boshqa Servislar (Rabbit, Redis...)]
+        OtherServices["Boshqa Servislar (Rabbit, Redis...)"]
     end
 
     Pods -- Metrikalar --> KPS
