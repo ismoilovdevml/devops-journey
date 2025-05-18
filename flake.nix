@@ -1,5 +1,5 @@
 {
-  description = "Telegram bot for Xinux community";
+  description = "Official website of Devops Journey";
 
   inputs = {
     # Too old to work with most libraries
