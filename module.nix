@@ -182,7 +182,7 @@ in {
       dataDir = mkOption {
         type = types.str;
         default = "/var/lib/devops-journey/";
-        description = lib.mdDoc ''
+        description = ''
           The path where DevOps Journey Website server keeps data and possibly logs.
         '';
       };
