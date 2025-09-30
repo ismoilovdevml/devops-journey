@@ -34,17 +34,22 @@ const config = {
 };
 
 if (process.env.NODE_ENV === 'development') {
-  const withPreconstruct = require('@preconstruct/next');
-  module.exports = withPreconstruct(withNextra(config));
-} else {
+  try {
+    const withPreconstruct = require('@preconstruct/next');
+    module.exports = withPreconstruct(withNextra(config));
+  } catch (e) {
+    module.exports = withNextra(config);
+  }
+} else if (process.env.ANALYZE === 'true') {
   try {
     const withBundleAnalyzer = require('@next/bundle-analyzer')({
-      enabled: process.env.ANALYZE === 'true',
+      enabled: true,
     });
     module.exports = withBundleAnalyzer(withNextra(config));
   } catch (e) {
-    // If @next/bundle-analyzer is not available, just use withNextra
-    console.warn('Warning: @next/bundle-analyzer not found, skipping bundle analysis');
+    console.warn('Warning: @next/bundle-analyzer not available');
     module.exports = withNextra(config);
   }
+} else {
+  module.exports = withNextra(config);
 }

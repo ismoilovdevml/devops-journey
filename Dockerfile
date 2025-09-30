@@ -1,68 +1,70 @@
-# Build stage
-FROM node:20-alpine AS builder
+# Dependencies stage
+FROM node:20-slim AS deps
 
-# Set working directory
 WORKDIR /app
 
-# Add pnpm to path
-ENV PNPM_HOME=/usr/local/bin
+# Install build dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3 \
+    make \
+    g++ \
+    && rm -rf /var/lib/apt/lists/*
 
-# Install pnpm - use exact version for reproducibility
-RUN npm install -g pnpm@8.15.4 \
-    && pnpm config set store-dir /.pnpm-store
+# Install corepack and pnpm
+RUN corepack enable && corepack prepare pnpm@8.15.4 --activate
 
-# Copy package.json and lockfile
+# Copy package files
 COPY package.json pnpm-lock.yaml* .npmrc* ./
 
-# Install dependencies with cache optimization
-RUN --mount=type=cache,id=pnpm,target=/.pnpm-store \
-    pnpm install --frozen-lockfile --prod=false
+# Install dependencies
+RUN pnpm install --frozen-lockfile
 
-# Copy application code
+# Builder stage
+FROM node:20-slim AS builder
+
+WORKDIR /app
+
+RUN corepack enable && corepack prepare pnpm@8.15.4 --activate
+
+# Copy dependencies and source
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # Build application
+ENV NEXT_TELEMETRY_DISABLED=1
 RUN pnpm build
 
 # Production stage
-FROM node:20-alpine AS runner
+FROM node:20-slim AS runner
 
-# Set working directory
 WORKDIR /app
 
-# Set environment variables
 ENV NODE_ENV=production \
-    PNPM_HOME=/usr/local/bin
+    NEXT_TELEMETRY_DISABLED=1
 
-# Add a non-root user to run the application
-RUN addgroup --system --gid 1001 nodejs \
-    && adduser --system --uid 1001 nextjs \
-    && npm install -g pnpm@8.15.4
+# Install wget for healthcheck
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    wget \
+    && rm -rf /var/lib/apt/lists/*
 
-# Copy only necessary files from builder
-COPY --from=builder --chown=nextjs:nodejs /app/next.config.js ./
+# Create non-root user
+RUN groupadd -r nodejs --gid=1001 && \
+    useradd -r -g nodejs --uid=1001 nextjs
+
+# Copy built application
 COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
-COPY --from=builder --chown=nextjs:nodejs /app/package.json ./package.json
-COPY --from=builder --chown=nextjs:nodejs /app/pnpm-lock.yaml ./pnpm-lock.yaml
+COPY --from=builder --chown=nextjs:nodejs /app/next.config.js ./
+COPY --from=builder --chown=nextjs:nodejs /app/package.json ./
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules ./node_modules
 
-# Install production dependencies and necessary dev dependencies
-RUN --mount=type=cache,id=pnpm,target=/.pnpm-store \
-    pnpm install --frozen-lockfile --prod --no-optional \
-    && pnpm add -D @next/bundle-analyzer
-
-# Set proper permissions
-RUN chmod -R 755 /app
-
-# Switch to non-root user
 USER nextjs
 
-# Expose the port the app runs on
 EXPOSE 3000
 
-# Define healthcheck
-HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
+ENV PORT=3000
+
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:3000/ || exit 1
 
-# Run the application
-CMD ["pnpm", "start"]
+CMD ["node_modules/.bin/next", "start"]
