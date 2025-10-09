@@ -33,23 +33,4 @@ const config = {
   },
 };
 
-if (process.env.NODE_ENV === 'development') {
-  try {
-    const withPreconstruct = require('@preconstruct/next');
-    module.exports = withPreconstruct(withNextra(config));
-  } catch (e) {
-    module.exports = withNextra(config);
-  }
-} else if (process.env.ANALYZE === 'true') {
-  try {
-    const withBundleAnalyzer = require('@next/bundle-analyzer')({
-      enabled: true,
-    });
-    module.exports = withBundleAnalyzer(withNextra(config));
-  } catch (e) {
-    console.warn('Warning: @next/bundle-analyzer not available');
-    module.exports = withNextra(config);
-  }
-} else {
-  module.exports = withNextra(config);
-}
+module.exports = withNextra(config);

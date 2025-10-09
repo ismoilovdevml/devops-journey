@@ -1,4 +1,4 @@
-name: DevOps Journey CI
+name: Test & Lint
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
 
     strategy:
@@ -17,15 +17,20 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Enable Corepack
+      run: corepack enable
+
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
-    - name: Install pnpm
-      run: npm install -g pnpm
-      
-    - name: Install dependencies
-      run: pnpm install
+        cache: 'pnpm'
 
-    - name: Build app
-      run: pnpm next build
+    - name: Install dependencies
+      run: pnpm install --frozen-lockfile
+
+    - name: Run lint
+      run: pnpm lint
+
+    - name: Run build
+      run: pnpm build

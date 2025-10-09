@@ -10,17 +10,15 @@ module.exports = {
     },
     allowImportExportEverywhere: true,
   },
-  plugins: ['@typescript-eslint', 'import', 'compat'],
+  plugins: ['@typescript-eslint', 'import'],
   extends: [
     'eslint:recommended',
     'plugin:@next/next/recommended',
-    'plugin:compat/recommended',
     'plugin:eslint-comments/recommended',
     'plugin:@typescript-eslint/recommended',
     'plugin:import/recommended',
     'plugin:import/typescript',
     'plugin:react-hooks/recommended',
-    'plugin:testing-library/react',
     'plugin:prettier/recommended',
     'prettier',
   ],
@@ -60,16 +58,12 @@ module.exports = {
   },
   overrides: [
     {
-      files: '**/*.mdx/**',
-      extends: ['plugin:mdx/recommended'],
+      files: '**/*.mdx',
       rules: {
         'import/no-anonymous-default-export': 'off',
         'react/display-name': 'off',
         'react/jsx-no-undef': 'off',
         'no-undef': 'off',
-      },
-      settings: {
-        'mdx/code-blocks': true,
       },
     },
   ],

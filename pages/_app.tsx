@@ -1,3 +1,4 @@
+import { Analytics } from '@vercel/analytics/react';
 import type { AppProps } from 'next/app';
 
 import * as React from 'react';
@@ -12,6 +13,7 @@ function App({ Component, pageProps }: AppProps<{ dehydratedState: string }>) {
   return (
     <QueryClientProvider client={queryClient}>
       <Component {...pageProps} />
+      <Analytics />
     </QueryClientProvider>
   );
 }
