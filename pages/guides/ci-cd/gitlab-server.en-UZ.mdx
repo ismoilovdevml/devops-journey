@@ -1,419 +1,887 @@
 ---
 image: https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/banner.png
-description: "Gitlab Server o'rnatish va sozlash"
+description: "GitLab Server o'rnatish va sozlash"
 ---
 
-
 import { Callout } from "nextra-theme-docs";
+import { Tabs, TabList, Tab, TabPanel } from 'react-tabs';
+import 'react-tabs/style/react-tabs.css';
 
-# Gitlab Server o'rnatish va sozlash
+# GitLab Server o'rnatish va sozlash
 
 ![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/banner.png)
 
-Zamonaviy rivojlanish landshaftida samarali manba kodni boshqarish va continuous integration/continuous deployment(CI/CD) pipelinelari barcha o'lchamdagi dasturiy ta'minot loyihalari uchun muhim ahamiyatga ega. GitLab, open-source DevOps platformasi, CI/CD va loyiha boshqaruvi funksiyalarini yagona ilovaga muammosiz birlashtirgan kuchli tool sifatida ajralib turadi. Kichik startapda yoki yirik korxonada ishlayapsizmi, GitLab serverini o'rnatish jamoangizning unumdorligini va hamkorligini sezilarli darajada oshirishi mumkin.
+## Kirish
 
-Ushbu qo'llanma GitLab serverini o'rnatish va sozlash bo'yicha har tomonlama, bosqichma-bosqich yondashuvni taqdim etishga qaratilgan. Ushbu qo'llanmaning oxirida siz optimallashtirilgan sozlamalar va xavfsizlik konfiguratsiyasi bilan to'liq o'z ehtiyojlaringizga moslashtirilgan to'liq ishlaydigan GitLab serveriga ega bo'lasiz. Biz serverning dastlabki sozlamalari va talablaridan unumdorlikni oshirish va mustahkam xavfsizlikni ta'minlash uchun ilg'or konfiguratsiyalargacha hamma narsani qamrab olamiz.
+Tasavvur qiling: kompaniyangizda 10 ta dasturchi ishlaydi, loyiha kodi maxfiy — tashqi cloud service'larga qo'yish mumkin emas. Yoki bankda ishlaysiz — regulator kodning O'zbekiston hududidagi serverlarda saqlanishini talab qiladi. Yoki oddiy holat — GitHub/GitLab.com'da bepul private repo limiti bor, serveringiz esa bepul va cheksiz.
 
-Tajribali DevOps yoki ish jarayonini soddalashtirishga intilayotgan dasturchi bo'lasizmi, ushbu qo'llanma sizni GitLab serverini samarali joylashtirish va unga xizmat ko'rsatish uchun zarur bo'lgan bilim va vositalar bilan ta'minlaydi.
+[**GitLab**](https://about.gitlab.com/) aynan shu muammolarni hal qiladi. Bu open-source DevOps platforma — source code management, CI/CD, project management hammasi bitta joyda. Eng muhimi — uni **o'z serveringizga o'rnatib olishingiz mumkin**.
 
-[GitLab](https://about.gitlab.com/) keng qamrovli DevOps platformasi bo'lib,software development, version control, va continuous integration/continuous deployment (CI/CD) uchun keng ko'lamli dasturlarni taqdim etadi.
+**Real hayotdan misollar — qachon self-hosted GitLab kerak:**
+* **Fintech/Bank** — regulator talabi: kod va ma'lumotlar mamlakat ichida saqlanishi shart
+* **Davlat tashkilotlari** — maxfiy loyihalar, internet cheklangan tarmoqlar
+* **O'rta/katta kompaniyalar** — 50+ dasturchi, GitHub Enterprise juda qimmat ($21/user/oy), GitLab self-hosted bepul
+* **Startaplar** — byudjet cheklangan, lekin professional DevOps workflow kerak
+* **Outsource kompaniyalar** — har bir mijoz uchun alohida group/permission sozlash kerak
 
-Gitlabning asosiy xususiyatlari quyidagilar.
+Ushbu qo'llanmada GitLab serverni noldan o'rnatamiz, production darajasida sozlaymiz, Runner ullab real CI/CD pipeline ishga tushiramiz.
 
-* **Version Control**
-* **CI/CD Pipelinelar**
-* **Project Management**
-* **Security va Compliance**
-* **Container Registry**
-* **Integratsiyalar va Extensionlar**
+## GitLab qanday ishlaydi?
 
-O'z ehtiyojlaringiz uchun global [Gitlab](https://gitlab.com) foydalanishingiz mumkin yoki o'zingiz uchun Gitlab o'rnatib olishingiz mumkin. Gitlab o'rnatishning ikki xil yo'li bor Gitlab clouddan foydalangan holda cloudan foydalanish va self-hosted o'rnatish ya'ni o'zingizning serveringizga o'rnatib olish. Gitlabning ikkita versiyasi mavjud **GitLab CE (Community Edition)** va **GitLab EE (Enterprise Edition)**. Ushbu qo'llanmada biz **GitLab EE (Enterprise Edition)** va **GitLab CE (Community Edition)** self-hosted o'rnatamiz ya'ni o'z serverimizga Gitlab o'rnatamiz.
+GitLab o'rnatilganda serverda bir nechta service birgalikda ishga tushadi. Ularning har biri o'z vazifasini bajaradi:
 
+```
++-------------------------------------------------------------------+
+|                        GITLAB SERVER                              |
+|                                                                   |
+|  +----------+    +-----------+    +------------+    +-----------+ |
+|  |          |    |           |    |            |    |           | |
+|  |  Nginx   |--->| Workhorse |--->|    Puma    |--->|  Sidekiq  | |
+|  | (Proxy)  |    | (Fayllar) |    |  (Asosiy   |    | (Fon      | |
+|  |          |    |           |    |   ilova)   |    |  ishlar)  | |
+|  +----------+    +-----------+    +------+-----+    +-----------+ |
+|                                         |                         |
+|                  +----------------------+----+                    |
+|                  |                      |    |                    |
+|           +------+-----+    +----------+-+  +-------+------+     |
+|           |            |    |            |  |              |     |
+|           | PostgreSQL |    |   Redis    |  |    Gitaly    |     |
+|           |   (DB)     |    |  (Cache)   |  | (Git repos)  |     |
+|           |            |    |            |  |              |     |
+|           +------------+    +------------+  +--------------+     |
+|                                                                   |
++-------------------------------------------------------------------+
+```
 
-* **GitLab CE->** Kichikroq jamoalar yoki open-source loyihalar uchun javob beradi, bu yerda byudjet cheklovlari muhim ahamiyatga ega va ilg'or korxona xususiyatlari muhim emas.
-* **GitLab EE->** Kengaytirilgan xavfsizlik, ishlash va qo'llab-quvvatlashni talab qiladigan yirik tashkilotlar uchun mo'ljallangan. Bu, ayniqsa, ilg'or CI/CD qobiliyatlari va keng qamrovli loyihalarni boshqarish vositalariga muhtoj bo'lgan korxonalar uchun foydalidir.
+Qisqacha:
+* **Nginx** — brauzerdan kelgan so'rovlarni qabul qiladi va to'g'ri joyga yo'naltiradi
+* **Workhorse** — katta fayllar bilan ishlaydi (upload/download), Puma'ni yuklamaslik uchun
+* **Puma** — GitLab'ning asosiy ilovasi. Web interfeys, API, login — hammasi shu yerda
+* **Sidekiq** — fon ishlarini bajaradi: email yuborish, webhook, pipeline yaratish
+* **PostgreSQL** — barcha ma'lumotlar saqlanadigan database
+* **Redis** — kesh va session boshqaruvi
+* **Gitaly** — Git repositorylar bilan ishlaydigan service
+
+<Callout type="info" emoji="">
+Bu komponentlarning hammasini siz alohida o'rnatmaysiz — GitLab Omnibus paketi hammasini avtomatik o'rnatib sozlab beradi. Shuning uchun alohida Nginx, PostgreSQL yoki Redis o'rnatish shart emas.
+</Callout>
+
+## GitLab CE yoki EE — qaysi birini tanlash kerak?
+
+GitLab ikki versiyada chiqadi. Farqi quyidagicha:
+
+| | GitLab CE (Community Edition) | GitLab EE (Enterprise Edition) |
+|---|---|---|
+| **Narxi** | Bepul, open-source | Bepul (core) + pullik rejalar |
+| **CI/CD** | To'liq ishlaydi | Qo'shimcha: merge trains, multi-project pipelines |
+| **Xavfsizlik** | Asosiy funksiyalar | SAST, DAST, dependency scanning |
+| **Qo'llab-quvvatlash** | Faqat community | Rasmiy texnik support |
+| **Kimga mos** | Kichik jamoalar, shaxsiy loyihalar | Katta tashkilotlar, korxonalar |
+
+<Callout type="info" emoji="">
+**Qaysi birini o'rnatish kerak?** Agar kelajakda pullik funksiyalar kerak bo'lishi mumkin deb o'ylasangiz — **GitLab EE** o'rnating. Bepul rejada CE bilan deyarli bir xil ishlaydi, lekin kerak bo'lganda pullik funksiyalarni yoqib olish imkoniyati qoladi. Aksariyat hollarda **EE** tavsiya etiladi.
+</Callout>
+
+## O'rnatish usullari
+
+GitLab'ni bir necha xil usulda o'rnatish mumkin:
+
+| Usul | Tavsif | Qachon ishlatiladi |
+|---|---|---|
+| **Linux paketi (Omnibus)** | VM yoki bare-metal serverga to'g'ridan-to'g'ri o'rnatish | Eng keng tarqalgan, production uchun tavsiya etiladi |
+| **Docker** | Docker container ichida ishga tushirish | Tez sinab ko'rish, kichik jamoalar uchun |
+| **Kubernetes (Helm chart)** | K8s clusterga deploy qilish | Katta tashkilotlar, auto-scaling kerak bo'lganda |
+| **Source'dan** | Kodni o'zingiz compile qilish | Faqat maxsus holatlar uchun, tavsiya etilmaydi |
+
+<Callout type="info" emoji="">
+Biz ushbu qo'llanmada **Linux paketi (Omnibus)** usulidan foydalanamiz — **Ubuntu VM**ga o'rnatamiz. Bu eng ko'p ishlatiladigan va GitLab tomonidan rasman tavsiya etiladigan usul. Barcha componentlar (Nginx, PostgreSQL, Redis va boshqalar) bitta paket ichida keladi.
+</Callout>
 
 ## Ishni boshlash
 
-Ushbu amaliyotni amalga oshirish uchun bizga quyidagi minimum server talablaridagi server kerak bo'ladi.
+### Server talablari
 
 <Callout type="info" emoji="">
-**Minimum Server talabi**
+**Minimum Server talablari**
 
-| OS            | RAM            | CPU           | Xotira       | Static IP  |
-| ------------- | -------------- | ------------- |------------- | ---------- |
-| Ubuntu 20.04  | 8GB            | 4vCPU 2 core  | 80GB         | Ha kerak   |
+| Host       | OS            | RAM            | CPU            | Xotira       | Static IP   |
+|----------- | ------------- | -------------- | -------------- |------------- | ----------- |
+| gitlab     | Ubuntu 20.04+ | 8GB            | 4 vCPU, 2 core | 80GB         | Ha, kerak   |
+
+**8GB RAM** — bu 500 tagacha foydalanuvchi uchun yetarli. Agar jamoangiz kattaroq bo'lsa, 16GB yoki undan ko'p RAM tavsiya etiladi. Disk hajmi esa repositorylar soniga qarab o'sadi.
 </Callout>
 
-## DNS sozlash
-Gitlab server o'rnatishimiz uchun bizgda domen kerak bo'ladi. DNS hostingizdan domenga Gitlab ishlab turgan server static IP manzilini qo'shishingiz kerak bo'ladi.
+### DNS sozlash
 
-Quyida [**ahost.uz**](https://www.ahost.uz/) DNS hostiga namuna ko'rsatilgan.
+GitLab server uchun domen kerak — biz shu domen orqali brauzerdan GitLab'ga kiramiz va Git operatsiyalarini bajaramiz.
 
-Kerakli domen sozlamalariga kirib **DNS xosting** bo'limga o'ting sizda quyidagi oyna ochilishi kerak.
+DNS hostingizdan domenga (yoki subdomenga) GitLab server IP manzilini ko'rsatishingiz kerak. Quyida [**ahost.uz**](https://www.ahost.uz/) uchun namuna:
 
-![harbor](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/harbor-setup/dns.png)
+Domen sozlamalaridan **DNS xosting** bo'limiga o'ting:
 
-Bu yerdan siz domen o'ziga yoki subdomenga Gitlab server static IP maznilini ko'rsatishingiz kerak bo'ladi. Bizda [**helm.uz**](https://helm.uz) domenimiz bor keling unga **gitlab** subdomeni qo'shamiz.
+![dns](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/harbor-setup/dns.png)
 
-* **Name->** subdomen nomi
-* **Type->** A
-* **TTL->** 14440
-* **RDATA->** gitlab server Static IP manzili
+Bizda [**helm.uz**](https://helm.uz) domeni bor. Unga **gitlab** subdomenini qo'shamiz:
 
-![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/dns.png)
+* **Name ->** `gitlab` (subdomen nomi)
+* **Type ->** `A`
+* **TTL ->** `14400`
+* **RDATA ->** GitLab server Static IP manzili
 
+![gitlab-dns](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/dns.png)
 
-## Gitlab o'rnatish
+## GitLab o'rnatish
 
-DNS sozlab olganimizdan keyin Gitlab serverni o'rnatishni boshlasak bo'ladi ushbu qadamda biz **GitLab CE (Community Edition)** va **GitLab EE (Enterprise Edition)** o'rnatishni ko'rib chiqamiz.
+DNS sozlab bo'lgach, o'rnatishni boshlaymiz.
 
-### GitLab CE o'rnatish
-
-**1->** Serverni yangilab olamiz.
+**1->** Serverni yangilaymiz va kerakli paketlarni o'rnatamiz.
 
 ```bash
 sudo apt update && sudo apt upgrade -y
+sudo apt install -y curl openssh-server ca-certificates tzdata perl
 ```
 
-**2->** Kerakli dasturlarni o'rnatib olamiz.
+**2->** Email notifikatsiyalar uchun **Postfix** o'rnatamiz. GitLab foydalanuvchilarga xabar yuborish uchun mail server ishlatadi.
 
 ```bash
-sudo apt-get install -y curl openssh-server ca-certificates tzdata perl
+sudo apt install -y postfix
 ```
 
-**3->** Notificationlarni yuborish uchun **Postfix** (yoki **Sendmail**)ni o'rnatamiz.
+O'rnatish vaqtida konfiguratsiya oynasi chiqadi:
+* Birinchi oynada **"Internet Site"** ni tanlang
+* Ikkinchi oynada serveringiz domenini yozing (masalan, `gitlab.helm.uz`)
 
-```bash
-sudo apt-get install -y postfix
-```
-**Postfix**-ni o'rnatish vaqtida konfiguratsiya ekrani paydo bo'lishi mumkin. **"Internet Site"** ni tanlang va Enter tugmasini bosing. "System mail name" uchun serveringizning tashqi DNS-dan foydalaning va Enter tugmasini bosing. Agar qo'shimcha ekranlar paydo bo'lsa, standart sozlamalarni qabul qilish uchun Enter tugmasini bosing.
+![postfix-1](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab1.png)
 
-![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab1.png)
+![postfix-2](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab2.png)
 
-![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab2.png)
+**3->** GitLab'ni o'rnatamiz. CE yoki EE — qaysi birini tanlaysiz, shunga mos tabni bosing:
 
-**4->** Gitlab CE o'rnatamiz
+<Tabs>
+<TabList>
+<Tab>**GitLab CE**</Tab>
+<Tab>**GitLab EE**</Tab>
+</TabList>
+<TabPanel>
+
+GitLab CE repositoryni qo'shamiz va o'rnatamiz:
 
 ```bash
 curl -s https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.deb.sh | sudo bash
-sudo EXTERNAL_URL="https://gitlab.helm.uz" apt-get install gitlab-ce
 ```
-Bu buyruqni ishga tushirganimizdan keyin gitlab o'rnatilishi boshlanadi va biroz vaqt oladi. Gitlab muvaffaqiyatli o'rnatilganda sizda quyidagi natija chiqishi kerak.
-![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab.png)
 
-Bundan yuqorida esa sizga note(qayd) yozilgan bo'ladi Gitlabga admin bo'lib kirish uchgun `root` user va paroli yozilgan faylni ko'rstadi(`/etc/gitlab/initial_root_password`).
-![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab3.png)
+`EXTERNAL_URL` ga o'zingizning domeningizni yozing:
 
-**5->** Belgilagan domenimiz orqali brauzerdan kiramiz biznig holatda **gitlab.helm.uz**. Brauzerda quyidagi Gitlab login qilish page ochilishi kerak. Biz yuqorida ko'rastilgandek `root` user bilan kiramiz parolni esa `/etc/gitlab/initial_root_password` faylidan olamiz.
+```bash
+sudo EXTERNAL_URL="https://gitlab.helm.uz" apt install gitlab-ce
+```
 
-parolni olamiz.
+Muvaffaqiyatli o'rnatilganda quyidagi natija chiqadi:
+
+![gitlab-ce-install](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab.png)
+
+</TabPanel>
+<TabPanel>
+
+GitLab EE repositoryni qo'shamiz va o'rnatamiz:
+
+```bash
+curl -s https://packages.gitlab.com/install/repositories/gitlab/gitlab-ee/script.deb.sh | sudo bash
+```
+
+`EXTERNAL_URL` ga o'zingizning domeningizni yozing:
+
+```bash
+sudo EXTERNAL_URL="https://gitlab.helm.uz" apt install gitlab-ee
+```
+
+Muvaffaqiyatli o'rnatilganda quyidagi natija chiqadi:
+
+![gitlab-ee-install](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab-ee.png)
+
+</TabPanel>
+</Tabs>
+
+<Callout type="warning" emoji="">
+O'rnatish 5-10 daqiqa vaqt olishi mumkin. Tugagach konsolda admin parol haqida xabar chiqadi — `root` foydalanuvchining paroli `/etc/gitlab/initial_root_password` faylida saqlanadi. **Bu fayl 24 soatdan keyin avtomatik o'chiriladi**, shuning uchun parolni darhol ko'chirib oling!
+</Callout>
+
+![gitlab-note](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab3.png)
+
+**4->** Brauzerdan domeningizni oching (bizda `gitlab.helm.uz`). Login sahifasi ochilishi kerak.
+
+`root` username bilan kiring. Parolni quyidagi buyruq bilan oling:
 
 ```bash
 sudo cat /etc/gitlab/initial_root_password
 ```
-Admin login parolni yozib kiramiz.
-![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab-ce.png)
 
-Bizda quyidagi **Welcome to Gitlab** page ochiladi.
+![gitlab-login](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab-ce.png)
 
-![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab-ce1.png)
+Login qilganingizdan keyin **Welcome to GitLab** sahifasi ochiladi:
 
-Admin panel orqali info olishimiz mumkin. **gitlab.helm.uz/admin**
+![gitlab-welcome](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab-ce1.png)
 
-![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab-ce2.png)
+Admin panel: `gitlab.helm.uz/admin` — bu yerda server haqida umumiy ma'lumotlarni ko'rishingiz mumkin.
 
-### GitLab EE o'rnatamiz
+![gitlab-admin](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab-ce2.png)
 
-Gitlab EE o'rnatish ham Gitlab CE o'rnatishdek deyarli bir xil siz yuqoridagi Gitlab CE o'rnatish qadamiagcha(4chi qadam) bo'lgan barcha qadamlarni bajarasiz unda keyin Gitlab EE o'rnatishni boshlaymiz.
+## GitLab Server sozlash
 
-**1->** Gitlab EE o'rnatamiz.
+GitLab o'rnatildi, endi ishlatishdan oldin bir nechta muhim sozlashlarni qilib olishimiz kerak.
 
-```bash
-curl https://packages.gitlab.com/install/repositories/gitlab/gitlab-ee/script.deb.sh | sudo bash
-sudo EXTERNAL_URL="https://git.helm.uz" apt-get install gitlab-ee
-```
+### 1. Admin parolini o'zgartirish
 
-Gitlab muvaffaqiyatli o'rnatilganda sizda quyidagi natija chiqishi kerak.
-![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab-ee.png)
+Hozir `root` username va avtomatik generatsiya qilingan parol bilan kirganmiz. Bularni o'zgartiramiz.
 
-Bundan yuqorida esa sizga note(qayd) yozilgan bo'ladi Gitlabga admin bo'lib kirish uchgun `root` user va paroli yozilgan faylni ko'rstadi(`/etc/gitlab/initial_root_password`).
-![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab3.png)
+Profilga o'ting → **Edit profile** → **Account** bo'limi:
 
-**5->** Belgilagan domenimiz orqali brauzerdan kiramiz biznig holatda **gitlab.helm.uz**. Brauzerda quyidagi Gitlab login qilish page ochilishi kerak. Biz yuqorida ko'rastilgandek `root` user bilan kiramiz parolni esa `/etc/gitlab/initial_root_password` falidan olamiz.
+![admin-profile](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/admin1.png)
 
-parolni olamiz.
+`root` o'rniga o'zingizning username'ingizni yozing va **Update username** bosing:
 
-```bash
-sudo cat /etc/gitlab/initial_root_password
-```
-Admin login parolni yozib kiramiz.
-![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab-ee1.png)
+![admin-username](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/admin2.png)
 
-Bizda quyidagi **Welcome to Gitlab** page ochiladi.
+**Password** bo'limiga o'tib yangi parol o'rnating:
 
-![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab-welcome.png)
+![admin-password](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/admin3.png)
 
-Admin panel orqali info olishimiz mumkin. **git.helm.uz/admin**
+Saqlangandan keyin login sahifasiga qaytarilasiz — yangi ma'lumotlar bilan kiring:
 
-![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab-ee2.png)
+![admin-login](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/admin4.png)
 
-## Gitlab server sozlash
+### 2. Ochiq registratsiyani yopish
 
-Yuqorida biz **Gitlab CE** va **Gitlab EE** o'rntaish bosqichlarini ko'rib chiqdik siz o'zingizga to'gri kelganini o'rnatasiz. Bu qismda biz Gitlabda dastlabki sozlashlarni ko'rib chiqamiz. Bu qismda men Gitlab EE dan foydalanib sozashni ko'rsatganman, Gitlab CE da ham deyarli bir xil.
+Default holatda GitLab'ga har kim ro'yxatdan o'ta oladi — login sahifasida **Register now** tugmasi bor. Bu xavfli, chunki begona odamlar ham serveringizga kirib olishi mumkin.
 
-**1->** Birinchi navbatda Admin user login parolini o'zgartiamiz.
-Profilga o'tib **Edit profile**ga o'tib va **Account** bo'limga kiramiz
-![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/admin1.png)
-Bu yerdan biz `root` usernameni olib tashlab o'zimizning admin userimizni yozamiz. `Update username` bosib userneyimizni yangilab olamiz.
-![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/admin2.png)
-**Password** bo'limga o'tib esa parolimizni yangilab olamiz. 
-![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/admin3.png)
-**Save password** bosganimizda sahifa yangilanib login pagega o'tishi kerak va biz o'zimizning yangi admin userimiz va parolimiz bilan kiramiz.
-![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/admin4.png)
+![register-link](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab4.png)
 
-**2->** Ochiq ro'yxatdan o'tishni yopish. E'tibor bergan bo'lsangiz Gitlabga kirish sahifasida **Register now** havolasi bor, yani biron bir kishi ro'yxatdan o'tib sizning Gitlab serveringizdan foydalana oladi, keling buni o'chirib qo'yamiz va userlarni o'zimiz yaratamiz. Bu hohishiy sozlash hisoblanadi.
+Buni o'chirish uchun:
 
-![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab4.png)
+**Admin Area** ga o'ting:
 
-Buni sozlash uchun **Admin area**ga o'tamiz.
-![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/ad1.png)
-**General** sozlamalar bo'limga o'tamiz va **Sign-up restrictions** qismini topamiz
-![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/ad2.png)
+![admin-area](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/ad1.png)
 
-**Sign-up restrictions**ni rasmda ko'rsatilgandek qilib o'chirib qo'yasiz.
-![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab5.png)
+**General** → **Sign-up restrictions** bo'limini toping:
 
-**3->** SSL sertifikatni yangilashni yoqamiz.
+![sign-up-settings](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/ad2.png)
+
+**Sign-up enabled** checkboxini olib tashlang va saqlang:
+
+![sign-up-disabled](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab5.png)
+
+Endi foydalanuvchilarni faqat admin o'zi yarata oladi.
+
+### 3. SSL sertifikatni avtomatik yangilash
+
+GitLab o'rnatilganda **Let's Encrypt** orqali SSL sertifikat avtomatik olinadi. Lekin sertifikatni har 90 kunda yangilash kerak. Buni avtomatik qilish uchun:
 
 ```bash
 sudo nano /etc/gitlab/gitlab.rb
 ```
 
-Gitlab konfiguratsiya faylidan shu qatorlarni izohdan chiqaramiz.
+Quyidagi qatorlarni toping va izohdan chiqaring (yoki qo'shing):
 
-```bash {10-14}
-# Let's Encrypt integration
-################################################################################
-# letsencrypt['enable'] = nil
-# letsencrypt['contact_emails'] = [] # This should be an array of email addresses to add as contacts
-# letsencrypt['group'] = 'root'
-# letsencrypt['key_size'] = 2048
-# letsencrypt['owner'] = 'root'
-# letsencrypt['wwwroot'] = '/var/opt/gitlab/nginx/www'
-# See http://docs.gitlab.com/omnibus/settings/ssl.html#automatic-renewal for more on these sesttings
+```ruby
+# /etc/gitlab/gitlab.rb
+
 letsencrypt['auto_renew'] = true
 letsencrypt['auto_renew_hour'] = "12"
-letsencrypt['auto_renew_minute'] = "30" # Should be a number or cron expression, if specified.
+letsencrypt['auto_renew_minute'] = "30"
 letsencrypt['auto_renew_day_of_month'] = "*/7"
 letsencrypt['auto_renew_log_directory'] = '/var/log/gitlab/lets-encrypt'
-#letsencrypt['alt_names'] = []
 ```
-Gitlabni qayta ishga tushiramiz.
+
+Bu sozlama har 7 kunda soat 12:30 da sertifikatni tekshiradi va kerak bo'lsa yangilaydi.
+
+O'zgarishlarni qo'llaymiz:
+
 ```bash
 sudo gitlab-ctl reconfigure
 ```
 
-**4->** Gitlabda loyihlar repositoriyalarni oson boshqarish uchun guruhlash mumkin. Keling biz gitlabda **DevOps** nomli group ochamiz va DevOpsga tegishli barcha repositoriyalarni shu guruhda saqlaylik.
+### 4. Production uchun GitLab sozlash (gitlab.rb tuning)
 
-![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab6.png)
-
-Guruh yaratib olganimizdan keyin shu guruh ichida birorta repositoritya yaratamiz misol uchun devops-journey loyihasini joylashtiramiz.
-
-![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab7.png)
-Repositoriya sozlaganimizdan keyin local kompyuterimizga git accountimizni ulab loyihani push qilamiz.
-![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab9.png)
-
-## Gitlab Runner sozlash
-
-Runnerlar **CI/CD** pipelinelarida belgilangan ishlarni bajarishi mumkin bo'lgan yengil, kengaytiriladigan agentlardir. Ular har qanday mashinaga, virtual mashinaga yoki konteynerga o'rnatilishi mumkin va ular applicationgizni build qilish, testdan o'tkazish va deploy qilish kabi vazifalarni bajaradi. Runnerlarning ikkita asosiy turi mavjud:
-
-* **Shared Runnerlar**  CI/CD tizimidagi barcha loyihalar uchun mavjud.
-* **Specific Runner** Muayyan loyiha yoki loyihalar guruhiga bag'ishlangan.
-
-Keling shared runner yaratamiz, buning uchun Gitlab admin arega o'tib **->CI/CD -> Runners** o'tamiz
-
-![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/runner.png)
-
-Runners bo'limidan **New instance runner** bosib runner yararish bo'limiga o'tamiz. Bu qismda shared runnerga tag berib rasmdagidek qilib sozlaymiz.
-![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/runner1.png)
-
-Bu qsimda esa serverimizga runner o'rnatib Gitlabga ulaymiz.
-![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/runner2.png)
-
-Serverimizga gitlab runner o'rnatamiz. **How do I install GitLab Runner?** bossak bizga runner o'rnatish buyruqlarini ko'rsatishi kerak
+Default sozlamalar kichik jamoalar uchun yetarli, lekin 20+ foydalanuvchi bo'lsa yoki server resurslarini tejash kerak bo'lsa, `gitlab.rb` faylini optimizatsiya qilish kerak.
 
 ```bash
-# Download the binary for your system
-sudo curl -L --output /usr/local/bin/gitlab-runner https://gitlab-runner-downloads.s3.amazonaws.com/latest/binaries/gitlab-runner-linux-amd64
+sudo nano /etc/gitlab/gitlab.rb
+```
 
-# Give it permission to execute
+```ruby
+# /etc/gitlab/gitlab.rb — Production tuning
+
+# Puma worker soni — har bir worker ~1GB RAM oladi
+# Formula: CPU core soni + 1, lekin RAM ga qarab kamaytiring
+# 8GB RAM, 4 CPU uchun:
+puma['worker_processes'] = 4
+
+# Sidekiq — fon ishlarini bajaradigan worker
+# Default 1 ta, ko'p foydalanuvchi bo'lsa 2-3 ga oshiring
+sidekiq['max_concurrency'] = 20
+
+# PostgreSQL — shared_buffers RAM ning 25% bo'lishi tavsiya etiladi
+# 8GB server uchun:
+postgresql['shared_buffers'] = "2048MB"
+
+# Monitoring — Prometheus va Grafana
+# gitlab.helm.uz/-/grafana orqali server holatini kuzating
+prometheus_monitoring['enable'] = true
+grafana['enable'] = true
+
+# Container Registry — Docker image saqlash uchun
+# gitlab.helm.uz:5050 orqali ishlatiladi
+registry_external_url 'https://gitlab.helm.uz:5050'
+
+# Backup sozlamalari
+gitlab_rails['backup_keep_time'] = 604800  # 7 kun (soniyada)
+```
+
+<Callout type="info" emoji="">
+**RAM hisoblash formulasi:** GitLab o'zi ~4GB RAM ishlatadi. Har bir Puma worker +700MB, har bir Sidekiq worker +1GB. 8GB RAM serverda 4 ta Puma worker va 1 ta Sidekiq — bu chegaraga yaqin. Agar serverda boshqa service'lar ham ishlayotgan bo'lsa, worker sonini kamaytiring.
+</Callout>
+
+O'zgarishlarni qo'llaymiz:
+
+```bash
+sudo gitlab-ctl reconfigure
+```
+
+### 5. Group va Repository yaratish
+
+GitLab'da loyihalarni gruppalash mumkin. Masalan, **DevOps** nomli group ochib, unga tegishli barcha repositorylarni joylashtirish qulay:
+
+![create-group](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab6.png)
+
+Guruh ichida yangi repository yaratamiz:
+
+![create-repo](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab7.png)
+
+Local kompyuterdan loyihani push qilamiz:
+
+![push-code](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab9.png)
+
+## GitLab Runner o'rnatish
+
+GitLab'ning o'zi CI/CD pipelinelarni yaratadi, lekin ularni **bajaradigan** alohida agent kerak — bu **GitLab Runner**. Runner pipeline'dagi har bir job'ni oladi va bajaradi: kod build qilish, testlarni ishga tushirish, deploy qilish.
+
+### Runner turlari
+
+```
++------------------------------------------------------------------+
+|                      GITLAB SERVER                                |
+|                                                                   |
+|   +-------------------+     +-------------------+                 |
+|   |    Project A      |     |    Project B      |                 |
+|   +--------+----------+     +--------+----------+                 |
+|            |                         |                            |
++------------------------------------------------------------------+
+             |                         |
+    +--------v----------+    +---------v---------+
+    |  Shared Runner    |    | Specific Runner   |
+    |  (Barcha loyihalar |    | (Faqat bitta      |
+    |   uchun umumiy)   |    |  loyiha uchun)    |
+    +--------+----------+    +---------+---------+
+             |                         |
+    +--------v----------+    +---------v---------+
+    |   Docker          |    |   Shell            |
+    |   Executor        |    |   Executor         |
+    +-------------------+    +--------------------+
+```
+
+* **Shared Runner** — barcha loyihalarga xizmat qiladi. Umumiy build/test vazifalar uchun qulay
+* **Specific Runner** — faqat bitta loyiha yoki guruhga biriktiriladi. Maxsus muhit kerak bo'lganda ishlatiladi
+
+**Executor** — Runner job'ni **qayerda** bajaradi:
+* **Docker executor** — har bir job uchun yangi Docker container yaratiladi (izolyatsiya yaxshi, tavsiya etiladi)
+* **Shell executor** — job'lar to'g'ridan-to'g'ri serverning o'zida ishlaydi (oddiy, lekin xavfli)
+
+### Runner o'rnatish
+
+**1->** GitLab Admin Area'dan runner yaratamiz: **Admin Area → CI/CD → Runners → New instance runner**
+
+![runners-page](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/runner.png)
+
+Runner uchun tag va sozlamalarni belgilang:
+
+![runner-create](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/runner1.png)
+
+GitLab sizga token va ro'yxatdan o'tkazish buyrug'ini ko'rsatadi:
+
+![runner-token](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/runner2.png)
+
+**2->** Endi serverga o'tib GitLab Runner o'rnatamiz:
+
+```bash
+# Binary faylni yuklab olamiz
+sudo curl -L --output /usr/local/bin/gitlab-runner \
+  https://gitlab-runner-downloads.s3.amazonaws.com/latest/binaries/gitlab-runner-linux-amd64
+
+# Ishga tushirish ruxsatini beramiz
 sudo chmod +x /usr/local/bin/gitlab-runner
 
-# Create a GitLab Runner user
+# GitLab Runner uchun alohida user yaratamiz
 sudo useradd --comment 'GitLab Runner' --create-home gitlab-runner --shell /bin/bash
 
-# Install and run as a service
+# Service sifatida o'rnatib ishga tushiramiz
 sudo gitlab-runner install --user=gitlab-runner --working-directory=/home/gitlab-runner
 sudo gitlab-runner start
 ```
 
-Serverimizga gitlab runner o'rnatganimizdan keyin docker ham o'rnatishimiz kerak bo'ladi chunki biz docker container ichida build qilishini ko'rsatamiz. [**Linux serverlarga Docker o'rnatish**](https://devops-journey.uz/guides/konteyner/docker-ornatish) qo'llanmasidan serveringizda docker o'rnatib olishingiz mumkin.
+**3->** Biz Docker executor ishlatmoqchimiz, shuning uchun serverda Docker ham o'rnatilgan bo'lishi kerak. [**Linux serverlarga Docker o'rnatish**](https://devops-journey.uz/guides/konteyner/docker-ornatish) qo'llanmasidan foydalaning.
 
-
-Serverimizga gitlab runner va docker o'rnatib olganimizdan keyin uni gitlabga ulashimiz va ishga tushirishimiz kerak bo'ladi. Bunda Gitlab orqali runner qo'yashotganimizda gitlab o'zi token yaratib beradi qo'shish uchun shu tokendan foydalanib qo'shib olamiz.
+**4->** Runner'ni GitLab'ga ulaymiz. GitLab bergan token bilan:
 
 ```bash
-gitlab-runner register  --url https://git.helm.uz  --token glrt-sDCeQ4SKg2Dk2LntYGjm
+gitlab-runner register \
+  --url https://gitlab.helm.uz \
+  --token glrt-xxxxxxxxxxxxxxxxxxxx
 ```
-![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/runner4.png)
+
+![runner-register](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/runner4.png)
+
+Ro'yxatdan o'tish jarayonida bir nechta savol so'raladi:
 
 <Callout type="info" emoji="">
-Enter a name for the runner. This is stored only in the local config.toml file:
+**Runner name:** `runner1` — bu faqat identifikatsiya uchun, xohlagan nomni yozing
 
-**[gitlab-ee]:** `runner1`
+**Executor:** `docker` — Docker container ichida job'larni bajarish uchun
 
-Enter an executor: kubernetes, docker-autoscaler, instance, ssh, virtualbox, docker, docker-windows, docker+machine, custom, shell, parallels:
-
-`docker`
-
-Enter the default Docker image (for example, ruby:2.7):
-
-`ubuntu:latest`
+**Default Docker image:** `ubuntu:latest` — agar `.gitlab-ci.yml` da image ko'rsatilmasa, shu ishlatiladi
 </Callout>
 
-Runnerni ishga tushiramiz.
+**5->** Runner'ni ishga tushiramiz:
 
 ```bash
 sudo gitlab-runner run
 ```
-Runnerni serverda ishga tushirganimizdan keyin Gitlabdan **View runner** bosganimizda runnerimiz ishlab turganini ko'rsatishi kerak.
 
-![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/runner3.png)
+GitLab'dan **View runner** bosib tekshiring — yashil holat ko'rsatishi kerak:
 
-Runnerni serverga o'rnatib gitlab ulaganimizdan keyin runner o'zini serverda sozlab olishimiz kerak bo'ladi. `config.toml` faylini quyidagicha konfiguratsiya qilamiz.
+![runner-online](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/runner3.png)
+
+### Runner konfiguratsiyasi
+
+Runner ro'yxatdan o'tgach, `config.toml` faylida sozlamalarni ko'rib chiqamiz:
 
 ```bash
 sudo nano /etc/gitlab-runner/config.toml
 ```
 
-```bash
-concurrent = 1
-check_interval = 0
-shutdown_timeout = 0
+```toml
+# /etc/gitlab-runner/config.toml
+
+concurrent = 4          # Bir vaqtda nechta job bajarishi mumkin
+check_interval = 0      # GitLab'dan yangi job'lar uchun so'rov intervali (0 = default 3s)
+shutdown_timeout = 0    # Shutdown oldidan kutish vaqti
 
 [session_server]
-  session_timeout = 1800
+  session_timeout = 1800  # Interactive web terminal uchun timeout (soniya)
 
 [[runners]]
   name = "runner1"
-  url = "https://git.helm.uz/"
-  token = "glrt-sDCeQ4SKg2Dk2LntYGjm"
+  url = "https://gitlab.helm.uz/"
+  token = "glrt-xxxxxxxxxxxxxxxxxxxx"
   executor = "docker"
-  [runners.custom_build_dir]
-  [runners.cache]
-    [runners.cache.s3]
-    [runners.cache.gcs]
   [runners.docker]
     tls_verify = false
-    image = "ubuntu:latest"
-    privileged = true
+    image = "ubuntu:latest"        # Default Docker image
+    privileged = true              # Docker-in-Docker uchun kerak
     disable_entrypoint_overwrite = false
     oom_kill_disable = false
     disable_cache = false
-    volumes = ["/cache"]
+    volumes = ["/cache"]           # Job'lar orasida kesh saqlash
     shm_size = 0
 ```
 
-Gitlab runner serverdagi dockerdan foydalanishi uchun uchun unga accses beramiz.
+<Callout type="warning" emoji="">
+**`privileged = true` haqida:** Bu Docker-in-Docker (ya'ni Docker ichida Docker) ishlashi uchun kerak. Masalan, CI pipeline ichida Docker image build qilmoqchi bo'lsangiz. Lekin bu xavfli — container host serverga to'liq kirish huquqiga ega bo'ladi. Agar Docker build kerak bo'lmasa, `privileged = false` qo'ying.
+</Callout>
+
+Runner'ga Docker ishlatish ruxsatini beramiz:
 
 ```bash
 sudo usermod -aG docker gitlab-runner
 ```
-Gitlab runnerga restart beramiz.
+
+O'zgarishlar kuchga kirishi uchun restart:
 
 ```bash
 sudo gitlab-runner restart
 ```
 
-## CI/CD
+## Birinchi CI/CD Pipeline
 
-Nihoyat biz bugunni qo'llanmaning oxirgi bosqichiga yetib keldik. Yuqorida biz serverimizga Gitlab o'rnatdik dastlabki sozlashlarni amalga oshirdik gitlab-runner o'rnatib runnerlar qo'shdik. Bu bosqichda biz hammasidan foydalangan holda **Gitlab CI** yordamida devops-journey loyihasiga CI pipeline yozamiz.
+Hammasi tayyor — GitLab o'rnatildi, sozlandi, Runner ulandi. Endi birinchi pipeline'ni ishga tushiramiz.
 
+### CI/CD qanday ishlaydi?
 
-Gitlab CI'ning o'zi katta bir mavzu hisoblanadi shuning uchun buni bu qo'llanmada batafsil yoritilmaydi. Batafsil [**Gitlab CI bilan CI/CD**](https://devops-journey.uz/guides/ci-cd/start-gitlabci)
+```
++----------+     +-----------+     +------------+     +----------+
+|          |     |           |     |            |     |          |
+|   Dev    |---->|   GitLab  |---->|   GitLab   |---->|  Natija  |
+| (git push)|    |  (pipeline |    |   Runner   |     | (pass/   |
+|          |     |   yaratadi)|    | (job bajara-|    |   fail)  |
++----------+     +-----------+     |    di)     |     +----------+
+                      |            +------------+
+                      |                  |
+                      |   .gitlab-ci.yml |
+                      +------------------+
+```
 
-Yuqorida biz **DevOps** nomli group ochib ichida devops-journey loyihasi uchun repositoriya yaratib loyihamizni o'zimizning gitlab serverimizga joylashtirgandik. Keling shu repositoriyaga Gitlab CI yozamiz.
+1. Dasturchi kodini o'zgartirib **git push** qiladi
+2. GitLab repository'da `.gitlab-ci.yml` faylini topadi va **pipeline** yaratadi
+3. **Runner** job'ni oladi va Docker container ichida bajaradi
+4. Natija (muvaffaqiyat yoki xatolik) GitLab interfeysida ko'rinadi
 
+### Pipeline yozish
 
-Loyiha uchun Gitlab CI quyidagicha, biz uni `.gitlab-ci.yml` faylida yozamiz.
+Repository'ning root papkasiga `.gitlab-ci.yml` fayl yaratamiz. Quyida ikkita real misol — oddiy va production darajasida:
 
+**Oddiy pipeline — faqat build tekshirish:**
 
-```bash
+```yaml
+# .gitlab-ci.yml — oddiy variant
+
 stages:
   - build
- 
+
+build:
+  stage: build
+  image: node:20
+  before_script:
+    - npm install -g pnpm
+  script:
+    - pnpm install
+    - pnpm next build
+  cache:
+    key: "$CI_COMMIT_REF_SLUG"
+    paths:
+      - node_modules/
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+  tags:
+    - shared
+```
+
+**Production pipeline — build, test, Docker image yaratish va deploy:**
+
+Real loyihalarda odatda bir necha bosqich bo'ladi. Masalan, Node.js loyiha uchun:
+
+```yaml
+# .gitlab-ci.yml — production variant
+
+stages:
+  - install
+  - test
+  - build
+  - docker
+  - deploy
+
 variables:
-  NODE_VERSION: "20.x"
- 
-cache:
-  key: "$CI_COMMIT_REF_SLUG"
-  paths:
-    - node_modules/
- 
-before_script:
-  - |
-      apt-get update -qy
-      apt-get install -y curl
-      curl -sL https://deb.nodesource.com/setup_20.x | bash -
-      apt-get install -y nodejs
-      npm install -g pnpm
- 
+  DOCKER_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
+  DOCKER_IMAGE_LATEST: $CI_REGISTRY_IMAGE:latest
+
+# Dependency'larni o'rnatish — keyingi bosqichlar uchun keshlanadi
+install:
+  stage: install
+  image: node:20
+  script:
+    - npm install -g pnpm
+    - pnpm install --frozen-lockfile
+  cache:
+    key: "$CI_COMMIT_REF_SLUG"
+    paths:
+      - node_modules/
+  tags:
+    - shared
+
+# Testlarni ishga tushirish
+test:
+  stage: test
+  image: node:20
+  script:
+    - npm install -g pnpm
+    - pnpm test
+  cache:
+    key: "$CI_COMMIT_REF_SLUG"
+    paths:
+      - node_modules/
+    policy: pull       # Faqat o'qiydi, yozmaydi (tezroq)
+  tags:
+    - shared
+
+# Loyihani build qilish
 build:
   stage: build
   image: node:20
   script:
-    - pnpm install
-    - pnpm next build
+    - npm install -g pnpm
+    - pnpm build
+  artifacts:
+    paths:
+      - .next/         # Build natijasini keyingi bosqichga uzatish
+    expire_in: 1 hour
+  cache:
+    key: "$CI_COMMIT_REF_SLUG"
+    paths:
+      - node_modules/
+    policy: pull
+  tags:
+    - shared
+
+# Docker image yaratish va GitLab Container Registry'ga push qilish
+docker:
+  stage: docker
+  image: docker:24
+  services:
+    - docker:24-dind
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - docker build -t $DOCKER_IMAGE -t $DOCKER_IMAGE_LATEST .
+    - docker push $DOCKER_IMAGE
+    - docker push $DOCKER_IMAGE_LATEST
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
+  tags:
+    - shared
+
+# Serverga deploy qilish (SSH orqali)
+deploy:
+  stage: deploy
+  image: alpine:latest
+  before_script:
+    - apk add --no-cache openssh-client
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | ssh-add -
+    - mkdir -p ~/.ssh
+    - echo "$SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts
+  script:
+    - ssh $DEPLOY_USER@$DEPLOY_HOST "
+        docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY &&
+        docker pull $DOCKER_IMAGE_LATEST &&
+        docker compose -f /app/docker-compose.yml up -d
+      "
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+  when: manual         # Deploy faqat qo'lda tasdiqlanganda ishlaydi
+  tags:
+    - shared
 ```
 
-Ushbu Gitlab CI haqida qisqacha aytadigan bo'lsak bu CI faqat bitta build bosqichdan iborat va **main** branchga o'zgarish bo'lganida avtomatik ishga tushadi va Nodejs 20 va pnpm o'rnatadi keyin esa loyihani build qiladi. Loyiha build qilish uchun shared gitlab-runnerlardan foydalanadi, yuqorida biz shared gitlab-runner o'rnatib sozlagandik.
+<Callout type="info" emoji="">
+**Production pipeline'dagi muhim tushunchalar:**
+* **`artifacts`** — build natijasini keyingi bosqichga uzatadi (masalan, `.next/` papkasini docker bosqichiga)
+* **`cache: policy: pull`** — test va build bosqichlarida keshni faqat o'qiydi, vaqt tejaydi
+* **`$CI_REGISTRY`** — GitLab'ning o'rnatilgan Container Registry'si. Alohida Docker Hub kerak emas
+* **`when: manual`** — deploy bosqichi avtomatik ishlamaydi, admin GitLab interfeysidan qo'lda tasdiqlaydi
+* **`$SSH_PRIVATE_KEY`, `$DEPLOY_HOST`** — bu o'zgaruvchilar **Settings → CI/CD → Variables** bo'limida saqlanadi (kodda emas!)
+</Callout>
 
-`.gitlab-ci.yml` konfiguratsiya fayl ochib yuqoridagi gitlab ci pipelineni  kiritamiz va **main** branchga push qilamiz va bizda **CI pipeline** ishga tusha boshlaydi.
+Faylni repository'ga qo'shib `main` branch'ga push qiling — pipeline avtomatik ishga tushadi.
 
-Buni ko'rish uchun repositoriyamizdan **Pipelines** bo'limiga o'tamiz.
-![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/jobs.png)
-Bizda quyidagi oyna ochilishi kerak bu muvaffaqiyatli ishga tushgan CI pipeline.
-![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/jobs1.png)
+**Pipelines** bo'limiga o'ting:
 
-Ustiga bosib kirib ko'rishimiz mumkin.
-![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/jobs2.png)
+![pipelines](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/jobs.png)
 
+Muvaffaqiyatli o'tgan pipeline:
 
-Agar siz qo'llanmani shu qismigacha muvaffaqiyatli yetib kelgan bo'lsangiz tabriklaymiz siz muvaffaqiyatli Gitlab serveringizni sozlab birinchi CI/CD pipelineni muvaffaqiyatli ishga tushirdingiz.
+![pipeline-success](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/jobs1.png)
 
+Tafsilotlarni ko'rish uchun ustiga bosing:
 
- ## Qo'shimcha
+![pipeline-detail](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/jobs2.png)
+
+<Callout type="info" emoji="">
+Bu yerda biz faqat bitta `build` bosqichli oddiy pipeline yozdik. GitLab CI'da test, deploy, multi-stage pipeline va boshqa ko'p narsalar qilish mumkin. Batafsil: [**GitLab CI bilan CI/CD**](https://devops-journey.uz/guides/ci-cd/start-gitlabci)
+</Callout>
+
+## Xavfsizlik va Backup
+
+GitLab serverini o'rnatib qo'yish yetarli emas — uni himoya qilish va ma'lumotlarni yo'qotmaslik choralarini ko'rish ham kerak.
+
+### Firewall sozlash
+
+Serverda faqat kerakli portlarni oching, qolganlarini yoping:
+
+```bash
+sudo ufw allow OpenSSH    # SSH (22-port) — serverga terminal orqali kirish uchun
+sudo ufw allow 80/tcp     # HTTP — Let's Encrypt sertifikat olish uchun kerak
+sudo ufw allow 443/tcp    # HTTPS — GitLab web interfeysi
+sudo ufw enable
+sudo ufw status
+```
+
+### Backup sozlash
+
+Real hayotda server'lar buziladi, disklar ishdan chiqadi, xodimlar xato qiladi. Backup bo'lmasa — barcha kodlar, issue'lar, CI/CD konfiguratsiyalar yo'qoladi. Shuning uchun backup — bu "kerak bo'lsa qilamiz" emas, balki **birinchi kundan sozlash kerak**.
+
+**Backup nima saqlaydi:**
+* Barcha Git repositorylar
+* Database (foydalanuvchilar, issue'lar, merge requestlar, CI/CD konfiguratsiyalar)
+* LFS ob'ektlar va uploadlar
+
+**Backup nima saqlamaydi (alohida qilish kerak):**
+* `/etc/gitlab/gitlab.rb` — server konfiguratsiyasi
+* `/etc/gitlab/gitlab-secrets.json` — encryption kalitlari (busiz backup'dan tiklash **imkonsiz**)
+
+```bash
+# Backup'ni qo'lda olish
+sudo gitlab-backup create
+
+# Backup fayllari shu yerda saqlanadi:
+ls /var/opt/gitlab/backups/
+# Natija: 1710100800_2024_03_11_16.9.1_gitlab_backup.tar
+```
+
+Avtomatik backup + konfiguratsiya fayllarni ham backup qilish:
+
+```bash
+sudo crontab -e
+```
+
+```bash
+# Har kuni soat 2:00 da to'liq backup
+0 2 * * * /opt/gitlab/bin/gitlab-backup create CRON=1
+
+# Konfiguratsiya fayllarni alohida backup (har kuni soat 2:30)
+30 2 * * * cp /etc/gitlab/gitlab.rb /var/opt/gitlab/backups/gitlab.rb.$(date +\%F)
+30 2 * * * cp /etc/gitlab/gitlab-secrets.json /var/opt/gitlab/backups/gitlab-secrets.json.$(date +\%F)
+```
+
+<Callout type="warning" emoji="">
+**Muhim:** Backup'ni shu serverning o'zida saqlash yetarli emas! Agar disk buzilsa — backup ham yo'qoladi. Real production'da backup'ni boshqa joyga ko'chiring:
+
+```bash
+# Masalan, boshqa serverga rsync bilan
+rsync -avz /var/opt/gitlab/backups/ backup-user@backup-server:/gitlab-backups/
+
+# Yoki S3 compatible storage'ga (MinIO, AWS S3)
+# gitlab.rb da:
+gitlab_rails['backup_upload_connection'] = {
+  'provider' => 'AWS',
+  'region' => 'us-east-1',
+  'aws_access_key_id' => 'ACCESS_KEY',
+  'aws_secret_access_key' => 'SECRET_KEY',
+  'endpoint' => 'https://s3.example.com'
+}
+gitlab_rails['backup_upload_remote_directory'] = 'gitlab-backups'
+```
+</Callout>
+
+**Backup'dan tiklash (restore):**
+```bash
+# GitLab service'larni to'xtatamiz (database va cache ishlab tursin)
+sudo gitlab-ctl stop puma
+sudo gitlab-ctl stop sidekiq
+
+# Backup'dan tiklaymiz (fayl nomidagi timestamp'ni ko'rsating)
+sudo gitlab-backup restore BACKUP=1710100800_2024_03_11_16.9.1
+
+# Konfiguratsiya fayllarni qaytaramiz
+sudo cp /backup/gitlab.rb /etc/gitlab/gitlab.rb
+sudo cp /backup/gitlab-secrets.json /etc/gitlab/gitlab-secrets.json
+
+# Reconfigure va restart
+sudo gitlab-ctl reconfigure
+sudo gitlab-ctl restart
+```
+
+### Xavfsizlik checklist
+
+Production serverda quyidagi choralarni albatta amalga oshiring:
+
+**1. SSH kalitlari — parolni o'chiring:**
+
+`gitlab.rb` faylida:
+```ruby
+# Parol bilan git clone/push ni o'chirish — faqat SSH kalit orqali
+gitlab_rails['gitlab_shell_ssh_port'] = 22
+```
+
+Foydalanuvchilar **User Settings → SSH Keys** bo'limidan o'z SSH public key'larini qo'shishlari kerak. Keyin:
+```bash
+# Parol o'rniga SSH kalit bilan ishlash
+git clone git@gitlab.helm.uz:devops/loyiha.git
+```
+
+**2. 2FA (Two-Factor Authentication) — majburiy qilish:**
+
+**Admin Area → Settings → General → Sign-in restrictions** dan:
+* **Two-factor authentication** ni yoqing
+* **Grace period** ni 3 kun qo'ying — foydalanuvchilar 3 kun ichida 2FA sozlashi kerak
+
+**3. Muntazam yangilash:**
+
+GitLab xavfsizlik patch'lari har oyda chiqadi. Real production'da yangilash jarayoni:
+```bash
+# Yangilashdan oldin backup oling!
+sudo gitlab-backup create
+
+# Yangilash
+sudo apt update && sudo apt upgrade gitlab-ee -y
+sudo gitlab-ctl reconfigure
+
+# Tekshirish
+sudo gitlab-ctl status
+sudo gitlab-rake gitlab:check SANITIZE=true
+```
+
+**4. Monitoring — server holatini kuzatish:**
+
+Yuqorida `gitlab.rb` da Prometheus va Grafana'ni yoqqan edik. Endi `gitlab.helm.uz/-/grafana` orqali kirib, tayyor dashboardlardan server holatini kuzating: CPU, RAM, disk, so'rovlar soni, pipeline statistikasi.
+
+**5. Rate limiting — brute-force himoyasi:**
+
+```ruby
+# /etc/gitlab/gitlab.rb
+
+# Login sahifasiga minutiga 10 dan ko'p so'rov yuborish mumkin emas
+gitlab_rails['rate_limiting_response_text'] = 'Retry later'
+```
+
+## GitLab loglarini ko'rish
+
+Biror muammo chiqganda loglar eng yaxshi do'stingiz. GitLab'da har bir component o'z logini yozadi:
+
+```bash
+sudo gitlab-ctl tail              # Barcha loglar (real-time)
+sudo gitlab-ctl tail puma         # Web application loglari
+sudo gitlab-ctl tail nginx        # Proxy loglari
+sudo gitlab-ctl tail sidekiq      # Background job loglari
+sudo gitlab-ctl tail gitaly       # Git operatsiya loglari
+sudo gitlab-ctl tail postgresql   # Database loglari
+```
+
+Agar muammo aniq bo'lmasa, umumiy diagnostika ishlatib ko'ring:
+
+```bash
+sudo gitlab-rake gitlab:check SANITIZE=true
+```
+
+Bu komanda GitLab'ning barcha componentlarini tekshirib, muammolarni ko'rsatadi.
+
+## Qo'shimcha
 
 <Callout type="info" emoji="">
 
 Qo'shimcha Resurslar
- * [**Gitlab CI | Releaselar va Integrationlar**](https://devops-journey.uz/guides/ci-cd/gitlab-ci-release-integrations)
- * [**Github Actions bilan Flutter CI/CD**](https://devops-journey.uz/guides/ci-cd/flutter-github-action)
- * [**Github Actions CI/CD**](https://devops-journey.uz/guides/ci-cd/github-actions-ci-cd)
+ * [**GitLab CI | Releaselar va Integrationlar**](https://devops-journey.uz/guides/ci-cd/gitlab-ci-release-integrations)
+ * [**GitLab CI bilan CI/CD**](https://devops-journey.uz/guides/ci-cd/start-gitlabci)
+ * [**GitHub Actions CI/CD**](https://devops-journey.uz/guides/ci-cd/github-actions-ci-cd)
  * [**Linux Serverlarga Jenkins o'rnatish**](https://devops-journey.uz/guides/ci-cd/jenkins-ornatish)
- * [**Koddan Servergacha: Jenkins bilan Docker CI/CD va Discord bilan integratsiya**](https://devops-journey.uz/guides/ci-cd/jenkins-docker-ci-cd)
+ * [**Koddan Servergacha: Jenkins bilan Docker CI/CD**](https://devops-journey.uz/guides/ci-cd/jenkins-docker-ci-cd)
  * [**Kubernetes CI/CD | GitHub Actions + Argo CD | GitOps**](https://devops-journey.uz/guides/ci-cd/github-actions-argocd-cicd)
 
 Qo'llanma uchun foydalanilgan resurslar
  * [**How To Install and Configure GitLab on Ubuntu**](https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-gitlab-on-ubuntu)
  * [**Install self-managed GitLab**](https://about.gitlab.com/install/#ubuntu)
+ * [**GitLab Administration Documentation**](https://docs.gitlab.com/ee/administration/)
 
 **Sana:** 2024.06.13(2024-yil 13-iyun)
 
-**Oxirgi yangilanish:** 2024.06.13(2024-yil 13-iyun)
+**Oxirgi yangilanish:** 2026.03.11(2026-yil 11-mart)
 
 **Muallif: Otabek Ismoilov**
 

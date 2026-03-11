@@ -1,6 +1,891 @@
 ---
-title: "gitlab server"
+image: https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/banner.png
+description: "Установка и настройка GitLab Server"
 ---
 
-> Эта статья ещё не переведена на русский язык.
-> Пожалуйста, прочитайте [версию на узбекском](/guides/ci-cd/gitlab-server) или помогите нам с переводом на [GitHub](https://github.com/ismoilovdevml/devops-journey).
+import { Callout } from "nextra-theme-docs";
+import { Tabs, TabList, Tab, TabPanel } from 'react-tabs';
+import 'react-tabs/style/react-tabs.css';
+
+# Установка и настройка GitLab Server
+
+![gitlab-server](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/banner.png)
+
+## Введение
+
+Представьте: в вашей компании работают 10 разработчиков, код проекта конфиденциален — размещать его на внешних cloud-сервисах нельзя. Или вы работаете в банке — регулятор требует, чтобы код хранился на серверах внутри страны. Или самый простой случай — на GitHub/GitLab.com есть лимиты на бесплатные приватные репозитории, а на собственном сервере всё бесплатно и без ограничений.
+
+[**GitLab**](https://about.gitlab.com/) решает именно эти задачи. Это DevOps-платформа с открытым исходным кодом — управление исходным кодом, CI/CD, управление проектами — всё в одном месте. Самое главное — вы можете **установить его на свой собственный сервер**.
+
+**Примеры из реальной практики — когда нужен self-hosted GitLab:**
+* **Финтех/Банки** — требование регулятора: код и данные должны храниться внутри страны
+* **Государственные организации** — секретные проекты, сети с ограниченным доступом в интернет
+* **Средние/крупные компании** — 50+ разработчиков, GitHub Enterprise слишком дорог ($21/user/мес), GitLab self-hosted бесплатен
+* **Стартапы** — бюджет ограничен, но нужен профессиональный DevOps-воркфлоу
+* **Аутсорсинговые компании** — для каждого клиента необходима отдельная настройка групп и прав доступа
+
+В этом руководстве мы установим GitLab-сервер с нуля, выполним настройку production-уровня, подключим Runner и запустим реальный CI/CD-пайплайн.
+
+## Как работает GitLab?
+
+При установке GitLab на сервере запускается несколько сервисов, работающих совместно. Каждый из них выполняет свою задачу:
+
+```
++-------------------------------------------------------------------+
+|                        GITLAB SERVER                              |
+|                                                                   |
+|  +----------+    +-----------+    +------------+    +-----------+ |
+|  |          |    |           |    |            |    |           | |
+|  |  Nginx   |--->| Workhorse |--->|    Puma    |--->|  Sidekiq  | |
+|  | (Proxy)  |    | (Fayllar) |    |  (Asosiy   |    | (Fon      | |
+|  |          |    |           |    |   ilova)   |    |  ishlar)  | |
+|  +----------+    +-----------+    +------+-----+    +-----------+ |
+|                                         |                         |
+|                  +----------------------+----+                    |
+|                  |                      |    |                    |
+|           +------+-----+    +----------+-+  +-------+------+     |
+|           |            |    |            |  |              |     |
+|           | PostgreSQL |    |   Redis    |  |    Gitaly    |     |
+|           |   (DB)     |    |  (Cache)   |  | (Git repos)  |     |
+|           |            |    |            |  |              |     |
+|           +------------+    +------------+  +--------------+     |
+|                                                                   |
++-------------------------------------------------------------------+
+```
+
+Кратко:
+* **Nginx** — принимает запросы из браузера и перенаправляет их в нужное место
+* **Workhorse** — обрабатывает большие файлы (upload/download), чтобы не нагружать Puma
+* **Puma** — основное приложение GitLab. Веб-интерфейс, API, авторизация — всё здесь
+* **Sidekiq** — выполняет фоновые задачи: отправка email, webhook'и, создание пайплайнов
+* **PostgreSQL** — база данных, в которой хранятся все данные
+* **Redis** — кеш и управление сессиями
+* **Gitaly** — сервис для работы с Git-репозиториями
+
+<Callout type="info" emoji="">
+Все эти компоненты не нужно устанавливать отдельно — Omnibus-пакет GitLab автоматически устанавливает и настраивает всё. Поэтому отдельная установка Nginx, PostgreSQL или Redis не требуется.
+</Callout>
+
+## GitLab CE или EE — какую версию выбрать?
+
+GitLab выпускается в двух версиях. Различия следующие:
+
+| | GitLab CE (Community Edition) | GitLab EE (Enterprise Edition) |
+|---|---|---|
+| **Стоимость** | Бесплатная, с открытым исходным кодом | Бесплатная (core) + платные планы |
+| **CI/CD** | Полная поддержка | Дополнительно: merge trains, multi-project pipelines |
+| **Безопасность** | Базовые функции | SAST, DAST, dependency scanning |
+| **Поддержка** | Только сообщество | Официальная техническая поддержка |
+| **Подходит для** | Небольших команд, личных проектов | Крупных организаций, корпоративных сред |
+
+<Callout type="info" emoji="">
+**Какую версию устанавливать?** Если вы думаете, что в будущем могут понадобиться платные функции — устанавливайте **GitLab EE**. На бесплатном плане он работает практически так же, как CE, но при необходимости можно активировать платные функции. В большинстве случаев рекомендуется **EE**.
+</Callout>
+
+## Способы установки
+
+GitLab можно установить несколькими способами:
+
+| Способ | Описание | Когда использовать |
+|---|---|---|
+| **Linux-пакет (Omnibus)** | Установка напрямую на VM или bare-metal сервер | Самый распространённый, рекомендуется для production |
+| **Docker** | Запуск внутри Docker-контейнера | Быстрое тестирование, небольшие команды |
+| **Kubernetes (Helm chart)** | Деплой в K8s-кластер | Крупные организации, когда нужен auto-scaling |
+| **Из исходников** | Самостоятельная сборка кода | Только для особых случаев, не рекомендуется |
+
+<Callout type="info" emoji="">
+В данном руководстве мы используем метод **Linux-пакета (Omnibus)** — устанавливаем на **Ubuntu VM**. Это самый распространённый и официально рекомендуемый GitLab способ. Все компоненты (Nginx, PostgreSQL, Redis и др.) поставляются в одном пакете.
+</Callout>
+
+## Начало работы
+
+### Требования к серверу
+
+<Callout type="info" emoji="">
+**Минимальные требования к серверу**
+
+| Хост       | ОС            | RAM            | CPU            | Диск         | Статический IP |
+|----------- | ------------- | -------------- | -------------- |------------- | -------------- |
+| gitlab     | Ubuntu 20.04+ | 8GB            | 4 vCPU, 2 core | 80GB         | Да, требуется  |
+
+**8 ГБ RAM** — этого достаточно для 500 пользователей. Если команда больше, рекомендуется 16 ГБ или более. Объём диска растёт в зависимости от количества репозиториев.
+</Callout>
+
+### Настройка DNS
+
+Для GitLab-сервера нужен домен — через него мы будем заходить в GitLab из браузера и выполнять Git-операции.
+
+В DNS-хостинге необходимо указать IP-адрес GitLab-сервера для домена (или поддомена). Ниже приведён пример для [**ahost.uz**](https://www.ahost.uz/).
+
+Перейдите в настройки домена, в раздел **DNS-хостинг**:
+
+![dns](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/container/harbor-setup/dns.png)
+
+У нас есть домен [**helm.uz**](https://helm.uz). Добавим к нему поддомен **gitlab**:
+
+* **Name ->** `gitlab` (имя поддомена)
+* **Type ->** `A`
+* **TTL ->** `14400`
+* **RDATA ->** статический IP-адрес GitLab-сервера
+
+![gitlab-dns](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/dns.png)
+
+## Установка GitLab
+
+После настройки DNS приступаем к установке.
+
+**1->** Обновляем сервер и устанавливаем необходимые пакеты.
+
+```bash
+sudo apt update && sudo apt upgrade -y
+sudo apt install -y curl openssh-server ca-certificates tzdata perl
+```
+
+**2->** Устанавливаем **Postfix** для email-уведомлений. GitLab использует почтовый сервер для отправки уведомлений пользователям.
+
+```bash
+sudo apt install -y postfix
+```
+
+Во время установки появится окно конфигурации:
+* В первом окне выберите **"Internet Site"**
+* Во втором окне укажите домен вашего сервера (например, `gitlab.helm.uz`)
+
+![postfix-1](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab1.png)
+
+![postfix-2](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab2.png)
+
+**3->** Устанавливаем GitLab. Выберите нужную вкладку — CE или EE:
+
+<Tabs>
+<TabList>
+<Tab>**GitLab CE**</Tab>
+<Tab>**GitLab EE**</Tab>
+</TabList>
+<TabPanel>
+
+Добавляем репозиторий GitLab CE и устанавливаем:
+
+```bash
+curl -s https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.deb.sh | sudo bash
+```
+
+В `EXTERNAL_URL` укажите свой домен:
+
+```bash
+sudo EXTERNAL_URL="https://gitlab.helm.uz" apt install gitlab-ce
+```
+
+При успешной установке вы увидите следующий результат:
+
+![gitlab-ce-install](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab.png)
+
+</TabPanel>
+<TabPanel>
+
+Добавляем репозиторий GitLab EE и устанавливаем:
+
+```bash
+curl -s https://packages.gitlab.com/install/repositories/gitlab/gitlab-ee/script.deb.sh | sudo bash
+```
+
+В `EXTERNAL_URL` укажите свой домен:
+
+```bash
+sudo EXTERNAL_URL="https://gitlab.helm.uz" apt install gitlab-ee
+```
+
+При успешной установке вы увидите следующий результат:
+
+![gitlab-ee-install](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab-ee.png)
+
+</TabPanel>
+</Tabs>
+
+<Callout type="warning" emoji="">
+Установка может занять 5-10 минут. По завершении в консоли появится сообщение о пароле администратора — пароль пользователя `root` сохраняется в файле `/etc/gitlab/initial_root_password`. **Этот файл автоматически удаляется через 24 часа**, поэтому скопируйте пароль немедленно!
+</Callout>
+
+![gitlab-note](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab3.png)
+
+**4->** Откройте в браузере ваш домен (в нашем случае `gitlab.helm.uz`). Должна открыться страница входа.
+
+Войдите с именем пользователя `root`. Пароль получите с помощью следующей команды:
+
+```bash
+sudo cat /etc/gitlab/initial_root_password
+```
+
+![gitlab-login](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab-ce.png)
+
+После входа откроется страница **Welcome to GitLab**:
+
+![gitlab-welcome](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab-ce1.png)
+
+Панель администратора: `gitlab.helm.uz/admin` — здесь можно посмотреть общую информацию о сервере.
+
+![gitlab-admin](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab-ce2.png)
+
+## Настройка GitLab Server
+
+GitLab установлен, теперь перед использованием выполним несколько важных настроек.
+
+### 1. Смена пароля администратора
+
+Сейчас мы вошли с именем пользователя `root` и автоматически сгенерированным паролем. Давайте изменим их.
+
+Перейдите в профиль -> **Edit profile** -> раздел **Account**:
+
+![admin-profile](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/admin1.png)
+
+Замените `root` на ваше имя пользователя и нажмите **Update username**:
+
+![admin-username](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/admin2.png)
+
+Перейдите в раздел **Password** и установите новый пароль:
+
+![admin-password](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/admin3.png)
+
+После сохранения вы будете перенаправлены на страницу входа — войдите с новыми учётными данными:
+
+![admin-login](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/admin4.png)
+
+### 2. Отключение открытой регистрации
+
+По умолчанию на странице входа GitLab есть кнопка **Register now** — это означает, что кто угодно может зарегистрироваться на вашем сервере. Это небезопасно, поскольку посторонние могут получить доступ.
+
+![register-link](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab4.png)
+
+Чтобы отключить эту функцию:
+
+Перейдите в **Admin Area**:
+
+![admin-area](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/ad1.png)
+
+Найдите раздел **General** -> **Sign-up restrictions**:
+
+![sign-up-settings](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/ad2.png)
+
+Снимите флажок **Sign-up enabled** и сохраните:
+
+![sign-up-disabled](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab5.png)
+
+Теперь только администратор может создавать пользователей.
+
+### 3. Автоматическое обновление SSL-сертификата
+
+При установке GitLab SSL-сертификат автоматически получается через **Let's Encrypt**. Но сертификат нужно обновлять каждые 90 дней. Для автоматизации этого процесса:
+
+```bash
+sudo nano /etc/gitlab/gitlab.rb
+```
+
+Найдите следующие строки и раскомментируйте (или добавьте):
+
+```ruby
+# /etc/gitlab/gitlab.rb
+
+letsencrypt['auto_renew'] = true
+letsencrypt['auto_renew_hour'] = "12"
+letsencrypt['auto_renew_minute'] = "30"
+letsencrypt['auto_renew_day_of_month'] = "*/7"
+letsencrypt['auto_renew_log_directory'] = '/var/log/gitlab/lets-encrypt'
+```
+
+Эта настройка проверяет сертификат каждые 7 дней в 12:30 и при необходимости обновляет его.
+
+Применяем изменения:
+
+```bash
+sudo gitlab-ctl reconfigure
+```
+
+### 4. Настройка GitLab для production (тюнинг gitlab.rb)
+
+Настройки по умолчанию достаточны для небольших команд, но при 20+ пользователях или когда нужно экономить ресурсы сервера, необходимо оптимизировать файл `gitlab.rb`.
+
+```bash
+sudo nano /etc/gitlab/gitlab.rb
+```
+
+```ruby
+# /etc/gitlab/gitlab.rb — Production tuning
+
+# Количество Puma worker'ов — каждый потребляет ~1 ГБ RAM
+# Формула: количество ядер CPU + 1, но корректируйте с учётом RAM
+# Для сервера с 8 ГБ RAM и 4 CPU:
+puma['worker_processes'] = 4
+
+# Sidekiq — worker для фоновых задач
+# По умолчанию 1, при большом количестве пользователей увеличьте до 2-3
+sidekiq['max_concurrency'] = 20
+
+# PostgreSQL — shared_buffers рекомендуется устанавливать на 25% от RAM
+# Для сервера с 8 ГБ:
+postgresql['shared_buffers'] = "2048MB"
+
+# Мониторинг — Prometheus и Grafana
+# Состояние сервера можно отслеживать через gitlab.helm.uz/-/grafana
+prometheus_monitoring['enable'] = true
+grafana['enable'] = true
+
+# Container Registry — для хранения Docker-образов
+# Доступен через gitlab.helm.uz:5050
+registry_external_url 'https://gitlab.helm.uz:5050'
+
+# Настройки резервного копирования
+gitlab_rails['backup_keep_time'] = 604800  # 7 дней (в секундах)
+```
+
+<Callout type="info" emoji="">
+**Формула расчёта RAM:** Сам GitLab потребляет ~4 ГБ RAM. Каждый Puma worker — ещё +700 МБ, каждый Sidekiq worker — +1 ГБ. На сервере с 8 ГБ RAM 4 Puma worker'а и 1 Sidekiq — это близко к пределу. Если на сервере работают и другие сервисы, уменьшите количество worker'ов.
+</Callout>
+
+Применяем изменения:
+
+```bash
+sudo gitlab-ctl reconfigure
+```
+
+### 5. Создание группы и репозитория
+
+В GitLab проекты можно объединять в группы. Например, удобно создать группу **DevOps** и размещать в ней все соответствующие репозитории:
+
+![create-group](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab6.png)
+
+Создаём новый репозиторий внутри группы:
+
+![create-repo](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab7.png)
+
+Выполняем push проекта с локального компьютера:
+
+![push-code](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/gitlab9.png)
+
+## Установка GitLab Runner
+
+GitLab сам создаёт CI/CD-пайплайны, но для их **выполнения** нужен отдельный агент — **GitLab Runner**. Runner берёт каждый job из пайплайна и выполняет его: сборка кода, запуск тестов, деплой.
+
+### Типы Runner'ов
+
+```
++------------------------------------------------------------------+
+|                      GITLAB SERVER                                |
+|                                                                   |
+|   +-------------------+     +-------------------+                 |
+|   |    Project A      |     |    Project B      |                 |
+|   +--------+----------+     +--------+----------+                 |
+|            |                         |                            |
++------------------------------------------------------------------+
+             |                         |
+    +--------v----------+    +---------v---------+
+    |  Shared Runner    |    | Specific Runner   |
+    |  (Barcha loyihalar |    | (Faqat bitta      |
+    |   uchun umumiy)   |    |  loyiha uchun)    |
+    +--------+----------+    +---------+---------+
+             |                         |
+    +--------v----------+    +---------v---------+
+    |   Docker          |    |   Shell            |
+    |   Executor        |    |   Executor         |
+    +-------------------+    +--------------------+
+```
+
+* **Shared Runner** — обслуживает все проекты. Удобен для общих задач сборки и тестирования
+* **Specific Runner** — привязан к одному проекту или группе. Используется, когда нужна специальная среда
+
+**Executor** — определяет, **где** Runner выполняет job'ы:
+* **Docker executor** — для каждого job'а создаётся новый Docker-контейнер (хорошая изоляция, рекомендуется)
+* **Shell executor** — job'ы выполняются непосредственно на самом сервере (просто, но небезопасно)
+
+### Установка Runner
+
+**1->** Создаём Runner в Admin Area GitLab: **Admin Area -> CI/CD -> Runners -> New instance runner**
+
+![runners-page](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/runner.png)
+
+Укажите теги и настройки для Runner'а:
+
+![runner-create](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/runner1.png)
+
+GitLab покажет токен и команду для регистрации:
+
+![runner-token](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/runner2.png)
+
+**2->** Теперь переходим на сервер и устанавливаем GitLab Runner:
+
+```bash
+# Скачиваем бинарный файл
+sudo curl -L --output /usr/local/bin/gitlab-runner \
+  https://gitlab-runner-downloads.s3.amazonaws.com/latest/binaries/gitlab-runner-linux-amd64
+
+# Даём права на выполнение
+sudo chmod +x /usr/local/bin/gitlab-runner
+
+# Создаём отдельного пользователя для GitLab Runner
+sudo useradd --comment 'GitLab Runner' --create-home gitlab-runner --shell /bin/bash
+
+# Устанавливаем и запускаем как сервис
+sudo gitlab-runner install --user=gitlab-runner --working-directory=/home/gitlab-runner
+sudo gitlab-runner start
+```
+
+**3->** Мы будем использовать Docker executor, поэтому на сервере должен быть установлен Docker. Воспользуйтесь руководством [**Установка Docker на Linux-серверы**](https://devops-journey.uz/guides/konteyner/docker-ornatish).
+
+**4->** Регистрируем Runner в GitLab. Используем токен, полученный от GitLab:
+
+```bash
+gitlab-runner register \
+  --url https://gitlab.helm.uz \
+  --token glrt-xxxxxxxxxxxxxxxxxxxx
+```
+
+![runner-register](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/runner4.png)
+
+В процессе регистрации будет задано несколько вопросов:
+
+<Callout type="info" emoji="">
+**Runner name:** `runner1` — это только для идентификации, можно указать любое имя
+
+**Executor:** `docker` — для выполнения job'ов внутри Docker-контейнера
+
+**Default Docker image:** `ubuntu:latest` — используется, если в `.gitlab-ci.yml` образ не указан
+</Callout>
+
+**5->** Запускаем Runner:
+
+```bash
+sudo gitlab-runner run
+```
+
+Нажмите **View runner** в GitLab для проверки — должен отображаться зелёный статус:
+
+![runner-online](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/runner3.png)
+
+### Конфигурация Runner
+
+После регистрации Runner'а рассмотрим настройки в файле `config.toml`:
+
+```bash
+sudo nano /etc/gitlab-runner/config.toml
+```
+
+```toml
+# /etc/gitlab-runner/config.toml
+
+concurrent = 4          # Сколько job'ов может выполняться одновременно
+check_interval = 0      # Интервал опроса GitLab для получения новых job'ов (0 = по умолчанию 3 сек)
+shutdown_timeout = 0    # Время ожидания перед завершением работы
+
+[session_server]
+  session_timeout = 1800  # Таймаут для интерактивного веб-терминала (в секундах)
+
+[[runners]]
+  name = "runner1"
+  url = "https://gitlab.helm.uz/"
+  token = "glrt-xxxxxxxxxxxxxxxxxxxx"
+  executor = "docker"
+  [runners.docker]
+    tls_verify = false
+    image = "ubuntu:latest"        # Docker-образ по умолчанию
+    privileged = true              # Необходимо для Docker-in-Docker
+    disable_entrypoint_overwrite = false
+    oom_kill_disable = false
+    disable_cache = false
+    volumes = ["/cache"]           # Кеш между job'ами
+    shm_size = 0
+```
+
+<Callout type="warning" emoji="">
+**О параметре `privileged = true`:** Он необходим для Docker-in-Docker (то есть для запуска Docker внутри Docker). Например, если в CI-пайплайне нужно собирать Docker-образы. Однако это небезопасно — контейнер получает полный доступ к хост-серверу. Если сборка Docker-образов не требуется, установите `privileged = false`.
+</Callout>
+
+Предоставляем GitLab Runner'у доступ к Docker:
+
+```bash
+sudo usermod -aG docker gitlab-runner
+```
+
+Перезапускаем Runner для применения изменений:
+
+```bash
+sudo gitlab-runner restart
+```
+
+## Первый CI/CD-пайплайн
+
+Всё готово — GitLab установлен, настроен, Runner подключён. Теперь запустим первый пайплайн.
+
+### Как работает CI/CD?
+
+```
++----------+     +-----------+     +------------+     +----------+
+|          |     |           |     |            |     |          |
+|   Dev    |---->|   GitLab  |---->|   GitLab   |---->|  Natija  |
+| (git push)|    |  (pipeline |    |   Runner   |     | (pass/   |
+|          |     |   yaratadi)|    | (job bajara-|    |   fail)  |
++----------+     +-----------+     |    di)     |     +----------+
+                      |            +------------+
+                      |                  |
+                      |   .gitlab-ci.yml |
+                      +------------------+
+```
+
+1. Разработчик вносит изменения в код и выполняет **git push**
+2. GitLab находит в репозитории файл `.gitlab-ci.yml` и создаёт **пайплайн**
+3. **Runner** получает job и выполняет его внутри Docker-контейнера
+4. Результат (успех или ошибка) отображается в интерфейсе GitLab
+
+### Написание пайплайна
+
+Создаём файл `.gitlab-ci.yml` в корневой директории репозитория. Ниже два реальных примера — простой и production-уровня:
+
+**Простой пайплайн — только проверка сборки:**
+
+```yaml
+# .gitlab-ci.yml — простой вариант
+
+stages:
+  - build
+
+build:
+  stage: build
+  image: node:20
+  before_script:
+    - npm install -g pnpm
+  script:
+    - pnpm install
+    - pnpm next build
+  cache:
+    key: "$CI_COMMIT_REF_SLUG"
+    paths:
+      - node_modules/
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+  tags:
+    - shared
+```
+
+**Production-пайплайн — сборка, тестирование, создание Docker-образа и деплой:**
+
+В реальных проектах обычно несколько этапов. Например, для Node.js-проекта:
+
+```yaml
+# .gitlab-ci.yml — production вариант
+
+stages:
+  - install
+  - test
+  - build
+  - docker
+  - deploy
+
+variables:
+  DOCKER_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
+  DOCKER_IMAGE_LATEST: $CI_REGISTRY_IMAGE:latest
+
+# Установка зависимостей — кешируется для последующих этапов
+install:
+  stage: install
+  image: node:20
+  script:
+    - npm install -g pnpm
+    - pnpm install --frozen-lockfile
+  cache:
+    key: "$CI_COMMIT_REF_SLUG"
+    paths:
+      - node_modules/
+  tags:
+    - shared
+
+# Запуск тестов
+test:
+  stage: test
+  image: node:20
+  script:
+    - npm install -g pnpm
+    - pnpm test
+  cache:
+    key: "$CI_COMMIT_REF_SLUG"
+    paths:
+      - node_modules/
+    policy: pull       # Только чтение, без записи (быстрее)
+  tags:
+    - shared
+
+# Сборка проекта
+build:
+  stage: build
+  image: node:20
+  script:
+    - npm install -g pnpm
+    - pnpm build
+  artifacts:
+    paths:
+      - .next/         # Передача результата сборки на следующий этап
+    expire_in: 1 hour
+  cache:
+    key: "$CI_COMMIT_REF_SLUG"
+    paths:
+      - node_modules/
+    policy: pull
+  tags:
+    - shared
+
+# Сборка Docker-образа и push в GitLab Container Registry
+docker:
+  stage: docker
+  image: docker:24
+  services:
+    - docker:24-dind
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - docker build -t $DOCKER_IMAGE -t $DOCKER_IMAGE_LATEST .
+    - docker push $DOCKER_IMAGE
+    - docker push $DOCKER_IMAGE_LATEST
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+  tags:
+    - shared
+
+# Деплой на сервер (через SSH)
+deploy:
+  stage: deploy
+  image: alpine:latest
+  before_script:
+    - apk add --no-cache openssh-client
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | ssh-add -
+    - mkdir -p ~/.ssh
+    - echo "$SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts
+  script:
+    - ssh $DEPLOY_USER@$DEPLOY_HOST "
+        docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY &&
+        docker pull $DOCKER_IMAGE_LATEST &&
+        docker compose -f /app/docker-compose.yml up -d
+      "
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+  when: manual         # Деплой запускается только при ручном подтверждении
+  tags:
+    - shared
+```
+
+<Callout type="info" emoji="">
+**Ключевые понятия production-пайплайна:**
+* **`artifacts`** — передаёт результат сборки на следующий этап (например, директорию `.next/` на этап docker)
+* **`cache: policy: pull`** — на этапах test и build кеш только читается, что экономит время
+* **`$CI_REGISTRY`** — встроенный Container Registry GitLab. Отдельный Docker Hub не нужен
+* **`when: manual`** — этап deploy не запускается автоматически, администратор подтверждает его вручную в интерфейсе GitLab
+* **`$SSH_PRIVATE_KEY`, `$DEPLOY_HOST`** — эти переменные хранятся в **Settings -> CI/CD -> Variables** (не в коде!)
+</Callout>
+
+Добавьте файл в репозиторий и выполните push в ветку `main` — пайплайн запустится автоматически.
+
+Перейдите в раздел **Pipelines**:
+
+![pipelines](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/jobs.png)
+
+Успешно выполненный пайплайн:
+
+![pipeline-success](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/jobs1.png)
+
+Для просмотра деталей нажмите на пайплайн:
+
+![pipeline-detail](https://raw.githubusercontent.com/devops-journey-uz/assets/main/images/tutorials/ci-cd/gitlab-server/jobs2.png)
+
+<Callout type="info" emoji="">
+Здесь мы написали простой пайплайн с одним этапом `build`. В GitLab CI можно настроить тестирование, деплой, multi-stage пайплайны и многое другое. Подробнее: [**CI/CD с GitLab CI**](https://devops-journey.uz/guides/ci-cd/start-gitlabci)
+</Callout>
+
+## Безопасность и резервное копирование
+
+Установить GitLab-сервер недостаточно — необходимо обеспечить его защиту и предусмотреть меры по сохранению данных.
+
+### Настройка файрвола
+
+На сервере откройте только необходимые порты, остальные закройте:
+
+```bash
+sudo ufw allow OpenSSH    # SSH (порт 22) — для доступа к серверу через терминал
+sudo ufw allow 80/tcp     # HTTP — необходим для получения сертификата Let's Encrypt
+sudo ufw allow 443/tcp    # HTTPS — веб-интерфейс GitLab
+sudo ufw enable
+sudo ufw status
+```
+
+### Настройка резервного копирования
+
+В реальной жизни серверы выходят из строя, диски ломаются, сотрудники допускают ошибки. Без резервных копий все данные — код, issue, конфигурации CI/CD — будут потеряны. Поэтому резервное копирование — это не «настроим, когда понадобится», а то, что нужно **настроить с первого дня**.
+
+**Что сохраняет резервная копия:**
+* Все Git-репозитории
+* Базу данных (пользователи, issue, merge request'ы, конфигурации CI/CD)
+* LFS-объекты и загруженные файлы
+
+**Что НЕ сохраняет резервная копия (нужно делать отдельно):**
+* `/etc/gitlab/gitlab.rb` — конфигурация сервера
+* `/etc/gitlab/gitlab-secrets.json` — ключи шифрования (без них восстановление из резервной копии **невозможно**)
+
+```bash
+# Создание резервной копии вручную
+sudo gitlab-backup create
+
+# Файлы резервных копий хранятся здесь:
+ls /var/opt/gitlab/backups/
+# Результат: 1710100800_2024_03_11_16.9.1_gitlab_backup.tar
+```
+
+Автоматическое резервное копирование + бэкап конфигурационных файлов:
+
+```bash
+sudo crontab -e
+```
+
+```bash
+# Полное резервное копирование каждый день в 2:00
+0 2 * * * /opt/gitlab/bin/gitlab-backup create CRON=1
+
+# Отдельное резервное копирование конфигурационных файлов (каждый день в 2:30)
+30 2 * * * cp /etc/gitlab/gitlab.rb /var/opt/gitlab/backups/gitlab.rb.$(date +\%F)
+30 2 * * * cp /etc/gitlab/gitlab-secrets.json /var/opt/gitlab/backups/gitlab-secrets.json.$(date +\%F)
+```
+
+<Callout type="warning" emoji="">
+**Важно:** Хранить резервные копии только на том же сервере недостаточно! Если диск выйдет из строя — резервная копия тоже будет потеряна. В production необходимо копировать бэкапы в другое место:
+
+```bash
+# Например, на другой сервер с помощью rsync
+rsync -avz /var/opt/gitlab/backups/ backup-user@backup-server:/gitlab-backups/
+
+# Или в S3-совместимое хранилище (MinIO, AWS S3)
+# В gitlab.rb:
+gitlab_rails['backup_upload_connection'] = {
+  'provider' => 'AWS',
+  'region' => 'us-east-1',
+  'aws_access_key_id' => 'ACCESS_KEY',
+  'aws_secret_access_key' => 'SECRET_KEY',
+  'endpoint' => 'https://s3.example.com'
+}
+gitlab_rails['backup_upload_remote_directory'] = 'gitlab-backups'
+```
+</Callout>
+
+**Восстановление из резервной копии (restore):**
+```bash
+# Останавливаем сервисы GitLab (база данных и кеш остаются работать)
+sudo gitlab-ctl stop puma
+sudo gitlab-ctl stop sidekiq
+
+# Восстанавливаем из резервной копии (укажите timestamp из имени файла)
+sudo gitlab-backup restore BACKUP=1710100800_2024_03_11_16.9.1
+
+# Восстанавливаем конфигурационные файлы
+sudo cp /backup/gitlab.rb /etc/gitlab/gitlab.rb
+sudo cp /backup/gitlab-secrets.json /etc/gitlab/gitlab-secrets.json
+
+# Reconfigure и restart
+sudo gitlab-ctl reconfigure
+sudo gitlab-ctl restart
+```
+
+### Чек-лист безопасности
+
+На production-сервере обязательно выполните следующие меры:
+
+**1. SSH-ключи — отключите вход по паролю:**
+
+В файле `gitlab.rb`:
+```ruby
+# Отключение git clone/push по паролю — только через SSH-ключ
+gitlab_rails['gitlab_shell_ssh_port'] = 22
+```
+
+Пользователи должны добавить свои SSH public key в разделе **User Settings -> SSH Keys**. После этого:
+```bash
+# Работа через SSH-ключ вместо пароля
+git clone git@gitlab.helm.uz:devops/loyiha.git
+```
+
+**2. 2FA (двухфакторная аутентификация) — сделайте обязательной:**
+
+В **Admin Area -> Settings -> General -> Sign-in restrictions**:
+* Включите **Two-factor authentication**
+* Установите **Grace period** 3 дня — у пользователей будет 3 дня на настройку 2FA
+
+**3. Регулярное обновление:**
+
+Патчи безопасности GitLab выходят ежемесячно. Процедура обновления в production:
+```bash
+# Перед обновлением создайте резервную копию!
+sudo gitlab-backup create
+
+# Обновление
+sudo apt update && sudo apt upgrade gitlab-ee -y
+sudo gitlab-ctl reconfigure
+
+# Проверка
+sudo gitlab-ctl status
+sudo gitlab-rake gitlab:check SANITIZE=true
+```
+
+**4. Мониторинг — отслеживание состояния сервера:**
+
+Выше мы включили Prometheus и Grafana в `gitlab.rb`. Теперь через `gitlab.helm.uz/-/grafana` можно отслеживать состояние сервера с помощью готовых дашбордов: CPU, RAM, диск, количество запросов, статистика пайплайнов.
+
+**5. Rate limiting — защита от brute-force:**
+
+```ruby
+# /etc/gitlab/gitlab.rb
+
+# Не более 10 запросов в минуту на страницу входа
+gitlab_rails['rate_limiting_response_text'] = 'Retry later'
+```
+
+## Просмотр логов GitLab
+
+Когда что-то идёт не так, логи — ваш лучший помощник. Каждый компонент GitLab ведёт свой лог:
+
+```bash
+sudo gitlab-ctl tail              # Все логи (в реальном времени)
+sudo gitlab-ctl tail puma         # Логи веб-приложения
+sudo gitlab-ctl tail nginx        # Логи прокси
+sudo gitlab-ctl tail sidekiq      # Логи фоновых задач
+sudo gitlab-ctl tail gitaly       # Логи Git-операций
+sudo gitlab-ctl tail postgresql   # Логи базы данных
+```
+
+Если проблема неочевидна, запустите общую диагностику:
+
+```bash
+sudo gitlab-rake gitlab:check SANITIZE=true
+```
+
+Эта команда проверит все компоненты GitLab и покажет обнаруженные проблемы.
+
+## Дополнительно
+
+<Callout type="info" emoji="">
+
+Дополнительные ресурсы
+ * [**GitLab CI | Релизы и интеграции**](https://devops-journey.uz/guides/ci-cd/gitlab-ci-release-integrations)
+ * [**CI/CD с GitLab CI**](https://devops-journey.uz/guides/ci-cd/start-gitlabci)
+ * [**GitHub Actions CI/CD**](https://devops-journey.uz/guides/ci-cd/github-actions-ci-cd)
+ * [**Установка Jenkins на Linux-серверы**](https://devops-journey.uz/guides/ci-cd/jenkins-ornatish)
+ * [**От кода до сервера: CI/CD с Jenkins и Docker**](https://devops-journey.uz/guides/ci-cd/jenkins-docker-ci-cd)
+ * [**Kubernetes CI/CD | GitHub Actions + Argo CD | GitOps**](https://devops-journey.uz/guides/ci-cd/github-actions-argocd-cicd)
+
+Ресурсы, использованные при подготовке руководства
+ * [**How To Install and Configure GitLab on Ubuntu**](https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-gitlab-on-ubuntu)
+ * [**Install self-managed GitLab**](https://about.gitlab.com/install/#ubuntu)
+ * [**GitLab Administration Documentation**](https://docs.gitlab.com/ee/administration/)
+
+**Дата:** 2024.06.13 (13 июня 2024 г.)
+
+**Последнее обновление:** 2026.03.11 (11 марта 2026 г.)
+
+**Автор: Отабек Исмоилов**
+
+| [Telegram](https://t.me/Otabek_Ismoilov) | [GitHub](https://github.com/ismoilovdevml) | [LinkedIn](https://www.linkedin.com/in/otabek-ismoilov/) |
+| - | - | - |
+
+</Callout>
